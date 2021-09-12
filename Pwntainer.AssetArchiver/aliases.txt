@@ -1,0 +1,3 @@
+﻿alias get-domains="curl -s http://localhost:8000/pwntainer/Domains.json | jq .rows[][0] | tr -d '\"'"
+alias get-hosts="curl -s http://localhost:8000/pwntainer/Hosts.json | jq .rows[][0] | tr -d '\"'"
+alias get-services="curl -s http://localhost:8000/pwntainer/Services.json | jq .rows[][0] | tr -d '\"'"

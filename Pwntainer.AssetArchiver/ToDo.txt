@@ -1,0 +1,22 @@
+﻿docker run -d pwntainer
+docker exec -it <hash> bash
+
+--------------
+create alias based api client
+
+run dnsvalidator weekly
+
+add recon_scripts as submodule
+refactor recon scripts to use aar
+
+-------------------------------
+
+cron jobs
+	1. subdomain monitoring
+	2. crawl new subdomains
+	3. discover and monitor static assets (javascript, json, xml)
+
+
+---------
+
+alias get-domains="curl -s http://localhost:8000/pwntainer/Domains.json?FoundAt__gt=2021-09-11+00:00:00 | jq .rows[][0] | tr -d '\"'"
