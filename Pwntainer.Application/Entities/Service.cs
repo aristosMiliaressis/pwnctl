@@ -6,7 +6,6 @@ namespace Pwntainer.Application.Entities
 {
     public class Service : BaseAsset
     {
-        public int Id { get; set; }
         public TransportProtocol TransportProtocol { get; set; }
         public ushort Port { get; set; }
         public string IP { get; set; }

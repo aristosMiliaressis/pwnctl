@@ -1,7 +1,6 @@
 C:\Users\bobma\source\repos\Pwntainer\Pwntainer.Application\bin\Debug\netcoreapp3.1\Pwntainer.Application.deps.json
 C:\Users\bobma\source\repos\Pwntainer\Pwntainer.Application\bin\Debug\netcoreapp3.1\Pwntainer.Application.dll
 C:\Users\bobma\source\repos\Pwntainer\Pwntainer.Application\bin\Debug\netcoreapp3.1\Pwntainer.Application.pdb
-C:\Users\bobma\source\repos\Pwntainer\Pwntainer.Application\obj\Debug\netcoreapp3.1\Pwntainer.Application.csprojAssemblyReference.cache
 C:\Users\bobma\source\repos\Pwntainer\Pwntainer.Application\obj\Debug\netcoreapp3.1\Pwntainer.Application.AssemblyInfoInputs.cache
 C:\Users\bobma\source\repos\Pwntainer\Pwntainer.Application\obj\Debug\netcoreapp3.1\Pwntainer.Application.AssemblyInfo.cs
 C:\Users\bobma\source\repos\Pwntainer\Pwntainer.Application\obj\Debug\netcoreapp3.1\Pwntainer.Application.csproj.CoreCompileInputs.cache

@@ -13,7 +13,7 @@ namespace Pwntainer.Persistence.EntityConfiguration
     {
         public void Configure(EntityTypeBuilder<WildcardDomain> builder)
         {
-            builder.HasKey(e => e.Pattern);
+            builder.HasKey(e => e.Id);
         }
     }
 }

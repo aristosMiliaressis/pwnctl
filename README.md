@@ -19,3 +19,8 @@ the above components provide us with an easy way to perform CRUD operations from
 cron job based workflows
 
 
+#### To Do
+- [ ] a workflow that monitors for new subdomains and sends discord notifications
+- [ ] a workflow that crawls all endpoints found in the last day
+- [ ] a workflow that tries to figure out if certain endpoints (i.e js|json|xml) are static and than monitors them for changes and sends discord notifications if changes found.
+- [ ] a workflow that runs some nuclei templates on newly found services???

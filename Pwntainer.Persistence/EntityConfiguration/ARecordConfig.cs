@@ -17,11 +17,11 @@ namespace Pwntainer.Persistence.EntityConfiguration
 
             builder.HasOne(e => e.Domain)
                 .WithMany()
-                .HasForeignKey(e => e.DomainName);
+                .HasForeignKey(e => e.Id);
 
             builder.HasOne(e => e.Host)
                 .WithMany()
-                .HasForeignKey(e => e.IP);
+                .HasForeignKey(e => e.Id);
         }
     }
 }

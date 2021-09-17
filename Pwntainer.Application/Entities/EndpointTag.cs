@@ -7,8 +7,6 @@ namespace Pwntainer.Application.Entities
 {
     public class EndpointTag : BaseAsset
     {
-        public int Id { get; set; }
-
         public int EndpointId { get; set; }
         public Endpoint Endpoint { get; set; }
 

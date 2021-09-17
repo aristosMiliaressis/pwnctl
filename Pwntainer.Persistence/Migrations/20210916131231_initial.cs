@@ -11,21 +11,24 @@ namespace Pwntainer.Persistence.Migrations
                 name: "Domains",
                 columns: table => new
                 {
-                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(type: "TEXT", nullable: true),
                     InScope = table.Column<bool>(type: "INTEGER", nullable: false),
                     TasksRun = table.Column<string>(type: "TEXT", nullable: true),
                     FoundAt = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Domains", x => x.Name);
+                    table.PrimaryKey("PK_Domains", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Hosts",
                 columns: table => new
                 {
-                    IP = table.Column<string>(type: "TEXT", nullable: false),
+                    Id = table.Column<int>(type: "INTEGER", nullable: false),
+                    IP = table.Column<string>(type: "TEXT", nullable: true),
                     OperatingSystem_Family = table.Column<string>(type: "TEXT", nullable: true),
                     OperatingSystem_Version = table.Column<string>(type: "TEXT", nullable: true),
                     OperatingSystem_Build = table.Column<string>(type: "TEXT", nullable: true),
@@ -34,20 +37,22 @@ namespace Pwntainer.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Hosts", x => x.IP);
+                    table.PrimaryKey("PK_Hosts", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "NetRanges",
                 columns: table => new
                 {
-                    CIDR = table.Column<string>(type: "TEXT", nullable: false),
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    CIDR = table.Column<string>(type: "TEXT", nullable: true),
                     TasksRun = table.Column<string>(type: "TEXT", nullable: true),
                     FoundAt = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_NetRanges", x => x.CIDR);
+                    table.PrimaryKey("PK_NetRanges", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -89,23 +94,24 @@ namespace Pwntainer.Persistence.Migrations
                 name: "WildcardDomains",
                 columns: table => new
                 {
-                    Pattern = table.Column<string>(type: "TEXT", nullable: false),
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Pattern = table.Column<string>(type: "TEXT", nullable: true),
                     TasksRun = table.Column<string>(type: "TEXT", nullable: true),
                     FoundAt = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_WildcardDomains", x => x.Pattern);
+                    table.PrimaryKey("PK_WildcardDomains", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "ARecords",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    DomainName = table.Column<string>(type: "TEXT", nullable: true),
-                    IP = table.Column<string>(type: "TEXT", nullable: true),
+                    Id = table.Column<int>(type: "INTEGER", nullable: false),
+                    DomainId = table.Column<int>(type: "INTEGER", nullable: false),
+                    HostId = table.Column<int>(type: "INTEGER", nullable: false),
                     TasksRun = table.Column<string>(type: "TEXT", nullable: true),
                     FoundAt = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
@@ -113,17 +119,17 @@ namespace Pwntainer.Persistence.Migrations
                 {
                     table.PrimaryKey("PK_ARecords", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ARecords_Domains_DomainName",
-                        column: x => x.DomainName,
+                        name: "FK_ARecords_Domains_Id",
+                        column: x => x.Id,
                         principalTable: "Domains",
-                        principalColumn: "Name",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ARecords_Hosts_IP",
-                        column: x => x.IP,
+                        name: "FK_ARecords_Hosts_Id",
+                        column: x => x.Id,
                         principalTable: "Hosts",
-                        principalColumn: "IP",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -152,14 +158,16 @@ namespace Pwntainer.Persistence.Migrations
                 name: "VirtualHosts",
                 columns: table => new
                 {
-                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(type: "TEXT", nullable: true),
                     ServiceId = table.Column<int>(type: "INTEGER", nullable: false),
                     TasksRun = table.Column<string>(type: "TEXT", nullable: true),
                     FoundAt = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_VirtualHosts", x => x.Name);
+                    table.PrimaryKey("PK_VirtualHosts", x => x.Id);
                     table.ForeignKey(
                         name: "FK_VirtualHosts_Services_ServiceId",
                         column: x => x.ServiceId,
@@ -189,16 +197,6 @@ namespace Pwntainer.Persistence.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ARecords_DomainName",
-                table: "ARecords",
-                column: "DomainName");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ARecords_IP",
-                table: "ARecords",
-                column: "IP");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Endpoints_ServiceId",

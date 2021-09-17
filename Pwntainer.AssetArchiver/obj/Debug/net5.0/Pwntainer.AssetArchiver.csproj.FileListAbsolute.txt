@@ -1,10 +1,3 @@
-C:\Users\bobma\source\repos\Pwntainer\Pwntainer.AssetArchiver\bin\Debug\net5.0\Seed\Data\bugcrowd_data.json
-C:\Users\bobma\source\repos\Pwntainer\Pwntainer.AssetArchiver\bin\Debug\net5.0\Seed\Data\federacy_data.json
-C:\Users\bobma\source\repos\Pwntainer\Pwntainer.AssetArchiver\bin\Debug\net5.0\Seed\Data\hackenproof_data.json
-C:\Users\bobma\source\repos\Pwntainer\Pwntainer.AssetArchiver\bin\Debug\net5.0\Seed\Data\hackerone_data.json
-C:\Users\bobma\source\repos\Pwntainer\Pwntainer.AssetArchiver\bin\Debug\net5.0\Seed\Data\intigriti_data.json
-C:\Users\bobma\source\repos\Pwntainer\Pwntainer.AssetArchiver\bin\Debug\net5.0\Seed\Data\yeswehack_data.json
-C:\Users\bobma\source\repos\Pwntainer\Pwntainer.AssetArchiver\bin\Debug\net5.0\appsettings.json
 C:\Users\bobma\source\repos\Pwntainer\Pwntainer.AssetArchiver\bin\Debug\net5.0\Pwntainer.AssetArchiver.exe
 C:\Users\bobma\source\repos\Pwntainer\Pwntainer.AssetArchiver\bin\Debug\net5.0\entrypoint.sh
 C:\Users\bobma\source\repos\Pwntainer\Pwntainer.AssetArchiver\bin\Debug\net5.0\Pwntainer.AssetArchiver.deps.json
@@ -108,3 +101,5 @@ C:\Users\bobma\source\repos\Pwntainer\Pwntainer.AssetArchiver\obj\Debug\net5.0\P
 C:\Users\bobma\source\repos\Pwntainer\Pwntainer.AssetArchiver\obj\Debug\net5.0\ref\Pwntainer.AssetArchiver.dll
 C:\Users\bobma\source\repos\Pwntainer\Pwntainer.AssetArchiver\obj\Debug\net5.0\Pwntainer.AssetArchiver.pdb
 C:\Users\bobma\source\repos\Pwntainer\Pwntainer.AssetArchiver\obj\Debug\net5.0\Pwntainer.AssetArchiver.genruntimeconfig.cache
+C:\Users\bobma\source\repos\Pwntainer\Pwntainer.AssetArchiver\bin\Debug\net5.0\workflows\weekly\validatedns.sh
+C:\Users\bobma\source\repos\Pwntainer\Pwntainer.AssetArchiver\bin\Debug\net5.0\resolvers_top25.txt

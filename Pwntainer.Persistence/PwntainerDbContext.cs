@@ -12,7 +12,7 @@ namespace Pwntainer.Persistence
 {
     public class PwntainerDbContext : DbContext
     {
-        public static string ConnectionString;
+        public static string ConnectionString = "FileName=/opt/pwntainer/pwntainer.db";
         
         public static readonly ILoggerFactory _loggerFactory = LoggerFactory.Create(builder =>
         {
@@ -45,8 +45,7 @@ namespace Pwntainer.Persistence
             if (!optionsBuilder.IsConfigured)
             {
 #if DEBUG
-                optionsBuilder.UseLoggerFactory(_loggerFactory)
-               .EnableSensitiveDataLogging(true);
+                optionsBuilder.UseLoggerFactory(_loggerFactory).EnableSensitiveDataLogging(true);
 #endif
                 optionsBuilder.UseSqlite(ConnectionString);
             }

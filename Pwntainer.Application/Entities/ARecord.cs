@@ -6,10 +6,9 @@ namespace Pwntainer.Application.Entities
 {
     public class ARecord : BaseAsset
     {
-        public int Id { get; set; }
-        public string DomainName { get; set; }
+        public int DomainId { get; set; }
         public Domain Domain { get; set; }
-        public string IP { get; set; }
+        public int HostId { get; set; }
         public Host Host { get; set; }
     }
 }

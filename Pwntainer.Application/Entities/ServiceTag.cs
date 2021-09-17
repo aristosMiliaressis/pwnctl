@@ -9,8 +9,6 @@ namespace Pwntainer.Application.Entities
     {
         public int ServiceTagId { get; set; }
 
-        public int Id { get; set; }
-
         public Tag Tag { get; set; }
     }
 }

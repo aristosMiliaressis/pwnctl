@@ -6,6 +6,70 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="recon_scripts\crlf_injector" />
+    <None Remove="recon_scripts\dig_deep" />
+    <None Remove="recon_scripts\get_js" />
+    <None Remove="recon_scripts\get_site" />
+    <None Remove="recon_scripts\path_traversor" />
+    <None Remove="recon_scripts\rdig" />
+    <None Remove="recon_scripts\recon" />
+    <None Remove="recon_scripts\scan" />
+    <None Remove="recon_scripts\sumup" />
+    <None Remove="recon_scripts\tld_scan" />
+    <None Remove="recon_scripts\udp_scan" />
+    <None Remove="recon_scripts\validatedns" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Program.cs" />
+    <Resource Include="recon_scripts\scan" />
+    <Resource Include="recon_scripts\validatedns" />
+    <Resource Include="resolvers_top25.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="ToDo.txt" />
+    <Content Include="aliases.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="recon_scripts\crlf_injector">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="recon_scripts\dig_deep">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="recon_scripts\get_js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="recon_scripts\get_site">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="recon_scripts\path_traversor">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="recon_scripts\rdig">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="recon_scripts\recon">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="recon_scripts\sumup">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="recon_scripts\tld_scan">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="recon_scripts\udp_scan">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="recon_scripts\resolvers_top25.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="workflows\weekly\validatedns.sh">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.8">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -20,18 +84,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="aliases.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="entrypoint.sh">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="workflows\daily\" />
     <Folder Include="workflows\hourly\" />
     <Folder Include="workflows\monthly\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="entrypoint.sh">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

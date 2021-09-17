@@ -1,0 +1,19 @@
+#!/bin/bash
+
+if [ $# -eq 0 ]; 
+then
+    echo "USAGE: rdig <hostfile>"
+    exit 1
+fi
+
+
+for host in $(cat ../$1)
+do
+	ip=$(dig +short -x $host)
+	echo "$host -> $ip"
+	echo "$host\tIN\tPTR\t$ip" >> all_records.txt
+done
+
+cat all_records.txt | grep -v in-addr.arpa | grep -v inaddr.ip-pool.com | grep -v dyn.forthnet.gr > temp.txt
+cat temp.txt > all_records.txt
+rm temp.txt

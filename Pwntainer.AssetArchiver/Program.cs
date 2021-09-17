@@ -13,7 +13,6 @@ namespace Pwntainer.AssetArchiver
     {
         static void Main(string[] args)
         {
-            PwntainerDbContext.ConnectionString = "/opt/pwntainer/pwntainer.db";
             var dbContext = new PwntainerDbContext();
             var assetService = new AssetService(dbContext);
 

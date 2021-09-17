@@ -13,7 +13,7 @@ namespace Pwntainer.Persistence.EntityConfiguration
     {
         public void Configure(EntityTypeBuilder<NetRange> builder)
         {
-            builder.HasKey(e => e.CIDR);
+            builder.HasKey(e => e.Id);
         }
     }
 }

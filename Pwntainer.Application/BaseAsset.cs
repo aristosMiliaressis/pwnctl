@@ -11,6 +11,7 @@ namespace Pwntainer.Application
             FoundAt = DateTime.Now;
         }
 
+        public int Id { get; set; }
         public string TasksRun { get; set; }
         public DateTime FoundAt { get; set; }
     }

@@ -19,34 +19,30 @@ namespace Pwntainer.Persistence.Migrations
             modelBuilder.Entity("Pwntainer.Application.Entities.ARecord", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("DomainName")
-                        .HasColumnType("TEXT");
+                    b.Property<int>("DomainId")
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("FoundAt")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("IP")
-                        .HasColumnType("TEXT");
+                    b.Property<int>("HostId")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("TasksRun")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DomainName");
-
-                    b.HasIndex("IP");
-
                     b.ToTable("ARecords");
                 });
 
             modelBuilder.Entity("Pwntainer.Application.Entities.Domain", b =>
                 {
-                    b.Property<string>("Name")
-                        .HasColumnType("TEXT");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("FoundAt")
                         .HasColumnType("TEXT");
@@ -54,10 +50,13 @@ namespace Pwntainer.Persistence.Migrations
                     b.Property<bool>("InScope")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("TasksRun")
                         .HasColumnType("TEXT");
 
-                    b.HasKey("Name");
+                    b.HasKey("Id");
 
                     b.ToTable("Domains");
                 });
@@ -111,22 +110,30 @@ namespace Pwntainer.Persistence.Migrations
 
             modelBuilder.Entity("Pwntainer.Application.Entities.Host", b =>
                 {
-                    b.Property<string>("IP")
-                        .HasColumnType("TEXT");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("FoundAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("IP")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("TasksRun")
                         .HasColumnType("TEXT");
 
-                    b.HasKey("IP");
+                    b.HasKey("Id");
 
                     b.ToTable("Hosts");
                 });
 
             modelBuilder.Entity("Pwntainer.Application.Entities.NetRange", b =>
                 {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("CIDR")
                         .HasColumnType("TEXT");
 
@@ -136,7 +143,7 @@ namespace Pwntainer.Persistence.Migrations
                     b.Property<string>("TasksRun")
                         .HasColumnType("TEXT");
 
-                    b.HasKey("CIDR");
+                    b.HasKey("Id");
 
                     b.ToTable("NetRanges");
                 });
@@ -192,10 +199,14 @@ namespace Pwntainer.Persistence.Migrations
 
             modelBuilder.Entity("Pwntainer.Application.Entities.VirtualHost", b =>
                 {
-                    b.Property<string>("Name")
-                        .HasColumnType("TEXT");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("FoundAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("ServiceId")
@@ -204,7 +215,7 @@ namespace Pwntainer.Persistence.Migrations
                     b.Property<string>("TasksRun")
                         .HasColumnType("TEXT");
 
-                    b.HasKey("Name");
+                    b.HasKey("Id");
 
                     b.HasIndex("ServiceId");
 
@@ -213,16 +224,20 @@ namespace Pwntainer.Persistence.Migrations
 
             modelBuilder.Entity("Pwntainer.Application.Entities.WildcardDomain", b =>
                 {
-                    b.Property<string>("Pattern")
-                        .HasColumnType("TEXT");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("FoundAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Pattern")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("TasksRun")
                         .HasColumnType("TEXT");
 
-                    b.HasKey("Pattern");
+                    b.HasKey("Id");
 
                     b.ToTable("WildcardDomains");
                 });
@@ -231,11 +246,15 @@ namespace Pwntainer.Persistence.Migrations
                 {
                     b.HasOne("Pwntainer.Application.Entities.Domain", "Domain")
                         .WithMany()
-                        .HasForeignKey("DomainName");
+                        .HasForeignKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Pwntainer.Application.Entities.Host", "Host")
                         .WithMany()
-                        .HasForeignKey("IP");
+                        .HasForeignKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Domain");
 
@@ -289,8 +308,8 @@ namespace Pwntainer.Persistence.Migrations
                 {
                     b.OwnsOne("Pwntainer.Application.ValueObject.OperatingSystem", "OperatingSystem", b1 =>
                         {
-                            b1.Property<string>("HostIP")
-                                .HasColumnType("TEXT");
+                            b1.Property<int>("HostId")
+                                .HasColumnType("INTEGER");
 
                             b1.Property<string>("Build")
                                 .HasColumnType("TEXT");
@@ -301,12 +320,12 @@ namespace Pwntainer.Persistence.Migrations
                             b1.Property<string>("Version")
                                 .HasColumnType("TEXT");
 
-                            b1.HasKey("HostIP");
+                            b1.HasKey("HostId");
 
                             b1.ToTable("Hosts");
 
                             b1.WithOwner()
-                                .HasForeignKey("HostIP");
+                                .HasForeignKey("HostId");
                         });
 
                     b.Navigation("OperatingSystem");

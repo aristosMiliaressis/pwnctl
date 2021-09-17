@@ -9,6 +9,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pwntainer.Application", "Pw
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pwntainer.AssetArchiver", "Pwntainer.AssetArchiver\Pwntainer.AssetArchiver.csproj", "{9BF94AA4-00F2-4CEC-A8BD-276D91C7B949}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B767139F-A13C-4109-9199-30434682F591}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,11 +36,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{94EC431D-16A0-4E53-A49F-7034B04DF6C3} = {85E50BCB-CFEE-4D6B-B7E1-14DEBB041459}
-		{0EE617E3-C19E-4BA3-83AA-44217A88E782} = {85E50BCB-CFEE-4D6B-B7E1-14DEBB041459}
-		{9BF94AA4-00F2-4CEC-A8BD-276D91C7B949} = {21FD2D57-0255-40BC-845F-E9FA36EE7E2D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E5281EA7-AE30-498A-9EEE-C5B02806FD6B}

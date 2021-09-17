@@ -1,9 +1,3 @@
-C:\Users\bobma\source\repos\Pwntainer\Pwntainer.Persistence\bin\Debug\net5.0\Seed\Data\bugcrowd_data.json
-C:\Users\bobma\source\repos\Pwntainer\Pwntainer.Persistence\bin\Debug\net5.0\Seed\Data\federacy_data.json
-C:\Users\bobma\source\repos\Pwntainer\Pwntainer.Persistence\bin\Debug\net5.0\Seed\Data\hackenproof_data.json
-C:\Users\bobma\source\repos\Pwntainer\Pwntainer.Persistence\bin\Debug\net5.0\Seed\Data\hackerone_data.json
-C:\Users\bobma\source\repos\Pwntainer\Pwntainer.Persistence\bin\Debug\net5.0\Seed\Data\intigriti_data.json
-C:\Users\bobma\source\repos\Pwntainer\Pwntainer.Persistence\bin\Debug\net5.0\Seed\Data\yeswehack_data.json
 C:\Users\bobma\source\repos\Pwntainer\Pwntainer.Persistence\bin\Debug\net5.0\Pwntainer.Persistence.deps.json
 C:\Users\bobma\source\repos\Pwntainer\Pwntainer.Persistence\bin\Debug\net5.0\Pwntainer.Persistence.runtimeconfig.json
 C:\Users\bobma\source\repos\Pwntainer\Pwntainer.Persistence\bin\Debug\net5.0\Pwntainer.Persistence.runtimeconfig.dev.json

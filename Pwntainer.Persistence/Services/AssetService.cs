@@ -1,4 +1,5 @@
 ﻿using DnsClient;
+using Microsoft.EntityFrameworkCore;
 using Pwntainer.Application.Entities;
 using Pwntainer.Application.Wrappers;
 using Pwntainer.Core;
@@ -102,6 +103,8 @@ namespace Pwntainer.Persistence.Services
                             var domain = new Domain();
                             domain.Name = host;
                             _context.Domains.Add(domain);
+
+                            existingDomain = domain;
                         }
 
                         hostDto.Domain = host;
@@ -114,14 +117,19 @@ namespace Pwntainer.Persistence.Services
                             {
                                 var hostIp = new Host() { IP = hostDto.Ip };
                                 _context.Hosts.Add(hostIp);
+
+                                existingHost = hostIp;
                             }
 
-                            var existingRecord = _context.ARecords.FirstOrDefault(r => r.DomainName == hostDto.Domain && r.IP == hostDto.Ip);
+                            var existingRecord = _context.ARecords
+                                                        .Include(a => a.Domain)
+                                                        .Include(a => a.Host)
+                                                        .FirstOrDefault(r => r.Domain.Name == hostDto.Domain && r.Host.IP == hostDto.Ip);
                             if (existingRecord == null)
                             {
                                 var record = new ARecord();
-                                record.DomainName = hostDto.Domain;
-                                record.IP = hostDto.Ip;
+                                record.Domain = existingDomain;
+                                record.Host = existingHost;
                                 _context.ARecords.Add(record);
                             }
                         }
@@ -152,6 +160,8 @@ namespace Pwntainer.Persistence.Services
                             var domain = new Domain();
                             domain.Name = host;
                             _context.Domains.Add(domain);
+
+                            existingDomain = domain;
                         }
 
                         hostDto.Domain = host;
@@ -164,14 +174,19 @@ namespace Pwntainer.Persistence.Services
                             {
                                 var hostIp = new Host() { IP = hostDto.Ip };
                                 _context.Hosts.Add(hostIp);
+
+                                existingHost = hostIp;
                             }
 
-                            var existingRecord = _context.ARecords.FirstOrDefault(r => r.DomainName == hostDto.Domain && r.IP == hostDto.Ip);
+                            var existingRecord = _context.ARecords
+                                                        .Include(a => a.Domain)
+                                                        .Include(a => a.Host)
+                                                        .FirstOrDefault(r => r.Domain.Name == hostDto.Domain && r.Host.IP == hostDto.Ip);
                             if (existingRecord == null)
                             {
                                 var record = new ARecord();
-                                record.DomainName = hostDto.Domain;
-                                record.IP = hostDto.Ip;
+                                record.Domain = existingDomain;
+                                record.Host = existingHost;
                                 _context.ARecords.Add(record);
                             }
                         }

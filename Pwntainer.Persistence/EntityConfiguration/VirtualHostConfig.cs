@@ -13,7 +13,7 @@ namespace Pwntainer.Persistence.EntityConfiguration
     {
         public void Configure(EntityTypeBuilder<VirtualHost> builder)
         {
-            builder.HasKey(e => e.Name);
+            builder.HasKey(e => e.Id);
 
             builder.HasOne(e => e.Service)
                 .WithMany()

@@ -1,0 +1,20 @@
+﻿version: '3.4'
+
+services:
+  pwntainer:
+    image: pwntainer
+    container_name: pwntainer
+    hostname: pwntainer
+    restart: unless-stopped
+    volumes:
+      - .:/opt/pwntainer/
+    ports:
+      - 8000:8000
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 750M
+        reservations:
+          cpus: '0.10'
+          memory: 250M

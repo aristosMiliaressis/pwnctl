@@ -1,0 +1,27 @@
+#!/bin/bash
+
+if [ $# -eq 0 ]; 
+then
+    echo "USAGE: get_site <url_file>"
+    exit 1
+fi
+
+echo "Downloading web content..."
+
+for webroot in $(cat $1)
+do
+	mkdir $1
+	cd $1
+	
+	domain=$(echo $webroot | unfurl --unique domains)
+
+	wget \
+     --recursive \
+     --no-clobber \
+     --page-requisites \
+     --html-extension \
+     --domains $domain \
+     $domain
+
+    cd ..
+done
