@@ -6,24 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="recon_scripts\crlf_injector" />
-    <None Remove="recon_scripts\dig_deep" />
-    <None Remove="recon_scripts\get_js" />
-    <None Remove="recon_scripts\get_site" />
-    <None Remove="recon_scripts\path_traversor" />
-    <None Remove="recon_scripts\rdig" />
-    <None Remove="recon_scripts\recon" />
-    <None Remove="recon_scripts\scan" />
-    <None Remove="recon_scripts\sumup" />
-    <None Remove="recon_scripts\tld_scan" />
-    <None Remove="recon_scripts\udp_scan" />
-    <None Remove="recon_scripts\validatedns" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Resource Include="Program.cs" />
-    <Resource Include="recon_scripts\scan" />
-    <Resource Include="recon_scripts\validatedns" />
     <Resource Include="resolvers_top25.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
@@ -52,6 +35,12 @@
     <Content Include="recon_scripts\recon">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="recon_scripts\resolvers_top25.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="recon_scripts\scan">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="recon_scripts\sumup">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -61,7 +50,7 @@
     <Content Include="recon_scripts\udp_scan">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="recon_scripts\resolvers_top25.txt">
+    <Content Include="recon_scripts\validatedns">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="workflows\weekly\validatedns.sh">
