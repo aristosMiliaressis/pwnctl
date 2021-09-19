@@ -16,7 +16,8 @@ namespace Pwntainer.AssetArchiver
             var dbContext = new PwntainerDbContext();
             var assetService = new AssetService(dbContext);
 
-            do {
+            do
+            {
                 var assetLine = Console.ReadLine();
                 assetService.AddAsset(assetLine);
             } while (true);

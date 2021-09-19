@@ -5,11 +5,12 @@ services:
     image: pwntainer
     container_name: pwntainer
     hostname: pwntainer
-    restart: unless-stopped
-    volumes:
-      - .:/opt/pwntainer/
     ports:
       - 8000:8000
+    build: .
+    restart: unless-stopped
+    volumes:
+      - ./data/:/opt/pwntainer/data/
     deploy:
       resources:
         limits:

@@ -21,8 +21,4 @@
     <ProjectReference Include="..\Pwntainer.Application\Pwntainer.Application.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Migrations\" />
-  </ItemGroup>
-
 </Project>

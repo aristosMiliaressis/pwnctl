@@ -47,6 +47,12 @@
     <Content Include="recon_scripts\tld_scan">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="recon_scripts\top20000.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="recon_scripts\top200000.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="recon_scripts\udp_scan">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

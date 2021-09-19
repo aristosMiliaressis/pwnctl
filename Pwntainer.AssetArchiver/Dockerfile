@@ -1,5 +1,7 @@
 FROM aaaguirrep/offensive-docker AS base
 
+EXPOSE 8000
+
 # install .NET runtime
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -22,12 +24,19 @@ RUN apt-get update && apt-get install -y apt-utils gcc sudo nano
 
 RUN pip3 install datasette
 
+RUN cd /tools/recon/massdns \
+    && make \
+    && ln -s /tools/recon/massdns/bin/massdns /usr/local/bin/ \
+    && ln -s /tools/recon/massdns/scripts/subbrute.py /usr/local/bin/
+
 WORKDIR /opt
 
 RUN git clone https://github.com/vortexau/dnsvalidator.git \
     && cd dnsvalidator && python3 setup.py install
 
 RUN go get -u github.com/tomnomnom/unfurl
+
+RUN GO111MODULE=on go get -v github.com/projectdiscovery/shuffledns/cmd/shuffledns
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim AS build
 COPY ["Pwntainer.AssetArchiver/Pwntainer.AssetArchiver.csproj", "Pwntainer.AssetArchiver/"]
@@ -44,11 +53,11 @@ RUN ln -s /app/Pwntainer.AssetArchiver /usr/local/bin/aar
 
 WORKDIR /opt
 
-#RUN git clone https://github.com/aristosMiliaressis/recon_scripts.git \
-    #&& mv /opt/recon_scripts/* /usr/local/bin \
-    #&& rm -r /opt/recon_scripts/
+RUN git clone https://github.com/dcsync/recontools.git
 
-RUN mkdir -p /opt/pwntainer/data/
+RUN mkdir -p /opt/pwntainer/data/ \
+ && mkdir -p /opt/pwntainer/lists/
+
 RUN printf ".databases\n.quit" | sqlite3 /opt/pwntainer/pwntainer.db
 
 RUN chmod +x /app/entrypoint.sh

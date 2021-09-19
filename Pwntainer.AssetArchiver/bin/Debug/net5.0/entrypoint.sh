@@ -1,12 +1,14 @@
 #!/bin/bash
 
-alias get-domains="curl -s http://localhost:8000/pwntainer/Domains.json | jq .rows[][0] | tr -d '\"'"
-alias get-hosts="curl -s http://localhost:8000/pwntainer/Hosts.json | jq .rows[][0] | tr -d '\"'"
-alias get-services="curl -s http://localhost:8000/pwntainer/Services.json | jq .rows[][0] | tr -d '\"'"
+cat /app/aliases.txt >> /root/.bashrc
 
 datasette serve /opt/pwntainer/pwntainer.db -h 127.0.0.1 -p 8000 &>/dev/null &
 
-mv /app/resolvers_top25.txt /opt/dnsvalidator/
+mv /app/recon_scripts/resolvers_top25.txt /opt/dnsvalidator/
+mv /app/recon_scripts/top200000.txt /opt/pwntainer/lists/
+mv /app/recon_scripts/top20000.txt /opt/pwntainer/lists/
+mv /app/recon_scripts/* /usr/local/bin
+rm -r /app/recon_scripts/
 
 chmod -R +x /app/workflows/
 mv /app/workflows/hourly/* /etc/cron.hourly/

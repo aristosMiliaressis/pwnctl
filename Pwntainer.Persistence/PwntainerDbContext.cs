@@ -34,7 +34,7 @@ namespace Pwntainer.Persistence
         public DbSet<NetRange> NetRanges { get; set; }
         public DbSet<Host> Hosts { get; set; }
         public DbSet<VirtualHost> VirtualHosts { get; set; }
-        public DbSet<ARecord> ARecords { get; set; }
+        public DbSet<DNSRecord> DNSRecords { get; set; }
         public DbSet<Service> Services { get; set; }
         public DbSet<ServiceTag> ServiceTags { get; set; }
         public DbSet<Endpoint> Endpoints { get; set; }

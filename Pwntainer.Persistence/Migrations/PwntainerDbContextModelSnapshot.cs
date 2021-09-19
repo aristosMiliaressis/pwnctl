@@ -16,26 +16,37 @@ namespace Pwntainer.Persistence.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "5.0.8");
 
-            modelBuilder.Entity("Pwntainer.Application.Entities.ARecord", b =>
+            modelBuilder.Entity("Pwntainer.Application.Entities.DNSRecord", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("DomainId")
+                    b.Property<int?>("DomainId")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("FoundAt")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("HostId")
+                    b.Property<int?>("HostId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("TasksRun")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("Type")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
 
-                    b.ToTable("ARecords");
+                    b.HasIndex("DomainId");
+
+                    b.HasIndex("HostId");
+
+                    b.ToTable("DNSRecords");
                 });
 
             modelBuilder.Entity("Pwntainer.Application.Entities.Domain", b =>
@@ -242,19 +253,15 @@ namespace Pwntainer.Persistence.Migrations
                     b.ToTable("WildcardDomains");
                 });
 
-            modelBuilder.Entity("Pwntainer.Application.Entities.ARecord", b =>
+            modelBuilder.Entity("Pwntainer.Application.Entities.DNSRecord", b =>
                 {
                     b.HasOne("Pwntainer.Application.Entities.Domain", "Domain")
                         .WithMany()
-                        .HasForeignKey("Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("DomainId");
 
                     b.HasOne("Pwntainer.Application.Entities.Host", "Host")
                         .WithMany()
-                        .HasForeignKey("Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("HostId");
 
                     b.Navigation("Domain");
 

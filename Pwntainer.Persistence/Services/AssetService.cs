@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Pwntainer.Application.Entities;
 using Pwntainer.Application.Wrappers;
-using Pwntainer.Core;
 using Pwntainer.Persistence;
 using System;
 using System.Collections.Generic;
@@ -26,9 +25,12 @@ namespace Pwntainer.Persistence.Services
 
         public void AddAsset(string asset)
         {
-            asset = asset.Split("?")[0];
+            if (string.IsNullOrEmpty(asset))
+                return;
 
-            if (AssetInspector.IsUrl(asset))
+            asset = asset.Split("?")[0];
+            
+            if (Endpoint.IsUrl(asset))
             {
                 var scheme = asset.Split("://")[0];
                 var uri = asset.Split("://")[1];
@@ -44,7 +46,7 @@ namespace Pwntainer.Persistence.Services
                 _context.SaveChanges();
 
                 var existingEndpoint = _context.Endpoints.FirstOrDefault(e => e.Uri == $"{scheme}://{host}{path}");
-                if (existingEndpoint == null)
+                if (existingEndpoint == null && service != null)
                 {
                     var endpoint = new Endpoint();
                     endpoint.Uri = $"{scheme}://{host}{path}";
@@ -52,22 +54,190 @@ namespace Pwntainer.Persistence.Services
                     _context.Endpoints.Add(endpoint);
                 }
             }
-            else if (AssetInspector.IsIp(asset) || AssetInspector.IsDomain(asset))
+            else if (Host.IsIp(asset) || Domain.IsDomain(asset))
             {
 
                 var hostDto = HandleHostSegment(asset);
                 
                 HandleService(hostDto);
             }
-            else if (AssetInspector.IsWildcardDomain(asset))
+            else if (Domain.IsWildcardDomain(asset))
             {
                 HandleWildcardDomain(asset);
             }
-            else if (AssetInspector.IsCidr(asset))
+            else if (NetRange.IsCidr(asset))
             {
                 HandleCIDR(asset);
             }
+            else if (DNSRecord.IsDNSRecord(asset))
+            {
+                HandleDNSRecord(asset);
+            }
 
+            _context.SaveChanges();
+        }
+
+        private void HandleDNSRecord(string asset)
+        {
+            var record = new DNSRecord();
+
+            var parts = asset.Replace("\t", " ").Split(" ");
+            switch (parts[2])
+            {
+                case "A":
+                    { 
+                    record.Type = RecordType.A;
+                    record.Value = parts[3];
+                    
+                        var existingHost = _context.Hosts.FirstOrDefault(r => r.IP == parts[3]);
+                    if (existingHost == null)
+                    {
+                        var host = HandleHostSegment(parts[3]);
+                        existingHost = _context.Hosts.FirstOrDefault(r => r.IP == parts[3]);
+                    }
+
+                    var existingDomain = _context.Domains.FirstOrDefault(r => r.Name == parts[0]);
+                    if (existingDomain == null)
+                    {
+                        HandleHostSegment(parts[0]);
+                        existingDomain = _context.Domains.FirstOrDefault(r => r.Name == parts[0]);
+                    }
+
+                    record.Host = existingHost;
+                    record.Domain = existingDomain;
+                    break;
+                    }
+                case "AAAA":
+                    {
+                        record.Type = RecordType.AAAA;
+                        record.Value = parts[3];
+
+                        var existingHost = _context.Hosts.FirstOrDefault(r => r.IP == parts[3]);
+                        if (existingHost == null)
+                        {
+                            var host = HandleHostSegment(parts[3]);
+                            existingHost = _context.Hosts.FirstOrDefault(r => r.IP == parts[3]);
+                        }
+
+                        var existingDomain = _context.Domains.FirstOrDefault(r => r.Name == parts[0]);
+                        if (existingDomain == null)
+                        {
+                            HandleHostSegment(parts[0]);
+                            existingDomain = _context.Domains.FirstOrDefault(r => r.Name == parts[0]);
+                        }
+
+                        record.Host = existingHost;
+                        record.Domain = existingDomain;
+                        break;
+                    }
+                case "CNAME":
+                    {
+                        record.Type = RecordType.CNAME;
+                        record.Value = parts[3];
+
+                        var existingDomain = _context.Domains.FirstOrDefault(r => r.Name == parts[0]);
+                        if (existingDomain == null)
+                        {
+                            HandleHostSegment(parts[0]);
+                            existingDomain = _context.Domains.FirstOrDefault(r => r.Name == parts[0]);
+                        }
+
+                        record.Domain = existingDomain;
+                        break;
+                    }
+                case "NS":
+                    {
+                        record.Type = RecordType.NS;
+                        record.Value = parts[3];
+
+                        var existingDomain = _context.Domains.FirstOrDefault(r => r.Name == parts[0]);
+                        if (existingDomain == null)
+                        {
+                            HandleHostSegment(parts[0]);
+                            existingDomain = _context.Domains.FirstOrDefault(r => r.Name == parts[0]);
+                        }
+
+                        record.Domain = existingDomain;
+                        break;
+                    }
+                case "MX":
+                    {
+                        record.Type = RecordType.MX;
+                        record.Value = string.Join(" ", parts[2..]);
+
+                        var existingDomain = _context.Domains.FirstOrDefault(r => r.Name == parts[0]);
+                        if (existingDomain == null)
+                        {
+                            HandleHostSegment(parts[0]);
+                            existingDomain = _context.Domains.FirstOrDefault(r => r.Name == parts[0]);
+                        }
+
+                        record.Domain = existingDomain;
+                        break;
+                    }
+                case "PTR":
+                    {
+                        record.Type = RecordType.PTR;
+                        record.Value = parts[3];
+
+                        var existingHost = _context.Hosts.FirstOrDefault(r => r.IP == parts[3]);
+                        if (existingHost == null)
+                        {
+                            var host = HandleHostSegment(parts[3]);
+                            existingHost = _context.Hosts.FirstOrDefault(r => r.IP == parts[3]);
+                        }
+
+                        record.Host = existingHost;
+                        break;
+                    }
+                case "TXT":
+                    {
+                        record.Type = RecordType.TXT;
+                        record.Value = parts[3];
+
+                        var existingDomain = _context.Domains.FirstOrDefault(r => r.Name == parts[0]);
+                        if (existingDomain == null)
+                        {
+                            HandleHostSegment(parts[0]);
+                            existingDomain = _context.Domains.FirstOrDefault(r => r.Name == parts[0]);
+                        }
+
+                        record.Domain = existingDomain;
+                        break;
+                    }
+                case "SOA":
+                    {
+                        record.Type = RecordType.SOA;
+                        record.Value = string.Join(" ", parts[2..]);
+
+                        var existingDomain = _context.Domains.FirstOrDefault(r => r.Name == parts[0]);
+                        if (existingDomain == null)
+                        {
+                            HandleHostSegment(parts[0]);
+                            existingDomain = _context.Domains.FirstOrDefault(r => r.Name == parts[0]);
+                        }
+
+                        record.Domain = existingDomain;
+                        break;
+                    }
+                case "SRV":
+                    {
+                        record.Type = RecordType.SRV;
+                        record.Value = string.Join(" ", parts[2..]);
+
+                        var existingDomain = _context.Domains.FirstOrDefault(r => r.Name == parts[0]);
+                        if (existingDomain == null)
+                        {
+                            HandleHostSegment(parts[0]);
+                            existingDomain = _context.Domains.FirstOrDefault(r => r.Name == parts[0]);
+                        }
+
+                        record.Domain = existingDomain;
+                        break;
+                    }
+            }
+
+            _context.Add(record);
             _context.SaveChanges();
         }
 
@@ -85,7 +255,7 @@ namespace Pwntainer.Persistence.Services
                 {
                     hostDto.Port = ushort.Parse(host.Split(":").Last());
                     host = host.Split(":")[0];
-                    if (AssetInspector.IsIp(host))
+                    if (Host.IsIp(host))
                     {
                         hostDto.Ip = host;
                         var existingHost = _context.Hosts.FirstOrDefault(r => r.IP == hostDto.Ip);
@@ -121,17 +291,22 @@ namespace Pwntainer.Persistence.Services
                                 existingHost = hostIp;
                             }
 
-                            var existingRecord = _context.ARecords
+                            var existingRecord = _context.DNSRecords
                                                         .Include(a => a.Domain)
                                                         .Include(a => a.Host)
                                                         .FirstOrDefault(r => r.Domain.Name == hostDto.Domain && r.Host.IP == hostDto.Ip);
                             if (existingRecord == null)
                             {
-                                var record = new ARecord();
-                                record.Domain = existingDomain;
-                                record.Host = existingHost;
-                                _context.ARecords.Add(record);
+                                var record = new DNSRecord
+                                {
+                                    Type = RecordType.A,
+                                    Domain = existingDomain,
+                                    Host = existingHost,
+                                    Value = hostDto.Ip
+                                };
+                                _context.DNSRecords.Add(record);
                             }
+                            _context.SaveChanges();
                         }
                     }
                 }
@@ -142,7 +317,7 @@ namespace Pwntainer.Persistence.Services
                         hostDto.Port = UriSchemeToPortMap[scheme];
                     }
 
-                    if (AssetInspector.IsIp(host))
+                    if (Host.IsIp(host))
                     {
                         hostDto.Ip = host;
                         var existingHost = _context.Hosts.FirstOrDefault(r => r.IP == hostDto.Ip);
@@ -178,17 +353,20 @@ namespace Pwntainer.Persistence.Services
                                 existingHost = hostIp;
                             }
 
-                            var existingRecord = _context.ARecords
+                            var existingRecord = _context.DNSRecords
                                                         .Include(a => a.Domain)
                                                         .Include(a => a.Host)
                                                         .FirstOrDefault(r => r.Domain.Name == hostDto.Domain && r.Host.IP == hostDto.Ip);
                             if (existingRecord == null)
                             {
-                                var record = new ARecord();
-                                record.Domain = existingDomain;
-                                record.Host = existingHost;
-                                _context.ARecords.Add(record);
+                                var record = new DNSRecord
+                                {
+                                    Domain = existingDomain,
+                                    Host = existingHost
+                                };
+                                _context.DNSRecords.Add(record);
                             }
+                            _context.SaveChanges();
                         }
                     }
                 }
@@ -213,7 +391,11 @@ namespace Pwntainer.Persistence.Services
                     //    host.Port = 80;
                     //else
                     //    return null;
+                    return null;
                 }
+
+                if (host.Ip == null)
+                    return null;
 
                 var service = new Service();
                 service.IP = host.Ip;
@@ -308,7 +490,7 @@ namespace Pwntainer.Persistence.Services
 
             var parts = domain.Split(".").Reverse().ToArray();
 
-            if (!AssetInspector.IsTld(parts[0]))
+            if (!Domain.IsTld(parts[0]))
                 return null;
 
             var temp = parts[0];

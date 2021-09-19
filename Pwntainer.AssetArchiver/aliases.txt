@@ -2,4 +2,9 @@
 # alias based api client
 alias get-domains="curl -s http://localhost:8000/pwntainer/Domains.json | jq .rows[][1] | tr -d '\"'"
 alias get-hosts="curl -s http://localhost:8000/pwntainer/Hosts.json | jq .rows[][1] | tr -d '\"'"
-alias get-services="curl -s http://localhost:8000/pwntainer/Services.json | jq .rows[][0] | tr -d '\"'"
+alias get-services="curl -s http://localhost:8000/pwntainer/Services.json | jq -r '{ip: .rows[][3], port: .rows[][2]} | \"\(.ip):\(.port)\"' | sort -u"
+
+find-cert()
+{
+	curl -s "https://api.certspotter.com/v1/issuances?domain=$1&expand=dns_names&expand=issuer" | jq -r ".[].dns_names[]"
+}
