@@ -1,6 +1,0 @@
-400 Bad Request
-Date: Mon, 20 Sep 2021 16:35:07 GMT
-Server: Apache/2.4.37 (Win64) OpenSSL/1.1.1a PHP/7.2.14
-Content-Length: 473
-Retry-Count: 0
-Content-Type: text/html; charset=iso-8859-1

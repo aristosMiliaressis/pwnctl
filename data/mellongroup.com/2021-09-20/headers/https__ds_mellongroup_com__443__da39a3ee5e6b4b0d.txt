@@ -1,4 +1,0 @@
-200 Found
-Retry-Count: 0
-Cache-Control: no-cache
-Content-Type: text/html
