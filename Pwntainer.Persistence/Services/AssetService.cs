@@ -80,7 +80,6 @@ namespace Pwntainer.Persistence.Services
         private void HandleDNSRecord(string asset)
         {
             var record = new DNSRecord();
-
             var parts = asset.Replace("\t", " ").Split(" ");
             switch (parts[2])
             {
@@ -89,7 +88,7 @@ namespace Pwntainer.Persistence.Services
                     record.Type = RecordType.A;
                     record.Value = parts[3];
                     
-                        var existingHost = _context.Hosts.FirstOrDefault(r => r.IP == parts[3]);
+                    var existingHost = _context.Hosts.FirstOrDefault(r => r.IP == parts[3]);
                     if (existingHost == null)
                     {
                         var host = HandleHostSegment(parts[3]);

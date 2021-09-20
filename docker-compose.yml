@@ -2,20 +2,13 @@
 
 services:
   pwntainer:
-    image: pwntainer
+    image: pwntainer:latest
     container_name: pwntainer
     hostname: pwntainer
-    ports:
-      - 8000:8000
-    build: .
+    network_mode: host
+    build: 
+      context: .
+      dockerfile: Pwntainer.AssetArchiver/Dockerfile
     restart: unless-stopped
     volumes:
       - ./data/:/opt/pwntainer/data/
-    deploy:
-      resources:
-        limits:
-          cpus: '0.50'
-          memory: 750M
-        reservations:
-          cpus: '0.10'
-          memory: 250M

@@ -1,0 +1,13 @@
+400 Bad Request
+X-Xss-Protection: 1; mode=block
+Content-Security-Policy: default-src 'self'; img-src 'self' data:; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; connect-src 'self' wss:;
+Content-Type: text/html; charset=iso-8859-1
+Date: Mon, 20 Sep 2021 16:35:06 GMT
+X-Frame-Options: SAMEORIGIN
+Strict-Transport-Security: max-age=63072000; includeSubDomains;
+X-Content-Type-Options: nosniff
+Retry-Count: 0
+Server: Apache
+X-Content-Security-Policy: default-src 'self'; img-src 'self' data:; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; connect-src 'self' wss:;
+X-Webkit-Csp: default-src 'self'; img-src 'self' data:; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; connect-src 'self' wss:;
+Content-Length: 483

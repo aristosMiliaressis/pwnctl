@@ -1,0 +1,15 @@
+200 OK
+Retry-Count: 0
+X-Content-Type-Options: nosniff
+Strict-Transport-Security: max-age=31536000
+Accept-Ranges: bytes
+Content-Type: text/html
+Content-Length: 727
+Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; font-src 'self'; object-src 'self'; media-src 'self'; child-src 'self'
+Date: Sun, 19 Sep 2021 19:47:44 GMT
+Etag: "605e22bf-2d7"
+X-Xss-Protection: 1; mode=block
+Last-Modified: Fri, 26 Mar 2021 18:06:55 GMT
+X-Frame-Options: SAMEORIGIN
+X-Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; font-src 'self'; object-src 'self'; media-src 'self'; child-src 'self'
+X-Webkit-Csp: default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; font-src 'self'; object-src 'self'; media-src 'self'; child-src 'self'

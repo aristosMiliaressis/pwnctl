@@ -1,0 +1,16 @@
+200 OK
+Via: 1.1 ID-0002262072514664 uproxy-2
+Retry-Count: 0
+Etag: W/"a78-17bdec6b16d"
+Accept-Ranges: bytes
+Content-Type: text/html; charset=UTF-8
+Date: Sun, 19 Sep 2021 19:47:43 GMT
+Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, PATCH, DELETE
+Access-Control-Allow-Headers: X-Requested-With,content-type
+Access-Control-Allow-Credentials: true
+Cache-Control: public, max-age=0
+Last-Modified: Mon, 13 Sep 2021 10:49:28 GMT
+Content-Length: 2680
+Set-Cookie: connect.sid=s%3A40_C-SDAcmEAGitnHsbhi42By7AO0Akn.tNvjcKiAAy59vXXHv6AXbJVl45GPKcULGxkYvufujvs; Path=/; Expires=Mon, 20 Sep 2021 19:47:43 GMT; HttpOnly; Secure
+Access-Control-Allow-Origin: *
+X-Powered-By: Express

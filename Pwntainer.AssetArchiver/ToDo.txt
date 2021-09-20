@@ -1,4 +1,5 @@
-﻿
+﻿expose datasette to host
+
 recon
 	reverse whois on registration domains
 		amass intel or domLink
@@ -8,6 +9,7 @@ run whatweb to get tags
 	tag s3 buckets
 
 create alias based api client
+	get-endpoints
 	get-domains-last-day
 
 -------------------------------

@@ -10,7 +10,6 @@ For data persistence i created a cli app called aar (i.e AssetArchiver) that rea
 ### API
 
 i use [datasette](https://github.com/simonw/datasette) to generate a webui & json api from my sqlite database and created some bash aliases to consume that api using curl & [jq](https://stedolan.github.io/jq/)
-![pwntainer web ui](Images/pwntainer-webui.PNG)
 
 ### Automation
 

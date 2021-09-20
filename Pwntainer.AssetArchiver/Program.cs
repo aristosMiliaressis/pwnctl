@@ -19,6 +19,8 @@ namespace Pwntainer.AssetArchiver
             do
             {
                 var assetLine = Console.ReadLine();
+                if (string.IsNullOrEmpty(assetLine))
+                    return;
                 assetService.AddAsset(assetLine);
             } while (true);
         }
