@@ -1,7 +1,0 @@
-404 Not Found
-Server: RTC/7.0
-X-Ms-Server-Fqdn: AM30E00EDG27.infra.lync.com
-Retry-Count: 0
-Strict-Transport-Security: max-age=31536000; includeSubDomains
-Content-Type: text/plain
-Content-Length: 75
