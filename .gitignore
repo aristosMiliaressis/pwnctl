@@ -351,3 +351,4 @@ MigrationBackup/
 
 obj/
 bin/
+data/

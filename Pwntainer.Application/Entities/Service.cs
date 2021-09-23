@@ -8,9 +8,14 @@ namespace Pwntainer.Application.Entities
     public class Service : BaseAsset
     {
         public TransportProtocol TransportProtocol { get; set; }
+        public string ApplicationProtocol { get; set; }
+        
         public ushort Port { get; set; }
         public string IP { get; set; }
         public string Protocol { get; set; }
+
+        public int HostId { get; set; }
+        public Host Host { get; set; }
 
         public static bool IsNetService(string asset)
         {
@@ -35,6 +40,7 @@ namespace Pwntainer.Application.Entities
     public enum TransportProtocol
     {
         TCP,
-        UDP
+        UDP,
+        SCTP
     }
 }

@@ -80,6 +80,8 @@ namespace Pwntainer.Persistence.Services
         private void HandleDNSRecord(string asset)
         {
             var record = new DNSRecord();
+            record.Key = asset;
+
             var parts = asset.Replace("\t", " ").Split(" ");
             switch (parts[2])
             {
@@ -301,7 +303,8 @@ namespace Pwntainer.Persistence.Services
                                     Type = RecordType.A,
                                     Domain = existingDomain,
                                     Host = existingHost,
-                                    Value = hostDto.Ip
+                                    Value = hostDto.Ip,
+                                    Key = existingDomain
                                 };
                                 _context.DNSRecords.Add(record);
                             }
@@ -360,8 +363,11 @@ namespace Pwntainer.Persistence.Services
                             {
                                 var record = new DNSRecord
                                 {
+                                    Type = RecordType.A,
                                     Domain = existingDomain,
-                                    Host = existingHost
+                                    Host = existingHost,                                    
+                                    Value = hostDto.Ip,
+                                    Key = hostDto.Domain
                                 };
                                 _context.DNSRecords.Add(record);
                             }
@@ -381,6 +387,8 @@ namespace Pwntainer.Persistence.Services
             var existingService = _context.Services.FirstOrDefault(e => e.IP == host.Ip & e.Port == host.Port);
             if (existingService == null)
             {
+                var host = _context.Hosts.FirstOrDefault(e => e.IP == host.Ip);
+
                 if (host.Port == 0)
                 {
                     //var nmapResult = NmapWrapper.Run("-sS", "-p", "80,443", host.Ip);
@@ -397,6 +405,7 @@ namespace Pwntainer.Persistence.Services
                     return null;
 
                 var service = new Service();
+                service.Host = host;
                 service.IP = host.Ip;
                 service.Port = host.Port;
                 service.TransportProtocol = TransportProtocol.TCP;

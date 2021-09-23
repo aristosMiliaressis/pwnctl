@@ -10,7 +10,6 @@ namespace Pwntainer.Application.Entities
         private static string DnsCharset => "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 
         public string Name { get; set; }
-        public bool InScope { get; set; } = true;
 
         public static bool IsDomain(string asset)
         {

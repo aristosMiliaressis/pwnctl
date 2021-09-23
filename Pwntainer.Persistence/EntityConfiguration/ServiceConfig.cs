@@ -14,6 +14,10 @@ namespace Pwntainer.Persistence.EntityConfiguration
         public void Configure(EntityTypeBuilder<Service> builder)
         {
             builder.HasKey(e => e.Id);
+
+            builder.HasOne(e => e.Host)
+                .WithMany()
+                .HasForeignKey(e => e.HostId);
         }
     }
 }

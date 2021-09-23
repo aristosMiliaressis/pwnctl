@@ -12,7 +12,7 @@ namespace Pwntainer.Application
         }
 
         public int Id { get; set; }
-        public string TasksRun { get; set; }
         public DateTime FoundAt { get; set; }
+        public bool InScope { get; set; } = true;
     }
 }

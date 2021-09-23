@@ -7,6 +7,8 @@ namespace Pwntainer.Application.Entities
     public class DNSRecord : BaseAsset
     {
         public RecordType Type { get; set; }
+
+        public string Key {get; set;}
         public string Value { get; set; }
 
         public int? HostId { get; set; }
