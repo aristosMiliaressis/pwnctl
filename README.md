@@ -2,22 +2,35 @@
 
 pwntainer is a portable pen-testing environment built on top of the [offensive-docker](https://github.com/aaaguirrep/offensive-docker) image, the goal is to add some infrastructure for asset monitoring, testing automation and data persistence.
 
-### Data Persistence
-For data persistence i created a cli app called aar (i.e AssetArchiver) that reads assets (e.g urls, domain names, ips, etc) from stdin and writes them to an SQLite database, the idea is to chain aar to other security tools using pipes and redirects instead of storing output to text files.
+![pwntainer architecture](Images/architecture.png)
 
-![pwntainer db model](Images/pwntainer-model.PNG)
+![pwntainer db model](Images/db-model.PNG)
 
-### API
+### pwnctl Asset Discovery & Persistence
 
-i use [datasette](https://github.com/simonw/datasette) to generate a webui & json api from my sqlite database and created some bash aliases to consume that api using curl & [jq](https://stedolan.github.io/jq/)
-
-### Automation
-
-the aformentioned components provide us with an easy way to perform CRUD operations from the comfort of the shell, now all that is left is to create some cron based workflows to automate monitoring and vulnerability scanning.
+`pwnctl` has two modes the query mode and process mode in process mode pwnctl reads 'assets' from stdin, each line is analyzed and classied into one or more of the asset classes shown in the database diagram, than the database is checked for existance of the given asset and if not found it is added to the database along with some metadata (FoundAt timestamp, InScope flag) and some jobs are pushed to the [job-queue.sh](https://github.com/aristosMiliaressis/job-queue.sh), those jobs also pipe their findings into pwnctl creating a loop.
 
 #### To Do
-- [ ] a workflow that monitors for new subdomains and sends discord notifications
-- [ ] a workflow that crawls all endpoints found the previous day
+- [x] a job that resolves domains to ips
+- [x] a job that does reverse dns lookup on ips
+- [x] a job that crawls endpoints
+- [x] a job that bruteforce directories of base urls
+- [x] a job that does tcp port scanning
+- [x] a job that scans all tls wrapped ports and extracts alt names from certs
+- [ ] a worflow that uses unresolvable domains as a wordlist for vertical vhost scanning
+
+### Asset Monitoring
+
+for monitoring and testing automations some cron based workflows are created, the job-queue may be stoped by those cron jobs to free up bandwidth.
+
+#### To Do
+- [ ] a workflow that monitors in scope registration domains for new subdomains and sends discord notifications
 - [ ] a workflow that tries to figure out if certain endpoints (e.g js|json|xml) are static and than monitors them for changes and sends discord notifications if changes found.
+- [ ] a workflow that extracts all .map.js files and commits them to local repos
+
+### Scanning Automation
+
+#### To Do
 - [ ] a workflow to run subjak and other subdomain takeover tools
 - [ ] a workflow that runs some nuclei templates on newly found services???
+

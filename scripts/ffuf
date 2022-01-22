@@ -1,0 +1,5 @@
+#!/bin/bash
+
+ffuf -recursion -u $1FUZZ -w $2 -o /opt/pwntainer/data/$(parse-domain $1)/ffuf.json && cat /opt/pwntainer/data/$(parse-domain $1)/ffuf.json \
+    | jq -r .results[].url \
+    | pwnctl

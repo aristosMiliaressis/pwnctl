@@ -1,0 +1,27 @@
+#!/bin/bash
+
+if [ $# -eq 0 ]; 
+then
+    echo "USAGE: get_js <url_file>"
+    exit 1
+fi
+
+i=0
+for url in $(cat $1)
+do
+	((i=i+1))
+
+	echo "$i# Crawling $url"
+
+	hakrawler -js -plain -url $url >> js_urls.txt
+done
+
+mkdir js
+cd js
+
+for js_url in $(cat ../js_urls.txt)
+do
+	echo "Downloading $js_url"
+
+	wget -O $(echo $js_url | unfurl --unique format %d%P%p | tr '/' '_') $js_url
+done

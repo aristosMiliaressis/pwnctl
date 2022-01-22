@@ -1,0 +1,15 @@
+com
+net
+org
+edu
+gov
+online
+biz
+in
+io
+info
+top
+xyz
+mil
+com.gr
+gr

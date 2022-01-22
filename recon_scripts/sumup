@@ -1,0 +1,44 @@
+#!/bin/bash
+
+sort_and_uniq() {
+	cat $1 | sort | uniq > temp.txt
+	cat temp.txt > $1
+	rm temp.txt
+}
+
+for masscan in $(find . -type f -name \*_masscan.json)
+do
+	cat $masscan | jq .[].ip | tr -d '"' >> all_hosts.sum
+
+	cat $masscan | jq "{ip:.[].ip, port:.[].ports[].port}" >> all_services.json
+	cat all_services.json | tr -d '"ip"' | tr -d '"port"' | tr -d ':' | tr ',' ':' | tr -d '{' | tr -d '\n' | tr '}' '\n' | tr -d '   ' >> all_services.sum
+done
+
+for domainfile in $(find . -type f -name \*_domains.txt)
+do
+	cat $domainfile >> all_domains.sum
+	echo >> all_domains.sum
+
+	echo "File: $domainfile"
+	for domain in $(cat $domainfile)
+	do
+		echo $domain
+		host $domain | grep "has address" | awk '{print $4}' >> all_hosts.sum
+	done
+
+done
+
+for webserverfile in $(find . -type f -name \*_http.txt)
+do
+	cat $webserverfile >> all_webservers.sum
+done
+
+for headerdir in $(find . -type d -name headers)
+do
+	cp -r $headerdir ./headers_sum
+done
+
+sort_and_uniq all_webservers.sum
+sort_and_uniq all_domains.sum
+sort_and_uniq all_hosts.sum
+sort_and_uniq all_services.sum

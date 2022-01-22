@@ -1,0 +1,88 @@
+#!/bin/bash
+
+sort_and_uniq() {
+	cat $1 | sort -u > temp.txt
+	cat temp.txt > $1
+	rm temp.txt
+}
+
+DNS_RESOLVERS_FILE=/opt/dnsvalidator/resolvers_top25.txt
+domain=$1
+
+domainsfile=subdomains.txt
+baseurlfile=baseurls.txt
+
+cd /opt/pwntainer/data
+
+mkdir $domain
+cd $domain
+
+datestamp=$(date +"%Y-%m-%d")
+mkdir $datestamp
+cd $datestamp
+
+echo "Scanning $domain"
+
+#assetfinder -subs-only $domain | sort -u | tee $domainsfile
+subfinder -silent -nC -o $domainsfile -rL $DNS_RESOLVERS_FILE -d $domain
+subfinder_count=$(wc -l $domainsfile | awk '{print  $1}')
+
+echo "subfinder found $subfinder_count subdomain(s)"
+
+shuffledns -d $domain -w /opt/pwntainer/wordlists/top20000.txt -r $DNS_RESOLVERS_FILE -strict-wildcard -silent -o shuffledns.txt
+cat shuffledns.txt >> $domainsfile
+sort_and_uniq $domainsfile
+
+shuffledns_count=$(wc -l $domainsfile | awk '{print  $1}')
+shuffledns_count=$((shuffledns_count-subfinder_count))
+echo "shuffledns found $shuffledns_count unique subdomains"
+
+amass enum -rf $DNS_RESOLVERS_FILE -max-dns-queries 20000 -d $domain -dir . -nolocaldb -noalts -nocolor -active | tee -a $domainsfile
+cat $domainsfile | unfurl --unique domains | grep $domain > tmpfile
+cat tmpfile > $domainsfile
+rm tmpfile
+
+amass_count=$(wc -l $domainsfile | awk '{print  $1}')
+amass_count=$((amass_count-shuffledns_count-subfinder_count))
+
+echo "amass found $amass_count unique subdomains"
+
+dig_deep $domainsfile $domain
+if ! [ -s all_records.txt ]
+then
+	cat all_records.txt | grep CNAME | awk '{print $4}' | tee -a $domainsfile
+	sort_and_uniq $domainsfile
+fi
+
+pwnctl < $domainsfile
+
+cat resolvable_domains.txt | httpx -silent -ports 80,443,8080,8443 | tee -a $baseurlfile
+echo "$(wc -l $baseurlfile | awk '{print  $1}') web servers found."
+
+pwnctl < $baseurlfile 
+
+waybackrecon () {
+	echo "Scraping wayback for data..."
+	mkdir ./wayback-data/
+
+	cat $baseurlfile | waybackurls > ./wayback-data/waybackurls.txt
+	cat ./wayback-data/waybackurls.txt  | sort -u | unfurl --unique keys > ./wayback-data/paramlist.txt
+	[ -s ./wayback-data/paramlist.txt ] && echo "Wordlist saved to /wayback-data/paramlist.txt"
+
+	cat ./wayback-data/waybackurls.txt  | sort -u | grep -P "\w+\.js(\?|$)" | sort -u > ./wayback-data/jsurls.txt
+	[ -s ./wayback-data/jsurls.txt ] && cat ./wayback-data/jsurls.txt | pwnctl && echo "JS Urls saved to /wayback-data/jsurls.txt"
+
+	cat ./wayback-data/waybackurls.txt  | sort -u | grep -P "\w+\.php(\?|$) | sort -u " > ./wayback-data/phpurls.txt
+	[ -s ./wayback-data/phpurls.txt ] && cat ./wayback-data/phpurls.txt | pwnctl && echo "PHP Urls saved to /wayback-data/phpurls.txt"
+
+	cat ./wayback-data/waybackurls.txt  | sort -u | grep -P "\w+\.aspx(\?|$) | sort -u " > ./wayback-data/aspxurls.txt
+	[ -s ./wayback-data/aspxurls.txt ] && cat ./wayback-data/aspxurls.txt | pwnctl && echo "ASP Urls saved to /wayback-data/aspxurls.txt"
+
+	cat ./wayback-data/waybackurls.txt  | sort -u | grep -P "\w+\.jsp(\?|$) | sort -u " > ./wayback-data/jspurls.txt
+	[ -s ./wayback-data/jspurls.txt ] && cat ./wayback-data/jspurls.txt | pwnctl && echo "JSP Urls saved to /wayback-data/jspurls.txt"
+}
+
+waybackrecon $domain
+
+echo "Taking screenshots.."
+cat $baseurlfile | aquatone -chrome-path /usr/bin/chromium-browser -silent -threads=5 -screenshot-timeout 300000

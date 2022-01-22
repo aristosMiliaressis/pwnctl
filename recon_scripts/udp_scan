@@ -1,0 +1,24 @@
+#!/bin/bash
+
+escaped_cidr=$(echo $1 | tr '/' '_')
+nmapoutfile=$(echo $escaped_cidr)_nmapudp.xml
+
+mkdir $escaped_cidr
+cd $escaped_cidr
+
+datestamp=$(date +"%Y-%m-%d")
+mkdir $datestamp
+cd $datestamp
+
+udp_dns=53
+udp_dhcp=67-68
+udp_http=80
+udp_snmp=161-162
+udp_linux=111
+udp_microsoft=88,135,137-139,445,1433-1434,1900
+udp_cisco=1167,1589,1645-1646,1967,1985,1998,2000,5445,9001,16384
+udp_nfs=2049
+udp_voip=1719,3478-3481,4569,5003,5060-5082
+udp_ports=$udp_dns,$udp_dhcp,$udp_http,$udp_linux,$udp_snmp,$udp_microsoft,$udp_cisco,$udp_nfs,$udp_voip
+
+sudo nmap -O -sUV --version-intensity 0 -n -p $udp_ports $1 -oX $nmapoutfile --webxml
