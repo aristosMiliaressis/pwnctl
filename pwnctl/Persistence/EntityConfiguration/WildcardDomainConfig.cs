@@ -7,7 +7,7 @@
 // using System.Text;
 // using System.Threading.Tasks;
 //
-// namespace pwnctl.DataEF.EntityConfiguration
+// namespace pwnctl.Persistence.EntityConfiguration
 // {
 //     public class WildcardDomainConfig : IEntityTypeConfiguration<WildcardDomain>
 //     {

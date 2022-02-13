@@ -17,7 +17,7 @@ pwntainer is a portable pen-testing environment built on top of the [offensive-d
 - [x] a job that bruteforce directories of base urls
 - [x] a job that does tcp port scanning
 - [x] a job that scans all tls wrapped ports and extracts alt names from certs
-- [ ] a worflow that uses unresolvable domains as a wordlist for vertical vhost scanning
+- [ ] a workflow that uses unresolvable domains as a wordlist for vertical vhost scanning
 
 ### Asset Monitoring
 

@@ -7,17 +7,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace pwnctl.DataEF.EntityConfiguration
+namespace pwnctl.Persistence.EntityConfiguration
 {
-    public class ServiceConfig : IEntityTypeConfiguration<Service>
+    public class ServiceTagConfig : IEntityTypeConfiguration<ServiceTag>
     {
-        public void Configure(EntityTypeBuilder<Service> builder)
+        public void Configure(EntityTypeBuilder<ServiceTag> builder)
         {
             builder.HasKey(e => e.Id);
 
-            builder.HasOne(e => e.Host)
-                .WithMany()
-                .HasForeignKey(e => e.HostId);
+            builder.OwnsOne(m => m.Tag);
         }
     }
 }

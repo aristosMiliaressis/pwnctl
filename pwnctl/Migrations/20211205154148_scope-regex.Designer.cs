@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using pwnctl;
-using pwnctl.DataEF;
+using pwnctl.Persistence;
 
 namespace pwnctl.Migrations
 {

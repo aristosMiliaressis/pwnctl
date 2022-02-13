@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace pwnctl.DataEF.EntityConfiguration
+namespace pwnctl.Persistence.EntityConfiguration
 {
     public class DNSRecordConfig : IEntityTypeConfiguration<DNSRecord>
     {

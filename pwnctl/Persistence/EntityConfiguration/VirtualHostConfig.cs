@@ -7,19 +7,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace pwnctl.DataEF.EntityConfiguration
+namespace pwnctl.Persistence.EntityConfiguration
 {
-    public class EndpointTagConfig : IEntityTypeConfiguration<EndpointTag>
+    public class VirtualHostConfig : IEntityTypeConfiguration<VirtualHost>
     {
-        public void Configure(EntityTypeBuilder<EndpointTag> builder)
+        public void Configure(EntityTypeBuilder<VirtualHost> builder)
         {
             builder.HasKey(e => e.Id);
 
-            builder.OwnsOne(e => e.Tag);
-
-            builder.HasOne(e => e.Endpoint)
+            builder.HasOne(e => e.Service)
                 .WithMany()
-                .HasForeignKey(e => e.EndpointId);
+                .HasForeignKey(e => e.ServiceId);
         }
     }
+    
 }

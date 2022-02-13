@@ -7,13 +7,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace pwnctl.DataEF.EntityConfiguration
+namespace pwnctl.Persistence.EntityConfiguration
 {
-    public class NetRangeConfig : IEntityTypeConfiguration<NetRange>
+    public class ServiceConfig : IEntityTypeConfiguration<Service>
     {
-        public void Configure(EntityTypeBuilder<NetRange> builder)
+        public void Configure(EntityTypeBuilder<Service> builder)
         {
             builder.HasKey(e => e.Id);
+
+            builder.HasOne(e => e.Host)
+                .WithMany()
+                .HasForeignKey(e => e.HostId);
         }
     }
 }

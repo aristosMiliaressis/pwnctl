@@ -1,7 +1,7 @@
 ﻿using CommandLine;
 using Microsoft.Extensions.Configuration;
 using pwnctl;
-using pwnctl.DataEF;
+using pwnctl.Persistence;
 using pwnctl.Services;
 using System;
 using System.Collections.Generic;
@@ -13,7 +13,8 @@ namespace pwnctl
 {
     class Program
     {
-        private static readonly PwntainerDbContext _dbContext = new();
+        private static readonly QueryRunner _queryRunner = new QueryRunner(PwntainerDbContext.ConnectionString);
+        private static readonly AssetService _assetService = new();
 
         static async Task Main(string[] args)
         {
@@ -22,7 +23,7 @@ namespace pwnctl
                 {
                     if (opts.QueryMode)
                     {
-                        await QueryModeAsync();
+                        QueryMode();
                         return;
                     }
                     
@@ -31,7 +32,7 @@ namespace pwnctl
                 errs => Task.FromResult(-1));
         }
 
-        private static async Task QueryModeAsync()
+        private static void QueryMode()
         {
             var input = new List<string>();
 
@@ -41,17 +42,15 @@ namespace pwnctl
                 input.Add(line);
             }
 
-            await _dbContext.RunSQLAsync(string.Join("\n", input));
+            _queryRunner.Run(string.Join("\n", input));
         }
 
         private static async Task ProcessModeAsync()
         {
-            var assetService = new AssetService();
-
             string line;
             while (!string.IsNullOrEmpty(line = Console.ReadLine()))
             {
-                await assetService.ProcessAsync(line);
+                await _assetService.ProcessAsync(line);
             }
         }
     }

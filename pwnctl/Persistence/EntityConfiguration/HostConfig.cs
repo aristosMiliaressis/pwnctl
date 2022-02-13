@@ -7,17 +7,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace pwnctl.DataEF.EntityConfiguration
+namespace pwnctl.Persistence.EntityConfiguration
 {
-    public class EndpointConfig : IEntityTypeConfiguration<Endpoint>
+    public class HostConfig : IEntityTypeConfiguration<Host>
     {
-        public void Configure(EntityTypeBuilder<Endpoint> builder)
+        public void Configure(EntityTypeBuilder<Host> builder)
         {
             builder.HasKey(e => e.Id);
 
-            builder.HasOne(e => e.Service)
-                .WithMany()
-                .HasForeignKey(e => e.ServiceId);
+            builder.OwnsOne(m => m.OperatingSystem);
         }
     }
 }

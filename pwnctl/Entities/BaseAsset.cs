@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using pwnctl.Services;
 
 namespace pwnctl
 {
@@ -12,10 +13,11 @@ namespace pwnctl
         public BaseAsset()
         {
             FoundAt = DateTime.Now;
+            InScope = ScopeService.Instance.IsInScope(this);
         }
 
         public int Id { get; set; }
         public DateTime FoundAt { get; set; }
-        public bool InScope { get; set; } = true;
+        public bool InScope { get; set; }
     }
 }

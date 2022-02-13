@@ -7,18 +7,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace pwnctl.DataEF.EntityConfiguration
+namespace pwnctl.Persistence.EntityConfiguration
 {
-    public class VirtualHostConfig : IEntityTypeConfiguration<VirtualHost>
+    public class DomainConfig : IEntityTypeConfiguration<Domain>
     {
-        public void Configure(EntityTypeBuilder<VirtualHost> builder)
+        public void Configure(EntityTypeBuilder<Domain> builder)
         {
             builder.HasKey(e => e.Id);
-
-            builder.HasOne(e => e.Service)
-                .WithMany()
-                .HasForeignKey(e => e.ServiceId);
         }
     }
-    
 }

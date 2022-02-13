@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using pwnctl.Entities;
-using pwnctl.DataEF;
+using pwnctl.Persistence;
 using pwnctl.Services;
 using pwnctl.Parsers;
 
@@ -12,7 +12,7 @@ namespace pwnctl.Handlers
     {
         private readonly JobQueueService _queueService = new();
         private readonly PwntainerDbContext _context = new();
-
+        
         public DomainHandler() {}
 
         public async Task HandleAsync(IAsset asset)
@@ -24,8 +24,6 @@ namespace pwnctl.Handlers
             {
                 return;
             }
-
-            // TODO: Program.ScopeDefinition.Pattern
 
             if (!domain.IsRegistrationDomain)
             {

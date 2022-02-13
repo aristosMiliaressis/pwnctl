@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using pwnctl.Entities;
-using pwnctl.DataEF;
+using pwnctl.Persistence;
 using pwnctl.Services;
 
 namespace pwnctl.Handlers

@@ -7,15 +7,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace pwnctl.DataEF.EntityConfiguration
+namespace pwnctl.Persistence.EntityConfiguration
 {
-    public class ServiceTagConfig : IEntityTypeConfiguration<ServiceTag>
+    public class NetRangeConfig : IEntityTypeConfiguration<NetRange>
     {
-        public void Configure(EntityTypeBuilder<ServiceTag> builder)
+        public void Configure(EntityTypeBuilder<NetRange> builder)
         {
             builder.HasKey(e => e.Id);
-
-            builder.OwnsOne(m => m.Tag);
         }
     }
 }

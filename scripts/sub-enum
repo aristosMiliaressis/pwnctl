@@ -1,0 +1,203 @@
+#!/bin/bash
+
+DNS_RESOLVERS_FILE=/opt/dnsvalidator/resolvers_top25.txt
+SUBDOMAIN_DICT=/opt/pwntainer/wordlists/top20000.txt
+RESOLVERS=1.1.1.1,8.8.8.8,8.8.4.4
+
+sort_and_uniq() {
+	cat $1 | sort -u > temp.txt
+	cat temp.txt > $1
+	rm temp.txt
+}
+
+gen_brute() {
+	while read sub; do
+  	echo "$sub.$1" >> potential_subs.txt
+	done < $SUBDOMAIN_DICT
+}
+
+sub_alts() {
+	cat valid_domains.txt > alt_seeds.txt
+	cat all_subs.txt >> alt_seeds.txt
+	sort_and_uniq alt_seeds.txt
+
+	dnsgen alt_seeds.txt > sub_alterations.txt
+	rm alt_seeds.txt
+
+	puredns resolve -q sub_alterations.txt \
+		-r $DNS_RESOLVERS_FILE \
+		--wildcard-tests $WILDCARD_TESTS \
+		--write valid_alts.txt
+
+	valid_domains=$(wc -l valid_alts.txt | awk '{print  $1}')
+
+    cat valid_alts.txt >> valid_domains.txt
+    sort_and_uniq valid_domains.txt
+
+    rm sub_alterations.txt valid_alts.txt
+}
+
+amass enum -rf $DNS_RESOLVERS_FILE -d $1 -nolocaldb -nocolor -passive | tee -a all_subs.txt
+cat all_subs.txt | unfurl --unique domains | grep $1 > tmpfile
+cat tmpfile > all_subs.txt
+rm tmpfile
+
+amass_count=$(wc -l all_subs.txt | awk '{print  $1}')
+
+# TODO look into experimentalServer & microsubs & https://github.com/Cgboal/SonarSearch
+# zcat /opt/sonar/2021-10-29-1635540560-fdns_any.json.gz | grep -F '.$1"' | jq -r .name | grep '.$1$' | sort -u >> all_subs.txt
+# dnsgrep -f /opt/dnsgrep/fdns_a.sort.txt -i ".$1" \
+# 	| tr ',' '\n' \
+# 	| tr ' ' '\n' \
+# 	| grep "$1" \
+# 	| sort -u >> all_subs.txt
+
+cat all_subs.txt > potential_subs.txt
+
+if [ -z "$NO_BRUTE" ];
+then
+	gen_brute
+fi
+
+sort_and_uniq potential_subs.txt
+
+puredns resolve potential_subs.txt \
+	-r $DNS_RESOLVERS_FILE \
+	--wildcard-tests $WILDCARD_TESTS \
+	--write valid_domains.txt
+
+cat valid_domains.txt >> all_subs.txt
+rm potential_subs.txt
+
+valid_domains=$(wc -l valid_domains.txt | awk '{print  $1}')
+
+if [ -z "$NO_ALTS" ];
+then
+	sub_alts
+fi
+
+cat all_subs.txt | pwnctl
+
+cat $1 \
+    | zdns ANY -name-servers $RESOLVERS -result-verbosity short \
+    | jq .data.answers \
+    | grep -v null > dns/any_records.txt
+
+cat $1 \
+    | zdns A -name-servers $RESOLVERS -result-verbosity short \
+    | jq .data.answers \
+    | grep -v null > dns/a_records.txt
+
+cat $1 \
+    | zdns AAAA -name-servers $RESOLVERS -result-verbosity short \
+    | jq .data.answers \
+    | grep -v null > dns/aaaa_records.txt
+
+cat $1 \
+    | zdns CNAME -name-servers $RESOLVERS > dns/cname_records.txt
+
+cat $1 \
+    | zdns NS -name-servers $RESOLVERS -result-verbosity short \
+    | jq .data.answers \
+    | grep -v null > dns/ns_records.txt
+
+cat $1 \
+    | zdns TXT -name-servers $RESOLVERS -result-verbosity short \
+    | jq .data.answers \
+    | grep -v null > dns/txt_records.txt
+
+cat $1 \
+    | zdns MX -name-servers $RESOLVERS -result-verbosity short \
+    | jq .data.answers \
+    | grep -v null > dns/mx_records.txt
+
+cat $1 \
+    | zdns SRV -name-servers $RESOLVERS -result-verbosity short \
+    | jq .data.answers \
+    | grep -v null > dns/srv_records.txt
+
+cat $1 \
+    | zdns HTTPS -name-servers $RESOLVERS -result-verbosity short \
+    | jq .data.answers \
+    | grep -v null > dns/https_records.txt
+
+cat $1 \
+    | zdns HINFO -name-servers $RESOLVERS -result-verbosity short \
+    | jq .data.answers \
+    | grep -v null > dns/hinfo_records.txt
+
+cat dns/a_records.txt \
+    | jq -r '{type: .[].type, ip: .[].answer} | "_\(.type)_ \(.ip)"' \
+    | grep "_A_" \
+    | awk '{print $2}' \
+    | grep -v '[a-zA-Z]' > dns/all_hosts.txt
+
+cat dns/aaaa_records.txt \
+    | jq -r '{type: .[].type, ip: .[].answer} | "_\(.type)_ \(.ip)"' \
+    | grep "_AAAA_" \
+    | awk '{print $2}' \
+    | grep -v '[a-zA-Z]'  >> dns/all_hosts.txt
+
+# extracting ips from SPF records
+cat dns/txt_records.txt \
+    | jq -r .[].answer \
+    | grep v=spf \
+    | tr ' ' '\n' \
+    | grep 'ip4\|ip6' \
+    | cut -d ':' -f2- >> dns/all_hosts.txt
+
+sort_and_uniq dns/all_hosts.txt
+
+cat dns/all_hosts.txt | zdns PTR -name-servers $RESOLVERS -result-verbosity short -output-file dns/ptr_records.txt
+
+cat dns/cname_records.txt \
+    | jq -r '{name:.name, status:.status} | "\(.status) \(.name)"' \
+    | grep 'NXDOMAIN' > dns/potential_cname_takeovers.txt
+
+cat dns/ns_records.txt \
+	| jq -r '{ns:.[].answer, type:.[].type, name:.[].name} | "\(.name) \(.type) \(.ns)"' \
+	| grep " NS " \
+	| awk '{print $1, "," ,$3}' \
+	| tr -d ' ' \
+	| sort -u \
+	| zdns A \
+	| jq  -r '{name: .name, status:.status, ns: .data.resolver} | "\(.status) \(.name) \(.ns)"' \
+	| grep 'SERVFAIL\|REFUSED\|no servers could be reached' > dns/potential_ns_takeovers.txt
+
+# TODO: MX takeovers
+
+
+cat dns/ns_records.txt \
+    | jq -r '{type: .[].type, domain: .[].name, ns: .[].answer} | "\(.domain) _\(.type)_ \(.ns)"' \
+    | grep "_NS_" \
+    | sort -u \
+    | while read -r entry; 
+do
+    ns=$(echo $entry | awk '{print $3}') 
+    domain=$(echo $entry | awk '{print $1}')
+
+    echo "$domain,$ns" >> zt_attempts.txt
+    echo "local,$ns" >> zt_attempts.txt
+    echo "internal,$ns" >> zt_attempts.txt
+    echo "int,$ns" >> zt_attempts.txt
+    echo "network,$ns" >> zt_attempts.txt
+    echo "company,$ns" >> zt_attempts.txt
+    echo "server,$ns" >> zt_attempts.txt
+    echo "lan,$ns" >> zt_attempts.txt
+    echo "computer,$ns" >> zt_attempts.txt
+    echo "192.168,$ns" >> zt_attempts.txt
+    echo "10,$ns" >> zt_attempts.txt
+    for i in $(seq 16 31);
+    do
+        echo "172.$i,$ns" >> zt_attempts.txt
+    done
+done
+
+cat zt_attempts.txt | zdns AXFR -result-verbosity short \
+    | jq -r '{status: .data.servers[].status, ns:.data.servers[].server, name: .name} | "\(.status) \(.ns) \(.name)"' > dns/axfr_records.txt
+rm zt_attempts.txt
+
+cd dns
+
+rm $(ls -la | awk '{print ">>", $5, $9}' | grep ">> 0" | awk '{print $3}')
+rm all_subs.txt valid_domains.txt

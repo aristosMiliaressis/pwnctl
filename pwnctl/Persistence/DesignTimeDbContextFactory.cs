@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace pwnctl.DataEF
+namespace pwnctl.Persistence
 {
     public class PwntainerDbContextFactory : IDesignTimeDbContextFactory<PwntainerDbContext>
     {
