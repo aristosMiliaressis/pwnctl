@@ -14,7 +14,7 @@ namespace pwnctl.Handlers
 
         public VirtualHostHandler() {}
 
-        public async Task HandleAsync(IAsset asset)
+        public Task HandleAsync(IAsset asset)
         {
             throw new NotImplementedException();
         }

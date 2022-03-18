@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using pwnctl;
 using pwnctl.Services;
 
 namespace pwnctl
@@ -8,12 +9,12 @@ namespace pwnctl
     public interface IAsset
     {}
 
-    public class BaseAsset : IAsset
+    public abstract class BaseAsset : IAsset
     {
-        public BaseAsset()
+        protected BaseAsset()
         {
             FoundAt = DateTime.Now;
-            InScope = ScopeService.Instance.IsInScope(this);
+            InScope = ScopeService.Singleton.IsInScope(this);
         }
 
         public int Id { get; set; }

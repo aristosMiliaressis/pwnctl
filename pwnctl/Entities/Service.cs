@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Text;
 
 namespace pwnctl.Entities
@@ -43,14 +42,14 @@ namespace pwnctl.Entities
                 var port = ushort.Parse(strPort);
                 assetText = assetText.Substring(0, assetText.Length - strPort.Length - 1);
 
-                if (DomainNameParser.IsValid(assetText))
+                if (Domain.TryParse(assetText, out Domain domain))
                 {
-                    service = new Service(new Domain(assetText), null, port);
+                    service = new Service(domain, null, port);
                     return true;
                 }
-                else if (IPAddress.TryParse(assetText, out IPAddress address))
+                else if (Host.TryParse(assetText, out Host host))
                 {
-                    service = new Service(null, new Host(assetText, address.AddressFamily), port);
+                    service = new Service(null, host, port);
                     return true;
                 }
 

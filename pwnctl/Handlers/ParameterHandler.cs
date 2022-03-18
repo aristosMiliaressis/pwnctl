@@ -14,7 +14,7 @@ namespace pwnctl.Handlers
 
         public ParameterHandler() {}
 
-        public async Task HandleAsync(IAsset asset)
+        public Task HandleAsync(IAsset asset)
         {
             throw new NotImplementedException();
         }

@@ -6,12 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Wrappers\**" />
-    <EmbeddedResource Remove="Wrappers\**" />
-    <None Remove="Wrappers\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Resource Include="Program.cs" />
   </ItemGroup>
 

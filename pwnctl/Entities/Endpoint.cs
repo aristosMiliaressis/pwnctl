@@ -1,7 +1,6 @@
 ﻿using pwnctl.Parsers;
 using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Text;
 using System.Linq;
 
@@ -40,8 +39,8 @@ namespace pwnctl.Entities
             {
                 var uri = new Uri(assetText);
 
-                var origin = IPAddress.TryParse(assetText, out IPAddress address)
-                        ? new Service(null, new Host(uri.Host, address.AddressFamily), (ushort)uri.Port)
+                var origin = Host.TryParse(uri.Host, out Host host)
+                        ? new Service(null, host, (ushort)uri.Port)
                         : new Service(new Domain(uri.Host), null, (ushort)uri.Port);
 
                 endpoint = new Endpoint(uri.Scheme, origin, uri.AbsolutePath);

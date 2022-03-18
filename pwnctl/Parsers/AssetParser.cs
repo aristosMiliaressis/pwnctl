@@ -2,7 +2,6 @@ using pwnctl.Entities;
 using pwnctl.Exceptions;
 using System;
 using System.Linq;
-using System.Net;
 
 namespace pwnctl.Parsers
 {
@@ -18,7 +17,6 @@ namespace pwnctl.Parsers
             assetText = assetText.Split("?")[0];
 
             // TODO: if scheme is tcp,tcp6,udp,udp6,quic return false & handle as service
-            // TODO: DNS record parsing
     
             if (Endpoint.TryParse(assetText, out Endpoint endpoint)) 
             {
@@ -30,15 +28,15 @@ namespace pwnctl.Parsers
                 assetType = typeof(Service);
                 asset = service;
             }
-            else if (IPAddress.TryParse(assetText, out IPAddress address))
+            else if (Host.TryParse(assetText, out Host host))
             {
                 assetType = typeof(Host);
-                asset = new Host(assetText, address.AddressFamily);
+                asset = host;
             }
-            else if (DomainNameParser.IsValid(assetText))
+            else if (Domain.TryParse(assetText, out Domain domain))
             {
                 assetType = typeof(Domain);
-                asset = new Domain(assetText);
+                asset = domain;
             }
             else if (NetRange.TryParse(assetText, out NetRange netRange))
             {

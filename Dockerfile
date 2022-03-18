@@ -1,7 +1,5 @@
 FROM aaaguirrep/offensive-docker AS base
 
-EXPOSE 8000
-
 # install .NET runtime
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -21,8 +19,6 @@ RUN curl -sSL https://dot.net/v1/dotnet-install.sh \
     && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet
 
 RUN apt-get update && apt-get install -y apt-utils gcc sudo nano moreutils
-
-RUN pip3 install datasette
 
 RUN cd /tools/recon/massdns \
     && make \
@@ -88,11 +84,6 @@ RUN cat /app/aliases.txt >> /root/.bashrc \
 ENV INSTALL_PATH=/opt/pwntainer
 
 RUN get_public_suffixes.sh
-
-#RUN mv /app/workflows/hourly/* /etc/cron.hourly/ \
-#    && mv /app/workflows/daily/* /etc/cron.daily/ \
-#    && mv /app/workflows/weekly/* /etc/cron.weekly/ \
-#    && mv /app/workflows/monthly/* /etc/cron.monthly/
 
 RUN chmod +x /app/entrypoint.sh
 ENTRYPOINT ["/app/entrypoint.sh"]

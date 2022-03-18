@@ -27,10 +27,10 @@ namespace pwnctl.Handlers
 
             if (!domain.IsRegistrationDomain)
             {
-                var registrationDomain = await _context.Domains.FirstOrDefaultAsync(d => d.Name == DomainNameParser.GetRegistrationDomain(domain.Name));
+                var registrationDomain = await _context.Domains.FirstOrDefaultAsync(d => d.Name == Domain.GetRegistrationDomain(domain.Name));
                 if (registrationDomain == null)
                 {
-                    registrationDomain = new Domain(DomainNameParser.GetRegistrationDomain(domain.Name));
+                    registrationDomain = new Domain(Domain.GetRegistrationDomain(domain.Name));
                     _context.Domains.Add(registrationDomain);
                 }
                 else

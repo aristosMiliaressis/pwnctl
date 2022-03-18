@@ -6,8 +6,14 @@ namespace pwnctl.ValueObject
 {
     public class Tag : ValueObject
     {
-        public TagSubject Subject { get; set; }
-        public string Type { get; set; }
+        public TagSubject Subject { get; private set; }
+        public string Type { get; private set; }
+
+        protected override IEnumerable<object> GetEqualityComponents()
+        {
+            yield return Subject;
+            yield return Type;
+        }
     }
 
     public enum TagSubject

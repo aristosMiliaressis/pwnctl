@@ -3,6 +3,9 @@
 DNS_RESOLVERS_FILE=/opt/dnsvalidator/resolvers_top25.txt
 SUBDOMAIN_DICT=/opt/pwntainer/wordlists/top20000.txt
 RESOLVERS=1.1.1.1,8.8.8.8,8.8.4.4
+WILDCARD_TESTS=3
+
+domain=$1
 
 sort_and_uniq() {
 	cat $1 | sort -u > temp.txt
@@ -12,7 +15,7 @@ sort_and_uniq() {
 
 gen_brute() {
 	while read sub; do
-  	echo "$sub.$1" >> potential_subs.txt
+  	echo "$sub.$domain" >> potential_subs.txt
 	done < $SUBDOMAIN_DICT
 }
 
@@ -25,7 +28,7 @@ sub_alts() {
 	rm alt_seeds.txt
 
 	puredns resolve -q sub_alterations.txt \
-		-r $DNS_RESOLVERS_FILE \
+		-q -r $DNS_RESOLVERS_FILE \
 		--wildcard-tests $WILDCARD_TESTS \
 		--write valid_alts.txt
 
@@ -37,6 +40,7 @@ sub_alts() {
     rm sub_alterations.txt valid_alts.txt
 }
 
+# 1. amass OSINT
 amass enum -rf $DNS_RESOLVERS_FILE -d $1 -nolocaldb -nocolor -passive | tee -a all_subs.txt
 cat all_subs.txt | unfurl --unique domains | grep $1 > tmpfile
 cat tmpfile > all_subs.txt
@@ -44,6 +48,7 @@ rm tmpfile
 
 amass_count=$(wc -l all_subs.txt | awk '{print  $1}')
 
+# 2. FDNS dataset search
 # TODO look into experimentalServer & microsubs & https://github.com/Cgboal/SonarSearch
 # zcat /opt/sonar/2021-10-29-1635540560-fdns_any.json.gz | grep -F '.$1"' | jq -r .name | grep '.$1$' | sort -u >> all_subs.txt
 # dnsgrep -f /opt/dnsgrep/fdns_a.sort.txt -i ".$1" \
@@ -52,8 +57,11 @@ amass_count=$(wc -l all_subs.txt | awk '{print  $1}')
 # 	| grep "$1" \
 # 	| sort -u >> all_subs.txt
 
+#dig -t _gc._{Domain_Name} && dig -t _ldap._{Domain_Name} && dig -t _kerberos._{Domain_Name} && dig -t _kpasswd._{Domain_Name} && nmap --script dns-srv-enum --script-args "dns-srv-enum.domain={Domain_Name}"
+
 cat all_subs.txt > potential_subs.txt
 
+# 3. subdomain brute-force
 if [ -z "$NO_BRUTE" ];
 then
 	gen_brute
@@ -62,7 +70,7 @@ fi
 sort_and_uniq potential_subs.txt
 
 puredns resolve potential_subs.txt \
-	-r $DNS_RESOLVERS_FILE \
+	-q -r $DNS_RESOLVERS_FILE \
 	--wildcard-tests $WILDCARD_TESTS \
 	--write valid_domains.txt
 
@@ -71,6 +79,7 @@ rm potential_subs.txt
 
 valid_domains=$(wc -l valid_domains.txt | awk '{print  $1}')
 
+# 4. generate alterations of live domains
 if [ -z "$NO_ALTS" ];
 then
 	sub_alts
@@ -78,6 +87,7 @@ fi
 
 cat all_subs.txt | pwnctl
 
+# 5. grab raw dns records
 cat $1 \
     | zdns ANY -name-servers $RESOLVERS -result-verbosity short \
     | jq .data.answers \
@@ -95,11 +105,6 @@ cat $1 \
 
 cat $1 \
     | zdns CNAME -name-servers $RESOLVERS > dns/cname_records.txt
-
-cat $1 \
-    | zdns NS -name-servers $RESOLVERS -result-verbosity short \
-    | jq .data.answers \
-    | grep -v null > dns/ns_records.txt
 
 cat $1 \
     | zdns TXT -name-servers $RESOLVERS -result-verbosity short \
@@ -126,6 +131,31 @@ cat $1 \
     | jq .data.answers \
     | grep -v null > dns/hinfo_records.txt
 
+cat $1 \
+    | zdns NS -name-servers $RESOLVERS -result-verbosity short \
+    | jq .data.answers \
+    | grep -v null > dns/ns_records.txt
+
+# 6. get bind information
+cat dns/ns_records.txt | jq -r '{ns:.[].answer, type:.[].type} | "\(.type) \(.ns)"' \
+        | grep "NS " \
+        | awk '{print $2}' \
+    | while read ns; \
+        do \
+            dig "$(dig +short $ns | head -1)" PTR @$ns | grep PTR; \
+            dig version.bind txt chaos @$ns  | grep TXT | while read line; do echo "$ns\t$line"; done; \
+            dig hostname.bind txt chaos @$ns | grep TXT | while read line; do echo "$ns\t$line"; done; \
+        done >> dns/bind_info.txt
+
+ cat dns/ns_records.txt \
+    | jq -r '{ns:.[].answer, type:.[].type} | "\(.type) \(.ns)"' \
+    | grep "NS " \
+    | awk '{print "google.com",$2}' \
+    | tr ' ' ',' \
+    | zdns A -result-verbosity long \
+    | jq 'select(.data.flags.recursion_available == true) | {ns: .data.resolver,recursion_available:.data.flags.recursion_available}' > dns_recursion_enabled.txt
+
+# 7. grab ips
 cat dns/a_records.txt \
     | jq -r '{type: .[].type, ip: .[].answer} | "_\(.type)_ \(.ip)"' \
     | grep "_A_" \
@@ -148,12 +178,19 @@ cat dns/txt_records.txt \
 
 sort_and_uniq dns/all_hosts.txt
 
+# 8. grab PTR records
+# TODO: use targets dns resolvers instead??
 cat dns/all_hosts.txt | zdns PTR -name-servers $RESOLVERS -result-verbosity short -output-file dns/ptr_records.txt
+#dnsrecon -r 127.0.0.0/24 -n <IP_DNS>  #DNS reverse of all of the addresses
+#dnsrecon -r 127.0.1.0/24 -n <IP_DNS>  #DNS reverse of all of the addresses
+#dnsrecon -r <IP_DNS>/24 -n <IP_DNS>   #DNS reverse of all of the addresses
 
+# 9. look for potential CNAME takeovers
 cat dns/cname_records.txt \
     | jq -r '{name:.name, status:.status} | "\(.status) \(.name)"' \
     | grep 'NXDOMAIN' > dns/potential_cname_takeovers.txt
 
+# 10. look for potential NS takeovers
 cat dns/ns_records.txt \
 	| jq -r '{ns:.[].answer, type:.[].type, name:.[].name} | "\(.name) \(.type) \(.ns)"' \
 	| grep " NS " \
@@ -164,9 +201,9 @@ cat dns/ns_records.txt \
 	| jq  -r '{name: .name, status:.status, ns: .data.resolver} | "\(.status) \(.name) \(.ns)"' \
 	| grep 'SERVFAIL\|REFUSED\|no servers could be reached' > dns/potential_ns_takeovers.txt
 
-# TODO: MX takeovers
+# TODO: 11. look for potential MX takeovers
 
-
+# 12. try a bunch of zone transfers
 cat dns/ns_records.txt \
     | jq -r '{type: .[].type, domain: .[].name, ns: .[].answer} | "\(.domain) _\(.type)_ \(.ns)"' \
     | grep "_NS_" \

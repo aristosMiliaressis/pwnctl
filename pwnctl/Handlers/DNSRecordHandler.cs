@@ -49,8 +49,6 @@ namespace pwnctl.Handlers
 
             _context.DNSRecords.Add(record);
 
-            // TODO: if host.InScope = domain.InScope
-
             await _context.SaveChangesAsync();
         }
     }

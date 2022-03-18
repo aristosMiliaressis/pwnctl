@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Net.Sockets;
+using System.Net;
 
 namespace pwnctl.Entities
 {
@@ -21,6 +22,18 @@ namespace pwnctl.Entities
         {
             IP = ip;
             Version = version;
+        }
+
+        public static bool TryParse(string assetText, out Host host)
+        {
+            if (IPAddress.TryParse(assetText, out IPAddress address))
+            {
+                host = new Host(assetText, address.AddressFamily);
+                return true;
+            }
+
+            host = null;
+            return false;
         }
     }
 }

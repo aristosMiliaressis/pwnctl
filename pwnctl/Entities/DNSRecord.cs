@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 
 namespace pwnctl.Entities
 {
@@ -26,8 +25,8 @@ namespace pwnctl.Entities
             Key = key;
             Value = value;
 
-            var isIp = IPAddress.TryParse(key, out IPAddress address);
-            Host = isIp ? new Host(key, address.AddressFamily) : null;
+            var isIp = Host.TryParse(key, out Host host);
+            Host = isIp ? host : null;
             Domain = isIp ? null : new Domain(key);
         }
 
@@ -46,55 +45,55 @@ namespace pwnctl.Entities
             record = null;
             return false;
         }
-    }
 
-    public enum RecordType
-    { 
-        A,
-        AAAA,
-        AFSDB,
-        APL,
-        AXFR,
-        CAA,
-        CDNSKEY,
-        CDS,
-        CERT,
-        CNAME,
-        CSYNC,
-        DHCID,
-        DNAME,
-        DNSKEY,
-        DS,
-        EUI48,
-        EUI64,
-        HINFO,
-        HIP,
-        HTTPS,
-        IPSECKEY,
-        IXFR,
-        KX,
-        LOC,
-        MX,
-        NAPTR,
-        NS,
-        NSEC3,
-        NSEC3PARAM,
-        OPENPGPKEY,
-        PTR,
-        RP,
-        RRSIG,
-        SMIMEA,
-        SOA,
-        SSHFP,
-        SVCB,
-        SRV,
-        TA,
-        TKEY,
-        TLSA,
-        TSIG,
-        TXT,
-        URI,
-        WKS,
-        ZONEMD
+        public enum RecordType
+        { 
+            A,
+            AAAA,
+            AFSDB,
+            APL,
+            AXFR,
+            CAA,
+            CDNSKEY,
+            CDS,
+            CERT,
+            CNAME,
+            CSYNC,
+            DHCID,
+            DNAME,
+            DNSKEY,
+            DS,
+            EUI48,
+            EUI64,
+            HINFO,
+            HIP,
+            HTTPS,
+            IPSECKEY,
+            IXFR,
+            KX,
+            LOC,
+            MX,
+            NAPTR,
+            NS,
+            NSEC3,
+            NSEC3PARAM,
+            OPENPGPKEY,
+            PTR,
+            RP,
+            RRSIG,
+            SMIMEA,
+            SOA,
+            SSHFP,
+            SVCB,
+            SRV,
+            TA,
+            TKEY,
+            TLSA,
+            TSIG,
+            TXT,
+            URI,
+            WKS,
+            ZONEMD
+        }
     }
 }
