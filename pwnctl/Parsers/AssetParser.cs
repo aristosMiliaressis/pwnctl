@@ -16,9 +16,18 @@ namespace pwnctl.Parsers
 
             assetText = assetText.Split("?")[0];
 
+            if (Request.TryParse(assetText, out Request request)) 
+            {
+                assetType = typeof(Request);
+                asset = request;
+            }
+            else if (Response.TryParse(assetText, out Response response)) 
+            {
+                assetType = typeof(Response);
+                asset = response;
+            }
             // TODO: if scheme is tcp,tcp6,udp,udp6,quic return false & handle as service
-    
-            if (Endpoint.TryParse(assetText, out Endpoint endpoint)) 
+            else if (Endpoint.TryParse(assetText, out Endpoint endpoint)) 
             {
                 assetType = typeof(Endpoint);
                 asset = endpoint;

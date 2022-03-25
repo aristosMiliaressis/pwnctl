@@ -11,7 +11,10 @@ namespace pwnctl.ValueObject
         private byte[] Bits { get; set; }
 
         public AddressFamily Version { get; private set; }
-        public string Address{ get; private set; }
+        public string Address { get; private set; }
+
+        // TODO: implement accessors for different formats (i.e decimal,octal,hex, dot notation)
+        // TODO: IsPrivate
 
         private IpAddress(string address)
         {

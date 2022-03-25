@@ -1,8 +1,14 @@
 #!/bin/bash
 
-DNS_RESOLVERS_FILE=/opt/dnsvalidator/resolvers_top25.txt
+# TODO: dig -t _gc._$domain && dig -t _ldap._$domain && dig -t _kerberos._$domain && dig -t _kpasswd._$domain && nmap --script dns-srv-enum --script-args "dns-srv-enum.domain={Domain_Name}"
+# TODO: collect TXT SPF at $domain, _dmarc.$domain and DKIM selector._domainkey.$domain 
+# TODO: collect SSHFD
+
+DNS_RESOLVERS_FILE=/tmp/resolvers.txt
+wget -O $DNS_RESOLVERS_FILE https://raw.githubusercontent.com/janmasarik/resolvers/master/resolvers.txt 2> /dev/null
+
 SUBDOMAIN_DICT=/opt/pwntainer/wordlists/top20000.txt
-RESOLVERS=1.1.1.1,8.8.8.8,8.8.4.4
+RESOLVERS=$(cat $DNS_RESOLVERS_FILE | tr '\n' ',')
 WILDCARD_TESTS=3
 
 domain=$1
@@ -56,8 +62,6 @@ amass_count=$(wc -l all_subs.txt | awk '{print  $1}')
 # 	| tr ' ' '\n' \
 # 	| grep "$1" \
 # 	| sort -u >> all_subs.txt
-
-#dig -t _gc._{Domain_Name} && dig -t _ldap._{Domain_Name} && dig -t _kerberos._{Domain_Name} && dig -t _kpasswd._{Domain_Name} && nmap --script dns-srv-enum --script-args "dns-srv-enum.domain={Domain_Name}"
 
 cat all_subs.txt > potential_subs.txt
 
@@ -179,11 +183,7 @@ cat dns/txt_records.txt \
 sort_and_uniq dns/all_hosts.txt
 
 # 8. grab PTR records
-# TODO: use targets dns resolvers instead??
-cat dns/all_hosts.txt | zdns PTR -name-servers $RESOLVERS -result-verbosity short -output-file dns/ptr_records.txt
-#dnsrecon -r 127.0.0.0/24 -n <IP_DNS>  #DNS reverse of all of the addresses
-#dnsrecon -r 127.0.1.0/24 -n <IP_DNS>  #DNS reverse of all of the addresses
-#dnsrecon -r <IP_DNS>/24 -n <IP_DNS>   #DNS reverse of all of the addresses
+cat dns/all_hosts.txt | hakrevdns | tee dns/ptr_records.txt
 
 # 9. look for potential CNAME takeovers
 cat dns/cname_records.txt \

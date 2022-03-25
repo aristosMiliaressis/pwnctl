@@ -12,8 +12,6 @@ namespace pwnctl.Entities
         public string IP { get; set; }
         public AddressFamily Version { get; set; }
 
-        public OperatingSystem OperatingSystem { get; set; }
-
         public List<DNSRecord> AARecords { get; set; }
 
         private Host() {}

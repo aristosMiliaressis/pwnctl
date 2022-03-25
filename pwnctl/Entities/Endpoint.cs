@@ -38,7 +38,7 @@ namespace pwnctl.Entities
             try
             {
                 var uri = new Uri(assetText);
-
+                
                 var origin = Host.TryParse(uri.Host, out Host host)
                         ? new Service(null, host, (ushort)uri.Port)
                         : new Service(new Domain(uri.Host), null, (ushort)uri.Port);

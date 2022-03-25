@@ -42,8 +42,9 @@ namespace pwnctl.Persistence
         public DbSet<DNSRecord> DNSRecords { get; set; }
         public DbSet<Service> Services { get; set; }
         public DbSet<Endpoint> Endpoints { get; set; }
-        public DbSet<EndpointTag> EndpointTags { get; set; }
-        public DbSet<ServiceTag> ServiceTags { get; set; }
+        public DbSet<Request> Requests { get; set; }
+        public DbSet<Response> Responses { get; set; }
+        public DbSet<Parameter> Parameters { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

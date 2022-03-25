@@ -14,8 +14,6 @@ namespace pwnctl.Persistence.EntityConfiguration
         public void Configure(EntityTypeBuilder<Host> builder)
         {
             builder.HasKey(e => e.Id);
-
-            builder.OwnsOne(m => m.OperatingSystem);
         }
     }
 }

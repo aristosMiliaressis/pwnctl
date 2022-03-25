@@ -69,8 +69,7 @@ COPY scripts /app/scripts
 COPY recon_scripts /app/recon_scripts
 COPY entrypoint.sh /app/entrypoint.sh
 
-RUN cat /app/aliases.txt >> /root/.bashrc \
-    && mv /app/recon_scripts/resolvers_top25.txt /opt/dnsvalidator/ \
+RUN mv /app/recon_scripts/resolvers_top25.txt /opt/dnsvalidator/ \
     && mv /app/recon_scripts/top200000.txt /opt/pwntainer/wordlists/ \
     && mv /app/recon_scripts/top20000.txt /opt/pwntainer/wordlists/ \
     && chmod +x /app/recon_scripts/* \ 
@@ -80,6 +79,7 @@ RUN cat /app/aliases.txt >> /root/.bashrc \
     && mv /app/scripts/* /usr/local/bin \
     && rm -r /app/scripts/ \
     && chmod -R +x /app/workflows/
+    # cat /app/aliases.txt >> /root/.bashrc
 
 ENV INSTALL_PATH=/opt/pwntainer
 

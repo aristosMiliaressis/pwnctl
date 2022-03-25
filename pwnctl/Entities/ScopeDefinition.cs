@@ -2,9 +2,8 @@ using System.Text.RegularExpressions;
 
 namespace pwnctl.Entities
 {
-    public class ScopeDefinition
+    public class ScopeDefinition : BaseEntity
     {
-        public int Id { get; set; }
         public string Name { get; set; }
         public ScopeType Type { get; set; }
         public string Pattern { get; set; }

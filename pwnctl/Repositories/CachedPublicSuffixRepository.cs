@@ -5,9 +5,12 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 
+// TODO: look into Nager.PublicSuffix 
+// TODO: use in-memory cache
+
 namespace pwnctl.Repositories
 {
-    public class CachedPublicSuffixRepository  // TODO: use in-memory cache
+    public class CachedPublicSuffixRepository  
     {
         private List<PublicSuffix> _publicSuffixes;
         private static CachedPublicSuffixRepository _singleton;
@@ -26,10 +29,10 @@ namespace pwnctl.Repositories
         {
             if (_publicSuffixes == null)
             {
-                    _publicSuffixes = File.ReadLines($"{EnvironmentVariables.INSTALL_PATH}/dns/public_suffix_list.dat")
-                        .Select(suffix => PublicSuffix.Create(suffix))
-                        .Distinct()
-                        .ToList();
+                _publicSuffixes = File.ReadLines($"{EnvironmentVariables.INSTALL_PATH}/dns/public_suffix_list.dat")
+                    .Select(suffix => PublicSuffix.Create(suffix))
+                    .Distinct()
+                    .ToList();
             }
     
             return _publicSuffixes;

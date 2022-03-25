@@ -9,13 +9,15 @@ using System.Threading.Tasks;
 
 namespace pwnctl.Persistence.EntityConfiguration
 {
-    public class ServiceTagConfig : IEntityTypeConfiguration<ServiceTag>
+    public class ResponseConfig : IEntityTypeConfiguration<Response>
     {
-        public void Configure(EntityTypeBuilder<ServiceTag> builder)
+        public void Configure(EntityTypeBuilder<Response> builder)
         {
-            builder.HasKey(e => e.Id);
+            builder.HasKey(r => r.Id);
 
-            builder.OwnsOne(m => m.Tag);
+            builder.HasOne(r => r.Request)
+                .WithMany()
+                .HasForeignKey(r => r.RequestId);
         }
     }
 }

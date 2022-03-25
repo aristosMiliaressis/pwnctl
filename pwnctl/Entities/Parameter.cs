@@ -6,20 +6,31 @@ namespace pwnctl.Entities
 {
     public class Parameter : BaseAsset, IAsset
     {
-        private Parameter()
+        private Parameter() {}
+        
+        public Parameter(Endpoint endpoint, string name, ParamType type, string urlEncodedCsValues)
         {
-            
+            Endpoint = endpoint;
+            Name = name;
+            Type = type;
+            UrlEncodedCsValues = urlEncodedCsValues;
+        }
+
+        public static bool TryParse(string assetText, out Parameter parameter)
+        {
+            throw new NotImplementedException();
         }
 
         public Endpoint Endpoint { get; set; }
-        public int? EndpointId { get; set; }
-        public Domain Domain { get; set; }
-        public int? DomainId { get; set; }
-        public VirtualHost VirtualHost { get; set; }
-        public int? VirtualHostId { get; set; }
+        public int EndpointId { get; set; }
+
+        public Request Request { get; set; }
+        public int? RequestId { get; set; }
 
         public string Name { get; set; }
         public ParamType Type { get; set; }
+
+        public string UrlEncodedCsValues { get; set; }
 
         public enum ParamType
         {

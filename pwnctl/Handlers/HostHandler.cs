@@ -28,10 +28,11 @@ namespace pwnctl.Handlers
 
             if (host.InScope)
             {
-                _queueService.Enqueue($"dig +short -x {host.IP} | pwnctl");
                 _queueService.Enqueue($"echo {host.IP} | httpx -silent | pwnctl");
                 _queueService.Enqueue($"portscan {host.IP}");
-                _queueService.Enqueue($"get-alt-names {host.IP}");
+                // TODO: try to correlate alt-names trough favicon hash or legal text patterns
+                _queueService.Enqueue($"dig +short -x {host.IP} | pwnctl");
+                _queueService.Enqueue($"get-alt-names {host.IP}"); 
             }
             
             await _context.SaveChangesAsync();
