@@ -81,8 +81,6 @@ namespace pwnctl.infra.Persistence
         public DbSet<core.Entities.Assets.DNSRecord> DNSRecords { get; set; }
         public DbSet<core.Entities.Assets.Service> Services { get; set; }
         public DbSet<core.Entities.Assets.Endpoint> Endpoints { get; set; }
-        public DbSet<core.Entities.Assets.Request> Requests { get; set; }
-        public DbSet<core.Entities.Assets.Response> Responses { get; set; }
         public DbSet<core.Entities.Assets.Parameter> Parameters { get; set; }
 
         public BaseEntity FirstFromLambda(LambdaExpression lambda)

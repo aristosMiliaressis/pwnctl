@@ -31,9 +31,6 @@ namespace pwnctl.core.Entities.Assets
         public Endpoint Endpoint { get; set; }
         public int EndpointId { get; set; }
 
-        public Request Request { get; set; }
-        public int? RequestId { get; set; }
-
         public string Name { get; set; }
         public ParamType Type { get; set; }
 

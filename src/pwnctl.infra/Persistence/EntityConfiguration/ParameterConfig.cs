@@ -18,10 +18,6 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
             builder.HasOne(p => p.Endpoint)
                 .WithMany()
                 .HasForeignKey(p => p.EndpointId);
-
-            builder.HasOne(p => p.Request)
-                .WithMany()
-                .HasForeignKey(p => p.RequestId);
         }
     }
 }
