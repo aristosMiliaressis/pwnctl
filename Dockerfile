@@ -15,7 +15,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 RUN curl -sSL https://dot.net/v1/dotnet-install.sh \
-     | bash /dev/stdin -Channel 5.0 -Runtime aspnetcore -InstallDir /usr/share/dotnet --architecture x64 \
+     | bash /dev/stdin -Channel 6.0 -Runtime aspnetcore -InstallDir /usr/share/dotnet --architecture x64 \
     && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet
 
 RUN apt-get update && apt-get install -y apt-utils gcc sudo nano moreutils
@@ -40,18 +40,28 @@ RUN mkdir -p /opt/pwntainer/data/ \
 RUN wget https://github.com/RustScan/RustScan/releases/download/2.0.1/rustscan_2.0.1_amd64.deb \
     && dpkg -i rustscan_2.0.1_amd64.deb && rm rustscan_2.0.1_amd64.deb
 
+RUN go get -u github.com/glebarez/cero
+RUN go install github.com/lc/gau/v2/cmd/gau@latest
+
 RUN git clone https://github.com/dcsync/recontools.git /opt/pwntainer/recontools
 RUN git clone https://github.com/danielmiessler/SecLists.git /opt/pwntainer/wordlists
 RUN wget -O /opt/pwntainer/wordlists/commonspeak2.txt https://raw.githubusercontent.com/assetnote/commonspeak2-wordlists/master/subdomains/subdomains.txt
 
-RUN printf ".databases\n.quit" | sqlite3 /opt/pwntainer/pwntainer.db
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 
-FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim AS build
-COPY ["pwnctl/pwnctl.csproj", "pwnctl/"]
-RUN dotnet restore "pwnctl/pwnctl.csproj"
+COPY ["/src/pwnctl.core/pwnctl.core.csproj", "/src/pwnctl.core/"]
+RUN dotnet restore "/src/pwnctl.core/pwnctl.core.csproj"
+COPY ["/src/pwnctl.infra/pwnctl.infra.csproj", "/src/pwnctl.infra/"]
+RUN dotnet restore "/src/pwnctl.infra/pwnctl.infra.csproj"
+COPY ["/src/pwnctl.app/pwnctl.app.csproj", "/src/pwnctl.app/"]
+RUN dotnet restore "/src/pwnctl.app/pwnctl.app.csproj"
+COPY ["/src/pwnctl/pwnctl.csproj", "/src/pwnctl/"]
+RUN dotnet restore "/src/pwnctl/pwnctl.csproj"
+
 COPY . .
-RUN dotnet build "/pwnctl/pwnctl.csproj" -c Release -o /app/build
-RUN dotnet publish "/pwnctl/pwnctl.csproj" -r linux-x64 -c Release -o /app/publish # -p:PublishSingleFile=true
+
+RUN dotnet build "/src/pwnctl/pwnctl.csproj" -c Release -o /app/build
+RUN dotnet publish "/src/pwnctl/pwnctl.csproj" -r linux-x64 -c Release -o /app/publish # -p:PublishSingleFile=true
 
 FROM base AS release
 
@@ -59,31 +69,17 @@ RUN wget -O /usr/local/bin/job-queue.sh https://raw.githubusercontent.com/aristo
     && chmod +x /usr/local/bin/job-queue.sh
 
 COPY --from=build /app/publish /app
-
 RUN ln -s /app/pwnctl /usr/local/bin/pwnctl
 
-WORKDIR /opt
-
-COPY workflows /app/workflows
-COPY scripts /app/scripts
-COPY recon_scripts /app/recon_scripts
-COPY entrypoint.sh /app/entrypoint.sh
-
-RUN mv /app/recon_scripts/resolvers_top25.txt /opt/dnsvalidator/ \
-    && mv /app/recon_scripts/top200000.txt /opt/pwntainer/wordlists/ \
-    && mv /app/recon_scripts/top20000.txt /opt/pwntainer/wordlists/ \
-    && chmod +x /app/recon_scripts/* \ 
-    && mv /app/recon_scripts/* /usr/local/bin \
-    && rm -r /app/recon_scripts/ \
-    && chmod +x /app/scripts/* \ 
-    && mv /app/scripts/* /usr/local/bin \
-    && rm -r /app/scripts/ \
-    && chmod -R +x /app/workflows/
-    # cat /app/aliases.txt >> /root/.bashrc
-
+RUN chmod -R +x /app/scripts \
+    && mv /app/scripts/recon_scripts/* /usr/local/bin/ \
+    && mv /app/scripts/* /usr/local/bin/
+    
 ENV INSTALL_PATH=/opt/pwntainer
 
 RUN get_public_suffixes.sh
 
+
+COPY entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 ENTRYPOINT ["/app/entrypoint.sh"]

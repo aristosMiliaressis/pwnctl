@@ -1,0 +1,53 @@
+[
+    {
+        "ShortName": "nmap_basic",
+        "CommandTemplate": "nmap -Pn {{CIDR}}",
+        "IsActive": true,
+        "Aggressiveness": 5,
+        "Subject": "NetRange"
+    },
+    {
+        "ShortName": "ffuf_common",
+        "CommandTemplate": "ffuf -H 'User-Agent: Mozilla/5.0' -H 'X-Forwarded-For: 127.0.0.1' -w /opt/SecLists/Discovery/Web-Content/common.txt {{Uri}}/FUZZ",
+        "IsActive": true,
+        "Aggressiveness": 8,
+        "Filter": "(Endpoint.Path == \"/\")",
+        "Subject": "Endpoint"
+    },
+    {
+        "ShortName": "shortname_scanner",
+        "CommandTemplate": "shortname_scanner",
+        "IsActive": true,
+        "Aggressiveness": 5,
+        "Filter": "(Endpoint.Path == \"/\") && (Endpoint[\"Server\"] == \"IIS\")",
+        "Subject": "Endpoint"
+    },
+    {
+        "ShortName": "subfinder",
+        "CommandTemplate": "subfinder {{Name}}",
+        "IsActive": false,
+        "Aggressiveness": 0,
+        "Subject": "Domain"
+    },
+    {
+        "ShortName": "domain_resolution",
+        "CommandTemplate": "dig +short {{Name}} | awk '{print \"{{Name}} IN A \" $1}'| pwnctl process",
+        "IsActive": false,
+        "Aggressiveness": 1,
+        "Subject": "Domain"
+    },
+    {
+        "ShortName": "hakrawler",
+        "CommandTemplate": "hakrawler -plain -h 'User-Agent: Mozilla/5.0' {{Uri}}",
+        "IsActive": true,
+        "Aggressiveness": 3,
+        "Subject": "Endpoint"
+    },
+    {
+        "ShortName": "sqlmap",
+        "CommandTemplate": "sqlmap {{Uri}}",
+        "IsActive": true,
+        "Aggressiveness": 1000,
+        "Subject": "Endpoint"
+    }
+]

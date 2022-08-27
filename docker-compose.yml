@@ -6,9 +6,9 @@ services:
     container_name: pwntainer
     hostname: pwntainer
     network_mode: host
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile
     restart: unless-stopped
     volumes:
-      - ./data/:/opt/pwntainer/
+      - ./data/seed/:/opt/pwntainer/seed
