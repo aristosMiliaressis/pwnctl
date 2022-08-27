@@ -7,24 +7,27 @@ namespace pwnctl.app.Utilities
 {
     public static class AssetParser
     {
-        private static readonly IEnumerable<MethodInfo> _tryParseMethods = Assembly.GetAssembly(typeof(BaseAsset))
-                                                        .GetTypes()
-                                                        .Where(t => !t.IsAbstract && typeof(BaseAsset).IsAssignableFrom(t))
-                                                        .Select(t => t.GetMethod("TryParse"));
+        public static bool TryParse(string assetText, out Type[] assetTypes, out BaseAsset[] assets)
+        {
+            try
+            {
+                assets = Parse(assetText, out assetTypes);
+                return true;
+            }
+            catch
+            {
+                assetTypes = null;
+                assets = null;
+                return false;
+            }
+        }
 
         public static BaseAsset[] Parse(string assetText, out Type[] assetTypes)
         {
             if (string.IsNullOrWhiteSpace(assetText))
                 throw new ArgumentException("Null or whitespace asset.", nameof(assetText));
 
-            List<Tag> tags = null;
-            if (assetText.Contains(" [["))
-            {
-                tags = assetText.Split(" [[")[1].Replace("]]", "").Split("][")
-                            .Select(t => new Tag(t.Split(":")[0], t.Split(":")[1]))
-                            .ToList();
-                assetText = assetText.Split(" [[")[0];
-            }
+            ParseTags(ref assetText, out List<Tag> tags);
 
             object[] parameters = new object[] { assetText, tags, null };
             foreach (var tryParseMethod in _tryParseMethods)
@@ -50,19 +53,21 @@ namespace pwnctl.app.Utilities
             throw new UnrecognizableAssetException(assetText);
         }
 
-        public static bool TryParse(string assetText, out Type[] assetTypes, out BaseAsset[] assets)
+        private static void ParseTags(ref string assetText, out List<Tag> tags)
         {
-            try
+            tags = null;
+            if (assetText.Contains(" [["))
             {
-                assets = Parse(assetText, out assetTypes);
-                return true;
-            }
-            catch
-            {
-                assetTypes = null;
-                assets = null;
-                return false;
+                tags = assetText.Split(" [[")[1].Replace("]]", "").Split("][")
+                            .Select(t => new Tag(t.Split(":")[0], t.Split(":")[1]))
+                            .ToList();
+                assetText = assetText.Split(" [[")[0];
             }
         }
+
+        private static readonly IEnumerable<MethodInfo> _tryParseMethods = Assembly.GetAssembly(typeof(BaseAsset))
+                                                .GetTypes()
+                                                .Where(t => !t.IsAbstract && typeof(BaseAsset).IsAssignableFrom(t))
+                                                .Select(t => t.GetMethod("TryParse"));
     }
 }

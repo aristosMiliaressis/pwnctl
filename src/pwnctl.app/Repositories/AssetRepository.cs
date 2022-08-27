@@ -19,23 +19,26 @@ namespace pwnctl.app.Repositories
 
         public async Task<BaseAsset> AddAsync(BaseAsset asset)
         {
-            // get asset relationships, check if they exist and update reference field if they do
-            var references = asset.GetType().GetProperties().Where(p => p.PropertyType.IsAssignableTo(typeof(BaseAsset)));
-            foreach (var reference in references)
-            {
-                var assetRef = (BaseAsset)reference.GetValue(asset);
-                if (assetRef == null)
-                    continue;
+            // replace asset references from db
+            // this prevents some database errors.
+            asset.GetType()
+                .GetProperties()
+                .Where(p => p.PropertyType.IsAssignableTo(typeof(BaseAsset)))
+                .ToList().ForEach(reference =>
+                {
+                    var assetRef = (BaseAsset)reference.GetValue(asset);
+                    if (assetRef == null)
+                        return;
 
-                assetRef = GetAsset(assetRef);
-                if (assetRef != null)
-                    reference.SetValue(asset, assetRef);
-            }
+                    assetRef = GetAsset(assetRef);
+                    if (assetRef != null)
+                        reference.SetValue(asset, assetRef);
+                });
 
             asset.FoundAt = DateTime.Now;
             asset.InScope = ScopeChecker.Singleton.IsInScope(asset);
             _context.Add(asset);
-            
+
             await _context.SaveChangesAsync();
 
             return asset;

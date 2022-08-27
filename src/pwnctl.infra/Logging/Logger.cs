@@ -1,6 +1,6 @@
 namespace pwnctl.infra.Logging
 {
-    public class Logger
+    public class Logger // TODO: make this better
     {
         public static Logger Instance = new();
 

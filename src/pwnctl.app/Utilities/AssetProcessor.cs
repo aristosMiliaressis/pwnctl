@@ -11,20 +11,6 @@ namespace pwnctl.app.Utilities
         private readonly AssetRepository _repository = new();
         private readonly JobAssignmentService _jobService = new();
 
-        public async Task ProcessAsync(string assetText)
-        {
-            bool parsed = AssetParser.TryParse(assetText, out Type[] assetTypes, out BaseAsset[] assets);
-            if (!parsed)
-            {
-                return;
-            }
-
-            foreach (var asset in assets)
-            {
-                await HandleAsset(asset);
-            }
-        }
-
         public async Task<bool> TryProccessAsync(string assetText)
         {
             try
@@ -39,18 +25,33 @@ namespace pwnctl.app.Utilities
             }
         }
 
+        public async Task ProcessAsync(string assetText)
+        {
+            bool parsed = AssetParser.TryParse(assetText, out Type[] assetTypes, out BaseAsset[] assets);
+            if (!parsed)
+            {
+                return;
+            }
+
+            foreach (var asset in assets)
+            {
+                await HandleAsset((BaseAsset)asset);
+            }
+        }
+
         private async Task HandleAsset(BaseAsset asset)
         {
             // recursivly process all parsed assets
-            var references = asset.GetType().GetProperties().Where(p => p.PropertyType.IsAssignableTo(typeof(BaseAsset)));
-            foreach (var reference in references)
-            {
-                var refAsset = (BaseAsset) reference.GetValue(asset);
-                if (refAsset != null)
-                    await HandleAsset(refAsset);
-            }
+            // starting from the botton of the ref tree
+            // this prevents some database errors.
+            asset.GetType()
+                .GetProperties()
+                .Where(p => p.PropertyType.IsAssignableTo(typeof(BaseAsset)))
+                .Select(rf => (BaseAsset) rf.GetValue(asset))
+                .Where(a => a != null)
+                .ToList().ForEach(async refAsset => await HandleAsset(refAsset));
 
-            // apply class specific logix
+            // apply class specific processing
             if (_assetHandlerMap[asset.GetType()] != null)
             {
                 var handler = _assetHandlerMap[asset.GetType()];

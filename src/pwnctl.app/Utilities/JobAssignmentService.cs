@@ -54,7 +54,6 @@ namespace pwnctl.app.Utilities
                 }
             }
 
-            _context.SaveChanges();
         }
 
         private void queueJob(TaskDefinition definition, BaseAsset asset)
@@ -69,13 +68,16 @@ namespace pwnctl.app.Utilities
             if (task != null)
                 return;
 
-            task = new core.Entities.Task(definition, asset);
-            asset.Tasks.Add(task);
+            // this prevents some errors in the unit tests
             if (asset.Id != 0)
                 _context.Attach(asset);
-            _context.Tasks.Add(task);
+
+            task = new core.Entities.Task(definition, asset);
 
             _jobQueueService.Enqueue(task);
+
+            _context.Tasks.Add(task);
+            _context.SaveChanges();
         }
     }
 }
