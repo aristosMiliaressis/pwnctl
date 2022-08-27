@@ -1,9 +1,6 @@
 
 # Architecture
 
-![high-level-arch](Images/high-level-arch.png)
-![db-model](Images/db-model.PNG)
-
 ### Implementation Phase #0
 
 - all in one docker container with bash job queue and sqlite db
@@ -126,18 +123,18 @@ tags are away to store arbitary metadata relating to an asset, they can be used 
 ]
 ```
 
-# `pwnctl --query`
+## `pwnctl --query`
 
 - [x] read sql queries from stdin, execute them and print output
 - [x] json output format
 - [ ] cli flags for common query types
 
-# `pwnctl -i/--import <importer> -s/--source <source>`
+## `pwnctl -i/--import <importer> -s/--source <source>`
 
 - [ ] burp suite imported
 - [ ] connection string importer (pwnctl schema)
 
-# Workers & Scaling
+## Workers & Scaling
 
 - [ ] EC2 C&C VM 
 - [ ] PostgreSQL db
@@ -147,7 +144,7 @@ tags are away to store arbitary metadata relating to an asset, they can be used 
 - [ ] deployment manifest to configure scope/task definitions and scaling
 - [ ] slimer worker images for faster worker creation&teardown
 
-# Miscellaneous Stuff
+## Miscellaneous Stuff
 
 - [ ] non deterministic methods of inscope detection for cloud assets, CIDRs, etc
 - [ ] maintaining fresh DNS resolvers (scheduled dnsvalidator task will store fresh resolvers for all workers to use)
