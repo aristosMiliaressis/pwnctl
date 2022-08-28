@@ -2,4 +2,3 @@
 
 ffuf -recursion -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.81 Safari/537.36' -u $1FUZZ -w $2 -o /opt/pwntainer/data/$(parse-domain $1)/ffuf.json && cat /opt/pwntainer/data/$(parse-domain $1)/ffuf.json \
     | jq -r .results[].url \
-    | pwnctl
