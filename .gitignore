@@ -358,4 +358,5 @@ MigrationBackup/
 
 obj/
 bin/
-data/
+data/jobs/
+data/pwntainer.db

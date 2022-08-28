@@ -1,0 +1,76 @@
+[
+    {
+        "ShortName": "ping_sweep",
+        "CommandTemplate": "rand=`mktemp`; nmap -sn -PE {{CIDR}} -oG $rand; cat $rand | grep 'Status: Up' | cut -f 2 -d ' ' | pwnctl process",
+        "IsActive": true,
+        "Aggressiveness": 1,
+        "Subject": "NetRange"
+    },
+    {
+        "ShortName": "domain_resolution",
+        "CommandTemplate": "dig +short {{Name}} | awk '{print \"{{Name}} IN A \" $1}' | pwnctl process",
+        "IsActive": false,
+        "Aggressiveness": 1,
+        "Subject": "Domain"
+    },
+    {
+        "ShortName": "subfinder",
+        "CommandTemplate": "subfinder -silent -d {{Name}} | pwnctl process",
+        "IsActive": false,
+        "Aggressiveness": 0,
+        "Filter": "(Domain.IsRegistrationDomain == true)",
+        "Subject": "Domain"
+    },
+    {
+        "ShortName": "reverse_lookup",
+        "CommandTemplate": "dig +short -x {{IP}} | pwnctl process",
+        "IsActive": false,
+        "Aggressiveness": 1,
+        "Subject": "Host"
+    },
+    {
+        "ShortName": "nmap_host",
+        "CommandTemplate": "nmapTagOutput.sh {{IP}} | pwnctl process",
+        "IsActive": true,
+        "Aggressiveness": 15,
+        "Subject": "Host"
+    },
+    {
+        "ShortName": "get_alt_names",
+        "CommandTemplate": "get-alt-names {{IP}} | pwnctl process",
+        "IsActive": true,
+        "Aggressiveness": 3,
+        "Subject": "Host"
+    },
+    {
+        "ShortName": "get_all_urls",
+        "CommandTemplate": "echo {{Origin}} | gau --fc 404 --blacklist png,jpg,jpeg,gif,ico,svg,ttf,woff,woff2,eot,css,pdf | unfurl format %s://%a%p%?%q | sort -u | pwnctl process",
+        "IsActive": true,
+        "Aggressiveness": 10,
+        "Subject": "Service",
+        "Filter": "(Service[\"Protocol\"] == \"http\") || (Service[\"Protocol\"] == \"https\")"
+    },
+    {
+        "ShortName": "ffuf_common",
+        "CommandTemplate": "dir-brute.sh {{Uri}} /tools/wordlist/SecLists/Discovery/Web-Content/common.txt | pwnctl process",
+        "IsActive": true,
+        "Aggressiveness": 8,
+        "Filter": "(Endpoint.Path == \"/\")",
+        "Subject": "Endpoint"
+    },
+    {
+        "ShortName": "ffuf_config",
+        "CommandTemplate": "dir-brute.sh {{Uri}} /opt/pwntainer/seed/config.txt | pwnctl process",
+        "IsActive": true,
+        "Aggressiveness": 8,
+        "Filter": "(Endpoint.Path == \"/\")",
+        "Subject": "Endpoint"
+    },
+    {
+        "ShortName": "hakrawler",
+        "CommandTemplate": "echo '{{Uri}}' | hakrawler -insecure -all -plain -headers 'User-Agent: Mozilla/5.0' | pwnctl process",
+        "IsActive": true,
+        "Aggressiveness": 3,
+        "Subject": "Endpoint"
+    }
+]
