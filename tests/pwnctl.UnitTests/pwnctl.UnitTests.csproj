@@ -22,7 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\pwnctl\pwnctl.csproj" />
     <ProjectReference Include="..\..\src\pwnctl.app\pwnctl.app.csproj" />
   </ItemGroup>
 

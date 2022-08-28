@@ -15,5 +15,4 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
                 .HasForeignKey(e => e.ServiceId);
         }
     }
-    
 }

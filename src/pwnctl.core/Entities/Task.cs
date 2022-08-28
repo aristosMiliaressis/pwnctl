@@ -37,7 +37,7 @@ namespace pwnctl.core.Entities
 
         public Task(TaskDefinition definition, BaseAsset asset)
         {
-            GetType().GetProperty(asset.GetType().Name).SetValue(this, asset);
+            GetType().GetProperty(asset.GetType().Name + "Id").SetValue(this, asset.Id);
 
             QueuedAt = DateTime.Now;
             Definition = definition;

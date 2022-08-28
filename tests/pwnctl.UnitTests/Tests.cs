@@ -9,6 +9,7 @@ using pwnctl.core.BaseClasses;
 using pwnctl.core;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
+using Newtonsoft.Json;
 
 public class Tests
 {
@@ -35,63 +36,56 @@ public class Tests
     public void AssetParser_Tests()
     {
         AssetParser.TryParse("example.com", out Type[] assetTypes, out BaseAsset[] assets);
-        Assert.Equal(typeof(Domain), assetTypes[0]);
-        Assert.NotNull(assets[0]);
-        Assert.Equal(typeof(Domain), assets[0].GetType());
+        Assert.Contains(assetTypes, t => t == typeof(Domain));
+        Assert.Contains(assets, t => t.GetType() == typeof(Domain));
+        Assert.Single(assets);
+        Assert.Single(assetTypes);
 
         AssetParser.TryParse("1.3.3.7", out assetTypes, out assets);
-        Assert.Equal(typeof(Host), assetTypes[0]);
-        Assert.NotNull(assets[0]);
-        Assert.Equal(typeof(Host), assets[0].GetType());
+        Assert.Contains(assetTypes, t => t == typeof(Host));
+        Assert.Contains(assets, t => t.GetType() == typeof(Host));
+        Assert.Single(assets);
+        Assert.Single(assetTypes);
 
-        AssetParser.TryParse("8.8.8.8:53", out assetTypes, out assets);
-        var service = assets.First(a => a.GetType() == typeof(Service));
-        var type = assetTypes.First(t => t == typeof(Service));
-        Assert.NotNull(service);
-        Assert.Equal(typeof(Service), service.GetType());
-        var host = assets.First(a => a.GetType() == typeof(Host));
-        type = assetTypes.First(t => t == typeof(Host));
-        Assert.NotNull(host);
-        Assert.Equal(typeof(Host), host.GetType());
+        AssetParser.TryParse("76.24.104.208:65533", out assetTypes, out assets);
+        Assert.Contains(assetTypes, t => t == typeof(Host));
+        Assert.Contains(assets, t => t.GetType() == typeof(Host));
+        Assert.Contains(assets, t => t.GetType() == typeof(Service));
+        Assert.Contains(assetTypes, t => t == typeof(Service));
+        Assert.Equal(2, assets.Length);
+        Assert.Equal(2, assetTypes.Length);
 
         AssetParser.TryParse("172.16.17.0/24", out assetTypes, out assets);
-        Assert.Equal(typeof(NetRange), assetTypes[0]);
-        Assert.NotNull(assets[0]);
-        Assert.Equal(typeof(NetRange), assets[0].GetType());
+        Assert.Contains(assetTypes, t => t == typeof(NetRange));
+        Assert.Contains(assets, t => t.GetType() == typeof(NetRange));
+        Assert.Single(assets);
+        Assert.Single(assetTypes);
 
         AssetParser.TryParse("xyz.example.com", out assetTypes, out assets);
-        Assert.Equal(typeof(Domain), assetTypes[0]);
-        Assert.NotNull(assets[0]);
-        Assert.Equal(typeof(Domain), assets[0].GetType());
+        Assert.Contains(assetTypes, t => t == typeof(Domain));
+        Assert.Contains(assets, t => t.GetType() == typeof(Domain));
+        Assert.Equal(2, assets.Length);
+        Assert.Equal(2, assetTypes.Length);
 
         AssetParser.TryParse("xyz.example.com IN A 31.3.3.7", out assetTypes, out assets);
-        var record = assets.First(a => a.GetType() == typeof(DNSRecord));
-        var domain = assets.First(a => a.GetType() == typeof(Domain));
-        host = assets.First(a => a.GetType() == typeof(Host));
-        Assert.Equal(typeof(DNSRecord), assetTypes[0]);
-        Assert.NotNull(record);
-        Assert.Equal(typeof(DNSRecord), record.GetType());
-        Assert.NotNull(host);
-        Assert.Equal(typeof(Host), host.GetType());
-        Assert.NotNull(domain);
-        Assert.Equal(typeof(Domain), domain.GetType());
+        Assert.Contains(assetTypes, t => t == typeof(DNSRecord));
+        Assert.Contains(assets, t => t.GetType() == typeof(DNSRecord));
+        Assert.Contains(assetTypes, t => t == typeof(Domain));
+        Assert.Contains(assets, t => t.GetType() == typeof(Domain));
+        Assert.Contains(assetTypes, t => t == typeof(Host));
+        Assert.Contains(assets, t => t.GetType() == typeof(Host));
 
         AssetParser.TryParse("https://xyz.example.com:8443/api/token", out assetTypes, out assets);
-        var endpoint = assets.First(a => a.GetType() == typeof(Endpoint));
-        service =  assets.First(a => a.GetType() == typeof(Service));
-        domain = assets.First(a => a.GetType() == typeof(Domain));
-        Assert.Equal(typeof(Endpoint), assetTypes[0]);
-        Assert.NotNull(endpoint);
-        Assert.Equal(typeof(Endpoint), endpoint.GetType());
-        Assert.NotNull(service);
-        Assert.Equal(typeof(Service), service.GetType());
-        Assert.NotNull(domain);
-        Assert.Equal(typeof(Domain), domain.GetType());
+        Assert.Contains(assetTypes, t => t == typeof(Endpoint));
+        Assert.Contains(assets, t => t.GetType() == typeof(Endpoint));
+        Assert.Contains(assetTypes, t => t == typeof(Domain));
+        Assert.Contains(assets, t => t.GetType() == typeof(Domain));
+        Assert.Contains(assetTypes, t => t == typeof(Service));
+        Assert.Contains(assets, t => t.GetType() == typeof(Service));
 
         AssetParser.TryParse("https://xyz.example.com:8443/api/token?_u=xxx", out assetTypes, out assets);
-        Assert.Equal(typeof(Endpoint), assetTypes[0]);
-        Assert.NotNull(assets[0]);
-        Assert.Equal(typeof(Endpoint), assets[0].GetType());
+        Assert.Contains(assetTypes, t => t == typeof(Endpoint));
+        Assert.Contains(assets, t => t.GetType() == typeof(Endpoint));
 
         // TODO: more DNSRecord & Endpoint parsing tests
     }
@@ -141,12 +135,18 @@ public class Tests
         JobAssignmentService jobService = new();
         PwnctlDbContext context = new();
 
-        jobService.Assign(new NetRange("172.16.17.0", 24));
+        var netRange = new NetRange("172.16.17.0", 24);
+        context.Add(netRange);
+        context.SaveChanges();
+        jobService.Assign(netRange);
 
         // blacklist test
         Assert.False(context.Tasks.Include(t => t.Definition).Any(t => t.Definition.ShortName == "nmap_basic"));
 
-        jobService.Assign(new Endpoint("https", new Service(new Host("172.16.17.15"), 443), "/api/token"));
+        var endpoint = new Endpoint("https", new Service(new Host("172.16.17.15"), 443), "/api/token");
+        context.Add(endpoint);
+        context.SaveChanges();
+        jobService.Assign(endpoint);
         // TaskDefinition.Filter fail test
         Assert.False(context.Tasks.Include(t => t.Definition).Any(t => t.Definition.ShortName == "ffuf_common"));
 
@@ -158,13 +158,19 @@ public class Tests
         var hakrawlerTask = context.Tasks.Include(t => t.Definition).First(t => t.Definition.ShortName == "hakrawler");
         Assert.Equal("hakrawler -plain -h 'User-Agent: Mozilla/5.0' https://172.16.17.15:443/api/token/", hakrawlerTask.Command);
 
-        jobService.Assign(new Endpoint("https", new Service(new Host("172.16.17.15"), 443), "/"));
+        endpoint = new Endpoint("https", new Service(new Host("172.16.17.15"), 443), "/");
+        context.Add(endpoint);
+        context.SaveChanges();
+        jobService.Assign(endpoint);
         
         // TaskDefinition.Filter pass test
         Assert.True(context.Tasks.Include(t => t.Definition).Any(t => t.Definition.ShortName == "ffuf_common"));
 
         // multiple interpolation test
-        jobService.Assign(new Domain("sub.tesla.com"));
+        var domain = new Domain("sub.tesla.com");
+        context.Add(domain);
+        context.SaveChanges();
+        jobService.Assign(domain);
         var resolutionTask = context.Tasks.Include(t => t.Definition).First(t => t.Definition.ShortName == "domain_resolution");
         Assert.Equal("dig +short sub.tesla.com | awk '{print \"sub.tesla.com IN A \" $1}'| pwnctl process", resolutionTask.Command);
 
@@ -248,6 +254,11 @@ public class Tests
         Assert.True(host.AARecords.First().Domain.InScope);
         var program = ScopeChecker.Singleton.GetApplicableProgram(host);
         Assert.NotNull(program);
+
+        res = processor.TryProccessAsync("85.25.105.204:65530").Result;
+        host = context.Hosts.First(h => h.IP == "85.25.105.204");
+        Assert.True(res);
+        var service = context.Services.First(srv => srv.Origin == "85.25.105.204:65530");
     }
 
     [Fact]
@@ -258,40 +269,35 @@ public class Tests
 
         BaseAsset[] assets = AssetParser.Parse("https://example.com [[ContentType:text/html][Status:200][Server:IIS]]", out Type[] assetTypes);
 
-        var endpoint = assets.First(a => a.GetType() == typeof(Endpoint));
+        var endpoint = (Endpoint) assets.First(a => a.GetType() == typeof(Endpoint));
         Assert.NotNull(endpoint.Tags);
 
-        var ctTag = endpoint.Tags.FirstOrDefault(t => t.Name == "ContentType");
-        Assert.NotNull(ctTag);
+        var ctTag = endpoint.Tags.First(t => t.Name == "ContentType");
         Assert.Equal("text/html", ctTag.Value);
 
-        var stTag = endpoint.Tags.FirstOrDefault(t => t.Name == "Status");
-        Assert.NotNull(stTag);
+        var stTag = endpoint.Tags.First(t => t.Name == "Status");
         Assert.Equal("200", stTag.Value);
 
-        var srvTag = endpoint.Tags.FirstOrDefault(t => t.Name == "Server");
-        Assert.NotNull(srvTag);
+        var srvTag = endpoint.Tags.First(t => t.Name == "Server");
         Assert.Equal("IIS", srvTag.Value);
 
         processor.ProcessAsync("https://example.com [[ContentType:text/html][Status:200][Server:IIS]]").Wait();
-        //Assert.True(res);
 
         endpoint = context.Endpoints.Include(e => e.Tags).Where(ep => ep.Uri == "https://example.com:443/").First();
-        ctTag = endpoint.Tags.FirstOrDefault(t => t.Name == "ContentType");
-        Assert.NotNull(ctTag);
+        ctTag = endpoint.Tags.First(t => t.Name == "ContentType");
         Assert.Equal("text/html", ctTag.Value);
 
-        stTag = endpoint.Tags.FirstOrDefault(t => t.Name == "Status");
-        Assert.NotNull(stTag);
+        stTag = endpoint.Tags.First(t => t.Name == "Status");
         Assert.Equal("200", stTag.Value);
 
-        srvTag = endpoint.Tags.FirstOrDefault(t => t.Name == "Server");
-        Assert.NotNull(srvTag);
+        srvTag = endpoint.Tags.First(t => t.Name == "Server");
         Assert.Equal("IIS", srvTag.Value);
 
+        //processor.ProcessAsync("https://iis.tesla.com [[ContentType:text/html][Status:200]]").Wait();
+
         // process same asset twice and make sure tasks are only assigned once
-        processor.ProcessAsync("https://iis.tesla.com [[ContentType:text/html][Status:200][Server:IIS]]").Wait();
-        endpoint = context.Endpoints.Include(e => e.Tags).Where(ep => ep.Uri == "https://iis.tesla.com:443/").First();
+        processor.ProcessAsync("https://iis.tesla.com [[ContentType:text/html][Status:200][Protocol:IIS]]").Wait();
+        endpoint = (Endpoint) context.Endpoints.Include(e => e.Tags).Where(ep => ep.Uri == "https://iis.tesla.com:443/").First();
         var tasks = context.Tasks.Include(t => t.Definition).Where(t => t.EndpointId == endpoint.Id).ToList();
         Assert.True(!tasks.GroupBy(t => t.DefinitionId).Any(g => g.Count() > 1));
 

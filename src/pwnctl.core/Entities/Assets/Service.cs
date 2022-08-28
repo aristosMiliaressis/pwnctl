@@ -45,23 +45,23 @@ namespace pwnctl.core.Entities.Assets
             var _assets = new List<BaseAsset>();
             try
             {
-                string strPort = assetText.Split(":").Last();
+                string strPort = assetText.Split(':').Last();
                 var port = ushort.Parse(strPort);
                 assetText = assetText.Substring(0, assetText.Length - strPort.Length - 1);
 
-                if (Domain.TryParse(assetText, null, out BaseAsset[] domains))
+                if (Host.TryParse(assetText, null, out BaseAsset[] hostAssets))
                 {
-                    _assets.Add((Domain)domains[0]);
-                    var service = new Service((Domain)domains[0], port);
+                    _assets.Add((Host)hostAssets[0]);
+                    var service = new Service((Host)hostAssets[0], port);
                     service.Tags = tags;
                     _assets.Add(service);
                     assets = _assets.ToArray();
                     return true;
                 }
-                else if (Host.TryParse(assetText, null, out BaseAsset[] hostAssets))
+                else if (Domain.TryParse(assetText, null, out BaseAsset[] domains))
                 {
-                    _assets.Add((Host)hostAssets[0]);
-                    var service = new Service((Host)hostAssets[0], port);
+                    _assets.Add((Domain)domains[0]);
+                    var service = new Service((Domain)domains[0], port);
                     service.Tags = tags;
                     _assets.Add(service);
                     assets = _assets.ToArray();

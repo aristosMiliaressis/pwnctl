@@ -47,6 +47,8 @@ RUN git clone https://github.com/dcsync/recontools.git /opt/pwntainer/recontools
 RUN git clone https://github.com/danielmiessler/SecLists.git /opt/pwntainer/wordlists
 RUN wget -O /opt/pwntainer/wordlists/commonspeak2.txt https://raw.githubusercontent.com/assetnote/commonspeak2-wordlists/master/subdomains/subdomains.txt
 
+RUN pip3 install arjun
+
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 
 COPY ["/src/pwnctl.core/pwnctl.core.csproj", "/src/pwnctl.core/"]
@@ -55,13 +57,13 @@ COPY ["/src/pwnctl.infra/pwnctl.infra.csproj", "/src/pwnctl.infra/"]
 RUN dotnet restore "/src/pwnctl.infra/pwnctl.infra.csproj"
 COPY ["/src/pwnctl.app/pwnctl.app.csproj", "/src/pwnctl.app/"]
 RUN dotnet restore "/src/pwnctl.app/pwnctl.app.csproj"
-COPY ["/src/pwnctl/pwnctl.csproj", "/src/pwnctl/"]
-RUN dotnet restore "/src/pwnctl/pwnctl.csproj"
+COPY ["/src/pwnctl.cli/pwnctl.cli.csproj", "/src/pwnctl.cli/"]
+RUN dotnet restore "/src/pwnctl.cli/pwnctl.cli.csproj"
 
 COPY . .
 
-RUN dotnet build "/src/pwnctl/pwnctl.csproj" -c Release -o /app/build
-RUN dotnet publish "/src/pwnctl/pwnctl.csproj" -r linux-x64 -c Release -o /app/publish # -p:PublishSingleFile=true
+RUN dotnet build "/src/pwnctl.cli/pwnctl.cli.csproj" -c Release -o /app/build
+RUN dotnet publish "/src/pwnctl.cli/pwnctl.cli.csproj" -r linux-x64 -c Release -o /app/publish # -p:PublishSingleFile=true
 
 FROM base AS release
 
@@ -69,7 +71,7 @@ RUN wget -O /usr/local/bin/job-queue.sh https://raw.githubusercontent.com/aristo
     && chmod +x /usr/local/bin/job-queue.sh
 
 COPY --from=build /app/publish /app
-RUN ln -s /app/pwnctl /usr/local/bin/pwnctl
+RUN ln -s /app/pwnctl.cli /usr/local/bin/pwnctl
 
 RUN chmod -R +x /app/scripts \
     && mv /app/scripts/recon_scripts/* /usr/local/bin/ \

@@ -50,6 +50,13 @@ namespace pwnctl.core.Entities.Assets
                 _assets.Add(origin);
                 if (origin.Domain != null) _assets.Add(origin.Domain);
                 if (origin.Host != null) _assets.Add(origin.Host);
+
+                var _params = uri.GetComponents(UriComponents.Query, UriFormat.SafeUnescaped)
+                    .Split("&")
+                    .Select(p => new Parameter(endpoint, p.Split("=")[0], Parameter.ParamType.Query, null));
+                if (_params.Any())
+                    _assets.AddRange(_params);
+
                 assets = _assets.ToArray();
                 return true;
             }

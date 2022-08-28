@@ -1,3 +1,4 @@
+using pwnctl.app.Repositories;
 using pwnctl.core.Entities;
 using pwnctl.core.BaseClasses;
 using pwnctl.infra.Persistence;
@@ -13,6 +14,7 @@ namespace pwnctl.app.Utilities
     {
         private static readonly IJobQueueService _jobQueueService = JobQueueFactory.Create();
         private readonly PwnctlDbContext _context = new();
+        private readonly AssetRepository _repository = new();
         private readonly List<TaskDefinition> _taskDefinitions;
         private readonly List<ScopeDefinition> _scopeDefinitions;
 
@@ -67,10 +69,6 @@ namespace pwnctl.app.Utilities
             var task = (core.Entities.Task)_context.FirstFromLambda(lambda);
             if (task != null)
                 return;
-
-            // this prevents some errors in the unit tests
-            if (asset.Id != 0)
-                _context.Attach(asset);
 
             task = new core.Entities.Task(definition, asset);
 

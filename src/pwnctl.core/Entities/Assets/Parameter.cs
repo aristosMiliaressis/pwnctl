@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using pwnctl.core.Entities.Assets;
+using pwnctl.core.Attributes;
 using pwnctl.core.BaseClasses;
 
 namespace pwnctl.core.Entities.Assets
@@ -25,13 +22,16 @@ namespace pwnctl.core.Entities.Assets
 
         public override bool Matches(ScopeDefinition definition)
         {
-            throw new NotImplementedException();
+            return Endpoint.Matches(definition);
         }
 
         public Endpoint Endpoint { get; set; }
+        [UniquenessAttribute]
         public int EndpointId { get; set; }
 
+        [UniquenessAttribute]
         public string Name { get; set; }
+        [UniquenessAttribute]
         public ParamType Type { get; set; }
 
         public string UrlEncodedCsValues { get; set; }

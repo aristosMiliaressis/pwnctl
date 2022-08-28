@@ -5,7 +5,7 @@
 
 - all in one docker container with bash job queue and sqlite db
 
-![arch-phase0](Images/arch-phase0.png)
+![arch-phase0](img/arch-phase0.png)
 
 ### Implementation Phase #1
 

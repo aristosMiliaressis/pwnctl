@@ -19,7 +19,7 @@
         "CommandTemplate": "shortname_scanner",
         "IsActive": true,
         "Aggressiveness": 5,
-        "Filter": "(Endpoint.Path == \"/\") && (Endpoint[\"Server\"] == \"IIS\")",
+        "Filter": "(Endpoint.Path == \"/\") && (Endpoint[\"Protocol\"] == \"IIS\")",
         "Subject": "Endpoint"
     },
     {

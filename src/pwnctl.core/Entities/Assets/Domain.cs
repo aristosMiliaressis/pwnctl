@@ -30,33 +30,40 @@ namespace pwnctl.core.Entities.Assets
         {
             assets = null;
 
-            if (assetText.Trim().Contains(" ") || assetText.Trim().Contains("/"))
-                return false;
-
-            if (_domainRegex.Match(assetText).Success)
+            try
             {
-                var domain = new Domain(assetText);
-                domain.Tags = tags;
-                assets = new BaseAsset[] { domain };
-                if (domain.RegistrationDomain != null)
-                {
-                    var parentDomain = domain.RegistrationDomain.Name;
-                    // TODO: add all parent domains
-                    // var subs = domain.Name.Replace(domain.RegistrationDomain.Name, "")
-                    //             .Split(".")
-                    //             .Where(sub => !string.IsNullOrEmpty(sub))
-                    //             .Reverse()
-                    //             .ToList();
-                    // foreach (var sub in subs) 
-                    // {
-                    //     parentDomain = sub+"."+parentDomain;
-                    //     assets = assets.Append(new Domain(parentDomain)).ToArray();
-                    // }
-                    assets = assets.Append(domain.RegistrationDomain).ToArray();
-                }
+                if (assetText.Trim().Contains(" ") || assetText.Trim().Contains("/"))
+                    return false;
 
-                return true;
+                if (_domainRegex.Match(assetText).Success)
+                {
+                    var domain = new Domain(assetText);
+                    domain.Tags = tags;
+                    assets = new BaseAsset[] { domain };
+                    if (domain.RegistrationDomain != null)
+                    {
+                        var parentDomain = domain.RegistrationDomain.Name;
+                        // TODO: add all parent domains
+                        // var subs = domain.Name.Replace(domain.RegistrationDomain.Name, "")
+                        //             .Split(".")
+                        //             .Where(sub => !string.IsNullOrEmpty(sub))
+                        //             .Reverse()
+                        //             .ToList();
+                        // foreach (var sub in subs) 
+                        // {
+                        //     parentDomain = sub+"."+parentDomain;
+                        //     assets = assets.Append(new Domain(parentDomain)).ToArray();
+                        // }
+                        assets = assets.Append(domain.RegistrationDomain).ToArray();
+                    }
+
+                    return true;
+                }
             }
+            catch
+            {
+                assets = null;
+            }            
 
             return false;
         }

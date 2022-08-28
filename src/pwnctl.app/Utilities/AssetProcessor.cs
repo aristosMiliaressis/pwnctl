@@ -2,6 +2,7 @@
 using pwnctl.infra.Persistence;
 using pwnctl.infra.Logging;
 using pwnctl.core.BaseClasses;
+using pwnctl.core.Entities.Assets;
 
 namespace pwnctl.app.Utilities
 {
@@ -20,7 +21,7 @@ namespace pwnctl.app.Utilities
             } 
             catch (Exception ex)
             {
-                Logger.Instance.Info(ex.Message + "\n" + ex.StackTrace + "\n" + (ex.InnerException == null ? "" : ex.InnerException.Message + "\n" + ex.InnerException.StackTrace));
+                Logger.Instance.Info(ex.ToRecursiveExInfo());
                 return false;
             }
         }
@@ -32,7 +33,7 @@ namespace pwnctl.app.Utilities
             {
                 return;
             }
-
+            
             foreach (var asset in assets)
             {
                 await HandleAsset((BaseAsset)asset);

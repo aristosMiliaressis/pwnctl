@@ -379,19 +379,10 @@ namespace pwnctl.infra.Persistence.Migrations
                     b.Property<int?>("DNSRecordId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("DNSRecordId1")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int?>("DomainId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("DomainId1")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int?>("EndpointId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("EndpointId1")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("FoundAt")
@@ -400,25 +391,16 @@ namespace pwnctl.infra.Persistence.Migrations
                     b.Property<int?>("HostId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("HostId1")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
                     b.Property<int?>("NetRangeId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("NetRangeId1")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int?>("ParameterId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int?>("ServiceId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("ServiceId1")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Value")
@@ -431,33 +413,21 @@ namespace pwnctl.infra.Persistence.Migrations
 
                     b.HasIndex("DNSRecordId");
 
-                    b.HasIndex("DNSRecordId1");
-
                     b.HasIndex("DomainId");
-
-                    b.HasIndex("DomainId1");
 
                     b.HasIndex("EndpointId");
 
-                    b.HasIndex("EndpointId1");
-
                     b.HasIndex("HostId");
 
-                    b.HasIndex("HostId1");
-
                     b.HasIndex("NetRangeId");
-
-                    b.HasIndex("NetRangeId1");
 
                     b.HasIndex("ParameterId");
 
                     b.HasIndex("ServiceId");
 
-                    b.HasIndex("ServiceId1");
-
                     b.HasIndex("VirtualHostId");
 
-                    b.ToTable("Tag");
+                    b.ToTable("Tags");
                 });
 
             modelBuilder.Entity("pwnctl.core.Entities.Task", b =>
@@ -668,56 +638,32 @@ namespace pwnctl.infra.Persistence.Migrations
             modelBuilder.Entity("pwnctl.core.Entities.Tag", b =>
                 {
                     b.HasOne("pwnctl.core.Entities.Assets.DNSRecord", "DNSRecord")
-                        .WithMany()
+                        .WithMany("Tags")
                         .HasForeignKey("DNSRecordId");
 
-                    b.HasOne("pwnctl.core.Entities.Assets.DNSRecord", null)
-                        .WithMany("Tags")
-                        .HasForeignKey("DNSRecordId1");
-
                     b.HasOne("pwnctl.core.Entities.Assets.Domain", "Domain")
-                        .WithMany()
+                        .WithMany("Tags")
                         .HasForeignKey("DomainId");
 
-                    b.HasOne("pwnctl.core.Entities.Assets.Domain", null)
-                        .WithMany("Tags")
-                        .HasForeignKey("DomainId1");
-
                     b.HasOne("pwnctl.core.Entities.Assets.Endpoint", "Endpoint")
-                        .WithMany()
+                        .WithMany("Tags")
                         .HasForeignKey("EndpointId");
 
-                    b.HasOne("pwnctl.core.Entities.Assets.Endpoint", null)
-                        .WithMany("Tags")
-                        .HasForeignKey("EndpointId1");
-
                     b.HasOne("pwnctl.core.Entities.Assets.Host", "Host")
-                        .WithMany()
+                        .WithMany("Tags")
                         .HasForeignKey("HostId");
 
-                    b.HasOne("pwnctl.core.Entities.Assets.Host", null)
-                        .WithMany("Tags")
-                        .HasForeignKey("HostId1");
-
                     b.HasOne("pwnctl.core.Entities.Assets.NetRange", "NetRange")
-                        .WithMany()
-                        .HasForeignKey("NetRangeId");
-
-                    b.HasOne("pwnctl.core.Entities.Assets.NetRange", null)
                         .WithMany("Tags")
-                        .HasForeignKey("NetRangeId1");
+                        .HasForeignKey("NetRangeId");
 
                     b.HasOne("pwnctl.core.Entities.Assets.Parameter", null)
                         .WithMany("Tags")
                         .HasForeignKey("ParameterId");
 
                     b.HasOne("pwnctl.core.Entities.Assets.Service", "Service")
-                        .WithMany()
-                        .HasForeignKey("ServiceId");
-
-                    b.HasOne("pwnctl.core.Entities.Assets.Service", null)
                         .WithMany("Tags")
-                        .HasForeignKey("ServiceId1");
+                        .HasForeignKey("ServiceId");
 
                     b.HasOne("pwnctl.core.Entities.Assets.VirtualHost", null)
                         .WithMany("Tags")

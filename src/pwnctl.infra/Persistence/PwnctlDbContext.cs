@@ -19,6 +19,30 @@ namespace pwnctl.infra.Persistence
             builder.AddDebug();
         });
 
+        public PwnctlDbContext()
+        {
+        }
+
+        public PwnctlDbContext(DbContextOptions options)
+            : base(options)
+        {
+        }
+
+        public DbSet<core.Entities.Program> Programs { get; set; }
+        public DbSet<core.Entities.ScopeDefinition> ScopeDefinitions { get; set; }
+        public DbSet<core.Entities.OperationalPolicy> OperationalPolicies { get; set; }
+        public DbSet<core.Entities.Task> Tasks { get; set; }
+        public DbSet<core.Entities.TaskDefinition> TaskDefinitions { get; set; }
+        public DbSet<core.Entities.Assets.Domain> Domains { get; set; }
+        public DbSet<core.Entities.Assets.NetRange> NetRanges { get; set; }
+        public DbSet<core.Entities.Assets.Host> Hosts { get; set; }
+        public DbSet<core.Entities.Assets.VirtualHost> VirtualHosts { get; set; }
+        public DbSet<core.Entities.Assets.DNSRecord> DNSRecords { get; set; }
+        public DbSet<core.Entities.Assets.Service> Services { get; set; }
+        public DbSet<core.Entities.Assets.Endpoint> Endpoints { get; set; }
+        public DbSet<core.Entities.Assets.Parameter> Parameters { get; set; }
+        public DbSet<core.Entities.Tag> Tags { get; set; }
+
         public static PwnctlDbContext Initialize()
         {
             PwnctlDbContext instance = new();
@@ -27,7 +51,7 @@ namespace pwnctl.infra.Persistence
             {
                 instance.Database.EnsureDeleted();
             }
-                
+
             if (instance.Database.GetPendingMigrations().Any())
             {
                 instance.Database.Migrate();
@@ -59,29 +83,6 @@ namespace pwnctl.infra.Persistence
 
             return instance;
         }
-
-        public PwnctlDbContext()
-        {
-        }
-
-        public PwnctlDbContext(DbContextOptions options)
-            : base(options)
-        {
-        }
-
-        public DbSet<core.Entities.Program> Programs { get; set; }
-        public DbSet<core.Entities.ScopeDefinition> ScopeDefinitions { get; set; }
-        public DbSet<core.Entities.OperationalPolicy> OperationalPolicies { get; set; }
-        public DbSet<core.Entities.Task> Tasks { get; set; }
-        public DbSet<core.Entities.TaskDefinition> TaskDefinitions { get; set; }
-        public DbSet<core.Entities.Assets.Domain> Domains { get; set; }
-        public DbSet<core.Entities.Assets.NetRange> NetRanges { get; set; }
-        public DbSet<core.Entities.Assets.Host> Hosts { get; set; }
-        public DbSet<core.Entities.Assets.VirtualHost> VirtualHosts { get; set; }
-        public DbSet<core.Entities.Assets.DNSRecord> DNSRecords { get; set; }
-        public DbSet<core.Entities.Assets.Service> Services { get; set; }
-        public DbSet<core.Entities.Assets.Endpoint> Endpoints { get; set; }
-        public DbSet<core.Entities.Assets.Parameter> Parameters { get; set; }
 
         public BaseEntity FirstFromLambda(LambdaExpression lambda)
         {

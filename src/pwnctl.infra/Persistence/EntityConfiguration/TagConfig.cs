@@ -11,27 +11,27 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
             builder.HasKey(t => t.Id);
 
             builder.HasOne(t => t.Host)
-                .WithMany()
+                .WithMany(a => a.Tags)
                 .HasForeignKey(t => t.HostId);
 
             builder.HasOne(t => t.Service)
-                .WithMany()
+                .WithMany(a => a.Tags)
                 .HasForeignKey(t => t.ServiceId);
 
             builder.HasOne(t => t.Endpoint)
-                .WithMany()
+                .WithMany(a => a.Tags)
                 .HasForeignKey(t => t.EndpointId);
 
             builder.HasOne(t => t.Domain)
-                .WithMany()
+                .WithMany(a => a.Tags)
                 .HasForeignKey(t => t.DomainId);
 
             builder.HasOne(t => t.NetRange)
-                .WithMany()
+                .WithMany(a => a.Tags)
                 .HasForeignKey(t => t.NetRangeId);
 
             builder.HasOne(t => t.DNSRecord)
-                .WithMany()
+                .WithMany(a => a.Tags)
                 .HasForeignKey(t => t.DNSRecordId);
         }
     }

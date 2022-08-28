@@ -294,7 +294,7 @@ namespace pwnctl.infra.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Tag",
+                name: "Tags",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
@@ -307,86 +307,50 @@ namespace pwnctl.infra.Persistence.Migrations
                     DomainId = table.Column<int>(type: "INTEGER", nullable: true),
                     DNSRecordId = table.Column<int>(type: "INTEGER", nullable: true),
                     NetRangeId = table.Column<int>(type: "INTEGER", nullable: true),
-                    DNSRecordId1 = table.Column<int>(type: "INTEGER", nullable: true),
-                    DomainId1 = table.Column<int>(type: "INTEGER", nullable: true),
-                    EndpointId1 = table.Column<int>(type: "INTEGER", nullable: true),
-                    HostId1 = table.Column<int>(type: "INTEGER", nullable: true),
-                    NetRangeId1 = table.Column<int>(type: "INTEGER", nullable: true),
                     ParameterId = table.Column<int>(type: "INTEGER", nullable: true),
-                    ServiceId1 = table.Column<int>(type: "INTEGER", nullable: true),
                     VirtualHostId = table.Column<int>(type: "INTEGER", nullable: true),
                     FoundAt = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Tag", x => x.Id);
+                    table.PrimaryKey("PK_Tags", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Tag_DNSRecords_DNSRecordId",
+                        name: "FK_Tags_DNSRecords_DNSRecordId",
                         column: x => x.DNSRecordId,
                         principalTable: "DNSRecords",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Tag_DNSRecords_DNSRecordId1",
-                        column: x => x.DNSRecordId1,
-                        principalTable: "DNSRecords",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Tag_Domains_DomainId",
+                        name: "FK_Tags_Domains_DomainId",
                         column: x => x.DomainId,
                         principalTable: "Domains",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Tag_Domains_DomainId1",
-                        column: x => x.DomainId1,
-                        principalTable: "Domains",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Tag_Endpoints_EndpointId",
+                        name: "FK_Tags_Endpoints_EndpointId",
                         column: x => x.EndpointId,
                         principalTable: "Endpoints",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Tag_Endpoints_EndpointId1",
-                        column: x => x.EndpointId1,
-                        principalTable: "Endpoints",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Tag_Hosts_HostId",
+                        name: "FK_Tags_Hosts_HostId",
                         column: x => x.HostId,
                         principalTable: "Hosts",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Tag_Hosts_HostId1",
-                        column: x => x.HostId1,
-                        principalTable: "Hosts",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Tag_NetRanges_NetRangeId",
+                        name: "FK_Tags_NetRanges_NetRangeId",
                         column: x => x.NetRangeId,
                         principalTable: "NetRanges",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Tag_NetRanges_NetRangeId1",
-                        column: x => x.NetRangeId1,
-                        principalTable: "NetRanges",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Tag_Parameters_ParameterId",
+                        name: "FK_Tags_Parameters_ParameterId",
                         column: x => x.ParameterId,
                         principalTable: "Parameters",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Tag_Services_ServiceId",
+                        name: "FK_Tags_Services_ServiceId",
                         column: x => x.ServiceId,
                         principalTable: "Services",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Tag_Services_ServiceId1",
-                        column: x => x.ServiceId1,
-                        principalTable: "Services",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Tag_VirtualHosts_VirtualHostId",
+                        name: "FK_Tags_VirtualHosts_VirtualHostId",
                         column: x => x.VirtualHostId,
                         principalTable: "VirtualHosts",
                         principalColumn: "Id");
@@ -522,73 +486,43 @@ namespace pwnctl.infra.Persistence.Migrations
                 column: "HostId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tag_DNSRecordId",
-                table: "Tag",
+                name: "IX_Tags_DNSRecordId",
+                table: "Tags",
                 column: "DNSRecordId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tag_DNSRecordId1",
-                table: "Tag",
-                column: "DNSRecordId1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Tag_DomainId",
-                table: "Tag",
+                name: "IX_Tags_DomainId",
+                table: "Tags",
                 column: "DomainId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tag_DomainId1",
-                table: "Tag",
-                column: "DomainId1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Tag_EndpointId",
-                table: "Tag",
+                name: "IX_Tags_EndpointId",
+                table: "Tags",
                 column: "EndpointId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tag_EndpointId1",
-                table: "Tag",
-                column: "EndpointId1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Tag_HostId",
-                table: "Tag",
+                name: "IX_Tags_HostId",
+                table: "Tags",
                 column: "HostId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tag_HostId1",
-                table: "Tag",
-                column: "HostId1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Tag_NetRangeId",
-                table: "Tag",
+                name: "IX_Tags_NetRangeId",
+                table: "Tags",
                 column: "NetRangeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tag_NetRangeId1",
-                table: "Tag",
-                column: "NetRangeId1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Tag_ParameterId",
-                table: "Tag",
+                name: "IX_Tags_ParameterId",
+                table: "Tags",
                 column: "ParameterId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tag_ServiceId",
-                table: "Tag",
+                name: "IX_Tags_ServiceId",
+                table: "Tags",
                 column: "ServiceId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tag_ServiceId1",
-                table: "Tag",
-                column: "ServiceId1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Tag_VirtualHostId",
-                table: "Tag",
+                name: "IX_Tags_VirtualHostId",
+                table: "Tags",
                 column: "VirtualHostId");
 
             migrationBuilder.CreateIndex(
@@ -648,7 +582,7 @@ namespace pwnctl.infra.Persistence.Migrations
                 name: "ScopeDefinitions");
 
             migrationBuilder.DropTable(
-                name: "Tag");
+                name: "Tags");
 
             migrationBuilder.DropTable(
                 name: "Tasks");
