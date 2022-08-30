@@ -22,6 +22,20 @@ namespace pwnctl.core.Entities.Assets
             }
         }
 
+        public string Extension
+        {
+            get
+            {
+                var parts = Path.Split(".");
+                if (parts.Count() == 1)
+                    return string.Empty;
+
+                return parts.Last().Length > 4
+                    ? string.Empty
+                    : parts.Last();
+            }
+        }
+
         private Endpoint() {}
         
         public Endpoint(string scheme, Service service, string path)

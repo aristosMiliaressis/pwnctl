@@ -43,17 +43,17 @@ namespace pwnctl.core.Entities.Assets
                     if (domain.RegistrationDomain != null)
                     {
                         var parentDomain = domain.RegistrationDomain.Name;
-                        // TODO: add all parent domains
-                        // var subs = domain.Name.Replace(domain.RegistrationDomain.Name, "")
-                        //             .Split(".")
-                        //             .Where(sub => !string.IsNullOrEmpty(sub))
-                        //             .Reverse()
-                        //             .ToList();
-                        // foreach (var sub in subs) 
-                        // {
-                        //     parentDomain = sub+"."+parentDomain;
-                        //     assets = assets.Append(new Domain(parentDomain)).ToArray();
-                        // }
+                        var subs = domain.Name.Replace(parentDomain, "")
+                                    .Split(".")
+                                    .Where(sub => !string.IsNullOrEmpty(sub))
+                                    .Skip(1)
+                                    .Reverse()
+                                    .ToList();
+                        foreach (var sub in subs) 
+                        {
+                            parentDomain = sub+"."+parentDomain;
+                            assets = assets.Append(new Domain(parentDomain)).ToArray();
+                        }
                         assets = assets.Append(domain.RegistrationDomain).ToArray();
                     }
 

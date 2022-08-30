@@ -29,7 +29,7 @@
         "Subject": "Host"
     },
     {
-        "ShortName": "nmap_host",
+        "ShortName": "nmap_basic",
         "CommandTemplate": "nmapTagOutput.sh {{IP}} | pwnctl process",
         "IsActive": true,
         "Aggressiveness": 15,
@@ -51,7 +51,7 @@
         "Filter": "(Service[\"Protocol\"] == \"http\") || (Service[\"Protocol\"] == \"https\")"
     },
     {
-        "ShortName": "ffuf_common",
+        "ShortName": "dir_brute_common",
         "CommandTemplate": "dir-brute.sh {{Uri}} /tools/wordlist/SecLists/Discovery/Web-Content/common.txt | pwnctl process",
         "IsActive": true,
         "Aggressiveness": 8,
@@ -59,7 +59,7 @@
         "Subject": "Endpoint"
     },
     {
-        "ShortName": "ffuf_config",
+        "ShortName": "dir_brute_config",
         "CommandTemplate": "dir-brute.sh {{Uri}} /opt/pwntainer/seed/config.txt | pwnctl process",
         "IsActive": true,
         "Aggressiveness": 8,
@@ -68,9 +68,10 @@
     },
     {
         "ShortName": "hakrawler",
-        "CommandTemplate": "echo '{{Uri}}' | hakrawler -insecure -all -plain -headers 'User-Agent: Mozilla/5.0' | pwnctl process",
+        "CommandTemplate": "echo '{{Uri}}' | hakrawler -insecure -h 'User-Agent: Mozilla/5.0' | pwnctl process",
         "IsActive": true,
         "Aggressiveness": 3,
+        "Filter": "(Endpoint.Extension == \"\") || (Endpoint.Extension == \"html\")",
         "Subject": "Endpoint"
     }
 ]

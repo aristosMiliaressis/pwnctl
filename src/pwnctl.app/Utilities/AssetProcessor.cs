@@ -1,8 +1,6 @@
 ﻿using pwnctl.app.Repositories;
-using pwnctl.infra.Persistence;
 using pwnctl.infra.Logging;
 using pwnctl.core.BaseClasses;
-using pwnctl.core.Entities.Assets;
 
 namespace pwnctl.app.Utilities
 {
@@ -43,8 +41,7 @@ namespace pwnctl.app.Utilities
         private async Task HandleAsset(BaseAsset asset)
         {
             // recursivly process all parsed assets
-            // starting from the botton of the ref tree
-            // this prevents some database errors.
+            // starting from the botton of the ref tree.
             asset.GetType()
                 .GetProperties()
                 .Where(p => p.PropertyType.IsAssignableTo(typeof(BaseAsset)))
@@ -60,10 +57,7 @@ namespace pwnctl.app.Utilities
                 asset = await handler.HandleAsync(asset);
             }
 
-            if (!_repository.CheckIfExists(asset))
-            {
-                asset = await _repository.AddAsync(asset);
-            }
+            asset = await _repository.AddOrUpdateAsync(asset);
 
             if (asset.InScope)
             {

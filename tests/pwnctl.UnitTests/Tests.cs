@@ -87,6 +87,13 @@ public class Tests
         Assert.Contains(assetTypes, t => t == typeof(Endpoint));
         Assert.Contains(assets, t => t.GetType() == typeof(Endpoint));
 
+
+        AssetParser.TryParse("multi.level.sub.example.com", out assetTypes, out assets);
+        Assert.Contains(assets, t => ((Domain)t).Name == "example.com");
+        Assert.Contains(assets, t => ((Domain)t).Name == "sub.example.com");
+        Assert.Contains(assets, t => ((Domain)t).Name == "level.sub.example.com");
+        Assert.Contains(assets, t => ((Domain)t).Name == "multi.level.sub.example.com");
+
         // TODO: more DNSRecord & Endpoint parsing tests
     }
 
@@ -300,6 +307,8 @@ public class Tests
         endpoint = (Endpoint) context.Endpoints.Include(e => e.Tags).Where(ep => ep.Uri == "https://iis.tesla.com:443/").First();
         var tasks = context.Tasks.Include(t => t.Definition).Where(t => t.EndpointId == endpoint.Id).ToList();
         Assert.True(!tasks.GroupBy(t => t.DefinitionId).Any(g => g.Count() > 1));
+        srvTag = endpoint.Tags.First(t => t.Name == "Protocol");
+        Assert.Equal("IIS", srvTag.Value);
 
         // test Tag filter
         Assert.Contains(tasks, t => t.Definition.ShortName == "shortname_scanner");

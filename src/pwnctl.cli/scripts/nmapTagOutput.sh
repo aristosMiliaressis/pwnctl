@@ -3,7 +3,7 @@
 ip=$1
 temp=`mktemp`;
 
-nmap -Pn -p- $ip -oG $temp >/dev/null;
+rustscan -r 1-65535 -a $ip -- -sSV -oG $temp >/dev/null;
 
 cat $temp \
 	| sed 's/Ports: /\n/g' \

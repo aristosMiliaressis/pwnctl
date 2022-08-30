@@ -64,7 +64,7 @@ namespace pwnctl.app.Repositories
                         reference.SetValue(asset, assetRef);
                 });
 
-            if (CheckIfExists(asset))
+            if (!CheckIfExists(asset))
             {
                 asset.FoundAt = DateTime.Now;
                 asset.InScope = ScopeChecker.Singleton.IsInScope(asset);
@@ -75,10 +75,14 @@ namespace pwnctl.app.Repositories
             {
                 asset.Tags.ForEach(tag => 
                 {
-                    var lambda = ExpressionTreeBuilder.BuildTagMatchingLambda(asset, tag);
+                    var lambda = ExpressionTreeBuilder.BuildTagMatchingLambda(GetAsset(asset), tag);
                     var existingTag = _context.FirstFromLambda(lambda);
-                    if (existingTag == null)
+                    if (existingTag == null) 
+                    {
+                        // TODO set tag.AssetId
+                        tag.Id = 0;
                         _context.Add(tag);
+                    }
                 });
             }
 
