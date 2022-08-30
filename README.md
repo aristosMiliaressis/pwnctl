@@ -30,6 +30,9 @@
 - [x] if any returns true asset is in scope.
 
 ### Scope Configuration
+
+scope definitions are configured in `target-*.json` files along with some policy rules effecting which tasks are allowed to be run against the given scope.
+
 **`target-*.json`**
 ```JSON
 {
@@ -43,7 +46,7 @@
     },
     "Scope": [
         {
-			// DomainRegex = 0, UrlRegex = 1, CIDR = 2
+	    // DomainRegex = 0, UrlRegex = 1, CIDR = 2
             "Type": 0,
             "Pattern": "^tesla\\.com$"
         },
@@ -65,7 +68,9 @@ tasks are configured per asset class and can be filtered trough C# script in the
 
 ### Asset Tagging
 
-tags are away to store arbitary metadata relating to an asset, they can be used in the `Filter` field to chain tasks into workflows where one task (e.g nmap) discovers some metadata relating to an asset (e.g. http service) which than causes a metadata specific task to be queued (e.g. some http specific task)
+tags are a way to store arbitary metadata relating to an asset, they can be used in the `Filter` field to chain tasks into workflows where one task (e.g nmap) discovers some metadata relating to an asset (e.g. http protocol running on port) which than causes a metadata specific task to be queued (e.g. some http specific task)
+
+this should probably be in yaml for less character escaping in the command templates, but it will do for now.
 
 **`task-definitions.json`**
 ```JSON
@@ -155,8 +160,7 @@ tags are away to store arbitary metadata relating to an asset, they can be used 
 
 ## `pwnctl -i/--import <importer> -s/--source <source>`
 
-- [ ] burp suite imported
-- [ ] connection string importer (pwnctl schema)
+- [ ] burp suite importer
 
 ## Workers & Scaling
 
@@ -170,9 +174,9 @@ tags are away to store arbitary metadata relating to an asset, they can be used 
 
 ## Miscellaneous Stuff
 
-- [ ] non deterministic methods of inscope detection for cloud assets, CIDRs, etc
+- [ ] non deterministic methods of inscope detection for cloud assets, CIDRs, etc (favicon, legal text, keyword, CT time correlation)
 - [ ] maintaining fresh DNS resolvers (scheduled dnsvalidator task will store fresh resolvers for all workers to use)
 - [ ] ip/hostname/url normalization
 - [ ] IP blocking detection & recycling of cloud ips
-- [ ] discord notifications for high signal findings
+- [ ] configurable notifications rules like TaskDefinitions
 - [ ] WebUI, graphs and stuff
