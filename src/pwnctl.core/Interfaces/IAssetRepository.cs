@@ -4,8 +4,8 @@ namespace pwnctl.core.Interfaces
 {
     public interface IAssetRepository
     {
-        Task<BaseAsset> AddAsync(BaseAsset asset);
+        Task<BaseAsset> AddOrUpdateAsync(BaseAsset asset);
         bool CheckIfExists(BaseAsset asset);
-        BaseAsset GetAsset(BaseAsset asset);
+        BaseAsset GetMatchingAsset(BaseAsset asset);
     }
 }

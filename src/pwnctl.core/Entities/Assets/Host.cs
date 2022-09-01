@@ -26,7 +26,7 @@ namespace pwnctl.core.Entities.Assets
             if (IPAddress.TryParse(assetText, out IPAddress address))
             {
                 var host = new Host(assetText, address.AddressFamily);
-                host.Tags = tags;
+                host.AddTags(tags);
                 assets = new BaseAsset[] { host };
                 return true;
             }

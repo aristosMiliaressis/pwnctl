@@ -55,7 +55,7 @@ namespace pwnctl.app.Utilities
 
         private static void ParseTags(ref string assetText, out List<Tag> tags)
         {
-            tags = null;
+            tags = new();
             if (assetText.Contains(" [["))
             {
                 tags = assetText.Split(" [[")[1].Replace("]]", "").Split("][")

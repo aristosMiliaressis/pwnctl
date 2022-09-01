@@ -1,6 +1,7 @@
 ﻿using pwnctl.app.Repositories;
 using pwnctl.infra.Logging;
 using pwnctl.core.BaseClasses;
+using Newtonsoft.Json;
 
 namespace pwnctl.app.Utilities
 {

@@ -12,16 +12,25 @@ namespace pwnctl.core.BaseClasses
         public bool IsRoutable { get; set; }
 
         public List<core.Entities.Task> Tasks { get; set; } = new List<core.Entities.Task>();
-        public List<Tag> Tags { get; set; } = new List<Tag>();
+        public List<Tag> Tags { get; private set; } = new List<Tag>();
         
         public string this[string key]
         { 
             get { return Tags.FirstOrDefault(t => t.Name == key)?.Value; }
+            set {
+                var tag = new Tag(key, value);
+                // TODO: check if exists
+                // add reference id
+                Tags.Add(tag);
+            }
         }
 
-        public void AddTags()
+        public void AddTags(List<Tag> tags)
         {
-            // TODO: implement
+            if (tags == null)
+                return;
+
+            tags.ForEach(t => this[t.Name] = t.Value);
         }
 
         public string DomainIdentifier => string.Join(",", GetType().GetProperties().Where(p => p.GetCustomAttribute(typeof(UniquenessAttribute)) != null).Select(p => p.GetValue(this).ToString()));

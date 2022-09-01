@@ -28,8 +28,8 @@ namespace pwnctl.core.Entities.Assets
                 var firstAddress = assetText.Split("/")[0];
                 var netPrefixBits = ushort.Parse(assetText.Split("/")[1]);
                 var netRange = new NetRange(firstAddress, netPrefixBits);
-                netRange.Tags = tags;
-                
+                netRange.AddTags(tags);
+
                 assets = new BaseAsset[] { netRange };
                 return true;
             }

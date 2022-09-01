@@ -6,6 +6,8 @@ services:
     container_name: pwntainer
     hostname: pwntainer
     network_mode: host
+    environment:
+      - BASH_WORKERS=2
     build:
       context: .
       dockerfile: Dockerfile

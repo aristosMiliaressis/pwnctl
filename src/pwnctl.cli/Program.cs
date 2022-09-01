@@ -3,12 +3,11 @@ using pwnctl.infra.Persistence;
 using pwnctl.infra.Repositories;
 using pwnctl.app.Importers;
 using pwnctl.app.Utilities;
-using pwnctl.core;
+using pwnctl.app;
 using System;
 using System.Collections.Generic;
 
-PwnctlDbContext.Initialize();
-PwnctlCoreShim.PublicSuffixRepository = CachedPublicSuffixRepository.Singleton;
+PwnctlAppFacade.Setup();
 var app = CoconaApp.Create();
 
 app.AddCommand("query", () => 

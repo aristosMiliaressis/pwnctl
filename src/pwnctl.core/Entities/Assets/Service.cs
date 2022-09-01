@@ -53,7 +53,7 @@ namespace pwnctl.core.Entities.Assets
                 {
                     _assets.Add((Host)hostAssets[0]);
                     var service = new Service((Host)hostAssets[0], port);
-                    service.Tags = tags;
+                    service.AddTags(tags);
                     _assets.Add(service);
                     assets = _assets.ToArray();
                     return true;
@@ -62,7 +62,7 @@ namespace pwnctl.core.Entities.Assets
                 {
                     _assets.Add((Domain)domains[0]);
                     var service = new Service((Domain)domains[0], port);
-                    service.Tags = tags;
+                    service.AddTags(tags);
                     _assets.Add(service);
                     assets = _assets.ToArray();
                     return true;

@@ -34,5 +34,10 @@ namespace pwnctl.core.Entities
             Name = name;
             Value = value;
         }
+
+        public void SetAsset(BaseAsset asset)
+        {
+            GetType().GetProperty(asset.GetType().Name).SetValue(this, asset);
+        }
     }
 }

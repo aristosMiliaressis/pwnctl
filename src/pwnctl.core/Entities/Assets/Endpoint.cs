@@ -58,8 +58,8 @@ namespace pwnctl.core.Entities.Assets
                         : new Service(new Domain(uri.Host), (ushort)uri.Port);
 
                 var endpoint = new Endpoint(uri.Scheme, origin, uri.AbsolutePath);
-                endpoint.Tags = tags;
-                
+                endpoint.AddTags(tags);
+
                 _assets.Add(endpoint);
                 _assets.Add(origin);
                 if (origin.Domain != null) _assets.Add(origin.Domain);

@@ -38,7 +38,7 @@ namespace pwnctl.core.Entities.Assets
                 if (_domainRegex.Match(assetText).Success)
                 {
                     var domain = new Domain(assetText);
-                    domain.Tags = tags;
+                    domain.AddTags(tags);
                     assets = new BaseAsset[] { domain };
                     if (domain.RegistrationDomain != null)
                     {

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using pwnctl.infra.Configuration;
 using pwnctl.infra.Logging;
 using pwnctl.core.Interfaces;
 
@@ -18,7 +19,7 @@ namespace pwnctl.infra.Queues
 
             var psi = new ProcessStartInfo();
             psi.FileName = "job-queue.sh";
-            psi.Arguments = $"-w 1 -q {_queueDirectory}";
+            psi.Arguments = $"-w {EnvironmentVariables.BASH_WORKERS} -q {_queueDirectory}";
             psi.RedirectStandardOutput = true;
             psi.RedirectStandardInput = true;
             psi.UseShellExecute = false;

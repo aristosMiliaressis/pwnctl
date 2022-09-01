@@ -6,7 +6,7 @@ using pwnctl.infra.Persistence;
 using pwnctl.infra.Repositories;
 using pwnctl.core.Entities.Assets;
 using pwnctl.core.BaseClasses;
-using pwnctl.core;
+using pwnctl.app;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using Newtonsoft.Json;
@@ -17,8 +17,7 @@ public class Tests
     {
         Environment.SetEnvironmentVariable("PWNTAINER_TEST", "true");
         Environment.SetEnvironmentVariable("INSTALL_PATH", ".");
-        PwnctlDbContext.Initialize();
-        PwnctlCoreShim.PublicSuffixRepository = CachedPublicSuffixRepository.Singleton;
+        PwnctlAppFacade.Setup();
 
         var psi = new ProcessStartInfo();
         psi.FileName = "/bin/bash";
@@ -208,11 +207,11 @@ public class Tests
         var outOfScope = new Domain("www.outofscope.com");
 
         Assert.False(repository.CheckIfExists(inScopeDomain));
-        repository.AddAsync(inScopeDomain).Wait();
+        repository.AddOrUpdateAsync(inScopeDomain).Wait();
         Assert.True(repository.CheckIfExists(inScopeDomain));
         inScopeDomain = context.Domains.First(d => d.Name == "tesla.com");
         Assert.True(inScopeDomain.InScope);
-        repository.AddAsync(outOfScope).Wait();
+        repository.AddOrUpdateAsync(outOfScope).Wait();
         outOfScope = context.Domains.First(d => d.Name == "www.outofscope.com");
         Assert.False(outOfScope.InScope);
 
@@ -221,20 +220,20 @@ public class Tests
 
         Assert.False(repository.CheckIfExists(record1));
         Assert.False(repository.CheckIfExists(record2));
-        repository.AddAsync(record1).Wait();
+        repository.AddOrUpdateAsync(record1).Wait();
         Assert.True(repository.CheckIfExists(record1));
         Assert.False(repository.CheckIfExists(record2));
-        repository.AddAsync(record2).Wait();
+        repository.AddOrUpdateAsync(record2).Wait();
         Assert.True(repository.CheckIfExists(record2));
 
         var netRange = new NetRange("10.1.101.0", 24);
         Assert.False(repository.CheckIfExists(netRange));
-        repository.AddAsync(netRange).Wait();
+        repository.AddOrUpdateAsync(netRange).Wait();
         Assert.True(repository.CheckIfExists(netRange));
 
         var service = new Service(inScopeDomain, 443);
         Assert.False(repository.CheckIfExists(service));
-        repository.AddAsync(service).Wait();
+        repository.AddOrUpdateAsync(service).Wait();
         Assert.True(repository.CheckIfExists(service));
     }
 
@@ -300,7 +299,7 @@ public class Tests
         srvTag = endpoint.Tags.First(t => t.Name == "Server");
         Assert.Equal("IIS", srvTag.Value);
 
-        //processor.ProcessAsync("https://iis.tesla.com [[ContentType:text/html][Status:200]]").Wait();
+        processor.ProcessAsync("https://iis.tesla.com [[ContentType:text/html][Status:200]]").Wait();
 
         // process same asset twice and make sure tasks are only assigned once
         processor.ProcessAsync("https://iis.tesla.com [[ContentType:text/html][Status:200][Protocol:IIS]]").Wait();

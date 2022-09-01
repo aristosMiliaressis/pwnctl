@@ -55,7 +55,7 @@ namespace pwnctl.core.Entities.Assets
             && Enum.GetNames(typeof(RecordType)).ToList().Contains(parts[2]))
             {
                 var record = new DNSRecord(Enum.Parse<RecordType>(parts[2]), parts[0], parts[3]);
-                record.Tags = tags;
+                record.AddTags(tags);
                 _assets.Add(record);
                 if (record.Host != null) _assets.Add(record.Host);
                 if (record.Domain != null) _assets.Add(record.Domain);
