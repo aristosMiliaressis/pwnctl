@@ -83,7 +83,7 @@
     },
     {
         "ShortName": "hakrawler",
-        "CommandTemplate": "echo '{{Uri}}' | hakrawler -insecure -h 'User-Agent: Mozilla/5.0' | pwnctl process",
+        "CommandTemplate": "echo '{{Uri}}' | hakrawler -insecure -h 'User-Agent: Mozilla/5.0' | xargs -I _ echo \"_ [[FoundBy:hakrawler]]\" pwnctl process",
         "IsActive": true,
         "Aggressiveness": 3,
         "Filter": "(Endpoint.Extension == \"\") || (Endpoint.Extension == \"html\")",

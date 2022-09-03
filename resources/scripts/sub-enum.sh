@@ -1,14 +1,14 @@
 #!/bin/bash
 
 domain=$1
-dict='./recon_scripts/top20000.txt'
-DNS_RESOLVERS_FILE='./recon_scripts/resolvers_top25.txt'
+dict='/opt/resources/wordlists/dns/top20000.txt'
+DNS_RESOLVERS_FILE='/opt/resources/wordlists/dns/resolvers_top25.txt'
 
 potential_subs_file=`mktemp`
 valid_subs_file=`mktemp`
 
 osint_subs() {
-    amass enum -rf $DNS_RESOLVERS_FILE -d $domain -nolocaldb -nocolor -passive -silent | tee amass.log
+    amass enum -rf $DNS_RESOLVERS_FILE -d $domain -nolocaldb -nocolor -passive -silent
 
     #dnsgrep -f /opt/dnsgrep/fdns_a.sort.txt -i ".$domain" \
 	#    | tr ',' '\n' \
@@ -22,7 +22,7 @@ generate_brute_gueses() {
 }
 
 resolve_domains() {
-    puredns resolve -q $potential_subs_file -r $DNS_RESOLVERS_FILE | tee puredns.log
+    puredns resolve -q $potential_subs_file -r $DNS_RESOLVERS_FILE
 }
 
 generate_alterations() {
