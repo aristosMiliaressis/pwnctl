@@ -36,15 +36,15 @@
         "Subject": "Host"
     },
     {
-        "ShortName": "nmap_basic",
-        "CommandTemplate": "nmapTagOutput.sh {{IP}} | pwnctl process",
+        "ShortName": "tcp_scan",
+        "CommandTemplate": "tcp-scan.sh {{IP}} | pwnctl process",
         "IsActive": true,
         "Aggressiveness": 15,
         "Subject": "Host"
     },
     {
         "ShortName": "get_alt_names",
-        "CommandTemplate": "get-alt-names {{IP}} | pwnctl process",
+        "CommandTemplate": "get-alt-names.sh {{IP}} | pwnctl process",
         "IsActive": true,
         "Aggressiveness": 3,
         "Subject": "Host"
@@ -66,8 +66,16 @@
         "Subject": "Endpoint"
     },
     {
+        "ShortName": "waf_print",
+        "CommandTemplate": "waf-print.sh {{Uri}} | pwnctl process",
+        "IsActive": true,
+        "Aggressiveness": 2,
+        "Filter": "(Endpoint.Path == \"/\")",
+        "Subject": "Endpoint"
+    },
+    {
         "ShortName": "dir_brute_config",
-        "CommandTemplate": "dir-brute.sh {{Uri}} /opt/pwntainer/seed/config.txt | pwnctl process",
+        "CommandTemplate": "dir-brute.sh {{Uri}} /opt/resources/wordlists/config.txt | pwnctl process",
         "IsActive": true,
         "Aggressiveness": 8,
         "Filter": "(Endpoint.Path == \"/\")",

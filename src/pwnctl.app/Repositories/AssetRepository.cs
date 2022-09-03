@@ -54,7 +54,6 @@ namespace pwnctl.app.Repositories
                     var existingTag = _context.FirstFromLambda(lambda);
                     if (existingTag == null) 
                     {
-                        Console.WriteLine(JsonConvert.SerializeObject(tag, new JsonSerializerSettings {ReferenceLoopHandling = ReferenceLoopHandling.Ignore}));
                         tag.SetAsset(matchingAsset);
                         _context.Add(tag);
                     }

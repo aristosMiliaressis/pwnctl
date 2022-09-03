@@ -13,4 +13,4 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     volumes:
-      - ./data/seed/:/opt/pwntainer/seed
+      - ./data/:/opt/pwntainer/

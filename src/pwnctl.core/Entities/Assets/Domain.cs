@@ -32,7 +32,9 @@ namespace pwnctl.core.Entities.Assets
 
             try
             {
-                if (assetText.Trim().Contains(" ") || assetText.Trim().Contains("/"))
+                if (assetText.Trim().Contains(" ") 
+                 || assetText.Trim().Contains("/")
+                 || assetText.Contains("*"))
                     return false;
 
                 if (_domainRegex.Match(assetText).Success)

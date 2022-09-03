@@ -79,16 +79,19 @@ RUN wget -O /usr/local/bin/job-queue.sh https://raw.githubusercontent.com/aristo
     && chmod +x /usr/local/bin/job-queue.sh
 
 COPY --from=build /app/publish /app
+
 RUN ln -s /app/pwnctl.cli /usr/local/bin/pwnctl
 
-RUN chmod -R +x /app/scripts \
-    && mv /app/scripts/recon_scripts/* /usr/local/bin/ \
-    && mv /app/scripts/* /usr/local/bin/
+RUN mkdir /opt/resources/
+COPY resources/* /opt/resources/
+COPY resources/scripts /opt/resources/scripts
+COPY resources/wordlists /opt/resources/wordlists
+RUN chmod -R +x /opt/resources/scripts \
+    && mv /opt/resources/scripts/* /usr/local/bin/
     
 ENV INSTALL_PATH=/opt/pwntainer
 
 RUN get_public_suffixes.sh
-
 
 COPY entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
