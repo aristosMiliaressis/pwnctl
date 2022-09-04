@@ -14,6 +14,8 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
         public void Configure(EntityTypeBuilder<Host> builder)
         {
             builder.HasKey(e => e.Id);
+
+            builder.HasIndex(nameof(Host.IP)).IsUnique();
         }
     }
 }

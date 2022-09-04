@@ -66,6 +66,7 @@ namespace pwnctl.app.Utilities
             }
 
             var lambda = ExpressionTreeBuilder.BuildTaskMatchingLambda(asset, definition);
+
             var task = (core.Entities.Task)_context.FirstFromLambda(lambda);
             if (task != null)
                 return;

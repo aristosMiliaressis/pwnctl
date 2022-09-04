@@ -35,7 +35,8 @@ RUN go get -u github.com/tomnomnom/unfurl
 RUN GO111MODULE=on go get -v github.com/projectdiscovery/shuffledns/cmd/shuffledns
 
 RUN mkdir -p /opt/pwntainer/data/ \
- && mkdir -p /opt/pwntainer/wordlists/
+ && mkdir /opt/pwntainer/wordlists/ \
+ && mkdir /opt/pwntainer/resources/
 
 RUN wget https://github.com/RustScan/RustScan/releases/download/2.0.1/rustscan_2.0.1_amd64.deb \
     && dpkg -i rustscan_2.0.1_amd64.deb && rm rustscan_2.0.1_amd64.deb
@@ -68,30 +69,27 @@ RUN dotnet restore "/src/pwnctl.app/pwnctl.app.csproj"
 COPY ["/src/pwnctl.cli/pwnctl.cli.csproj", "/src/pwnctl.cli/"]
 RUN dotnet restore "/src/pwnctl.cli/pwnctl.cli.csproj"
 
-COPY . .
+COPY src/ src/
 
 RUN dotnet build "/src/pwnctl.cli/pwnctl.cli.csproj" -c Release -o /app/build
 RUN dotnet publish "/src/pwnctl.cli/pwnctl.cli.csproj" -r linux-x64 -c Release -o /app/publish # -p:PublishSingleFile=true
 
 FROM base AS release
 
+COPY --from=build /app/publish /app
+RUN ln -s /app/pwnctl.cli /usr/local/bin/pwnctl
+
 RUN wget -O /usr/local/bin/job-queue.sh https://raw.githubusercontent.com/aristosMiliaressis/job-queue.sh/master/job-queue.sh \
     && chmod +x /usr/local/bin/job-queue.sh
 
-COPY --from=build /app/publish /app
-
-RUN ln -s /app/pwnctl.cli /usr/local/bin/pwnctl
-
-RUN mkdir /opt/resources/
-COPY resources/* /opt/resources/
-COPY resources/scripts /opt/resources/scripts
-COPY resources/wordlists /opt/resources/wordlists
-RUN chmod -R +x /opt/resources/scripts \
-    && mv /opt/resources/scripts/* /usr/local/bin/
+COPY resources/* /opt/pwntainer/resources/
+COPY resources/scripts /opt/pwntainer/resources/scripts
+COPY resources/wordlists /opt/pwntainer/resources/wordlists
+RUN chmod -R +x /opt/pwntainer/resources/scripts \
+    && mv /opt/pwntainer/resources/scripts/* /usr/local/bin/
     
-ENV INSTALL_PATH=/opt/pwntainer
-
-RUN get_public_suffixes.sh
+ENV PWNCTL_INSTALL_PATH "/opt/pwntainer"
+RUN printf 'export PWNCTL_DELIMITER=`printf "\\x1E"`' >> /etc/bash.bashrc
 
 COPY entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh

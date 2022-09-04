@@ -1,6 +1,8 @@
 using pwnctl.core.BaseClasses;
 using pwnctl.core.Entities;
 using pwnctl.app.Exceptions;
+using pwnctl.infra.Configuration;
+using pwnctl.infra.Logging;
 using System.Reflection;
 
 namespace pwnctl.app.Utilities
@@ -56,12 +58,11 @@ namespace pwnctl.app.Utilities
         private static void ParseTags(ref string assetText, out List<Tag> tags)
         {
             tags = new();
-            if (assetText.Contains(" [["))
+            var parts = assetText.Split(EnvironmentVariables.PWNCTL_DELIMITER);
+            assetText = parts[0];
+            if (parts.Length > 1)
             {
-                tags = assetText.Split(" [[")[1].Replace("]]", "").Split("][")
-                            .Select(t => new Tag(t.Split(":")[0], t.Split(":")[1]))
-                            .ToList();
-                assetText = assetText.Split(" [[")[0];
+                tags = parts.Skip(1).Select(p => new Tag(p.Split(":")[0], p.Split(":")[1])).ToList();
             }
         }
 

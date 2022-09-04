@@ -3,9 +3,10 @@ namespace pwnctl.infra.Configuration
 {
     public static class EnvironmentVariables
     {
-        public static string INSTALL_PATH => Environment.GetEnvironmentVariable("INSTALL_PATH");
-        public static string BASH_WORKERS => Environment.GetEnvironmentVariable("BASH_WORKERS");
-        public static bool PWNTAINER_SQS => Environment.GetEnvironmentVariable("PWNTAINER_SQS")?.Equals("true") ?? false;
-        public static bool PWNTAINER_TEST => Environment.GetEnvironmentVariable("PWNTAINER_TEST")?.Equals("true") ?? false;
+        public static string PWNCTL_INSTALL_PATH => Environment.GetEnvironmentVariable("PWNCTL_INSTALL_PATH");
+        public static char PWNCTL_DELIMITER => Environment.GetEnvironmentVariable("PWNCTL_DELIMITER").First();
+        public static string PWNCTL_BASH_WORKERS => Environment.GetEnvironmentVariable("PWNCTL_BASH_WORKERS");
+        public static bool PWNCTL_SQS => Environment.GetEnvironmentVariable("PWNCTL_SQS")?.Equals("true") ?? false;
+        public static bool PWNCTL_TEST => Environment.GetEnvironmentVariable("PWNCTL_TEST")?.Equals("true") ?? false;
     }
 }

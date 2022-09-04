@@ -15,7 +15,7 @@ cat $temp \
 		port=`echo $line | cut -d '/' -f 1`; \
 		protocol=`echo $line | cut -d '/' -f 2`; \
 		version=`echo $line | cut -d '/' -f 3`; \
-		echo "$ip:$port [[Protocol:$protocol]$([[ ! -z "$version" ]] && echo "[Version:$version]")]"; \
+		printf "$ip:$port${PWNCTL_DELIMITER}Protocol:$protocol$([[ ! -z "$version" ]] && printf "${PWNCTL_DELIMITER}Version:$version")"; \
 	done
 
 rm $temp

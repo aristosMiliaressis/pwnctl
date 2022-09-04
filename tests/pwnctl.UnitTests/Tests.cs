@@ -9,20 +9,22 @@ using pwnctl.core.BaseClasses;
 using pwnctl.app;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
-using Newtonsoft.Json;
+using System.Text;
+using pwnctl.infra.Configuration;
 
 public class Tests
 {
     public Tests()
     {
-        Environment.SetEnvironmentVariable("PWNTAINER_TEST", "true");
-        Environment.SetEnvironmentVariable("INSTALL_PATH", ".");
+        Environment.SetEnvironmentVariable("PWNCTL_TEST", "true");
+        Environment.SetEnvironmentVariable("PWNCTL_INSTALL_PATH", ".");
+        Environment.SetEnvironmentVariable("PWNCTL_DELIMITER", Convert.ToChar(0x1E).ToString());
         PwnctlAppFacade.Setup();
 
         var psi = new ProcessStartInfo();
         psi.FileName = "/bin/bash";
         psi.Arguments = " -c scripts/get_public_suffixes.sh";
-        psi.EnvironmentVariables["INSTALL_PATH"] = ".";
+        psi.EnvironmentVariables["PWNCTL_INSTALL_PATH"] = ".";
         psi.CreateNoWindow = true;
 
         using (var process = Process.Start(psi))
@@ -152,6 +154,7 @@ public class Tests
         var endpoint = new Endpoint("https", new Service(new Host("172.16.17.15"), 443), "/api/token");
         context.Add(endpoint);
         context.SaveChanges();
+        var service = context.Services.First(h => h.Origin == "172.16.17.15:443");
         jobService.Assign(endpoint);
         // TaskDefinition.Filter fail test
         Assert.False(context.Tasks.Include(t => t.Definition).Any(t => t.Definition.ShortName == "ffuf_common"));
@@ -164,7 +167,7 @@ public class Tests
         var hakrawlerTask = context.Tasks.Include(t => t.Definition).First(t => t.Definition.ShortName == "hakrawler");
         Assert.Equal("hakrawler -plain -h 'User-Agent: Mozilla/5.0' https://172.16.17.15:443/api/token/", hakrawlerTask.Command);
 
-        endpoint = new Endpoint("https", new Service(new Host("172.16.17.15"), 443), "/");
+        endpoint = new Endpoint("https", service, "/");
         context.Add(endpoint);
         context.SaveChanges();
         jobService.Assign(endpoint);
@@ -273,7 +276,7 @@ public class Tests
         AssetProcessor processor = new();
         PwnctlDbContext context = new();
 
-        BaseAsset[] assets = AssetParser.Parse("https://example.com [[ContentType:text/html][Status:200][Server:IIS]]", out Type[] assetTypes);
+        BaseAsset[] assets = AssetParser.Parse($"https://example.com{EnvironmentVariables.PWNCTL_DELIMITER}ContentType:text/html{EnvironmentVariables.PWNCTL_DELIMITER}Status:200{EnvironmentVariables.PWNCTL_DELIMITER}Server:IIS", out Type[] assetTypes);
 
         var endpoint = (Endpoint) assets.First(a => a.GetType() == typeof(Endpoint));
         Assert.NotNull(endpoint.Tags);
@@ -287,7 +290,7 @@ public class Tests
         var srvTag = endpoint.Tags.First(t => t.Name == "Server");
         Assert.Equal("IIS", srvTag.Value);
 
-        processor.ProcessAsync("https://example.com [[ContentType:text/html][Status:200][Server:IIS]]").Wait();
+        processor.ProcessAsync($"https://example.com{EnvironmentVariables.PWNCTL_DELIMITER}ContentType:text/html{EnvironmentVariables.PWNCTL_DELIMITER}Status:200{EnvironmentVariables.PWNCTL_DELIMITER}Server:IIS").Wait();
 
         endpoint = context.Endpoints.Include(e => e.Tags).Where(ep => ep.Uri == "https://example.com:443/").First();
         ctTag = endpoint.Tags.First(t => t.Name == "ContentType");
@@ -299,10 +302,10 @@ public class Tests
         srvTag = endpoint.Tags.First(t => t.Name == "Server");
         Assert.Equal("IIS", srvTag.Value);
 
-        processor.ProcessAsync("https://iis.tesla.com [[ContentType:text/html][Status:200]]").Wait();
+        processor.ProcessAsync($"https://iis.tesla.com{EnvironmentVariables.PWNCTL_DELIMITER}ContentType:text/html{EnvironmentVariables.PWNCTL_DELIMITER}Status:200").Wait();
 
         // process same asset twice and make sure tasks are only assigned once
-        processor.ProcessAsync("https://iis.tesla.com [[ContentType:text/html][Status:200][Protocol:IIS]]").Wait();
+        processor.ProcessAsync($"https://iis.tesla.com{EnvironmentVariables.PWNCTL_DELIMITER}ContentType:text/html{EnvironmentVariables.PWNCTL_DELIMITER}Status:200{EnvironmentVariables.PWNCTL_DELIMITER}Protocol:IIS").Wait();
         endpoint = (Endpoint) context.Endpoints.Include(e => e.Tags).Where(ep => ep.Uri == "https://iis.tesla.com:443/").First();
         var tasks = context.Tasks.Include(t => t.Definition).Where(t => t.EndpointId == endpoint.Id).ToList();
         Assert.True(!tasks.GroupBy(t => t.DefinitionId).Any(g => g.Count() > 1));
@@ -311,7 +314,7 @@ public class Tests
 
         // test Tag filter
         Assert.Contains(tasks, t => t.Definition.ShortName == "shortname_scanner");
-        processor.ProcessAsync("https://apache.tesla.com [[ContentType:text/html][Status:200][Server:apache]]").Wait();
+        processor.ProcessAsync($"https://apache.tesla.com{EnvironmentVariables.PWNCTL_DELIMITER}ContentType:text/html{EnvironmentVariables.PWNCTL_DELIMITER}Status:200{EnvironmentVariables.PWNCTL_DELIMITER}Server:apache").Wait();
         endpoint = context.Endpoints.Include(e => e.Tags).Where(ep => ep.Uri == "https://apache.tesla.com:443/").First();
         tasks = context.Tasks.Include(t => t.Definition).Where(t => t.EndpointId == endpoint.Id).ToList();
         Assert.DoesNotContain(tasks, t => t.Definition.ShortName == "shortname_scanner");

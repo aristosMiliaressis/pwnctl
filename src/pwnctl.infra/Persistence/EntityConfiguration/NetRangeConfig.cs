@@ -14,6 +14,8 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
         public void Configure(EntityTypeBuilder<NetRange> builder)
         {
             builder.HasKey(e => e.Id);
+
+            builder.HasIndex(nameof(NetRange.FirstAddress), nameof(NetRange.NetPrefixBits)).IsUnique();
         }
     }
 }

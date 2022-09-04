@@ -1,21 +1,21 @@
 [
     {
         "ShortName": "ping_sweep",
-        "CommandTemplate": "rand=`mktemp`; nmap -sn -PE {{CIDR}} -oG $rand; cat $rand | grep 'Status: Up' | cut -f 2 -d ' ' | pwnctl process",
+        "CommandTemplate": "rand=`mktemp`; nmap -sn -PE {{CIDR}} -oG $rand; cat $rand | grep 'Status: Up' | cut -f 2 -d ' '",
         "IsActive": true,
         "Aggressiveness": 1,
         "Subject": "NetRange"
     },
     {
         "ShortName": "domain_resolution",
-        "CommandTemplate": "dig +short {{Name}} | awk '{print \"{{Name}} IN A \" $1}' | pwnctl process",
+        "CommandTemplate": "dig +short {{Name}} | awk '{print \"{{Name}} IN A \" $1}'",
         "IsActive": false,
         "Aggressiveness": 1,
         "Subject": "Domain"
     },
     {
         "ShortName": "subfinder",
-        "CommandTemplate": "subfinder -silent -d {{Name}} | pwnctl process",
+        "CommandTemplate": "subfinder -silent -d {{Name}}",
         "IsActive": false,
         "Aggressiveness": 0,
         "Filter": "(Domain.IsRegistrationDomain == true)",
@@ -23,35 +23,35 @@
     },
     {
         "ShortName": "httpx",
-        "CommandTemplate": "echo {{Name}} | httpx -silent | pwnctl process",
+        "CommandTemplate": "echo {{Name}} | httpx -silent",
         "IsActive": true,
         "Aggressiveness": 2,
         "Subject": "Domain"
     },
     {
         "ShortName": "reverse_lookup",
-        "CommandTemplate": "dig +short -x {{IP}} | pwnctl process",
+        "CommandTemplate": "dig +short -x {{IP}}",
         "IsActive": false,
         "Aggressiveness": 1,
         "Subject": "Host"
     },
     {
         "ShortName": "tcp_scan",
-        "CommandTemplate": "tcp-scan.sh {{IP}} | pwnctl process",
+        "CommandTemplate": "tcp-scan.sh {{IP}}",
         "IsActive": true,
         "Aggressiveness": 15,
         "Subject": "Host"
     },
     {
         "ShortName": "get_alt_names",
-        "CommandTemplate": "get-alt-names.sh {{IP}} | pwnctl process",
+        "CommandTemplate": "get-alt-names.sh {{IP}}",
         "IsActive": true,
         "Aggressiveness": 3,
         "Subject": "Host"
     },
     {
         "ShortName": "get_all_urls",
-        "CommandTemplate": "echo {{Uri}} | gau --fc 404 --blacklist png,jpg,jpeg,gif,ico,svg,ttf,woff,woff2,eot,css,pdf | unfurl format %s://%a%p%?%q | sort -u | pwnctl process",
+        "CommandTemplate": "echo {{Uri}} | gau --fc 404 --blacklist png,jpg,jpeg,gif,ico,svg,ttf,woff,woff2,eot,css,pdf | unfurl format %s://%a%p%?%q | sort -u",
         "IsActive": true,
         "Aggressiveness": 10,
         "Subject": "Endpoint",
@@ -59,7 +59,7 @@
     },
     {
         "ShortName": "dir_brute_common",
-        "CommandTemplate": "dir-brute.sh {{Uri}} /tools/wordlist/SecLists/Discovery/Web-Content/common.txt | pwnctl process",
+        "CommandTemplate": "dir-brute.sh {{Uri}} /tools/wordlist/SecLists/Discovery/Web-Content/common.txt",
         "IsActive": true,
         "Aggressiveness": 8,
         "Filter": "(Endpoint.Path == \"/\")",
@@ -67,7 +67,7 @@
     },
     {
         "ShortName": "waf_print",
-        "CommandTemplate": "waf-print.sh {{Uri}} | pwnctl process",
+        "CommandTemplate": "waf-print.sh {{Uri}}",
         "IsActive": true,
         "Aggressiveness": 2,
         "Filter": "(Endpoint.Path == \"/\")",
@@ -75,7 +75,7 @@
     },
     {
         "ShortName": "dir_brute_config",
-        "CommandTemplate": "dir-brute.sh {{Uri}} /opt/resources/wordlists/config.txt | pwnctl process",
+        "CommandTemplate": "dir-brute.sh {{Uri}} /opt/pwntainer/resources/wordlists/config.txt",
         "IsActive": true,
         "Aggressiveness": 8,
         "Filter": "(Endpoint.Path == \"/\")",
@@ -83,10 +83,10 @@
     },
     {
         "ShortName": "hakrawler",
-        "CommandTemplate": "echo '{{Uri}}' | hakrawler -insecure -h 'User-Agent: Mozilla/5.0' | xargs -I _ echo \"_ [[FoundBy:hakrawler]]\" pwnctl process",
+        "CommandTemplate": "echo '{{Uri}}' | hakrawler -insecure -h 'User-Agent: Mozilla/5.0'",
         "IsActive": true,
         "Aggressiveness": 3,
-        "Filter": "(Endpoint.Extension == \"\") || (Endpoint.Extension == \"html\")",
+        "Filter": "(Endpoint.Path == \"/\")",
         "Subject": "Endpoint"
     }
 ]

@@ -10,7 +10,7 @@ namespace pwnctl.infra.Repositories
     {
         private List<PublicSuffix> _publicSuffixes;
         private static CachedPublicSuffixRepository _singleton;
-        private string _publicSuffixDataFile = $"{EnvironmentVariables.INSTALL_PATH}/dns/public_suffix_list.dat";
+        private string _publicSuffixDataFile = $"{EnvironmentVariables.PWNCTL_INSTALL_PATH}/dns/public_suffix_list.dat";
         
         public static CachedPublicSuffixRepository Singleton
         {

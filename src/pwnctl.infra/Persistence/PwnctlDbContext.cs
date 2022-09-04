@@ -12,7 +12,7 @@ namespace pwnctl.infra.Persistence
 {
     public class PwnctlDbContext : DbContext
     {
-        public static string ConnectionString = $"Data Source={EnvironmentVariables.INSTALL_PATH}/pwntainer.db";
+        public static string ConnectionString = $"Data Source={EnvironmentVariables.PWNCTL_INSTALL_PATH}/pwntainer.db";
         
         public static readonly ILoggerFactory _loggerFactory = LoggerFactory.Create(builder =>
         {
@@ -47,7 +47,7 @@ namespace pwnctl.infra.Persistence
         {
             PwnctlDbContext instance = new();
 
-            if (EnvironmentVariables.PWNTAINER_TEST)
+            if (EnvironmentVariables.PWNCTL_TEST)
             {
                 instance.Database.EnsureDeleted();
             }
@@ -57,9 +57,9 @@ namespace pwnctl.infra.Persistence
                 instance.Database.Migrate();
             }
 
-            if (!instance.TaskDefinitions.Any() && File.Exists($"{EnvironmentVariables.INSTALL_PATH}/seed/task-definitions.json"))
+            if (!instance.TaskDefinitions.Any() && File.Exists($"{EnvironmentVariables.PWNCTL_INSTALL_PATH}/seed/task-definitions.json"))
             {
-                var json = File.ReadAllText($"{EnvironmentVariables.INSTALL_PATH}/seed/task-definitions.json");
+                var json = File.ReadAllText($"{EnvironmentVariables.PWNCTL_INSTALL_PATH}/seed/task-definitions.json");
                 var taskDefinitions = JsonConvert.DeserializeObject<List<TaskDefinition>>(json);
 
                 instance.TaskDefinitions.AddRange(taskDefinitions);
@@ -71,7 +71,7 @@ namespace pwnctl.infra.Persistence
                 Matcher matcher = new();
                 matcher.AddInclude("target-*.json");
 
-                foreach (string file in matcher.GetResultsInFullPath($"{EnvironmentVariables.INSTALL_PATH}/seed/"))
+                foreach (string file in matcher.GetResultsInFullPath($"{EnvironmentVariables.PWNCTL_INSTALL_PATH}/seed/"))
                 {
                     var program = JsonConvert.DeserializeObject<Program>(File.ReadAllText(file));
                     instance.ScopeDefinitions.AddRange(program.Scope);

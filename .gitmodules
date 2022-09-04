@@ -1,4 +1,0 @@
-[submodule "data/recon_scripts"]
-	path = data/recon_scripts
-	url = https://github.com/aristosMiliaressis/recon_scripts.git
-	branch = pwntainer

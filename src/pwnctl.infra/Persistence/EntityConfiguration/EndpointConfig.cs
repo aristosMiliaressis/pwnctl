@@ -18,6 +18,8 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
             builder.HasOne(e => e.Service)
                 .WithMany()
                 .HasForeignKey(e => e.ServiceId);
+
+            builder.HasIndex(nameof(Endpoint.Uri)).IsUnique();
         }
     }
 }

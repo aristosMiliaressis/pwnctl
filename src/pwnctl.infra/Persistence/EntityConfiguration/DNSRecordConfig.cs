@@ -22,6 +22,8 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
             builder.HasOne(e => e.Host)
                 .WithMany()
                 .HasForeignKey(e => e.HostId);
+
+            builder.HasIndex(nameof(DNSRecord.Type), nameof(DNSRecord.Key)).IsUnique();
         }
     }
 }

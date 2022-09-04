@@ -67,7 +67,8 @@ namespace pwnctl.core.Entities.Assets
 
                 var _params = uri.GetComponents(UriComponents.Query, UriFormat.SafeUnescaped)
                     .Split("&")
-                    .Select(p => new Parameter(endpoint, p.Split("=")[0], Parameter.ParamType.Query, null));
+                    .Select(p => new Parameter(endpoint, p.Split("=")[0], Parameter.ParamType.Query, null))
+                    .Where(p => !string.IsNullOrEmpty(p.Name));
                 if (_params.Any())
                     _assets.AddRange(_params);
 

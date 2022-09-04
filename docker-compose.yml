@@ -7,7 +7,7 @@ services:
     hostname: pwntainer
     network_mode: host
     environment:
-      - BASH_WORKERS=2
+      - PWNCTL_BASH_WORKERS=1
     build:
       context: .
       dockerfile: Dockerfile

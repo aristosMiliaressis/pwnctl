@@ -33,6 +33,13 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
             builder.HasOne(t => t.DNSRecord)
                 .WithMany(a => a.Tags)
                 .HasForeignKey(t => t.DNSRecordId);
+
+            builder.HasIndex(nameof(Tag.NetRangeId), nameof(Tag.Name)).IsUnique();
+            builder.HasIndex(nameof(Tag.HostId), nameof(Tag.Name)).IsUnique();
+            builder.HasIndex(nameof(Tag.DomainId), nameof(Tag.Name)).IsUnique();
+            builder.HasIndex(nameof(Tag.ServiceId), nameof(Tag.Name)).IsUnique();
+            builder.HasIndex(nameof(Tag.EndpointId), nameof(Tag.Name)).IsUnique();
+            builder.HasIndex(nameof(Tag.DNSRecordId), nameof(Tag.Name)).IsUnique();
         }
     }
 }

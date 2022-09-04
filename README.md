@@ -23,6 +23,7 @@
 - [x] if no check if in scope
 - [x] if not in scope do nothing
 - [x] if inscope query configured task definitions for asset class and queue tasks
+- [x] arbitary key/value metadata `Tags`
 - [x] bash job queue
 
 ## In Scope checking process
@@ -30,6 +31,9 @@
 - [x] select all ScopeDefinitions from all programs in db
 - [x] iterate over definitions and call bool Matches(ScopeDefinition def) on asset object.
 - [x] if any returns true asset is in scope.
+
+**To Do**
+- out of scope flag on ScopeDefinition
 
 ### Scope Configuration
 
@@ -158,27 +162,32 @@ this should probably be in yaml for less character escaping in the command templ
 
 - [x] read sql queries from stdin, execute them and print output
 - [x] json output format
-- [ ] cli flags for common query types
+
+**To Do**
+- cli flags for common query types
 
 ## `pwnctl -i/--import <importer> -s/--source <source>`
 
-- [ ] burp suite importer
+**To Do**
+- burp suite importer
 
 ## Workers & Scaling
 
-- [ ] EC2 C&C VM 
-- [ ] PostgreSQL db
-- [ ] AWS SQS queue 
-- [ ] EKS with Fargate for serverless autoscaling worker deployment
-- [ ] job runner that will run command and pipe output to `pwnctl` than record task metadata (i.e return code, start/finish timestamp) to db
-- [ ] deployment manifest to configure scope/task definitions and scaling
-- [ ] slimer worker images for faster worker creation&teardown
+**To Do**
+- EC2 C&C VM 
+- PostgreSQL db
+- AWS SQS queue 
+- EKS with Fargate for serverless autoscaling worker deployment
+- job runner that will run command and pipe output to `pwnctl` than record task metadata (i.e return code, start/finish timestamp) to db
+- deployment manifest to configure scope/task definitions and scaling
+- slimer worker images for faster worker creation&teardown
 
 ## Miscellaneous Stuff
 
-- [ ] non deterministic methods of inscope detection for cloud assets, CIDRs, etc (favicon, legal text, keyword, CT time correlation)
-- [ ] maintaining fresh DNS resolvers (scheduled dnsvalidator task will store fresh resolvers for all workers to use)
-- [ ] ip/hostname/url normalization
-- [ ] IP blocking detection & recycling of cloud ips
-- [ ] configurable notifications rules like TaskDefinitions
-- [ ] WebUI, graphs and stuff
+**To Do**
+- non deterministic methods of inscope detection for cloud assets, CIDRs, etc (favicon, legal text, keyword, CT time correlation)
+- maintaining fresh DNS resolvers (scheduled dnsvalidator task will store fresh resolvers for all workers to use)
+- ip/hostname/url normalization
+- IP blocking detection & recycling of cloud ips
+- configurable notifications rules like TaskDefinitions
+- WebUI, graphs and stuff

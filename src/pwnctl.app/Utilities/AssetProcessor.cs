@@ -32,7 +32,7 @@ namespace pwnctl.app.Utilities
             {
                 return;
             }
-            
+
             foreach (var asset in assets)
             {
                 await HandleAsset((BaseAsset)asset);
