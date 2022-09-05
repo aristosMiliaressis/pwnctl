@@ -59,7 +59,7 @@
     },
     {
         "ShortName": "dir_brute_common",
-        "CommandTemplate": "dir-brute.sh {{Uri}} /tools/wordlist/SecLists/Discovery/Web-Content/common.txt",
+        "CommandTemplate": "dir-brute.sh {{Uri}} /opt/resources/wordlists/Discovery/Web-Content/common.txt",
         "IsActive": true,
         "Aggressiveness": 8,
         "Filter": "(Endpoint.Path == \"/\")",
@@ -75,7 +75,7 @@
     },
     {
         "ShortName": "dir_brute_config",
-        "CommandTemplate": "dir-brute.sh {{Uri}} /opt/pwntainer/resources/wordlists/config.txt",
+        "CommandTemplate": "dir-brute.sh {{Uri}} /opt/resources/wordlists/config.txt",
         "IsActive": true,
         "Aggressiveness": 8,
         "Filter": "(Endpoint.Path == \"/\")",

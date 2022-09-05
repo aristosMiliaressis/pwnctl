@@ -7,7 +7,7 @@
 DNS_RESOLVERS_FILE=/tmp/resolvers.txt
 wget -O $DNS_RESOLVERS_FILE https://raw.githubusercontent.com/janmasarik/resolvers/master/resolvers.txt 2> /dev/null
 
-SUBDOMAIN_DICT=/opt/pwntainer/wordlists/top20000.txt
+SUBDOMAIN_DICT=/opt/resources/wordlists/top20000.txt
 RESOLVERS=$(cat $DNS_RESOLVERS_FILE | tr '\n' ',')
 WILDCARD_TESTS=3
 

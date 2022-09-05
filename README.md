@@ -142,7 +142,7 @@ this should probably be in yaml for less character escaping in the command templ
     },
     {
         "ShortName": "ffuf_config",
-        "CommandTemplate": "dir-brute.sh {{Uri}} /opt/pwntainer/seed/config.txt | pwnctl process",
+        "CommandTemplate": "dir-brute.sh {{Uri}} /opt/resources/wordlists/config.txt | pwnctl process",
         "IsActive": true,
         "Aggressiveness": 8,
         "Filter": "(Endpoint.Path == \"/\")",

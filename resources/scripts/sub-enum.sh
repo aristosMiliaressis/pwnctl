@@ -1,8 +1,8 @@
 #!/bin/bash
 
 domain=$1
-dict='/opt/pwntainer/resources/wordlists/dns/top20000.txt'
-DNS_RESOLVERS_FILE='/opt/pwntainer/resources/wordlists/dns/resolvers_top25.txt'
+dict='/opt/resources/wordlists/dns/top20000.txt'
+DNS_RESOLVERS_FILE='/opt/resources/wordlists/dns/resolvers_top25.txt'
 
 potential_subs_file=`mktemp`
 valid_subs_file=`mktemp`
