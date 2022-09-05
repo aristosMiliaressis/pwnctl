@@ -1,7 +1,7 @@
 [
     {
         "ShortName": "ping_sweep",
-        "CommandTemplate": "rand=`mktemp`; nmap -sn -PE {{CIDR}} -oG $rand; cat $rand | grep 'Status: Up' | cut -f 2 -d ' '",
+        "CommandTemplate": "rand=`mktemp`; nmap -sn {{CIDR}} -oG $rand; cat $rand | grep 'Status: Up' | cut -f 2 -d ' '",
         "IsActive": true,
         "Aggressiveness": 1,
         "Subject": "NetRange"
@@ -80,13 +80,20 @@
         "Aggressiveness": 8,
         "Filter": "(Endpoint.Path == \"/\")",
         "Subject": "Endpoint"
-    },
-    {
+    }, {
         "ShortName": "hakrawler",
         "CommandTemplate": "echo '{{Uri}}' | hakrawler -insecure -h 'User-Agent: Mozilla/5.0'",
         "IsActive": true,
         "Aggressiveness": 3,
         "Filter": "(Endpoint.Path == \"/\")",
+        "Subject": "Endpoint"
+    },
+    {
+        "ShortName": "link_finder",
+        "CommandTemplate": "link-finder.sh {{Uri}}",
+        "IsActive": true,
+        "Aggressiveness": 3,
+        "Filter": "(Endpoint.Extension == \"js\")",
         "Subject": "Endpoint"
     }
 ]

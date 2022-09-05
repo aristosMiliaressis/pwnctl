@@ -54,9 +54,10 @@ RUN wget -O /opt/pwntainer/wordlists/commonspeak2.txt https://raw.githubusercont
 
 RUN pip3 install arjun
 
-#RUN git clone https://github.com/xnl-h4ck3r/xnLinkFinder.git \
-#    && cd xnLinkFinder \
-#    && python setup.py install
+RUN git clone https://github.com/xnl-h4ck3r/xnLinkFinder.git \
+    && cd xnLinkFinder \
+    && pip install -r requirments.txt \ 
+    && python setup.py install
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 
