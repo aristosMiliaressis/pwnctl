@@ -14,8 +14,8 @@
         "Subject": "Domain"
     },
     {
-        "ShortName": "subfinder",
-        "CommandTemplate": "subfinder -silent -d {{Name}}",
+        "ShortName": "amass",
+        "CommandTemplate": "amass enum -d {{Name}} -nolocaldb -nocolor -passive",
         "IsActive": false,
         "Aggressiveness": 0,
         "Filter": "(Domain.IsRegistrationDomain == true)",
@@ -38,6 +38,13 @@
     {
         "ShortName": "tcp_scan",
         "CommandTemplate": "tcp-scan.sh {{IP}}",
+        "IsActive": true,
+        "Aggressiveness": 15,
+        "Subject": "Host"
+    },
+    {
+        "ShortName": "udp_scan",
+        "CommandTemplate": "udp-scan.sh {{IP}}",
         "IsActive": true,
         "Aggressiveness": 15,
         "Subject": "Host"

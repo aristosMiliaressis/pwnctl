@@ -2,4 +2,4 @@
 
 dnsvalidator -tL https://public-dns.info/nameservers.txt -threads 20 -o /opt/dnsvalidator/resolvers.txt
 
-head -25 /opt/dnsvalidator/resolvers.txt > /opt/dnsvalidator/resolvers_top25.txt
+head -25 /opt/dnsvalidator/resolvers.txt > /opt/resources/wordlists/dns/resolvers_top25.txt

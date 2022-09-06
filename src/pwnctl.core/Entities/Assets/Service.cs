@@ -21,21 +21,19 @@ namespace pwnctl.core.Entities.Assets
 
         private Service() {}
 
-        public Service(Domain domain, ushort port, TransportProtocol l4Proto = TransportProtocol.Unknown, string appProto = null)
+        public Service(Domain domain, ushort port, TransportProtocol l4Proto = TransportProtocol.Unknown)
         {
             Domain = domain;
             TransportProtocol = l4Proto;
-            ApplicationProtocol = appProto;
             Port = port;
             Origin = domain.Name + ":" + port;
         }
 
-        public Service(Host host, ushort port, TransportProtocol l4Proto = TransportProtocol.Unknown, string appProto = null)
+        public Service(Host host, ushort port, TransportProtocol l4Proto = TransportProtocol.Unknown)
         {
             Host = host;
             HostId = 0;
             TransportProtocol = l4Proto;
-            ApplicationProtocol = appProto;
             Port = port;
             Origin = host.IP + ":" + port;
         }
@@ -46,13 +44,25 @@ namespace pwnctl.core.Entities.Assets
             try
             {
                 string strPort = assetText.Split(':').Last();
-                var port = ushort.Parse(strPort);
                 assetText = assetText.Substring(0, assetText.Length - strPort.Length - 1);
+
+                var protocol = strPort[0] switch
+                {
+                    'U' => TransportProtocol.UDP,
+                    'T' => TransportProtocol.TCP,
+                    'S' => TransportProtocol.SCTP,
+                    _ => TransportProtocol.TCP
+                };
+
+                if (!char.IsDigit(strPort[0]))
+                    strPort = strPort.Substring(1);
+
+                var port = ushort.Parse(strPort);
 
                 if (Host.TryParse(assetText, null, out BaseAsset[] hostAssets))
                 {
                     _assets.Add((Host)hostAssets[0]);
-                    var service = new Service((Host)hostAssets[0], port);
+                    var service = new Service((Host)hostAssets[0], port, protocol);
                     service.AddTags(tags);
                     _assets.Add(service);
                     assets = _assets.ToArray();
@@ -61,7 +71,7 @@ namespace pwnctl.core.Entities.Assets
                 else if (Domain.TryParse(assetText, null, out BaseAsset[] domains))
                 {
                     _assets.Add((Domain)domains[0]);
-                    var service = new Service((Domain)domains[0], port);
+                    var service = new Service((Domain)domains[0], port, protocol);
                     service.AddTags(tags);
                     _assets.Add(service);
                     assets = _assets.ToArray();

@@ -83,7 +83,7 @@ RUN wget -O /usr/local/bin/job-queue.sh https://raw.githubusercontent.com/aristo
     && chmod +x /usr/local/bin/job-queue.sh
 
 COPY resources/scripts/* /opt/resources/scripts/
-COPY resources/wordlists/* /opt/resources/wordlists/
+COPY resources/wordlists/ /opt/resources/wordlists/
 RUN chmod -R +x /opt/resources/scripts \
     && mv /opt/resources/scripts/* /usr/local/bin/
     

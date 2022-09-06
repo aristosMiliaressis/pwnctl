@@ -56,6 +56,14 @@ public class Tests
         Assert.Equal(2, assets.Length);
         Assert.Equal(2, assetTypes.Length);
 
+        AssetParser.TryParse("76.24.104.208:U161", out assetTypes, out assets);
+        Assert.Contains(assetTypes, t => t == typeof(Host));
+        Assert.Contains(assets, t => t.GetType() == typeof(Host));
+        Assert.Contains(assets, t => t.GetType() == typeof(Service));
+        Assert.Contains(assetTypes, t => t == typeof(Service));
+        Assert.Equal(2, assets.Length);
+        Assert.Equal(2, assetTypes.Length);
+
         AssetParser.TryParse("172.16.17.0/24", out assetTypes, out assets);
         Assert.Contains(assetTypes, t => t == typeof(NetRange));
         Assert.Contains(assets, t => t.GetType() == typeof(NetRange));

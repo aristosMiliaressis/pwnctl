@@ -1,7 +1,0 @@
-#!/bin/bash
-
-whatweb $1 --log-json=whatweb.json --color=never --no-errors
-
-cat whatweb.json \
-    | jq -r '.[] | { target:.target, tags: { key: .plugins | to_entries } | .[] | map( {key: .key, value: .value.string[] } )} | "\(.target) \(.tags[] | .key+" --> "+.value)"' \
-    2>/dev/null | pwnctl
