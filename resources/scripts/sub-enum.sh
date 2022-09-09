@@ -1,25 +1,27 @@
 #!/bin/bash
 
+# TODO: solve fresh dns resolvers issue
+# TODO: integrate dig_deep_zdns
+
 domain=$1
 dict='/opt/resources/wordlists/dns/top20000.txt'
 DNS_RESOLVERS_FILE='/opt/resources/wordlists/dns/resolvers_top25.txt'
 
-potential_subs_file='potential_subs_file.log'
-valid_subs_file='valid_subs_file.log'
-trusted_resolvers='trusted_resolvers.log'
-
-dig @9.9.9.9 $domain NS +short > $trusted_resolvers # TODO: error handle this
-
-# resolve amass domains & add tag for unresolvable
-# fix puredns & solve fresh dns resolvers issue
+potential_subs_file=`mktemp`
+valid_subs_file=`mktemp`
+trusted_resolvers=`mktemp`
 
 osint_subs() {
-	temp='temp.log'
+	temp=`mktemp`
+	amass_temp=`mktemp`
 
-    amass enum -d $domain -nolocaldb -nocolor -passive | tee $potential_subs_file
-	puredns resolve -q $potential_subs_file --resolvers-trusted $trusted_resolvers -r $DNS_RESOLVERS_FILE | tee $temp > $valid_subs_file
+    amass enum -d $domain -nolocaldb -nocolor -passive -silent -json $amass_temp
+	cat $amass_temp | jq -r .name > $potential_subs_file
+
+	resolve_domains > $temp
 	
 	cat $potential_subs_file | anew $temp | xargs -I _ printf "_${PWNCTL_DELIMITER}Unresolvable:true\n"
+	rm $amass_temp
 	rm $temp
 }
 
@@ -28,17 +30,14 @@ generate_brute_gueses() {
 }
 
 resolve_domains() {
-    puredns resolve -q $potential_subs_file --resolvers-trusted $trusted_resolvers -r $DNS_RESOLVERS_FILE \
-		--write valid_domains.txt \
-		--write-wildcards wildcards.txt \
-		--write-massdns massdns.txt
+    puredns resolve -q $potential_subs_file -r $DNS_RESOLVERS_FILE
 }
 
 generate_alterations() {
 	dnsgen -f $valid_subs_file | sort -u
 }
 
-osint_subs > $potential_subs_file > /dev/null 2>&1
+osint_subs
 
 generate_brute_gueses | anew $potential_subs_file > /dev/null
 
@@ -48,8 +47,10 @@ generate_alterations > $potential_subs_file
 
 resolve_domains | anew $valid_subs_file
 
-rm $potential_subs_file
-cat $valid_subs_file
-rm $valid_subs_file
+dig-deep.sh $valid_subs_file | sort -u 2>/dev/null
 
-#dig_deep_zdns
+cat $valid_subs_file | sort -u
+rm $potential_subs_file
+rm $valid_subs_file
+rm $trusted_resolvers
+

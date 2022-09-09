@@ -1,0 +1,98 @@
+tasks:
+  ping_sweep:
+    CommandTemplate: "rand=`mktemp`; nmap -sn {{CIDR}} -oG $rand; cat $rand | grep 'Status: Up' | cut -f 2 -d ' '"
+    IsActive: true
+    Aggressiveness: 1
+    Subject: NetRange
+
+  domain_resolution:
+    CommandTemplate: dig +short {{Name}} | awk '{print "{{Name}} IN A " $1}'
+    IsActive: false
+    Aggressiveness: 1
+    Subject: Domain
+
+  sub_enum:
+    CommandTemplate: sub-enum.sh {{Name}}
+    IsActive: false
+    Aggressiveness: 0
+    Filter: (Domain.IsRegistrationDomain == true)
+    Subject: Domain
+
+  httpx:
+    CommandTemplate: echo {{Name}} | httpx -silent
+    IsActive: true
+    Aggressiveness: 2
+    Subject: Domain
+
+  reverse_lookup:
+    CommandTemplate: dig +short -x {{IP}}
+    IsActive: false
+    Aggressiveness: 1
+    Subject: Host
+
+  tcp_scan:
+    CommandTemplate: tcp-scan.sh {{IP}}
+    IsActive: true
+    Aggressiveness: 15
+    Subject: Host
+
+  udp_scan:
+    CommandTemplate: udp-scan.sh {{IP}}
+    IsActive: true
+    Aggressiveness: 15
+    Subject: Host
+
+  get_alt_names:
+    CommandTemplate: get-alt-names.sh {{IP}}
+    IsActive: true
+    Aggressiveness: 3
+    Subject: Host
+
+  get_all_urls:
+    CommandTemplate: echo {{Uri}} | gau --fc 404 --blacklist png,jpg,jpeg,gif,ico,svg,ttf,woff,woff2,eot,css,pdf | unfurl format %s://%a%p%?%q | sort -u
+    IsActive: true
+    Aggressiveness: 10
+    Subject: Endpoint
+    Filter: (Endpoint.Path == "/")
+
+  dir_brute_common:
+    CommandTemplate: dir-brute.sh {{Uri}} /opt/resources/wordlists/Discovery/Web-Content/common.txt
+    IsActive: true
+    Aggressiveness: 8
+    Filter: (Endpoint.Path == "/")
+    Subject: Endpoint
+
+  dir_brute_config:
+    CommandTemplate: dir-brute.sh {{Uri}} /opt/resources/wordlists/config.txt
+    IsActive: true
+    Aggressiveness: 8
+    Filter: (Endpoint.Path == "/")
+    Subject: Endpoint
+
+  waf_print:
+    CommandTemplate: waf-print.sh {{Uri}}
+    IsActive: true
+    Aggressiveness: 2
+    Filter: (Endpoint.Path == "/")
+    Subject: Endpoint
+
+  hakrawler:
+    CommandTemplate: "echo '{{Uri}}' | hakrawler -insecure -h 'User-Agent: Mozilla/5.0'"
+    IsActive: true
+    Aggressiveness: 3
+    Filter: (Endpoint.Path == "/")
+    Subject: Endpoint
+
+  link_finder:
+    CommandTemplate: link-finder.sh {{Uri}}
+    IsActive: true
+    Aggressiveness: 3
+    Filter: (Endpoint.Extension == "js")
+    Subject: Endpoint
+
+  zone_walking:
+    CommandTemplate: ldns-walk {{Key}}
+    IsActive: true
+    Aggressiveness: 1
+    Filter: (DNSRecord.Type == RecordType.NSEC)
+    Subject: DNSRecord

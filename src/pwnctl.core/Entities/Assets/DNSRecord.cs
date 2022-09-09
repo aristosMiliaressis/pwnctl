@@ -102,6 +102,7 @@ namespace pwnctl.core.Entities.Assets
             MX,
             NAPTR,
             NS,
+            NSEC,
             NSEC3,
             NSEC3PARAM,
             OPENPGPKEY,
