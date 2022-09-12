@@ -95,7 +95,6 @@ RUN chmod -R +x /opt/resources/scripts \
     && mv /opt/resources/scripts/* /usr/local/bin/
     
 ENV PWNCTL_INSTALL_PATH "/opt/pwntainer"
-RUN printf 'export PWNCTL_DELIMITER=`printf "\\x1E"`' >> /etc/bash.bashrc
 
 COPY entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh

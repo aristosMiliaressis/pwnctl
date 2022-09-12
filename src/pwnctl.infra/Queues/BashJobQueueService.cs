@@ -28,8 +28,19 @@ namespace pwnctl.infra.Queues
 
             using var process = Process.Start(psi);
             using (StreamWriter sr = process.StandardInput)
-            { 
-                sr.WriteLine($"{job.Command} | while read asset; do printf \"$asset\\\\x{(int)EnvironmentVariables.PWNCTL_DELIMITER:X2}FoundBy:{job.Definition.ShortName}\\\\n\"; done | pwnctl process");
+            {
+                var command = @$"{job.Command} | while read assetLine;
+                do
+                    if [[ ${{assetLine::1}} == '{{' ]]; 
+                    then
+                        echo $assetLine | jq '.tags += {{""FoundBy"": ""{job.Definition.ShortName}""}}';
+                    else 
+                        echo ""{{\""asset\"":\""$assetLine\"", \""tags\"":{{\""FoundBy\"":\""{job.Definition.ShortName}\""}}}}""; 
+                    fi; 
+                done | pwnctl process".Replace("\r\n", "");
+
+                sr.WriteLine(command);
+                //sr.WriteLine($"{job.Command} | jq '.tags += {{\"FoundBy\": \"{job.Definition.ShortName}\"}}' | pwnctl process");
                 sr.Flush();
                 sr.Close();
             }

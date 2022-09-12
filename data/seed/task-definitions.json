@@ -58,7 +58,7 @@
     },
     {
         "ShortName": "get_all_urls",
-        "CommandTemplate": "echo {{Uri}} | gau --fc 404 --blacklist png,jpg,jpeg,gif,ico,svg,ttf,woff,woff2,eot,css,pdf | unfurl format %s://%a%p%?%q | sort -u",
+        "CommandTemplate": "get-all-urls.sh {{Uri}}",
         "IsActive": true,
         "Aggressiveness": 10,
         "Subject": "Endpoint",
@@ -93,7 +93,7 @@
         "CommandTemplate": "echo '{{Uri}}' | hakrawler -insecure -h 'User-Agent: Mozilla/5.0'",
         "IsActive": true,
         "Aggressiveness": 3,
-        "Filter": "(Endpoint.Path == \"/\")",
+        "Filter": "(Endpoint[\"Content-Type\"].Contains(\"/html\") || Endpoint[\"Content-Type\"].Contains(\"/xhtml\"))",
         "Subject": "Endpoint"
     },
     {
@@ -101,7 +101,7 @@
         "CommandTemplate": "link-finder.sh {{Uri}}",
         "IsActive": true,
         "Aggressiveness": 3,
-        "Filter": "(Endpoint.Extension == \"js\")",
+        "Filter": "(Endpoint[\"Content-Type\"].Contains(\"/javascript\"))",
         "Subject": "Endpoint"
     },
     {

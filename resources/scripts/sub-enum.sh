@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # TODO: solve fresh dns resolvers issue
-# TODO: integrate dig_deep_zdns
 
 domain=$1
 dict='/opt/resources/wordlists/dns/top20000.txt'
@@ -20,7 +19,7 @@ osint_subs() {
 
 	resolve_domains > $temp
 	
-	cat $potential_subs_file | anew $temp | xargs -I _ printf "_${PWNCTL_DELIMITER}Unresolvable:true\n"
+	cat $potential_subs_file | anew $temp | xargs -I _ printf "{\"asset\":\"_\", \"tags\"[\"Unresolvable\":true\"]}\n"
 	rm $amass_temp
 	rm $temp
 }

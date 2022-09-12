@@ -2,7 +2,7 @@ using pwnctl.core.BaseClasses;
 using pwnctl.core.Entities;
 using pwnctl.app.Exceptions;
 using pwnctl.infra.Configuration;
-using pwnctl.infra.Logging;
+using Newtonsoft.Json;
 using System.Reflection;
 
 namespace pwnctl.app.Utilities
@@ -58,12 +58,18 @@ namespace pwnctl.app.Utilities
         private static void ParseTags(ref string assetText, out List<Tag> tags)
         {
             tags = new();
-            var parts = assetText.Split(EnvironmentVariables.PWNCTL_DELIMITER);
-            assetText = parts[0];
-            if (parts.Length > 1)
-            {
-                tags = parts.Skip(1).Select(p => new Tag(p.Split(":")[0], p.Split(":")[1])).ToList();
-            }
+            if (!assetText.TrimStart().StartsWith("{"))
+                return;
+
+            var entry = JsonConvert.DeserializeObject<AssetEntry>(assetText);
+            assetText = entry.Asset;
+            tags = entry.Tags.Select(t => new Tag(t.Key, t.Value)).ToList();
+        }
+
+        public class AssetEntry
+        {
+            public string Asset{get;set;}
+            public Dictionary<string,string> Tags { get; set; }
         }
 
         private static readonly IEnumerable<MethodInfo> _tryParseMethods = Assembly.GetAssembly(typeof(BaseAsset))

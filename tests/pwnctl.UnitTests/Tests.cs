@@ -5,11 +5,12 @@ using pwnctl.app.Utilities;
 using pwnctl.infra.Persistence;
 using pwnctl.infra.Repositories;
 using pwnctl.core.Entities.Assets;
+using pwnctl.core.Entities;
 using pwnctl.core.BaseClasses;
 using pwnctl.app;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
-using System.Text;
+using Newtonsoft.Json;
 using pwnctl.infra.Configuration;
 
 public class Tests
@@ -18,7 +19,6 @@ public class Tests
     {
         Environment.SetEnvironmentVariable("PWNCTL_TEST", "true");
         Environment.SetEnvironmentVariable("PWNCTL_INSTALL_PATH", ".");
-        Environment.SetEnvironmentVariable("PWNCTL_DELIMITER", Convert.ToChar(0x1E).ToString());
         PwnctlAppFacade.Setup();
 
         var psi = new ProcessStartInfo();
@@ -160,6 +160,7 @@ public class Tests
         Assert.False(context.Tasks.Include(t => t.Definition).Any(t => t.Definition.ShortName == "nmap_basic"));
 
         var endpoint = new Endpoint("https", new Service(new Host("172.16.17.15"), 443), "/api/token");
+        endpoint.AddTags(new List<Tag> {new Tag("Content-Type", "text/html")});
         context.Add(endpoint);
         context.SaveChanges();
         var service = context.Services.First(h => h.Origin == "172.16.17.15:443");
@@ -284,7 +285,16 @@ public class Tests
         AssetProcessor processor = new();
         PwnctlDbContext context = new();
 
-        BaseAsset[] assets = AssetParser.Parse($"https://example.com{EnvironmentVariables.PWNCTL_DELIMITER}ContentType:text/html{EnvironmentVariables.PWNCTL_DELIMITER}Status:200{EnvironmentVariables.PWNCTL_DELIMITER}Server:IIS", out Type[] assetTypes);
+        var exampleUrl = new {
+            asset = "https://example.com",
+            tags = new Dictionary<string,string>{
+               {"ContentType", "text/html"},
+               {"Status", "200"},
+               {"Server", "IIS"}
+            }
+        };
+        
+        BaseAsset[] assets = AssetParser.Parse(JsonConvert.SerializeObject(exampleUrl), out Type[] assetTypes);
 
         var endpoint = (Endpoint) assets.First(a => a.GetType() == typeof(Endpoint));
         Assert.NotNull(endpoint.Tags);
@@ -298,7 +308,7 @@ public class Tests
         var srvTag = endpoint.Tags.First(t => t.Name == "Server");
         Assert.Equal("IIS", srvTag.Value);
 
-        processor.ProcessAsync($"https://example.com{EnvironmentVariables.PWNCTL_DELIMITER}ContentType:text/html{EnvironmentVariables.PWNCTL_DELIMITER}Status:200{EnvironmentVariables.PWNCTL_DELIMITER}Server:IIS").Wait();
+        processor.ProcessAsync(JsonConvert.SerializeObject(exampleUrl)).Wait();
 
         endpoint = context.Endpoints.Include(e => e.Tags).Where(ep => ep.Uri == "https://example.com:443/").First();
         ctTag = endpoint.Tags.First(t => t.Name == "ContentType");
@@ -310,19 +320,39 @@ public class Tests
         srvTag = endpoint.Tags.First(t => t.Name == "Server");
         Assert.Equal("IIS", srvTag.Value);
 
-        processor.ProcessAsync($"https://iis.tesla.com{EnvironmentVariables.PWNCTL_DELIMITER}ContentType:text/html{EnvironmentVariables.PWNCTL_DELIMITER}Status:200").Wait();
+        processor.ProcessAsync(JsonConvert.SerializeObject(exampleUrl)).Wait();
+
+        var teslaUrl = new
+        {
+            asset = "https://iis.tesla.com",
+            tags = new Dictionary<string, string>{
+               {"ContentType", "text/html"},
+               {"Status", "200"},
+               {"Protocol", "IIS"}
+            }
+        };
 
         // process same asset twice and make sure tasks are only assigned once
-        processor.ProcessAsync($"https://iis.tesla.com{EnvironmentVariables.PWNCTL_DELIMITER}ContentType:text/html{EnvironmentVariables.PWNCTL_DELIMITER}Status:200{EnvironmentVariables.PWNCTL_DELIMITER}Protocol:IIS").Wait();
+        processor.ProcessAsync(JsonConvert.SerializeObject(teslaUrl)).Wait();
         endpoint = (Endpoint) context.Endpoints.Include(e => e.Tags).Where(ep => ep.Uri == "https://iis.tesla.com:443/").First();
         var tasks = context.Tasks.Include(t => t.Definition).Where(t => t.EndpointId == endpoint.Id).ToList();
         Assert.True(!tasks.GroupBy(t => t.DefinitionId).Any(g => g.Count() > 1));
         srvTag = endpoint.Tags.First(t => t.Name == "Protocol");
         Assert.Equal("IIS", srvTag.Value);
+        Assert.Contains(tasks, t => t.Definition.ShortName == "shortname_scanner");
+
+        var apacheTeslaUrl = new
+        {
+            asset = "https://apache.tesla.com",
+            tags = new Dictionary<string, string>{
+               {"ContentType", "text/html"},
+               {"Status", "200"},
+               {"Server", "apache"}
+            }
+        };
 
         // test Tag filter
-        Assert.Contains(tasks, t => t.Definition.ShortName == "shortname_scanner");
-        processor.ProcessAsync($"https://apache.tesla.com{EnvironmentVariables.PWNCTL_DELIMITER}ContentType:text/html{EnvironmentVariables.PWNCTL_DELIMITER}Status:200{EnvironmentVariables.PWNCTL_DELIMITER}Server:apache").Wait();
+        processor.ProcessAsync(JsonConvert.SerializeObject(apacheTeslaUrl)).Wait();
         endpoint = context.Endpoints.Include(e => e.Tags).Where(ep => ep.Uri == "https://apache.tesla.com:443/").First();
         tasks = context.Tasks.Include(t => t.Definition).Where(t => t.EndpointId == endpoint.Id).ToList();
         Assert.DoesNotContain(tasks, t => t.Definition.ShortName == "shortname_scanner");

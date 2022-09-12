@@ -41,6 +41,7 @@
         "CommandTemplate": "hakrawler -plain -h 'User-Agent: Mozilla/5.0' {{Uri}}",
         "IsActive": true,
         "Aggressiveness": 3,
+        "Filter": "(Endpoint[\"Content-Type\"].Contains(\"/html\"))",
         "Subject": "Endpoint"
     },
     {

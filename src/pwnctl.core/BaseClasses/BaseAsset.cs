@@ -16,11 +16,9 @@ namespace pwnctl.core.BaseClasses
         
         public string this[string key]
         { 
-            get { return Tags.FirstOrDefault(t => t.Name == key)?.Value; }
+            get { return Tags.FirstOrDefault(t => t.Name == key.ToLower())?.Value ?? string.Empty; }
             set {
                 var tag = new Tag(key, value);
-                // TODO: check if exists
-                // add reference id
                 Tags.Add(tag);
             }
         }
