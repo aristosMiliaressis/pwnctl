@@ -1,6 +1,6 @@
 ﻿using Cocona;
 using pwnctl.infra.Persistence;
-using pwnctl.infra.Repositories;
+using pwnctl.infra.Logging;
 using pwnctl.app.Importers;
 using pwnctl.app.Utilities;
 using pwnctl.app;
@@ -32,7 +32,15 @@ app.AddCommand("process", async () =>
         string line;
         while (!string.IsNullOrEmpty(line = Console.ReadLine()))
         {
-            await processor.TryProccessAsync(line);
+            try
+            {
+                await processor.TryProccessAsync(line);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Info(line);
+                Logger.Instance.Info(ex.ToRecursiveExInfo());
+            }
         }
     }
 ).WithDescription("Asset processing mode (reads assets from stdin)");

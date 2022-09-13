@@ -30,9 +30,9 @@ namespace pwnctl.infra.Queues
             using (StreamWriter sr = process.StandardInput)
             {
                 var command = @$"{job.Command} | while read assetLine;
-                do
+                do 
                     if [[ ${{assetLine::1}} == '{{' ]]; 
-                    then
+                    then 
                         echo $assetLine | jq '.tags += {{""FoundBy"": ""{job.Definition.ShortName}""}}';
                     else 
                         echo ""{{\""asset\"":\""$assetLine\"", \""tags\"":{{\""FoundBy\"":\""{job.Definition.ShortName}\""}}}}""; 
@@ -40,7 +40,6 @@ namespace pwnctl.infra.Queues
                 done | pwnctl process".Replace("\r\n", "");
 
                 sr.WriteLine(command);
-                //sr.WriteLine($"{job.Command} | jq '.tags += {{\"FoundBy\": \"{job.Definition.ShortName}\"}}' | pwnctl process");
                 sr.Flush();
                 sr.Close();
             }

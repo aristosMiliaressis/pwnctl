@@ -288,7 +288,7 @@ public class Tests
         var exampleUrl = new {
             asset = "https://example.com",
             tags = new Dictionary<string,string>{
-               {"ContentType", "text/html"},
+               {"Content-Type", "text/html"},
                {"Status", "200"},
                {"Server", "IIS"}
             }
@@ -299,25 +299,25 @@ public class Tests
         var endpoint = (Endpoint) assets.First(a => a.GetType() == typeof(Endpoint));
         Assert.NotNull(endpoint.Tags);
 
-        var ctTag = endpoint.Tags.First(t => t.Name == "ContentType");
+        var ctTag = endpoint.Tags.First(t => t.Name == "content-type");
         Assert.Equal("text/html", ctTag.Value);
 
-        var stTag = endpoint.Tags.First(t => t.Name == "Status");
+        var stTag = endpoint.Tags.First(t => t.Name == "status");
         Assert.Equal("200", stTag.Value);
 
-        var srvTag = endpoint.Tags.First(t => t.Name == "Server");
+        var srvTag = endpoint.Tags.First(t => t.Name == "server");
         Assert.Equal("IIS", srvTag.Value);
 
         processor.ProcessAsync(JsonConvert.SerializeObject(exampleUrl)).Wait();
 
         endpoint = context.Endpoints.Include(e => e.Tags).Where(ep => ep.Uri == "https://example.com:443/").First();
-        ctTag = endpoint.Tags.First(t => t.Name == "ContentType");
+        ctTag = endpoint.Tags.First(t => t.Name == "content-type");
         Assert.Equal("text/html", ctTag.Value);
 
-        stTag = endpoint.Tags.First(t => t.Name == "Status");
+        stTag = endpoint.Tags.First(t => t.Name == "status");
         Assert.Equal("200", stTag.Value);
 
-        srvTag = endpoint.Tags.First(t => t.Name == "Server");
+        srvTag = endpoint.Tags.First(t => t.Name == "server");
         Assert.Equal("IIS", srvTag.Value);
 
         processor.ProcessAsync(JsonConvert.SerializeObject(exampleUrl)).Wait();
@@ -337,7 +337,7 @@ public class Tests
         endpoint = (Endpoint) context.Endpoints.Include(e => e.Tags).Where(ep => ep.Uri == "https://iis.tesla.com:443/").First();
         var tasks = context.Tasks.Include(t => t.Definition).Where(t => t.EndpointId == endpoint.Id).ToList();
         Assert.True(!tasks.GroupBy(t => t.DefinitionId).Any(g => g.Count() > 1));
-        srvTag = endpoint.Tags.First(t => t.Name == "Protocol");
+        srvTag = endpoint.Tags.First(t => t.Name == "protocol");
         Assert.Equal("IIS", srvTag.Value);
         Assert.Contains(tasks, t => t.Definition.ShortName == "shortname_scanner");
 

@@ -18,7 +18,7 @@
         "CommandTemplate": "sub-enum.sh {{Name}} ",
         "IsActive": false,
         "Aggressiveness": 0,
-        "Filter": "(Domain.IsRegistrationDomain == true)",
+        "Filter": "Domain.IsRegistrationDomain == true",
         "Subject": "Domain"
     },
     {
@@ -62,14 +62,14 @@
         "IsActive": true,
         "Aggressiveness": 10,
         "Subject": "Endpoint",
-        "Filter": "(Endpoint.Path == \"/\")"
+        "Filter": "Endpoint.Path == \"/\""
     },
     {
         "ShortName": "dir_brute_common",
         "CommandTemplate": "dir-brute.sh {{Uri}} /opt/resources/wordlists/Discovery/Web-Content/common.txt",
         "IsActive": true,
         "Aggressiveness": 8,
-        "Filter": "(Endpoint.Path == \"/\")",
+        "Filter": "Endpoint.Path == \"/\"",
         "Subject": "Endpoint"
     },
     {
@@ -77,7 +77,7 @@
         "CommandTemplate": "dir-brute.sh {{Uri}} /opt/resources/wordlists/config.txt",
         "IsActive": true,
         "Aggressiveness": 8,
-        "Filter": "(Endpoint.Path == \"/\")",
+        "Filter": "Endpoint.Path == \"/\"",
         "Subject": "Endpoint"
     },
     {
@@ -85,7 +85,7 @@
         "CommandTemplate": "waf-print.sh {{Uri}}",
         "IsActive": true,
         "Aggressiveness": 2,
-        "Filter": "(Endpoint.Path == \"/\")",
+        "Filter": "Endpoint.Path == \"/\"",
         "Subject": "Endpoint"
     },
     {
@@ -93,7 +93,7 @@
         "CommandTemplate": "echo '{{Uri}}' | hakrawler -insecure -h 'User-Agent: Mozilla/5.0'",
         "IsActive": true,
         "Aggressiveness": 3,
-        "Filter": "(Endpoint[\"Content-Type\"].Contains(\"/html\") || Endpoint[\"Content-Type\"].Contains(\"/xhtml\"))",
+        "Filter": "Endpoint[\"Content-Type\"].Contains(\"/html\") || Endpoint[\"Content-Type\"].Contains(\"/xhtml\")",
         "Subject": "Endpoint"
     },
     {
@@ -101,7 +101,7 @@
         "CommandTemplate": "link-finder.sh {{Uri}}",
         "IsActive": true,
         "Aggressiveness": 3,
-        "Filter": "(Endpoint[\"Content-Type\"].Contains(\"/javascript\"))",
+        "Filter": "new string[] {\"js\", \"jsm\"}.Contains(Endpoint.Extension) || Endpoint[\"Content-Type\"].Contains(\"/javascript\")",
         "Subject": "Endpoint"
     },
     {
@@ -109,7 +109,7 @@
         "CommandTemplate": "ldns-walk {{Key}}",
         "IsActive": true,
         "Aggressiveness": 1,
-        "Filter": "(DNSRecord.Type == RecordType.NSEC)",
+        "Filter": "DNSRecord.Type == RecordType.NSEC",
         "Subject": "DNSRecord"
     }
 ] 

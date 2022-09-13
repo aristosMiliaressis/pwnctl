@@ -19,7 +19,7 @@ osint_subs() {
 
 	resolve_domains > $temp
 	
-	cat $potential_subs_file | anew $temp | xargs -I _ printf "{\"asset\":\"_\", \"tags\"[\"Unresolvable\":true\"]}\n"
+	cat $potential_subs_file | anew $temp | xargs -I _ printf "{\"asset\":\"_\", \"tags\"{\"Unresolvable\":true\"}}\n"
 	rm $amass_temp
 	rm $temp
 }
