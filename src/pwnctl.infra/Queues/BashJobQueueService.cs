@@ -35,7 +35,7 @@ namespace pwnctl.infra.Queues
                     then 
                         echo $assetLine | jq '.tags += {{""FoundBy"": ""{job.Definition.ShortName}""}}';
                     else 
-                        echo ""{{\\\""asset\\\"":\\\""$assetLine\\\"", \\\""tags\\\"":{{\\\""FoundBy\\\"":\\\""{job.Definition.ShortName}\\\""}}}}""; 
+                        echo '{{""asset"":""'$assetLine'"", ""tags"":{{""FoundBy"":""{job.Definition.ShortName}""}}}}'; 
                     fi; 
                 done | pwnctl process".Replace("\r\n", "");
 

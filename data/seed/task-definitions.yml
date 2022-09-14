@@ -94,5 +94,5 @@ tasks:
     CommandTemplate: ldns-walk {{Key}}
     IsActive: true
     Aggressiveness: 1
-    Filter: DNSRecord.Type == RecordType.NSEC
+    Filter: DNSRecord.Type == pwnctl.core.Entities.Assets.DNSRecord.RecordType.NSEC
     Subject: DNSRecord

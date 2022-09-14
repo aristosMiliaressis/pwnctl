@@ -55,7 +55,6 @@ namespace pwnctl.app.Utilities
                     queueJob(definition, asset);
                 }
             }
-
         }
 
         private void queueJob(TaskDefinition definition, BaseAsset asset)
