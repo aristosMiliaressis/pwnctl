@@ -54,8 +54,17 @@ namespace pwnctl.core.Entities.Assets
             if (parts.Length >= 4 && parts[1] == "IN"
             && Enum.GetNames(typeof(RecordType)).ToList().Contains(parts[2]))
             {
-                var record = new DNSRecord(Enum.Parse<RecordType>(parts[2]), parts[0], parts[3]);
+                var record = new DNSRecord(Enum.Parse<RecordType>(parts[2]), parts[0], string.Join(" ", parts.Skip(3)));
                 record.AddTags(tags);
+                if (record.Type == RecordType.TXT && record.Value.Contains("spf"))
+                {
+                    var spfHosts = record.Value
+                                        .Split(" ")
+                                        .Where(p => p.StartsWith("ip"))
+                                        .Select(p => new Host(p.Split(":")[1]));
+                    _assets.AddRange(spfHosts);
+                }
+
                 _assets.Add(record);
                 if (record.Host != null) _assets.Add(record.Host);
                 if (record.Domain != null) _assets.Add(record.Domain);

@@ -87,7 +87,7 @@ tasks:
     CommandTemplate: link-finder.sh {{Uri}}
     IsActive: true
     Aggressiveness: 3
-    Filter: new string[] {"js", "jsm"}.Contains(Endpoint.Extension) || Endpoint["Content-Type"].Contains("/javascript")
+    Filter: Endpoint.Extension == "js" || Endpoint.Extension == "jsm" || Endpoint["Content-Type"].Contains("/javascript")
     Subject: Endpoint
 
   zone_walking:

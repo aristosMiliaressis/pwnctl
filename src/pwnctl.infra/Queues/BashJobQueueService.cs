@@ -33,7 +33,7 @@ namespace pwnctl.infra.Queues
                 do 
                     if [[ ${{assetLine::1}} == '{{' ]]; 
                     then 
-                        echo $assetLine | jq '.tags += {{""FoundBy"": ""{job.Definition.ShortName}""}}';
+                        echo $assetLine | jq -c '.tags += {{""FoundBy"": ""{job.Definition.ShortName}""}}';
                     else 
                         echo '{{""asset"":""'$assetLine'"", ""tags"":{{""FoundBy"":""{job.Definition.ShortName}""}}}}'; 
                     fi; 

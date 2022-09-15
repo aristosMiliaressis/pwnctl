@@ -15,6 +15,15 @@ namespace pwnctl.core.Entities.Assets
 
         private Host() {}
 
+        public Host(string ip)
+        {
+            if (!IPAddress.TryParse(ip, out IPAddress address))
+                throw new Exception($"{ip} not a valid ip");
+
+            IP = ip;
+            Version = address.AddressFamily;
+        }
+
         public Host(string ip, AddressFamily version = AddressFamily.InterNetwork)
         {
             IP = ip;

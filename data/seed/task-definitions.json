@@ -29,6 +29,13 @@
         "Subject": "Domain"
     },
     {
+        "ShortName": "get_alt_names",
+        "CommandTemplate": "get-alt-names.sh {{IP}}",
+        "IsActive": true,
+        "Aggressiveness": 3,
+        "Subject": "Host"
+    },
+    {
         "ShortName": "reverse_lookup",
         "CommandTemplate": "dig +short -x {{IP}}",
         "IsActive": false,
@@ -47,13 +54,6 @@
         "CommandTemplate": "udp-scan.sh {{IP}}",
         "IsActive": true,
         "Aggressiveness": 15,
-        "Subject": "Host"
-    },
-    {
-        "ShortName": "get_alt_names",
-        "CommandTemplate": "get-alt-names.sh {{IP}}",
-        "IsActive": true,
-        "Aggressiveness": 3,
         "Subject": "Host"
     },
     {
@@ -101,7 +101,7 @@
         "CommandTemplate": "link-finder.sh {{Uri}}",
         "IsActive": true,
         "Aggressiveness": 3,
-        "Filter": "new string[] {\"js\", \"jsm\"}.Contains(Endpoint.Extension) || Endpoint[\"Content-Type\"].Contains(\"/javascript\")",
+        "Filter": "Endpoint.Extension == \"js\" || Endpoint.Extension == \"jsm\" || Endpoint[\"Content-Type\"].Contains(\"/javascript\")",
         "Subject": "Endpoint"
     },
     {
