@@ -163,7 +163,7 @@ public class Tests
         endpoint.AddTags(new List<Tag> {new Tag("Content-Type", "text/html")});
         context.Add(endpoint);
         context.SaveChanges();
-        var service = context.Services.First(h => h.Origin == "172.16.17.15:443");
+        var service = context.Services.First(h => h.Origin == "tcp://172.16.17.15:443");
         jobService.Assign(endpoint);
         // TaskDefinition.Filter fail test
         Assert.False(context.Tasks.Include(t => t.Definition).Any(t => t.Definition.ShortName == "ffuf_common"));
@@ -276,7 +276,7 @@ public class Tests
         res = processor.TryProccessAsync("85.25.105.204:65530").Result;
         host = context.Hosts.First(h => h.IP == "85.25.105.204");
         Assert.True(res);
-        var service = context.Services.First(srv => srv.Origin == "85.25.105.204:65530");
+        var service = context.Services.First(srv => srv.Origin == "tcp://85.25.105.204:65530");
     }
 
     [Fact]

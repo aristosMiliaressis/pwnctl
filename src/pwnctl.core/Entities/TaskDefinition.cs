@@ -11,7 +11,7 @@ namespace pwnctl.core.Entities
 		public string Subject { get; set; }
         public string Filter { get; set; }
 
-        private TaskDefinition() {}
+        public TaskDefinition() {}
 
         public List<string> Parameters
         { 

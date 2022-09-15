@@ -43,7 +43,7 @@ namespace pwnctl.core.Entities.Assets
             Scheme = scheme;
             Service = service;
             Path = path;
-            Uri = $"{scheme}://{Service.Origin}{path}" + (path.EndsWith("/") ? "" : "/");
+            Uri = $"{Service.Origin.Replace("tcp", scheme)}{path}" + (path.EndsWith("/") ? "" : "/");
         }
 
         public static bool TryParse(string assetText, List<Tag> tags, out BaseAsset[] assets)

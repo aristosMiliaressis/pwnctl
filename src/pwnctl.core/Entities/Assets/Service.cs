@@ -21,21 +21,21 @@ namespace pwnctl.core.Entities.Assets
 
         private Service() {}
 
-        public Service(Domain domain, ushort port, TransportProtocol l4Proto = TransportProtocol.Unknown)
+        public Service(Domain domain, ushort port, TransportProtocol l4Proto = TransportProtocol.TCP)
         {
             Domain = domain;
             TransportProtocol = l4Proto;
             Port = port;
-            Origin = domain.Name + ":" + port;
+            Origin = l4Proto.ToString().ToLower() + "://" + domain.Name + ":" + port;
         }
 
-        public Service(Host host, ushort port, TransportProtocol l4Proto = TransportProtocol.Unknown)
+        public Service(Host host, ushort port, TransportProtocol l4Proto = TransportProtocol.TCP)
         {
             Host = host;
             HostId = 0;
             TransportProtocol = l4Proto;
             Port = port;
-            Origin = host.IP + ":" + port;
+            Origin = l4Proto.ToString().ToLower() + "://" + host.IP + ":" + port;
         }
 
         public static bool TryParse(string assetText, List<Tag> tags, out BaseAsset[] assets)

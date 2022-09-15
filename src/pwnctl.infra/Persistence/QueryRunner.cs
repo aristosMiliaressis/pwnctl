@@ -23,7 +23,8 @@ namespace pwnctl.infra.Persistence
                     connection.Open();
                     SQLiteDataReader reader = command.ExecuteReader();
                     var row = Serialize(reader);
-                    string json = JsonConvert.SerializeObject(row, Formatting.Indented);
+                    string json = string.Join("\n", row.Select(r => JsonConvert.SerializeObject(r, Formatting.Indented)));
+                    //string json = JsonConvert.SerializeObject(row, Formatting.Indented);
                     Console.WriteLine(json);
                     reader.Close();
                 }

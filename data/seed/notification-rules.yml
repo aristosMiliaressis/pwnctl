@@ -1,0 +1,13 @@
+
+providers:
+  
+
+runles:
+  default_creds:
+  spf_dmarc:
+  iis_shortnames:
+  zone_transfer:
+  zone_walking:
+  cname_takeover:
+  cors_misconfig:
+  info_disclosure: ["/git", "/phpinfo.php", "/Trace.axd"]

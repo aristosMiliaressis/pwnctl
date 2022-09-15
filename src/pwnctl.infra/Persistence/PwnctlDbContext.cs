@@ -7,6 +7,8 @@ using Newtonsoft.Json;
 using Microsoft.Extensions.FileSystemGlobbing;
 using pwnctl.infra.Configuration;
 using System.Linq.Expressions;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 namespace pwnctl.infra.Persistence
 {
@@ -57,11 +59,20 @@ namespace pwnctl.infra.Persistence
                 instance.Database.Migrate();
             }
 
-            if (!instance.TaskDefinitions.Any() && File.Exists($"{EnvironmentVariables.PWNCTL_INSTALL_PATH}/seed/task-definitions.json"))
-            {
-                var json = File.ReadAllText($"{EnvironmentVariables.PWNCTL_INSTALL_PATH}/seed/task-definitions.json");
-                var taskDefinitions = JsonConvert.DeserializeObject<List<TaskDefinition>>(json);
+            //var taskDefinitionFile = $"{EnvironmentVariables.PWNCTL_INSTALL_PATH}/seed/task-definitions.json";
+            var taskDefinitionFile = $"{EnvironmentVariables.PWNCTL_INSTALL_PATH}/seed/task-definitions.yml";
 
+            if (!instance.TaskDefinitions.Any() && File.Exists(taskDefinitionFile))
+            {
+                var taskText = File.ReadAllText(taskDefinitionFile);
+                //var taskDefinitions = JsonConvert.DeserializeObject<List<TaskDefinition>>(taskText);
+                var deserializer = new DeserializerBuilder()
+                           .WithNamingConvention(PascalCaseNamingConvention.Instance) 
+                           .Build();
+                //var yaml = serializer.Serialize(taskDefinitions);
+                var taskDefinitions = deserializer.Deserialize<List<TaskDefinition>>(taskText);
+
+                //Console.WriteLine(yaml);
                 instance.TaskDefinitions.AddRange(taskDefinitions);
                 instance.SaveChanges();
             }

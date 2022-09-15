@@ -79,6 +79,14 @@
         "Aggressiveness": 8,
         "Filter": "Endpoint.Path == \"/\"",
         "Subject": "Endpoint"
+    }, 
+    {
+        "ShortName": "header_and_favicon_grab",
+        "CommandTemplate": "echo {{Uri}} | urgo -H 'User-Agent: Mozilla/5.0' -rH Server -rH X-Powered-By -rH Via -f -st | jq -c '{asset:.Url, tags:.ResponseHeasers}'",
+        "IsActive": true,
+        "Aggressiveness": 2,
+        "Filter": "Endpoint.Path == \"/\"",
+        "Subject": "Endpoint"
     },
     {
         "ShortName": "waf_print",
