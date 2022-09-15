@@ -7,4 +7,4 @@ echo $url \
     | unfurl format %s://%a%p%?%q \
     | sort -u \
     | urgo -H 'User-Agent: Mozilla/5.0' -rH 'Content-Type' 2>/dev/null \
-    | jq '{asset:.Url, tags:.ResponseHeasers}' 2>/dev/null
+    | jq -c '{asset:.Url, tags:.ResponseHeasers}' 2>/dev/null

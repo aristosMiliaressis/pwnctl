@@ -97,7 +97,7 @@
   Subject: Endpoint
 
 - ShortName: zone_walking
-  CommandTemplate: ldns-walk {{Key}}
+  CommandTemplate: ldns-walk {{Key}} | grep IN
   IsActive: true
   Aggressiveness: 1
   Filter: DNSRecord.Type == pwnctl.core.Entities.Assets.DNSRecord.RecordType.NSEC

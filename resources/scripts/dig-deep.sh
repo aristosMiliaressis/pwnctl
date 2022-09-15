@@ -13,10 +13,11 @@ domainfile=$1
 
 enum_records() {
     cat $domainfile \
-    | zdns $1 -name-servers $RESOLVERS -result-verbosity short \
+    | zdns $1 --name-servers $RESOLVERS --result-verbosity short \
     | jq -c ".data.answers[] | select( .type == \"$1\" )" 2>/dev/null \
+    | jq -r ' "\(.name) IN \(.type) \(.answer)"' 2>/dev/null \
     | grep -v null \
-    | jq -r ' "\(.name) IN \(.type) \(.answer)"' 2>/dev/null | sort -u
+    | sort -u
 }
 
 for record in "${RECORD_TYPES[@]}"
