@@ -1,11 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ValueGeneration;
 using Microsoft.Extensions.Logging;
 using pwnctl.core.BaseClasses;
 using pwnctl.core.Entities;
 using System.Reflection;
 using Newtonsoft.Json;
 using Microsoft.Extensions.FileSystemGlobbing;
+using Microsoft.Extensions.DependencyInjection;
 using pwnctl.infra.Configuration;
+using pwnctl.infra.Persistence.IdGenerators;
 using System.Linq.Expressions;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
@@ -44,6 +47,7 @@ namespace pwnctl.infra.Persistence
         public DbSet<core.Entities.Assets.Endpoint> Endpoints { get; set; }
         public DbSet<core.Entities.Assets.Parameter> Parameters { get; set; }
         public DbSet<core.Entities.Tag> Tags { get; set; }
+        public DbSet<core.Entities.Keyword> Keywords { get; set; }
 
         public static PwnctlDbContext Initialize()
         {
@@ -59,20 +63,16 @@ namespace pwnctl.infra.Persistence
                 instance.Database.Migrate();
             }
 
-            //var taskDefinitionFile = $"{EnvironmentVariables.PWNCTL_INSTALL_PATH}/seed/task-definitions.json";
             var taskDefinitionFile = $"{EnvironmentVariables.PWNCTL_INSTALL_PATH}/seed/task-definitions.yml";
 
             if (!instance.TaskDefinitions.Any() && File.Exists(taskDefinitionFile))
             {
                 var taskText = File.ReadAllText(taskDefinitionFile);
-                //var taskDefinitions = JsonConvert.DeserializeObject<List<TaskDefinition>>(taskText);
                 var deserializer = new DeserializerBuilder()
                            .WithNamingConvention(PascalCaseNamingConvention.Instance) 
                            .Build();
-                //var yaml = serializer.Serialize(taskDefinitions);
                 var taskDefinitions = deserializer.Deserialize<List<TaskDefinition>>(taskText);
 
-                //Console.WriteLine(yaml);
                 instance.TaskDefinitions.AddRange(taskDefinitions);
                 instance.SaveChanges();
             }
@@ -117,9 +117,8 @@ namespace pwnctl.infra.Persistence
 #if DEBUG
                 optionsBuilder.UseLoggerFactory(_loggerFactory).EnableSensitiveDataLogging(true);
 #endif
-                optionsBuilder.UseSqlite(ConnectionString
-                    ,x => x.MigrationsHistoryTable("__EFMigrationHistory")
-                    );
+                optionsBuilder.ReplaceService<StringValueGenerator, HashIdValueGenerator>()
+                            .UseSqlite(ConnectionString, x => x.MigrationsHistoryTable("__EFMigrationHistory"));
             }
         }
 

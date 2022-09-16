@@ -39,8 +39,8 @@ public class Tests
         AssetParser.TryParse("example.com", out Type[] assetTypes, out BaseAsset[] assets);
         Assert.Contains(assetTypes, t => t == typeof(Domain));
         Assert.Contains(assets, t => t.GetType() == typeof(Domain));
-        Assert.Single(assets);
-        Assert.Single(assetTypes);
+        Assert.Equal(2, assets.Count());
+        Assert.Equal(2, assetTypes.Count());
 
         AssetParser.TryParse("1.3.3.7", out assetTypes, out assets);
         Assert.Contains(assetTypes, t => t == typeof(Host));
@@ -73,8 +73,8 @@ public class Tests
         AssetParser.TryParse("xyz.example.com", out assetTypes, out assets);
         Assert.Contains(assetTypes, t => t == typeof(Domain));
         Assert.Contains(assets, t => t.GetType() == typeof(Domain));
-        Assert.Equal(2, assets.Length);
-        Assert.Equal(2, assetTypes.Length);
+        Assert.Equal(3, assets.Length);
+        Assert.Equal(3, assetTypes.Length);
 
         AssetParser.TryParse("xyz.example.com IN A 31.3.3.7", out assetTypes, out assets);
         Assert.Contains(assetTypes, t => t == typeof(DNSRecord));
@@ -310,7 +310,7 @@ public class Tests
 
         processor.ProcessAsync(JsonConvert.SerializeObject(exampleUrl)).Wait();
 
-        endpoint = context.Endpoints.Include(e => e.Tags).Where(ep => ep.Uri == "https://example.com:443/").First();
+        endpoint = context.Endpoints.Include(e => e.Tags).Where(ep => ep.Url == "https://example.com:443/").First();
         ctTag = endpoint.Tags.First(t => t.Name == "content-type");
         Assert.Equal("text/html", ctTag.Value);
 
@@ -334,7 +334,7 @@ public class Tests
 
         // process same asset twice and make sure tasks are only assigned once
         processor.ProcessAsync(JsonConvert.SerializeObject(teslaUrl)).Wait();
-        endpoint = (Endpoint) context.Endpoints.Include(e => e.Tags).Where(ep => ep.Uri == "https://iis.tesla.com:443/").First();
+        endpoint = (Endpoint) context.Endpoints.Include(e => e.Tags).Where(ep => ep.Url == "https://iis.tesla.com:443/").First();
         var tasks = context.Tasks.Include(t => t.Definition).Where(t => t.EndpointId == endpoint.Id).ToList();
         Assert.True(!tasks.GroupBy(t => t.DefinitionId).Any(g => g.Count() > 1));
         srvTag = endpoint.Tags.First(t => t.Name == "protocol");
@@ -353,7 +353,7 @@ public class Tests
 
         // test Tag filter
         processor.ProcessAsync(JsonConvert.SerializeObject(apacheTeslaUrl)).Wait();
-        endpoint = context.Endpoints.Include(e => e.Tags).Where(ep => ep.Uri == "https://apache.tesla.com:443/").First();
+        endpoint = context.Endpoints.Include(e => e.Tags).Where(ep => ep.Url == "https://apache.tesla.com:443/").First();
         tasks = context.Tasks.Include(t => t.Definition).Where(t => t.EndpointId == endpoint.Id).ToList();
         Assert.DoesNotContain(tasks, t => t.Definition.ShortName == "shortname_scanner");
     }

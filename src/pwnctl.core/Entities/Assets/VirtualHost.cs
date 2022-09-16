@@ -6,7 +6,7 @@ namespace pwnctl.core.Entities.Assets
     {
         public string Name { get; set; }
         public Service Service { get; set; }
-        public int ServiceId { get; set; }
+        public string ServiceId { get; set; }
 
         private VirtualHost() {}
 

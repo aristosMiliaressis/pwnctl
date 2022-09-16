@@ -13,10 +13,10 @@ namespace pwnctl.core.Entities.Assets
         public TransportProtocol TransportProtocol { get; set; }
         public string ApplicationProtocol { get; set; }
        
-        public int? HostId { get; set; }
+        public string HostId { get; set; }
         public Host Host { get; set; }
 
-        public int? DomainId { get; set; }
+        public string DomainId { get; set; }
         public Domain Domain { get; set; }
 
         private Service() {}
@@ -32,7 +32,7 @@ namespace pwnctl.core.Entities.Assets
         public Service(Host host, ushort port, TransportProtocol l4Proto = TransportProtocol.TCP)
         {
             Host = host;
-            HostId = 0;
+            HostId = null;
             TransportProtocol = l4Proto;
             Port = port;
             Origin = l4Proto.ToString().ToLower() + "://" + host.IP + ":" + port;

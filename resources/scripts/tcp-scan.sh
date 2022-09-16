@@ -3,7 +3,7 @@
 ip=$1
 temp=`mktemp`;
 
-rustscan -r 1-65535 -a $ip -- -sSV -oG $temp >/dev/null;
+rustscan -r 1-65535 -a $ip -- -sSV --script-args http.useragent="$(uagen)" -oG $temp >/dev/null;
 
 cat $temp \
 	| sed 's/Ports: /\n/g' \

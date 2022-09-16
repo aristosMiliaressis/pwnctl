@@ -4,9 +4,8 @@ using System.Reflection;
 
 namespace pwnctl.core.BaseClasses
 {
-    public abstract class BaseAsset : BaseEntity
+    public abstract class BaseAsset : BaseEntity<string>
     {
-        public new int Id { get; set; }
         public new DateTime FoundAt { get; set; }
         public bool InScope { get; set; }
         public bool IsRoutable { get; set; }

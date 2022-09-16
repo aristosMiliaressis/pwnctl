@@ -9,7 +9,7 @@ namespace pwnctl.core.Entities.Assets
         [UniquenessAttribute]
         public string Name { get; set; }
         public bool IsRegistrationDomain { get; set; }
-        public int? RegistrationDomainId { get; set; }
+        public string RegistrationDomainId { get; set; }
         public Domain RegistrationDomain { get; set; }
         public List<DNSRecord> DNSRecords { get; set; }
 
@@ -37,30 +37,35 @@ namespace pwnctl.core.Entities.Assets
                  || assetText.Contains("*"))
                     return false;
 
-                if (_domainRegex.Match(assetText).Success)
-                {
-                    var domain = new Domain(assetText);
-                    domain.AddTags(tags);
-                    assets = new BaseAsset[] { domain };
-                    if (domain.RegistrationDomain != null)
-                    {
-                        var parentDomain = domain.RegistrationDomain.Name;
-                        var subs = domain.Name.Replace(parentDomain, "")
-                                    .Split(".")
-                                    .Where(sub => !string.IsNullOrEmpty(sub))
-                                    .Skip(1)
-                                    .Reverse()
-                                    .ToList();
-                        foreach (var sub in subs) 
-                        {
-                            parentDomain = sub+"."+parentDomain;
-                            assets = assets.Append(new Domain(parentDomain)).ToArray();
-                        }
-                        assets = assets.Append(domain.RegistrationDomain).ToArray();
-                    }
+                if (!_domainRegex.Match(assetText).Success)
+                    return false;
 
-                    return true;
+                var domain = new Domain(assetText);
+                domain.AddTags(tags);
+                assets = new BaseAsset[] { domain };
+                if (domain.RegistrationDomain != null)
+                {
+                    var parentDomain = domain.RegistrationDomain.Name;
+                    var subs = domain.Name.Replace(parentDomain, "")
+                                .Split(".")
+                                .Where(sub => !string.IsNullOrEmpty(sub))
+                                .Skip(1)
+                                .Reverse()
+                                .ToList();
+                    foreach (var sub in subs)
+                    {
+                        parentDomain = sub + "." + parentDomain;
+                        assets = assets.Append(new Domain(parentDomain)).ToArray();
+                    }
+                    assets = assets.Append(domain.RegistrationDomain).ToArray();
                 }
+
+                var regDomain = PwnctlCoreShim.PublicSuffixRepository.GetRegistrationDomain(domain.Name);
+                var pubSuffix = PwnctlCoreShim.PublicSuffixRepository.GetPublicSuffix(domain.Name);
+                var word = regDomain.Substring(0, regDomain.Length - pubSuffix.Suffix.Length - 1);
+                assets = assets.Append(new Keyword(word)).ToArray();
+
+                return true;
             }
             catch
             {

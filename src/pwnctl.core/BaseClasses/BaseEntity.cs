@@ -6,12 +6,17 @@ namespace pwnctl.core.BaseClasses
 {
     public abstract class BaseEntity
     {
+
+    }
+
+    public abstract class BaseEntity<TPKey> : BaseEntity
+    {
         protected BaseEntity()
         {
             FoundAt = DateTime.Now;
         }
 
-        public int Id { get; set; }
+        public TPKey Id { get; set; }
         public DateTime FoundAt { get; set; }
     }
 }

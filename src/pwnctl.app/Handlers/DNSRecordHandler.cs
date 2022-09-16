@@ -11,6 +11,14 @@ namespace pwnctl.app.Handlers
 
         protected override async Task<DNSRecord> HandleAsync(DNSRecord record)
         {
+            if (record.Host != null)
+            {
+                record.Host  = await _context.Hosts
+                                            .Include(h => h.AARecords)
+                                            .ThenInclude(r => r.Domain)
+                                            .FirstOrDefaultAsync(d => d.IP == record.Host.IP);
+            }
+
             if (!ScopeChecker.Singleton.IsInScope(record))
                 return record;
 

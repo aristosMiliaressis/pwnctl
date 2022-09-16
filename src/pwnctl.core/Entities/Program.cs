@@ -3,7 +3,7 @@ using pwnctl.core.BaseClasses;
 
 namespace pwnctl.core.Entities
 {
-    public class Program : BaseEntity
+    public class Program : BaseEntity<int>
     {
         public string Name { get; set; }
         public string Platform { get; set; }

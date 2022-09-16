@@ -3,7 +3,7 @@
 ip=$1
 temp=`mktemp`;
 
-nmap -sU -sV --version-intensity 0 -F -n $ip -oG $temp >/dev/null;
+nmap -sU --script-args http.useragent="$(uagen)" -sV --version-intensity 0 -F -n $ip -oG $temp >/dev/null;
 
 cat $temp \
 	| sed 's/Ports: /\n/g' \

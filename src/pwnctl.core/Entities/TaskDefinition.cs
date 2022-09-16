@@ -2,7 +2,7 @@ using pwnctl.core.BaseClasses;
 
 namespace pwnctl.core.Entities
 {
-    public class TaskDefinition : BaseEntity
+    public class TaskDefinition : BaseEntity<int>
     {
         public string ShortName { get; set; }
 		public string CommandTemplate { get; set; }

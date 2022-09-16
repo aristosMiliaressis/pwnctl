@@ -51,7 +51,9 @@ RUN go install github.com/tomnomnom/anew@latest
 RUN go install github.com/d3mondev/puredns/v2@latest
 RUN go install github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
 RUN go install github.com/aristosMiliaressis/urgo@latest
+RUN go install github.com/projectdiscovery/dnsx/cmd/dnsx@latest
 RUN git clone https://github.com/zmap/zdns.git && cd zdns && go build && cp zdns /usr/bin
+RUN pip install useragent-picker-cli && uagen
 
 RUN git clone https://github.com/ProjectAnte/dnsgen && cd dnsgen && pip3 install -r requirements.txt && python3 setup.py install
 RUN git clone https://github.com/dcsync/recontools.git /opt/recontools

@@ -12,8 +12,8 @@ namespace pwnctl.core.Entities.Assets
         public string Key {get; set;}
         public string Value { get; set; }
 
-        public int? HostId { get; set; }
-        public int? DomainId { get; set; }
+        public string HostId { get; set; }
+        public string DomainId { get; set; }
 
         public Host Host { get; set; }
         public Domain Domain { get; set; }

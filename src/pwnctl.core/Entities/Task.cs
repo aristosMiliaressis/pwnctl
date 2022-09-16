@@ -4,7 +4,7 @@ using pwnctl.core.Entities.Assets;
 
 namespace pwnctl.core.Entities
 {
-    public class Task : BaseEntity
+    public class Task : BaseEntity<int>
     {
         public int DefinitionId { get; set; }
         public TaskDefinition Definition { get; set; }
@@ -16,22 +16,22 @@ namespace pwnctl.core.Entities
 		public string Arguments { get; set; }
 
         public Host Host { get; set; }
-        public int? HostId { get; set; }
+        public string HostId { get; set; }
 
         public Service Service { get; set; }
-        public int? ServiceId { get; set; }
+        public string ServiceId { get; set; }
 
         public Endpoint Endpoint { get; set; }
-        public int? EndpointId { get; set; }
+        public string EndpointId { get; set; }
 
         public Domain Domain { get; set; }
-        public int? DomainId { get; set; }
+        public string DomainId { get; set; }
 
         public DNSRecord DNSRecord { get; set; }
-        public int? DNSRecordId { get; set; }
+        public string DNSRecordId { get; set; }
 
         public NetRange NetRange { get; set; }
-        public int? NetRangeId { get; set; }
+        public string NetRangeId { get; set; }
 
         private Task() {}
 

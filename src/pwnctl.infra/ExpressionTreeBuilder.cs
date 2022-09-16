@@ -45,7 +45,6 @@ namespace pwnctl.infra
             var expression = Expression.Equal(lref, rval);
 
             lref = Expression.PropertyOrField(_param, asset.GetType().Name + "Id");
-            lref = Expression.PropertyOrField(lref, "Value");
             rval = Expression.Constant(asset.Id);
             var assetExpression = Expression.Equal(lref, rval);
 
@@ -68,7 +67,6 @@ namespace pwnctl.infra
             var expression = Expression.Equal(lref, rval);
 
             lref = Expression.PropertyOrField(_param, asset.GetType().Name + "Id");
-            lref = Expression.PropertyOrField(lref, "Value");
             rval = Expression.Constant(asset.Id);
             var assetExpression = Expression.Equal(lref, rval);
 

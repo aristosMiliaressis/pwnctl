@@ -10,6 +10,7 @@ namespace pwnctl.core.Entities.Assets
         public Parameter(Endpoint endpoint, string name, ParamType type, string urlEncodedCsValues)
         {
             Endpoint = endpoint;
+            Url = endpoint.Url;
             Name = name;
             Type = type;
             UrlEncodedCsValues = urlEncodedCsValues;
@@ -26,8 +27,9 @@ namespace pwnctl.core.Entities.Assets
         }
 
         public Endpoint Endpoint { get; set; }
+        public string EndpointId { get; set; }
         [UniquenessAttribute]
-        public int EndpointId { get; set; }
+        public string Url { get; set; }
 
         [UniquenessAttribute]
         public string Name { get; set; }

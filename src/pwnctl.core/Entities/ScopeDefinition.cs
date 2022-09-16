@@ -4,7 +4,7 @@ using pwnctl.core.BaseClasses;
 
 namespace pwnctl.core.Entities
 {
-    public class ScopeDefinition : BaseEntity
+    public class ScopeDefinition : BaseEntity<int>
     {
         public string Name { get; set; }
         public ScopeType Type { get; set; }

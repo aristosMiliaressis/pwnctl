@@ -6,9 +6,9 @@ namespace pwnctl.core.Entities.Assets
     public class Endpoint : BaseAsset
     {
         [UniquenessAttribute]
-        public string Uri { get; set; }
+        public string Url { get; set; }
 
-        public int ServiceId { get; set; }
+        public string ServiceId { get; set; }
         public Service Service { get; set; }
 
         public string Scheme { get; set; }
@@ -43,7 +43,7 @@ namespace pwnctl.core.Entities.Assets
             Scheme = scheme;
             Service = service;
             Path = path;
-            Uri = $"{Service.Origin.Replace("tcp", scheme)}{path}" + (path.EndsWith("/") ? "" : "/");
+            Url = $"{Service.Origin.Replace("tcp", scheme)}{path}" + (path.EndsWith("/") ? "" : "/");
         }
 
         public static bool TryParse(string assetText, List<Tag> tags, out BaseAsset[] assets)

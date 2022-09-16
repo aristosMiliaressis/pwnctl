@@ -106,14 +106,14 @@ this should probably be in yaml for less character escaping in the command templ
   Subject: Host
 
 - ShortName: dir_brute_common
-  CommandTemplate: dir-brute.sh {{Uri}} /opt/resources/wordlists/Discovery/Web-Content/common.txt
+  CommandTemplate: dir-brute.sh {{Url}} /opt/resources/wordlists/Discovery/Web-Content/common.txt
   IsActive: true
   Aggressiveness: 8
   Filter: Endpoint.Path == "/"
   Subject: Endpoint
 
 - ShortName: hakrawler
-  CommandTemplate: "echo '{{Uri}}' | hakrawler -insecure -h 'User-Agent: Mozilla/5.0'"
+  CommandTemplate: "echo '{{Url}}' | hakrawler -insecure -h 'User-Agent: Mozilla/5.0'"
   IsActive: true
   Aggressiveness: 3
   Filter: Endpoint["Content-Type"].Contains("/html") || Endpoint["Content-Type"].Contains("/xhtml")

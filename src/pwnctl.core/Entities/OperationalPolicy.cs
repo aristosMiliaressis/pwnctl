@@ -6,7 +6,7 @@ using pwnctl.core.BaseClasses;
 
 namespace pwnctl.core.Entities
 {
-    public class OperationalPolicy : BaseEntity
+    public class OperationalPolicy : BaseEntity<int>
     {
         public string Name { get; set; }
 		public string Blacklist { get; set; }
