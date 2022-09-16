@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using pwnctl.app.Utilities;
-using pwnctl.infra.Logging;
+using pwnctl.core.BaseClasses;
 using pwnctl.core.Entities.Assets;
 
 namespace pwnctl.app.Handlers
@@ -37,6 +37,11 @@ namespace pwnctl.app.Handlers
 
             if (host != null && !host.InScope)
             {
+                // this prevents some db errors
+                _context.ChangeTracker.Entries()
+                                        .Where(e => e.Entity.GetType() == typeof(Domain))
+                                        .ToList()
+                                        .ForEach(d => d.State = EntityState.Detached);
                 host.InScope = true;
                 await _context.SaveChangesAsync();
                 host.AARecords.Add(record);
