@@ -35,8 +35,8 @@ RUN go get -u github.com/tomnomnom/unfurl
 RUN GO111MODULE=on go get -v github.com/projectdiscovery/shuffledns/cmd/shuffledns
 
 RUN mkdir -p /opt/pwntainer/data/ \
-    && mkdir -p /opt/resources/wordlists \
-    && mkdir /opt/resources/scripts
+    && mkdir /opt/wordlists \
+    && mkdir /opt/scripts
 
 RUN wget https://github.com/RustScan/RustScan/releases/download/2.0.1/rustscan_2.0.1_amd64.deb \
     && dpkg -i rustscan_2.0.1_amd64.deb && rm rustscan_2.0.1_amd64.deb
@@ -57,8 +57,8 @@ RUN pip install useragent-picker-cli && uagen
 
 RUN git clone https://github.com/ProjectAnte/dnsgen && cd dnsgen && pip3 install -r requirements.txt && python3 setup.py install
 RUN git clone https://github.com/dcsync/recontools.git /opt/recontools
-RUN git clone https://github.com/danielmiessler/SecLists.git /opt/resources/wordlists
-RUN wget -O /opt/resources/wordlists/commonspeak2.txt https://raw.githubusercontent.com/assetnote/commonspeak2-wordlists/master/subdomains/subdomains.txt
+RUN git clone https://github.com/danielmiessler/SecLists.git /opt/wordlists
+RUN wget -O /opt/wordlists/commonspeak2.txt https://raw.githubusercontent.com/assetnote/commonspeak2-wordlists/master/subdomains/subdomains.txt
 RUN curl -L https://github.com/OWASP/Amass/releases/download/v3.19.3/amass_linux_amd64.zip -o /tmp/amass_linux_amd64.zip \
     && unzip -o /tmp/amass_linux_amd64.zip  -d /tools/recon/amass/amass_linux_amd64/ && rm /tmp/amass_linux_amd64.zip
 RUN git clone https://github.com/darkoperator/dnsrecon.git \
@@ -96,10 +96,10 @@ RUN ln -s /app/pwnctl.cli /usr/local/bin/pwnctl
 RUN wget -O /usr/local/bin/job-queue.sh https://raw.githubusercontent.com/aristosMiliaressis/job-queue.sh/master/job-queue.sh \
     && chmod +x /usr/local/bin/job-queue.sh
 
-COPY resources/scripts/* /opt/resources/scripts/
-COPY resources/wordlists/ /opt/resources/wordlists/
-RUN chmod -R +x /opt/resources/scripts \
-    && mv /opt/resources/scripts/* /usr/local/bin/
+COPY scripts/* /opt/scripts/
+COPY wordlists/ /opt/wordlists/
+RUN chmod -R +x /opt/scripts \
+    && mv /opt/scripts/* /usr/local/bin/
     
 ENV PWNCTL_INSTALL_PATH "/opt/pwntainer"
 

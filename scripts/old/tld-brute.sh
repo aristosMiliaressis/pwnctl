@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DNS_RESOLVERS_FILE='/opt/resources/wordlists/dns/resolvers_top25.txt'
+DNS_RESOLVERS_FILE='/opt/wordlists/dns/resolvers_top25.txt'
 WILDCARD_TESTS=30
 
 #wget -O $DNS_RESOLVERS_FILE https://raw.githubusercontent.com/janmasarik/resolvers/master/resolvers.txt 2> /dev/null

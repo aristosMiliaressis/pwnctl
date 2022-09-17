@@ -6,7 +6,7 @@ sort_and_uniq() {
 	rm temp.txt
 }
 
-DNS_RESOLVERS_FILE=/usr/local/bin/resolvers_top25.txt
+DNS_RESOLVERS_FILE=/opt/wordlists/dns/resolvers_top25.txt
 domain=$1
 
 domainsfile=subdomains.txt
