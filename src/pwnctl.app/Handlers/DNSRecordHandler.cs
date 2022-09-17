@@ -38,10 +38,12 @@ namespace pwnctl.app.Handlers
             if (host != null && !host.InScope)
             {
                 // this prevents some db errors
-                _context.ChangeTracker.Entries()
-                                        .Where(e => e.Entity.GetType() == typeof(Domain))
-                                        .ToList()
-                                        .ForEach(d => d.State = EntityState.Detached);
+                _context.ChangeTracker.TrackGraph(host, e =>
+                {
+                    if (e.Entry.Entity is Domain)
+                        e.Entry.State = EntityState.Detached;
+                });
+            
                 host.InScope = true;
                 await _context.SaveChangesAsync();
                 host.AARecords.Add(record);

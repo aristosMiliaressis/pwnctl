@@ -17,6 +17,13 @@ namespace pwnctl.core.BaseClasses
         { 
             get { return Tags.FirstOrDefault(t => t.Name == key.ToLower())?.Value ?? string.Empty; }
             set {
+                var property = this.GetType().GetProperties().FirstOrDefault(p => p.Name.ToLower() == key.ToLower());
+                if (property != null)
+                {
+                    property.SetValue(this, value);
+                    return;
+                }
+
                 var tag = new Tag(key, value);
                 Tags.Add(tag);
             }

@@ -61,6 +61,9 @@ RUN git clone https://github.com/danielmiessler/SecLists.git /opt/resources/word
 RUN wget -O /opt/resources/wordlists/commonspeak2.txt https://raw.githubusercontent.com/assetnote/commonspeak2-wordlists/master/subdomains/subdomains.txt
 RUN curl -L https://github.com/OWASP/Amass/releases/download/v3.19.3/amass_linux_amd64.zip -o /tmp/amass_linux_amd64.zip \
     && unzip -o /tmp/amass_linux_amd64.zip  -d /tools/recon/amass/amass_linux_amd64/ && rm /tmp/amass_linux_amd64.zip
+RUN git clone https://github.com/darkoperator/dnsrecon.git \
+    && cd dnsrecon && pip install -r requirements.txt && python3 setup.py install
+RUN git clone https://github.com/initstring/cloud_enum.git && cd cloud_enum && pip install -r requirements.txt
 
 RUN pip3 install arjun
 RUN apt-get install -y ldnsutils

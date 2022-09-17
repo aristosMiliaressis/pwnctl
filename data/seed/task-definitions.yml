@@ -1,6 +1,12 @@
 - ShortName: ping_sweep
-  CommandTemplate: "rand=`mktemp`; nmap -sn {{CIDR}} -oG $rand; cat $rand | grep 'Status: Up' | cut -f 2 -d ' '"
+  CommandTemplate: ping-sweep.sh {{CIDR}}
   IsActive: true
+  Aggressiveness: 1
+  Subject: NetRange
+
+- ShortName: reverse_range_lookup
+  CommandTemplate: reverse-range-lookup.sh {{CIDR}}
+  IsActive: false
   Aggressiveness: 1
   Subject: NetRange
 
@@ -12,6 +18,12 @@
 
 - ShortName: httpx
   CommandTemplate: echo {{Name}} | httpx -silent
+  IsActive: true
+  Aggressiveness: 2
+  Subject: Domain
+
+- ShortName: zone_trasfer
+  CommandTemplate: zone-transfer.sh {{Name}}
   IsActive: true
   Aggressiveness: 2
   Subject: Domain
@@ -89,7 +101,7 @@
   Subject: Endpoint
 
 - ShortName: header_and_favicon_grab
-  CommandTemplate: "echo {{Url}} | urgo -H \"User-Agent: $(uagen)\" -rH Server -rH X-Powered-By -rH Via -rf Content-Type -f -st | jq -c '{asset:.Url, tags:.ResponseHeasers}'"
+  CommandTemplate: "echo {{Url}} | urgo -H \"User-Agent: $(uagen)\" -rH Server -rH X-Powered-By -rH Via -rH Content-Type -f -sC | jq -c '{asset:.Url, tags:.ResponseHeasers}'"
   IsActive: true
   Aggressiveness: 2
   Filter: Endpoint.Path == "/"
@@ -110,8 +122,14 @@
   Subject: Endpoint
 
 - ShortName: zone_walking
-  CommandTemplate: ldns-walk {{Key}} | grep IN
+  CommandTemplate: ldns-walk {{Key}} | tail -n +2 | cut -d ' ' -f 1
   IsActive: true
   Aggressiveness: 1
   Filter: DNSRecord.Type == pwnctl.core.Entities.Assets.DNSRecord.RecordType.NSEC
   Subject: DNSRecord
+
+- ShortName: cloud_enum
+  CommandTemplate: cloud-enum.sh {{Word}}
+  IsActive: true
+  Aggressiveness: 5
+  Subject: Keyword

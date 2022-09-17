@@ -356,6 +356,18 @@ public class Tests
         endpoint = context.Endpoints.Include(e => e.Tags).Where(ep => ep.Url == "https://apache.tesla.com:443/").First();
         tasks = context.Tasks.Include(t => t.Definition).Where(t => t.EndpointId == endpoint.Id).ToList();
         Assert.DoesNotContain(tasks, t => t.Definition.ShortName == "shortname_scanner");
+
+        var sshService = new
+        {
+            asset = "1.3.3.7:22",
+            tags = new Dictionary<string, string>{
+               {"ApplicationProtocol", "ssh"}
+            }
+        };
+
+        processor.ProcessAsync(JsonConvert.SerializeObject(sshService)).Wait();
+        var service = context.Services.Where(ep => ep.Origin == "tcp://1.3.3.7:22").First();
+        Assert.Equal("ssh", service.ApplicationProtocol);
     }
 
     // [Fact]
