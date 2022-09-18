@@ -1,11 +1,11 @@
 
 Providers:
-  Name: DiscordNotificationProvider
-  Channels:
-    - Name: crits
-      Filter: Rule.Severity == "critical"
-    - Name: misconfigs
-      Filter: Rule.Topic == "misconfigs"
+  - Name: DiscordNotificationProvider
+    Channels:
+      - Name: crits
+        Filter: Rule.Severity == "critical"
+      - Name: misconfigs
+        Filter: Rule.Topic == "misconfigs"
 
 Rules:
   - ShortName: default_creds
@@ -20,7 +20,7 @@ Rules:
   - ShortName: cname_takeover
   - ShortName: cors_misconfig
   - ShortName: info_disclosure
-    Filter: ["/git", "/phpinfo.php", "/Trace.axd"]
+    Filter: "[\"/git\", \"/phpinfo.php\", \"/Trace.axd\"]"
     Topic: info_disclosure
     Severity: medium
 

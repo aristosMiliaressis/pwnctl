@@ -2,8 +2,9 @@
 
 temp=`mktemp` 
 cidr=$1
+RESOLVERS=$(cat /opt/wordlists/dns/resolvers_top25.txt| tr '\n' ',')
 
-dnsrecon -r $cidr -t rvl -j $temp >/dev/null
+dnsrecon -r $cidr -t rvl -j $temp -n $RESOLVERS >/dev/null
 
 cat $temp | jq -c .[] | grep "\[{" | jq -r .[].name
 

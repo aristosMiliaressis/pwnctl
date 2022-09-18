@@ -1,7 +1,7 @@
 using pwnctl.core.Attributes;
 using pwnctl.core.BaseClasses;
 
-namespace pwnctl.core.Entities
+namespace pwnctl.core.Entities.Assets
 {
     public class Keyword : BaseAsset
     {
@@ -18,6 +18,11 @@ namespace pwnctl.core.Entities
         public override bool Matches(ScopeDefinition definition)
         {
             return false;
+        }
+
+        public override string ToJson()
+        {
+            throw new NotImplementedException();
         }
     }
 }

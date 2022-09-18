@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using pwnctl.core.Entities;
+using pwnctl.core.Entities.Assets;
 using pwnctl.infra.Persistence.IdGenerators;
 
 namespace pwnctl.infra.Persistence.EntityConfiguration

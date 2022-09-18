@@ -26,5 +26,9 @@ namespace pwnctl.core.Entities.Assets
             throw new NotImplementedException();
         }
 
+        public override string ToJson()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

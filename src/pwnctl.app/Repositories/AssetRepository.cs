@@ -2,15 +2,10 @@ using pwnctl.app.Utilities;
 using pwnctl.infra;
 using pwnctl.infra.Persistence;
 using pwnctl.infra.Persistence.Extensions;
-using pwnctl.infra.Repositories;
-using pwnctl.infra.Logging;
-using pwnctl.core.Attributes;
 using pwnctl.core.BaseClasses;
-using pwnctl.core.Entities;
+using pwnctl.core.Entities.Assets;
 using pwnctl.core.Interfaces;
-using Newtonsoft.Json;
-using System.Reflection;
-using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
 
 namespace pwnctl.app.Repositories
 {
@@ -85,6 +80,46 @@ namespace pwnctl.app.Repositories
             _context.Entry(asset).LoadReferencesRecursivelyAsync().Wait();
 
             return asset;
+        }
+
+        public List<Host> ListHosts()
+        {
+            return _context.Hosts.Include(a => a.Tags).ToList();
+        }
+
+        public List<Domain> ListDomains()
+        {
+            return _context.Domains.Include(a => a.Tags).ToList();
+        }
+
+        public List<DNSRecord> ListDNSRecords()
+        {
+            return _context.DNSRecords.Include(a => a.Tags).ToList();
+        }
+
+        public List<Endpoint> ListEndpoints()
+        {
+            return _context.Endpoints
+                            .Include(a => a.Tags)
+                            .Include(e => e.Service)
+                                .ThenInclude(s => s.Host)
+                            .Include(e => e.Service)
+                                .ThenInclude(s => s.Domain)
+                            .ToList();
+        }
+
+        public List<NetRange> ListNetRanges()
+        {
+            return _context.NetRanges.Include(a => a.Tags).ToList();
+        }
+
+        public List<Service> ListServices()
+        {
+            return _context.Services
+                            .Include(a => a.Tags)
+                            .Include(e => e.Host)
+                            .Include(e => e.Domain)
+                            .ToList();
         }
     }
 }

@@ -100,10 +100,17 @@
   Filter: Endpoint.Path == "/"
   Subject: Endpoint
 
-- ShortName: header_and_favicon_grab
-  CommandTemplate: "echo {{Url}} | urgo -H \"User-Agent: $(uagen)\" -rH Server -rH X-Powered-By -rH Via -rH Content-Type -f -sC | jq -c '{asset:.Url, tags:.ResponseHeasers}'"
+- ShortName: grab_url_metadata
+  CommandTemplate: grab-url-metadata.sh {{Url}}
   IsActive: true
   Aggressiveness: 2
+  Filter: Endpoint.Path == "/"
+  Subject: Endpoint
+
+- ShortName: whatweb
+  CommandTemplate: whatweb.sh {{Url}}
+  IsActive: true
+  Aggressiveness: 5
   Filter: Endpoint.Path == "/"
   Subject: Endpoint
 

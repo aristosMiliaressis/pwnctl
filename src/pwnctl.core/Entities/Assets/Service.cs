@@ -1,5 +1,7 @@
 ﻿using pwnctl.core.Attributes;
 using pwnctl.core.BaseClasses;
+using pwnctl.core.Models;
+using Newtonsoft.Json;
 
 namespace pwnctl.core.Entities.Assets
 {
@@ -9,17 +11,17 @@ namespace pwnctl.core.Entities.Assets
 
         [UniquenessAttribute]
         public string Origin { get; set; }
- 
+
         public TransportProtocol TransportProtocol { get; set; }
         public string ApplicationProtocol { get; set; }
-       
+
         public string HostId { get; set; }
         public Host Host { get; set; }
 
         public string DomainId { get; set; }
         public Domain Domain { get; set; }
 
-        private Service() {}
+        private Service() { }
 
         public Service(Domain domain, ushort port, TransportProtocol l4Proto = TransportProtocol.TCP)
         {
@@ -91,11 +93,29 @@ namespace pwnctl.core.Entities.Assets
 
         public override bool Matches(ScopeDefinition definition)
         {
-            return Host != null && Host.Matches(definition) 
+            return Host != null && Host.Matches(definition)
                 || Domain != null && Domain.Matches(definition);
         }
-    }
 
+        public override string ToJson()
+        {
+            var dto = new AssetDTO
+            {
+                Asset = Origin,
+                Tags = new Dictionary<string, string>
+                {
+                    {"Port", Port.ToString()},
+                    {"Host", Host?.IP},
+                    {"Domain", Domain?.ToString()},
+                    {"TransportProtocol", TransportProtocol.ToString()}
+                }
+            };
+
+            Tags.ForEach(t => dto.Tags.Add(t.Name, t.Value));
+
+            return JsonConvert.SerializeObject(dto);
+        }
+    }
     public enum TransportProtocol
     {
         TCP,

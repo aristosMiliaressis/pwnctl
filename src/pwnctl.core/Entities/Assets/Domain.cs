@@ -1,6 +1,8 @@
-﻿using System.Text.RegularExpressions;
-using pwnctl.core.Attributes;
+﻿using pwnctl.core.Attributes;
 using pwnctl.core.BaseClasses;
+using pwnctl.core.Models;
+using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 
 namespace pwnctl.core.Entities.Assets
 {
@@ -79,6 +81,22 @@ namespace pwnctl.core.Entities.Assets
         {
             return definition.Type == ScopeDefinition.ScopeType.DomainRegex 
                 && new Regex(definition.Pattern).Matches(Name).Count > 0;
+        }
+
+        public override string ToJson()
+        {
+            var dto = new AssetDTO
+            {
+                Asset = Name,
+                Tags = new Dictionary<string, string>
+                {
+                    {"IsRegistrationDomain", IsRegistrationDomain.ToString()}
+                }
+            };
+
+            Tags.ForEach(t => dto.Tags.Add(t.Name, t.Value));
+
+            return JsonConvert.SerializeObject(dto);
         }
 
         private static readonly Regex _domainRegex = new Regex("(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]");

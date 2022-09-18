@@ -1,6 +1,8 @@
 ﻿using pwnctl.core.Attributes;
-using System.Net;
 using pwnctl.core.BaseClasses;
+using pwnctl.core.Models;
+using System.Net;
+using Newtonsoft.Json;
 
 namespace pwnctl.core.Entities.Assets
 {
@@ -12,7 +14,7 @@ namespace pwnctl.core.Entities.Assets
         public ushort NetPrefixBits { get; set; }
 
         public string CIDR => $"{FirstAddress}/{NetPrefixBits}";
-
+    
         private NetRange() {}
         
         public NetRange(string firstAddress, ushort netPrefix)
@@ -54,6 +56,23 @@ namespace pwnctl.core.Entities.Assets
         public override bool Matches(ScopeDefinition definition)
         {
             return definition.Type == ScopeDefinition.ScopeType.CIDR && NetRange.RoutesTo(FirstAddress, definition.Pattern);
+        }
+
+        public override string ToJson()
+        {
+            var dto = new AssetDTO
+            {
+                Asset = CIDR,
+                Tags = new Dictionary<string, string>
+                {
+                    {"FirstAddress", FirstAddress},
+                    {"NetPrefixBits", NetPrefixBits.ToString()}
+                }
+            };
+
+            Tags.ForEach(t => dto.Tags.Add(t.Name, t.Value));
+
+            return JsonConvert.SerializeObject(dto);
         }
     }
 }

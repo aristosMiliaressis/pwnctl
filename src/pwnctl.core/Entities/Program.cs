@@ -9,7 +9,7 @@ namespace pwnctl.core.Entities
         public string Platform { get; set; }
         public int? PolicyId { get; set; }
         public OperationalPolicy Policy { get; set; }
-        public List<ScopeDefinition> Scope { get; set; } 
+        public List<ScopeDefinition> Scope { get; set; }
 
         private Program() {}
     }

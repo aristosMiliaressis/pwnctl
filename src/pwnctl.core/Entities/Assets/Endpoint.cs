@@ -1,5 +1,7 @@
 ﻿using pwnctl.core.Attributes;
 using pwnctl.core.BaseClasses;
+using pwnctl.core.Models;
+using Newtonsoft.Json;
 
 namespace pwnctl.core.Entities.Assets
 {
@@ -85,6 +87,29 @@ namespace pwnctl.core.Entities.Assets
         public override bool Matches(ScopeDefinition definition)
         {
             return Service.Matches(definition);
+        }
+
+        public override string ToJson()
+        {
+            var dto = new AssetDTO
+            {
+                Asset = Url,
+                Tags = new Dictionary<string, string>
+                {
+                    {"Extension", Extension},
+                    {"Filename", Filename},
+                    {"Path", Path},
+                    {"Origin", Service.Origin},
+                    {"Port", Service.Port.ToString()},
+                    {"Host", Service?.Host?.IP},
+                    {"Domain", Service?.Domain?.Name},
+                    {"Scheme", Scheme}
+                }
+            };
+
+            Tags.ForEach(t => dto.Tags.Add(t.Name, t.Value));
+
+            return JsonConvert.SerializeObject(dto);
         }
     }
 }

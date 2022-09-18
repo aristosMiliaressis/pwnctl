@@ -24,6 +24,9 @@ namespace pwnctl.core.BaseClasses
                     return;
                 }
 
+                if (string.IsNullOrEmpty(value))
+                    return;
+
                 var tag = new Tag(key, value);
                 Tags.Add(tag);
             }
@@ -40,5 +43,7 @@ namespace pwnctl.core.BaseClasses
         public string DomainIdentifier => string.Join(",", GetType().GetProperties().Where(p => p.GetCustomAttribute(typeof(UniquenessAttribute)) != null).Select(p => p.GetValue(this).ToString()));
 
         public abstract bool Matches(ScopeDefinition definition);
+
+        public abstract string ToJson();
     }
 }

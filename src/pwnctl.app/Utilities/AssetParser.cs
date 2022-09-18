@@ -1,5 +1,6 @@
 using pwnctl.core.BaseClasses;
 using pwnctl.core.Entities;
+using pwnctl.core.Models;
 using pwnctl.app.Exceptions;
 using pwnctl.infra.Configuration;
 using Newtonsoft.Json;
@@ -61,15 +62,9 @@ namespace pwnctl.app.Utilities
             if (!assetText.TrimStart().StartsWith("{"))
                 return;
 
-            var entry = JsonConvert.DeserializeObject<AssetEntry>(assetText);
+            var entry = JsonConvert.DeserializeObject<AssetDTO>(assetText);
             assetText = entry.Asset;
             tags = entry.Tags.Select(t => new Tag(t.Key, t.Value)).ToList();
-        }
-
-        public class AssetEntry
-        {
-            public string Asset{get;set;}
-            public Dictionary<string,string> Tags { get; set; }
         }
 
         private static readonly IEnumerable<MethodInfo> _tryParseMethods = Assembly.GetAssembly(typeof(BaseAsset))

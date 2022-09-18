@@ -1,6 +1,13 @@
 #!/bin/bash
 
-if ! test -f "/opt/wordlists/dns/public_suffix_list.dat"; then
+
+if test -f "$PWNCTL_INSTALL_PATH/amass.ini"; 
+then
+    cp "$PWNCTL_INSTALL_PATH/amass.ini" /etc/amass/config.ini
+fi
+
+if ! test -f "/opt/wordlists/dns/public_suffix_list.dat"; 
+then
     get-psl.sh
 fi
 

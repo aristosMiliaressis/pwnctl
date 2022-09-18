@@ -1,5 +1,7 @@
 ﻿using pwnctl.core.Attributes;
 using pwnctl.core.BaseClasses;
+using pwnctl.core.Models;
+using Newtonsoft.Json;
 
 namespace pwnctl.core.Entities.Assets
 {
@@ -80,6 +82,24 @@ namespace pwnctl.core.Entities.Assets
         {
             return(Host != null && Host.Matches(definition))
                 || (Domain != null && Domain.Matches(definition));
+        }
+
+        public override string ToJson()
+        {
+            var dto = new AssetDTO
+            {
+                Asset = $"{Key} IN {Type} {Value}",
+                Tags = new Dictionary<string, string>
+                {
+                    {"Key", Key},
+                    {"Value", Value},
+                    {"Type", Type.ToString()}
+                }
+            };
+
+            Tags.ForEach(t => dto.Tags.Add(t.Name, t.Value));
+
+            return JsonConvert.SerializeObject(dto);
         }
 
         public enum RecordType

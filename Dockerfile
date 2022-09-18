@@ -54,6 +54,8 @@ RUN go install github.com/aristosMiliaressis/urgo@latest
 RUN go install github.com/projectdiscovery/dnsx/cmd/dnsx@latest
 RUN git clone https://github.com/zmap/zdns.git && cd zdns && go build && cp zdns /usr/bin
 RUN pip install useragent-picker-cli && uagen
+RUN mkdir -p /etc/amass/scripts \
+    && git clone https://github.com/PatrikFehrenbach/amass-tools.git /etc/amass/scripts
 
 RUN git clone https://github.com/ProjectAnte/dnsgen && cd dnsgen && pip3 install -r requirements.txt && python3 setup.py install
 RUN git clone https://github.com/dcsync/recontools.git /opt/recontools

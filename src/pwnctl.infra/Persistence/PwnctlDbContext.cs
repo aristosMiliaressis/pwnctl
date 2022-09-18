@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.ValueGeneration;
 using Microsoft.Extensions.Logging;
 using pwnctl.core.BaseClasses;
 using pwnctl.core.Entities;
+using pwnctl.infra.Notifications;
 using System.Reflection;
 using Newtonsoft.Json;
 using Microsoft.Extensions.FileSystemGlobbing;
@@ -47,8 +48,11 @@ namespace pwnctl.infra.Persistence
         public DbSet<core.Entities.Assets.Endpoint> Endpoints { get; set; }
         public DbSet<core.Entities.Assets.Parameter> Parameters { get; set; }
         public DbSet<core.Entities.Tag> Tags { get; set; }
-        public DbSet<core.Entities.Keyword> Keywords { get; set; }
-
+        public DbSet<core.Entities.Assets.Keyword> Keywords { get; set; }
+        public DbSet<core.Entities.NotificationRule> NotificationRules { get; set; }
+        public DbSet<core.Entities.NotificationProviderSettings> NotificationProviderSettings { get; set; }
+        public DbSet<core.Entities.NotificationChannel> NotificationChannels { get; set; }
+        
         public static PwnctlDbContext Initialize()
         {
             PwnctlDbContext instance = new();
@@ -90,6 +94,21 @@ namespace pwnctl.infra.Persistence
                     instance.Programs.Add(program);
                     instance.SaveChanges();
                 }
+            }
+
+            var notificationRulesFile = $"{EnvironmentVariables.PWNCTL_INSTALL_PATH}/seed/notification-rules.yml";
+
+            if (!instance.NotificationRules.Any())
+            {
+                var taskText = File.ReadAllText(notificationRulesFile);
+                var deserializer = new DeserializerBuilder()
+                           .WithNamingConvention(PascalCaseNamingConvention.Instance)
+                           .Build();
+                var notificationSettings = deserializer.Deserialize<NotificationSettings>(taskText);
+
+                instance.NotificationProviderSettings.AddRange(notificationSettings.Providers);
+                instance.NotificationRules.AddRange(notificationSettings.Rules);
+                instance.SaveChanges();
             }
 
             return instance;

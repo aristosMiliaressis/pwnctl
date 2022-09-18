@@ -2,6 +2,8 @@
 using System.Net.Sockets;
 using System.Net;
 using pwnctl.core.BaseClasses;
+using pwnctl.core.Models;
+using Newtonsoft.Json;
 
 namespace pwnctl.core.Entities.Assets
 {
@@ -48,6 +50,22 @@ namespace pwnctl.core.Entities.Assets
         {
             return (definition.Type == ScopeDefinition.ScopeType.CIDR && NetRange.RoutesTo(IP, definition.Pattern))
             || (definition.Type == ScopeDefinition.ScopeType.DomainRegex && AARecords.Any(r => r.Domain.Matches(definition)));
+        }
+
+        public override string ToJson()
+        {
+            var dto = new AssetDTO
+            {
+                Asset = IP,
+                Tags = new Dictionary<string, string>
+                {
+                    {"Version", Version.ToString()}
+                }
+            };
+
+            Tags.ForEach(t => dto.Tags.Add(t.Name, t.Value));
+
+            return JsonConvert.SerializeObject(dto);
         }
     }
 }

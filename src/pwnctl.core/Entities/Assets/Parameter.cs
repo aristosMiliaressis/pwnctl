@@ -46,5 +46,11 @@ namespace pwnctl.core.Entities.Assets
             Cookie,
             Header,
         }
+
+        public override string ToJson()
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }

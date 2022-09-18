@@ -3,15 +3,19 @@ using pwnctl.infra.Persistence;
 using pwnctl.infra.Logging;
 using pwnctl.app.Importers;
 using pwnctl.app.Utilities;
+using pwnctl.app.Repositories;
 using pwnctl.app;
+using pwnctl.core.BaseClasses;
 using System;
+using System.IO;
+using System.Linq;
 using System.Collections.Generic;
 
 PwnctlAppFacade.Setup();
 var app = CoconaApp.Create();
 
-app.AddCommand("query", () => 
-    { 
+app.AddCommand("query", () =>
+    {
         var queryRunner = new QueryRunner(PwnctlDbContext.ConnectionString);
         var input = new List<string>();
 
@@ -45,22 +49,65 @@ app.AddCommand("process", async () =>
     }
 ).WithDescription("Asset processing mode (reads assets from stdin)");
 
-app.AddSubCommand("import", x =>
-    {  
-        x.AddCommand("csv-burp", async ( [Argument(Description = "path to burp csv file.")] string file ) 
-        => {
-            await BurpSuiteImporter.ImportAsync(file);
-        }).WithDescription("BurpSuite CSV Import mode");
+app.AddCommand("list", (string mode) => 
+{
+    void WriteToConsole(IEnumerable<BaseAsset> assets)
+    {
+        assets.ToList().ForEach(a => Console.WriteLine(a.ToJson()));
     }
-).WithDescription("Import mode");
+    AssetRepository repository = new();
+    if (mode.ToLower() == "hosts") 
+    {
+        var assets = repository.ListHosts().Select(a => (BaseAsset) a);
+        WriteToConsole(assets);
+    }
+    if (mode.ToLower() == "endpoints")
+    {
+        var assets = repository.ListEndpoints().Select(a => (BaseAsset)a);
+        WriteToConsole(assets);
+    }
+    if (mode.ToLower() == "domains")
+    {
+        var assets = repository.ListDomains().Select(a => (BaseAsset)a);
+        WriteToConsole(assets);
+    }
+    if (mode.ToLower() == "services")
+    {
+        var assets = repository.ListServices().Select(a => (BaseAsset)a);
+        WriteToConsole(assets);
+    }
+    if (mode.ToLower() == "dnsrecords")
+    {
+        var assets = repository.ListDNSRecords().Select(a => (BaseAsset)a);
+        WriteToConsole(assets);
+    }
+    if (mode.ToLower() == "netranges")
+    {
+        var assets = repository.ListNetRanges().Select(a => (BaseAsset)a);
+        WriteToConsole(assets);
+    }
+}
+).WithDescription("List assets");
 
-// app.AddSubCommand("list", x => 
-// {
-//     x.AddCommand("ips", () => );
-//     x.AddCommand("urls", () => );
-//     x.AddCommand("domains", () => );
-//     x.AddCommand("ports", () => );
-// }
-// ).WithDescription("Import mode");
+app.AddCommand("export", (string path) => {
+    void WriteToFile(string filename, IEnumerable<BaseAsset> assets)
+    {
+        assets.ToList().ForEach(a => File.AppendAllText(filename, a.ToJson()));
+    }
+
+    AssetRepository repository = new();
+    var hosts = repository.ListHosts().Select(a => (BaseAsset)a);
+    WriteToFile(Path.Combine(path, "hosts.json"), hosts);
+    var endpoints = repository.ListEndpoints().Select(a => (BaseAsset)a);
+    WriteToFile(Path.Combine(path, "endpoints.json"), endpoints);
+    var domains = repository.ListDomains().Select(a => (BaseAsset)a);
+    WriteToFile(Path.Combine(path, "domains.json"), domains);
+    var services = repository.ListServices().Select(a => (BaseAsset)a);
+    WriteToFile(Path.Combine(path, "services.json"), services);
+    var records = repository.ListDNSRecords().Select(a => (BaseAsset)a);
+    WriteToFile(Path.Combine(path, "records.json"), records);
+    var netRanges = repository.ListNetRanges().Select(a => (BaseAsset)a);
+    WriteToFile(Path.Combine(path, "netRanges.json"), netRanges);
+});
 
 app.Run();
