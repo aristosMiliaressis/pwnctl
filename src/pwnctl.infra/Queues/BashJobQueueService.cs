@@ -16,7 +16,6 @@ namespace pwnctl.infra.Queues
         /// <param name="command"></param>
         public void Enqueue(core.Entities.Task job)
         {
-            Logger.Instance.Info("Enqueue( " + job.Command +")" );
 
             var psi = new ProcessStartInfo();
             psi.FileName = "job-queue.sh";

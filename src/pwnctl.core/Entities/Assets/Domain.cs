@@ -91,6 +91,12 @@ namespace pwnctl.core.Entities.Assets
                 Tags = new Dictionary<string, string>
                 {
                     {"IsRegistrationDomain", IsRegistrationDomain.ToString()}
+                },
+                Metadata = new Dictionary<string, string>
+                {
+                    {"InScope", InScope.ToString()},
+                    {"FoundAt", FoundAt.ToString()},
+                    {"FoundBy", FoundBy.ToString()}
                 }
             };
 

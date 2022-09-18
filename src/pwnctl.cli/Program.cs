@@ -53,7 +53,7 @@ app.AddCommand("list", (string mode) =>
 {
     void WriteToConsole(IEnumerable<BaseAsset> assets)
     {
-        assets.ToList().ForEach(a => Console.WriteLine(a.ToJson()));
+        assets.ToList().ForEach(a => Console.WriteLine(a.ToJson()+ "\n"));
     }
     AssetRepository repository = new();
     if (mode.ToLower() == "hosts") 
@@ -92,7 +92,7 @@ app.AddCommand("list", (string mode) =>
 app.AddCommand("export", (string path) => {
     void WriteToFile(string filename, IEnumerable<BaseAsset> assets)
     {
-        assets.ToList().ForEach(a => File.AppendAllText(filename, a.ToJson()));
+        assets.ToList().ForEach(a => File.AppendAllText(filename, a.ToJson()+"\n"));
     }
 
     AssetRepository repository = new();
@@ -108,6 +108,28 @@ app.AddCommand("export", (string path) => {
     WriteToFile(Path.Combine(path, "records.json"), records);
     var netRanges = repository.ListNetRanges().Select(a => (BaseAsset)a);
     WriteToFile(Path.Combine(path, "netRanges.json"), netRanges);
+});
+
+app.AddCommand("summary", () =>
+{
+    PwnctlDbContext context = new();
+    int netRangeCount = context.NetRanges.Count();
+    int hostCount = context.Hosts.Count();
+    int domainCount = context.Domains.Count();
+    int recordCount = context.DNSRecords.Count();
+    int serviceCount = context.Services.Count();
+    int endpointCount = context.Endpoints.Count();
+    int paramCount = context.Parameters.Count();
+    int tagCount = context.Tags.Count();
+
+    Console.WriteLine("NetRanges: " + netRangeCount);
+    Console.WriteLine("Hosts: " + hostCount);
+    Console.WriteLine("Domains: " + domainCount);
+    Console.WriteLine("DNSRecords: " + recordCount);
+    Console.WriteLine("Services: " + serviceCount);
+    Console.WriteLine("Endpoints: " + endpointCount);
+    Console.WriteLine("Parameters: " + paramCount);
+    Console.WriteLine("Tags: " + tagCount);
 });
 
 app.Run();

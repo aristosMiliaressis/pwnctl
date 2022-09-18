@@ -1,16 +1,10 @@
 #!/bin/bash
 
-
-if test -f "$PWNCTL_INSTALL_PATH/amass.ini"; 
+# volume mapped entrypoint_hook.sh for injecting resources and 
+# running commands at startup without needing to rebuild the image
+if test -f "$PWNCTL_INSTALL_PATH/entrypoint_hook.sh"; 
 then
-    cp "$PWNCTL_INSTALL_PATH/amass.ini" /etc/amass/config.ini
+    bash "$PWNCTL_INSTALL_PATH/entrypoint_hook.sh"
 fi
-
-if ! test -f "/opt/wordlists/dns/public_suffix_list.dat"; 
-then
-    get-psl.sh
-fi
-
-echo 'get-valid-resolvers.sh' | job-queue.sh -w 1 -q "$PWNCTL_INSTALL_PATH/jobs"
 
 while true; do sleep 10000; done

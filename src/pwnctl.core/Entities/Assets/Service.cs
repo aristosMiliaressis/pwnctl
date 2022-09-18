@@ -108,6 +108,12 @@ namespace pwnctl.core.Entities.Assets
                     {"Host", Host?.IP},
                     {"Domain", Domain?.ToString()},
                     {"TransportProtocol", TransportProtocol.ToString()}
+                },
+                Metadata = new Dictionary<string, string>
+                {
+                    {"InScope", InScope.ToString()},
+                    {"FoundAt", FoundAt.ToString()},
+                    {"FoundBy", FoundBy.ToString()}
                 }
             };
 

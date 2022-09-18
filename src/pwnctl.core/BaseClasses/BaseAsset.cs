@@ -6,9 +6,9 @@ namespace pwnctl.core.BaseClasses
 {
     public abstract class BaseAsset : BaseEntity<string>
     {
-        public new DateTime FoundAt { get; set; }
+        public DateTime FoundAt { get; set; }
+        public string FoundBy { get; set; }
         public bool InScope { get; set; }
-        public bool IsRoutable { get; set; }
 
         public List<core.Entities.Task> Tasks { get; set; } = new List<core.Entities.Task>();
         public List<Tag> Tags { get; private set; } = new List<Tag>();

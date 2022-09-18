@@ -104,6 +104,12 @@ namespace pwnctl.core.Entities.Assets
                     {"Host", Service?.Host?.IP},
                     {"Domain", Service?.Domain?.Name},
                     {"Scheme", Scheme}
+                },
+                Metadata = new Dictionary<string, string>
+                {
+                    {"InScope", InScope.ToString()},
+                    {"FoundAt", FoundAt.ToString()},
+                    {"FoundBy", FoundBy.ToString()}
                 }
             };
 

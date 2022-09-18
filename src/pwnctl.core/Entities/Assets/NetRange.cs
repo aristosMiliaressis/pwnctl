@@ -67,6 +67,12 @@ namespace pwnctl.core.Entities.Assets
                 {
                     {"FirstAddress", FirstAddress},
                     {"NetPrefixBits", NetPrefixBits.ToString()}
+                },
+                Metadata = new Dictionary<string, string>
+                {
+                    {"InScope", InScope.ToString()},
+                    {"FoundAt", FoundAt.ToString()},
+                    {"FoundBy", FoundBy.ToString()}
                 }
             };
 

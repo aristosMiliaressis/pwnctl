@@ -1,7 +1,7 @@
 ﻿using pwnctl.app.Repositories;
 using pwnctl.infra.Logging;
+using pwnctl.infra.Notifications;
 using pwnctl.core.BaseClasses;
-using Newtonsoft.Json;
 
 namespace pwnctl.app.Utilities
 {
@@ -10,6 +10,8 @@ namespace pwnctl.app.Utilities
         private readonly AssetHandlerMap _assetHandlerMap = new();
         private readonly AssetRepository _repository = new();
         private readonly JobAssignmentService _jobService = new();
+        private readonly NotificationSender _notificationSender = new();
+        private readonly NotificationRuleChecker _notificationRuleChecker = new();
 
         public async Task<bool> TryProccessAsync(string assetText)
         {
@@ -62,6 +64,12 @@ namespace pwnctl.app.Utilities
 
             if (asset.InScope)
             {
+                var rule = _notificationRuleChecker.Check(asset);
+                if (rule != null)
+                {
+                   _notificationSender.Send(asset, rule);
+                }
+
                 _jobService.Assign(asset);
             }
         }

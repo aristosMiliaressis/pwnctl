@@ -60,6 +60,12 @@ namespace pwnctl.core.Entities.Assets
                 Tags = new Dictionary<string, string>
                 {
                     {"Version", Version.ToString()}
+                },
+                Metadata = new Dictionary<string, string>
+                {
+                    {"InScope", InScope.ToString()},
+                    {"FoundAt", FoundAt.ToString()},
+                    {"FoundBy", FoundBy.ToString()}
                 }
             };
 

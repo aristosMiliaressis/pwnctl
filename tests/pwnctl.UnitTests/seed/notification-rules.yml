@@ -10,7 +10,7 @@ Providers:
 Rules:
   - ShortName: default_creds
     Subject: Service
-    Filter: Service["vuln-default-creds"] == true
+    Filter: Service["vuln-default-creds"] == "true"
     Topic: misconfigs
     Severity: high
   - ShortName: spf_dmarc

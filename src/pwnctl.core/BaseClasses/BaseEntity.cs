@@ -13,10 +13,8 @@ namespace pwnctl.core.BaseClasses
     {
         protected BaseEntity()
         {
-            FoundAt = DateTime.Now;
         }
 
         public TPKey Id { get; set; }
-        public DateTime FoundAt { get; set; }
     }
 }

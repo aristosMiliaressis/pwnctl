@@ -293,7 +293,7 @@ public class Tests
                {"Server", "IIS"}
             }
         };
-        Console.WriteLine(JsonConvert.SerializeObject(exampleUrl));
+
         BaseAsset[] assets = AssetParser.Parse(JsonConvert.SerializeObject(exampleUrl), out Type[] assetTypes);
 
         var endpoint = (Endpoint) assets.First(a => a.GetType() == typeof(Endpoint));

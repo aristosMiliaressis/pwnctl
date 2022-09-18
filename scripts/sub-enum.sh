@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# TODO: solve fresh dns resolvers issue
-
 domain=$1
 dict='/opt/wordlists/dns/top20000.txt'
 DNS_RESOLVERS_FILE='/opt/wordlists/dns/resolvers_top25.txt'
