@@ -78,8 +78,6 @@ tasks are configured per asset class and can be filtered trough C# script in the
 
 tags are a way to store arbitary metadata relating to an asset, they can be used in the `Filter` field to chain tasks into workflows where one task (e.g nmap) discovers some metadata relating to an asset (e.g. http protocol running on port) which than causes a metadata specific task to be queued (e.g. some http specific task)
 
-this should probably be in yaml for less character escaping in the command templates, but it will do for now.
-
 **`task-definitions.yml`**
 ```YAML
 - ShortName: ping_sweep

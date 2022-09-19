@@ -33,7 +33,7 @@ jobs:
         run: dotnet build "src/pwnctl.cli/pwnctl.cli.csproj" -c Release -o ./build
 
       - name: Upload build artifacts
-        uses: action/upload-artifact@v3
+        uses: actions/upload-artifact@v3
         with:
           name: pwnctl
           path: ./build/pwnctl
