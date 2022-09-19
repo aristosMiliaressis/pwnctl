@@ -1,6 +1,8 @@
 
 # Pwntainer
 
+![ci: tag](https://github.com/aristosMiliaressis/pwntainer/actions/workflows/ci.yml/badge.svg)
+
  a recursive rule based asset discovery, scanning and reporting framework 
 
 ### Implementation Phase #0

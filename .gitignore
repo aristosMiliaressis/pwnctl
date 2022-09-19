@@ -358,5 +358,7 @@ MigrationBackup/
 
 obj/
 bin/
-data/jobs/
-data/pwntainer.db
+src/pwnctl.worker/data/jobs/
+*.log
+*.txt
+*.db

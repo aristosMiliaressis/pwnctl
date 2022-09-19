@@ -17,7 +17,7 @@ namespace pwnctl.core.Entities.Assets
 
         public override bool Matches(ScopeDefinition definition)
         {
-            return false;
+            return true;
         }
 
         public override string ToJson()

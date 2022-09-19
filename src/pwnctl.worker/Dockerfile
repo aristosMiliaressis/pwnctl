@@ -75,26 +75,28 @@ RUN git clone https://github.com/xnl-h4ck3r/xnLinkFinder.git \
     && cd xnLinkFinder \
     && python3 setup.py install
 
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+# FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 
-COPY ["/src/pwnctl.core/pwnctl.core.csproj", "/src/pwnctl.core/"]
-RUN dotnet restore "/src/pwnctl.core/pwnctl.core.csproj"
-COPY ["/src/pwnctl.infra/pwnctl.infra.csproj", "/src/pwnctl.infra/"]
-RUN dotnet restore "/src/pwnctl.infra/pwnctl.infra.csproj"
-COPY ["/src/pwnctl.app/pwnctl.app.csproj", "/src/pwnctl.app/"]
-RUN dotnet restore "/src/pwnctl.app/pwnctl.app.csproj"
-COPY ["/src/pwnctl.cli/pwnctl.cli.csproj", "/src/pwnctl.cli/"]
-RUN dotnet restore "/src/pwnctl.cli/pwnctl.cli.csproj"
+# COPY ["/src/pwnctl.core/pwnctl.core.csproj", "/src/pwnctl.core/"]
+# RUN dotnet restore "/src/pwnctl.core/pwnctl.core.csproj"
+# COPY ["/src/pwnctl.infra/pwnctl.infra.csproj", "/src/pwnctl.infra/"]
+# RUN dotnet restore "/src/pwnctl.infra/pwnctl.infra.csproj"
+# COPY ["/src/pwnctl.app/pwnctl.app.csproj", "/src/pwnctl.app/"]
+# RUN dotnet restore "/src/pwnctl.app/pwnctl.app.csproj"
+# COPY ["/src/pwnctl.cli/pwnctl.cli.csproj", "/src/pwnctl.cli/"]
+# RUN dotnet restore "/src/pwnctl.cli/pwnctl.cli.csproj"
 
-COPY src/ src/
+# COPY src/ src/
 
-RUN dotnet build "/src/pwnctl.cli/pwnctl.cli.csproj" -c Release -o /app/build
-RUN dotnet publish "/src/pwnctl.cli/pwnctl.cli.csproj" -r linux-x64 -c Release -o /app/publish # -p:PublishSingleFile=true
+# RUN dotnet build "/src/pwnctl.cli/pwnctl.cli.csproj" -c Release -o /app/build
+# RUN dotnet publish "/src/pwnctl.cli/pwnctl.cli.csproj" -r linux-x64 -c Release -o /app/publish # -p:PublishSingleFile=true
 
-FROM base AS release
+# FROM base AS release
 
-COPY --from=build /app/publish /app
-RUN ln -s /app/pwnctl.cli /usr/local/bin/pwnctl
+# COPY --from=build /app/publish /app
+# RUN ln -s /app/pwnctl.cli /usr/local/bin/pwnctl
+
+RUN curl -o /usr/local/bin/pwnctl
 
 RUN wget -O /usr/local/bin/job-queue.sh https://raw.githubusercontent.com/aristosMiliaressis/job-queue.sh/master/job-queue.sh \
     && chmod +x /usr/local/bin/job-queue.sh

@@ -1,0 +1,82 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+
+  workflow_dispatch:
+
+jobs:
+  test-cli:
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/dotnet/sdk:6.0
+    steps:
+      - name: Checkout subject branch
+        uses: actions/checkout@v2
+
+      - name: test cli
+        run: dotnet test
+  
+  build-cli:
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/dotnet/sdk:6.0
+    needs: test-cli
+    steps:
+      - name: Checkout subject branch
+        uses: actions/checkout@v2
+
+      - name: build cli
+        run: dotnet build "src/pwnctl.cli/pwnctl.cli.csproj" -c Release -o ./build
+
+      - name: Upload build artifacts
+        uses: action/upload-artifact@v3
+        with:
+          name: pwnctl
+          path: ./build/pwnctl
+
+  release-cli:
+    runs-on: ubuntu-latest
+    needs: build-cli
+    steps:
+      - name: Download build artifacts
+        uses: action/download-artifact@v3
+      
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+
+      - name: Upload relase assets
+        uses: action/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./build/pwnctl
+          asset_name: pwnctl
+          asset_content_type: application/x-elf
+
+  # build-worker:
+  #   runs-on: ubuntu-latest
+  #   needs: test-cli
+  #   steps:
+  #     - name: build worker image
+  #       run: docker build src/pwnctl.worker -t aristosmiliaressis/pwnctl:latest
+
+  # push-worker:
+  #   runs-on: ubuntu-latest
+  #   needs: test-cli
+  #   steps:
+  #     # TODO: auth to dockerhub
+  #     # TODO: retag release with version tag
+
+  #     - name: push to dockerhub
+  #       run: docker push aristosmiliaressis/pwnctl:latest
