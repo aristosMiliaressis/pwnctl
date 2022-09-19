@@ -16,5 +16,5 @@ docker rm pwntainer
 
 docker-compose up -d
 
-sudo rm data/pwntainer.*
-sudo rm -rf data/jobs
+sudo rm data/pwntainer.* 2>/dev/null
+sudo rm -rf data/jobs 2>/dev/null
