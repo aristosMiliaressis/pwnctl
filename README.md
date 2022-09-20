@@ -120,13 +120,30 @@ tags are a way to store arbitary metadata relating to an asset, they can be used
   Subject: Endpoint
 ```
 
+## Notification Configuration
+
+...
+
+**`notification-rules.yml`**
+```YAML
+```
+
 ## `pwnctl --query`
 
 - [x] read sql queries from stdin, execute them and print output
 - [x] json output format
 
-**To Do**
-- cli flags for common query types
+## `pwnctl list --mode <domains/hosts/endpoints/etc>`
+
+...
+
+## `pwnctl export --path out/`
+
+...
+
+## `pwnctl summary`
+
+...
 
 ## `pwnctl -i/--import <importer> -s/--source <source>`
 
@@ -136,20 +153,16 @@ tags are a way to store arbitary metadata relating to an asset, they can be used
 ## Workers & Scaling
 
 **To Do**
-- EC2 C&C VM 
 - PostgreSQL db
 - AWS SQS queue 
-- EKS with Fargate for serverless autoscaling worker deployment
 - job runner that will run command and pipe output to `pwnctl` than record task metadata (i.e return code, start/finish timestamp) to db
-- deployment manifest to configure scope/task definitions and scaling
+- EKS with Fargate for serverless autoscaling worker deployment
 - slimer worker images for faster worker creation&teardown
 
 ## Miscellaneous Stuff
 
 **To Do**
 - non deterministic methods of inscope detection for cloud assets, CIDRs, etc (favicon, legal text, keyword, CT time correlation)
-- maintaining fresh DNS resolvers (scheduled dnsvalidator task will store fresh resolvers for all workers to use)
 - ip/hostname/url normalization
 - IP blocking detection & recycling of cloud ips
-- configurable notifications rules like TaskDefinitions
 - WebUI, graphs and stuff

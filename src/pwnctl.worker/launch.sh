@@ -16,8 +16,8 @@ then
 fi
 
 docker build . -t pwntainer
-docker stop pwntainer
-docker rm pwntainer
+docker stop pwntainer 2>/dev/null
+docker rm pwntainer 2>/dev/null
 
 docker-compose up -d
 
