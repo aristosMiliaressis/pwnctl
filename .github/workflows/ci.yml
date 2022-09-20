@@ -17,11 +17,18 @@ jobs:
       - name: Checkout subject branch
         uses: actions/checkout@v2
 
+      - name: Cache Nuget packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: nuget
+
       - name: test cli
         run: dotnet test
 
       - name: build cli
-        run: dotnet publish "src/pwnctl.cli/pwnctl.cli.csproj" -r linux-x64 -c Release -o ./build
+        run: dotnet publish "src/pwnctl.cli/pwnctl.cli.csproj" -r linux-x64 -c Release -o ./build -p:PublishSingleFile=true
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
@@ -84,3 +91,5 @@ jobs:
           push: true
           tags: aristosmiliaressis/pwnctl:latest
           context: src/pwnctl.worker
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
