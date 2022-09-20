@@ -22,4 +22,4 @@ then
     get-psl.sh
 fi
 
-echo 'get-valid-resolvers.sh' | job-queue.sh -w 1 -q "$PWNCTL_INSTALL_PATH/jobs"
+echo 'get-valid-resolvers.sh' | job-queue.sh -w 1 -q "$PWNCTL_INSTALL_PATH/queue"

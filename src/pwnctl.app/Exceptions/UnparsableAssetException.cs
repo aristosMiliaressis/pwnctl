@@ -2,9 +2,9 @@ using System;
 
 namespace pwnctl.app.Exceptions
 {
-    public class UnrecognizableAssetException : Exception
+    public class UnparsableAssetException : Exception
     {
-        public UnrecognizableAssetException(string assetText)
+        public UnparsableAssetException(string assetText)
             : base($"Can't parse asset {assetText}")
         { }
     }

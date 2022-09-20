@@ -121,5 +121,13 @@ namespace pwnctl.app.Repositories
                             .Include(e => e.Domain)
                             .ToList();
         }
+
+        public List<Email> ListEmails()
+        {
+            return _context.Emails
+                            .Include(a => a.Tags)
+                            .Include(e => e.Domain)
+                            .ToList();
+        }
     }
 }

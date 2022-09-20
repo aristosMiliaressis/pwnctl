@@ -103,6 +103,18 @@ public class Tests
         Assert.Contains(assets, t => ((Domain)t).Name == "level.sub.example.com");
         Assert.Contains(assets, t => ((Domain)t).Name == "multi.level.sub.example.com");
 
+        AssetParser.TryParse("no-reply@tesla.com", out assetTypes, out assets);
+        Assert.Contains(assetTypes, t => t == typeof(Email));
+        Assert.Contains(assets, t => t.GetType() == typeof(Email));
+        Assert.Contains(assetTypes, t => t == typeof(Domain));
+        Assert.Contains(assets, t => t.GetType() == typeof(Domain));
+
+        AssetParser.TryParse("no-reply@whatever.com", out assetTypes, out assets);
+        Assert.Contains(assetTypes, t => t == typeof(Email));
+        Assert.Contains(assets, t => t.GetType() == typeof(Email));
+        Assert.Contains(assetTypes, t => t == typeof(Domain));
+        Assert.Contains(assets, t => t.GetType() == typeof(Domain));
+
         // TODO: more DNSRecord & Endpoint parsing tests
     }
 
@@ -123,10 +135,16 @@ public class Tests
 
         // domain
         Assert.True(ScopeChecker.Singleton.IsInScope(new Domain("tesla.com")));
+        Assert.True(ScopeChecker.Singleton.IsInScope(new Keyword(new Domain("tesla.com"), "tesla")));
+        Assert.False(ScopeChecker.Singleton.IsInScope(new Keyword(new Domain("tttesla.com"), "tttesla")));
         Assert.False(ScopeChecker.Singleton.IsInScope(new Domain("tttesla.com")));
         Assert.False(ScopeChecker.Singleton.IsInScope(new Domain("tesla.com.net")));
         //Assert.False(ScopeChecker.Singleton.IsInScope(new Domain("tesla.com.test")));
         Assert.False(ScopeChecker.Singleton.IsInScope(new Domain("tesla2.com")));
+
+        // Emails
+        Assert.True(ScopeChecker.Singleton.IsInScope(new Email(new Domain("tesla.com"), "no-reply@tesla.com")));
+        Assert.False(ScopeChecker.Singleton.IsInScope(new Email(new Domain("tesla2.com"), "no-reply@tesla2.com")));
 
         //subdomain
         Assert.True(ScopeChecker.Singleton.IsInScope(new Domain("xyz.tesla.com")));
@@ -326,7 +344,7 @@ public class Tests
         {
             asset = "https://iis.tesla.com",
             tags = new Dictionary<string, string>{
-               {"ContentType", "text/html"},
+               {"Content-Type", "text/html"},
                {"Status", "200"},
                {"Protocol", "IIS"}
             }
@@ -345,7 +363,7 @@ public class Tests
         {
             asset = "https://apache.tesla.com",
             tags = new Dictionary<string, string>{
-               {"ContentType", "text/html"},
+               {"Content-Type", "text/html"},
                {"Status", "200"},
                {"Server", "apache"}
             }

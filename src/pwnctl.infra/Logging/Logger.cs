@@ -1,3 +1,5 @@
+using pwnctl.infra.Configuration;
+
 namespace pwnctl.infra.Logging
 {
     public class Logger // TODO: make this better
@@ -9,7 +11,7 @@ namespace pwnctl.infra.Logging
 
         public void Info(string msg)
         {
-            File.AppendAllText("./pwnctl.log", $"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")}] {msg} \n");
+            File.AppendAllText($"{AppConfig.InstallPath}/pwnctl.log", $"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")}] {msg} \n");
         }
     }    
 }

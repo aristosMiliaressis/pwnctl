@@ -11,8 +11,8 @@ using pwnctl.infra.Persistence;
 namespace pwnctl.infra.Persistence.Migrations
 {
     [DbContext(typeof(PwnctlDbContext))]
-    [Migration("20220904160844_uniqness")]
-    partial class uniqness
+    [Migration("20220920124331_initial")]
+    partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -21,29 +21,22 @@ namespace pwnctl.infra.Persistence.Migrations
 
             modelBuilder.Entity("pwnctl.core.Entities.Assets.DNSRecord", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
 
-                    b.Property<int?>("DomainId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("DomainId1")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("DomainId")
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("FoundAt")
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("HostId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("FoundBy")
+                        .HasColumnType("TEXT");
 
-                    b.Property<int?>("HostId1")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("HostId")
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("InScope")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("IsRoutable")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Key")
@@ -59,11 +52,7 @@ namespace pwnctl.infra.Persistence.Migrations
 
                     b.HasIndex("DomainId");
 
-                    b.HasIndex("DomainId1");
-
                     b.HasIndex("HostId");
-
-                    b.HasIndex("HostId1");
 
                     b.HasIndex("Type", "Key")
                         .IsUnique();
@@ -73,11 +62,13 @@ namespace pwnctl.infra.Persistence.Migrations
 
             modelBuilder.Entity("pwnctl.core.Entities.Assets.Domain", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("FoundAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FoundBy")
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("InScope")
@@ -86,14 +77,11 @@ namespace pwnctl.infra.Persistence.Migrations
                     b.Property<bool>("IsRegistrationDomain")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsRoutable")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("RegistrationDomainId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("RegistrationDomainId")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -105,19 +93,48 @@ namespace pwnctl.infra.Persistence.Migrations
                     b.ToTable("Domains");
                 });
 
-            modelBuilder.Entity("pwnctl.core.Entities.Assets.Endpoint", b =>
+            modelBuilder.Entity("pwnctl.core.Entities.Assets.Email", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Address")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DomainId")
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("FoundAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FoundBy")
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("InScope")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsRoutable")
+                    b.HasKey("Id");
+
+                    b.HasIndex("Address")
+                        .IsUnique();
+
+                    b.HasIndex("DomainId");
+
+                    b.ToTable("Emails");
+                });
+
+            modelBuilder.Entity("pwnctl.core.Entities.Assets.Endpoint", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("FoundAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FoundBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("InScope")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Path")
@@ -126,17 +143,17 @@ namespace pwnctl.infra.Persistence.Migrations
                     b.Property<string>("Scheme")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("ServiceId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("ServiceId")
+                        .HasColumnType("TEXT");
 
-                    b.Property<string>("Uri")
+                    b.Property<string>("Url")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ServiceId");
 
-                    b.HasIndex("Uri")
+                    b.HasIndex("Url")
                         .IsUnique();
 
                     b.ToTable("Endpoints");
@@ -144,20 +161,19 @@ namespace pwnctl.infra.Persistence.Migrations
 
             modelBuilder.Entity("pwnctl.core.Entities.Assets.Host", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("FoundAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FoundBy")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("IP")
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("InScope")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("IsRoutable")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("Version")
@@ -171,11 +187,40 @@ namespace pwnctl.infra.Persistence.Migrations
                     b.ToTable("Hosts");
                 });
 
+            modelBuilder.Entity("pwnctl.core.Entities.Assets.Keyword", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DomainId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("FoundAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FoundBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("InScope")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Word")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DomainId");
+
+                    b.HasIndex("Word")
+                        .IsUnique();
+
+                    b.ToTable("Keywords");
+                });
+
             modelBuilder.Entity("pwnctl.core.Entities.Assets.NetRange", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("FirstAddress")
                         .HasColumnType("TEXT");
@@ -183,10 +228,10 @@ namespace pwnctl.infra.Persistence.Migrations
                     b.Property<DateTime>("FoundAt")
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("InScope")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("FoundBy")
+                        .HasColumnType("TEXT");
 
-                    b.Property<bool>("IsRoutable")
+                    b.Property<bool>("InScope")
                         .HasColumnType("INTEGER");
 
                     b.Property<ushort>("NetPrefixBits")
@@ -202,20 +247,19 @@ namespace pwnctl.infra.Persistence.Migrations
 
             modelBuilder.Entity("pwnctl.core.Entities.Assets.Parameter", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
 
-                    b.Property<int>("EndpointId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("EndpointId")
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("FoundAt")
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("InScope")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("FoundBy")
+                        .HasColumnType("TEXT");
 
-                    b.Property<bool>("IsRoutable")
+                    b.Property<bool>("InScope")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
@@ -224,12 +268,17 @@ namespace pwnctl.infra.Persistence.Migrations
                     b.Property<int>("Type")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Url")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("UrlEncodedCsValues")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EndpointId", "Name", "Type")
+                    b.HasIndex("EndpointId");
+
+                    b.HasIndex("Url", "Name", "Type")
                         .IsUnique();
 
                     b.ToTable("Parameters");
@@ -237,26 +286,25 @@ namespace pwnctl.infra.Persistence.Migrations
 
             modelBuilder.Entity("pwnctl.core.Entities.Assets.Service", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ApplicationProtocol")
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("DomainId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("DomainId")
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("FoundAt")
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("HostId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("FoundBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("HostId")
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("InScope")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("IsRoutable")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Origin")
@@ -282,30 +330,91 @@ namespace pwnctl.infra.Persistence.Migrations
 
             modelBuilder.Entity("pwnctl.core.Entities.Assets.VirtualHost", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("FoundAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FoundBy")
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("InScope")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsRoutable")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("ServiceId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("ServiceId")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ServiceId");
 
                     b.ToTable("VirtualHosts");
+                });
+
+            modelBuilder.Entity("pwnctl.core.Entities.NotificationChannel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Filter")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ProviderId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProviderId");
+
+                    b.ToTable("NotificationChannels");
+                });
+
+            modelBuilder.Entity("pwnctl.core.Entities.NotificationProviderSettings", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("NotificationProviderSettings");
+                });
+
+            modelBuilder.Entity("pwnctl.core.Entities.NotificationRule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Filter")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Severity")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ShortName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Subject")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Topic")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("NotificationRules");
                 });
 
             modelBuilder.Entity("pwnctl.core.Entities.OperationalPolicy", b =>
@@ -318,9 +427,6 @@ namespace pwnctl.infra.Persistence.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Blacklist")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("FoundAt")
                         .HasColumnType("TEXT");
 
                     b.Property<int?>("MaxAggressiveness")
@@ -342,9 +448,6 @@ namespace pwnctl.infra.Persistence.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("FoundAt")
-                        .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
@@ -368,9 +471,6 @@ namespace pwnctl.infra.Persistence.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("FoundAt")
-                        .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
@@ -397,40 +497,47 @@ namespace pwnctl.infra.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("DNSRecordId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("DomainId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("EndpointId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("FoundAt")
+                    b.Property<string>("DNSRecordId")
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("HostId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("DomainId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("EmailId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("EndpointId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("HostId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("KeywordId")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("NetRangeId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("NetRangeId")
+                        .HasColumnType("TEXT");
 
-                    b.Property<int?>("ParameterId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("ParameterId")
+                        .HasColumnType("TEXT");
 
-                    b.Property<int?>("ServiceId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("ServiceId")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Value")
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("VirtualHostId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("VirtualHostId")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EmailId");
+
+                    b.HasIndex("KeywordId");
 
                     b.HasIndex("ParameterId");
 
@@ -466,32 +573,35 @@ namespace pwnctl.infra.Persistence.Migrations
                     b.Property<string>("Arguments")
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("DNSRecordId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("DNSRecordId")
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("DefinitionId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("DomainId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("DomainId")
+                        .HasColumnType("TEXT");
 
-                    b.Property<int?>("EndpointId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("EmailId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("EndpointId")
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("FinishedAt")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("FoundAt")
+                    b.Property<string>("HostId")
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("HostId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("KeywordId")
+                        .HasColumnType("TEXT");
 
-                    b.Property<int?>("NetRangeId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("NetRangeId")
+                        .HasColumnType("TEXT");
 
-                    b.Property<int?>("ParameterId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("ParameterId")
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("QueuedAt")
                         .HasColumnType("TEXT");
@@ -499,14 +609,14 @@ namespace pwnctl.infra.Persistence.Migrations
                     b.Property<int?>("ReturnCode")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("ServiceId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("ServiceId")
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("StartedAt")
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("VirtualHostId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("VirtualHostId")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -516,9 +626,13 @@ namespace pwnctl.infra.Persistence.Migrations
 
                     b.HasIndex("DomainId");
 
+                    b.HasIndex("EmailId");
+
                     b.HasIndex("EndpointId");
 
                     b.HasIndex("HostId");
+
+                    b.HasIndex("KeywordId");
 
                     b.HasIndex("NetRangeId");
 
@@ -546,9 +660,6 @@ namespace pwnctl.infra.Persistence.Migrations
                     b.Property<string>("Filter")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("FoundAt")
-                        .HasColumnType("TEXT");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("INTEGER");
 
@@ -566,20 +677,12 @@ namespace pwnctl.infra.Persistence.Migrations
             modelBuilder.Entity("pwnctl.core.Entities.Assets.DNSRecord", b =>
                 {
                     b.HasOne("pwnctl.core.Entities.Assets.Domain", "Domain")
-                        .WithMany()
+                        .WithMany("DNSRecords")
                         .HasForeignKey("DomainId");
 
-                    b.HasOne("pwnctl.core.Entities.Assets.Domain", null)
-                        .WithMany("DNSRecords")
-                        .HasForeignKey("DomainId1");
-
                     b.HasOne("pwnctl.core.Entities.Assets.Host", "Host")
-                        .WithMany()
-                        .HasForeignKey("HostId");
-
-                    b.HasOne("pwnctl.core.Entities.Assets.Host", null)
                         .WithMany("AARecords")
-                        .HasForeignKey("HostId1");
+                        .HasForeignKey("HostId");
 
                     b.Navigation("Domain");
 
@@ -595,24 +698,38 @@ namespace pwnctl.infra.Persistence.Migrations
                     b.Navigation("RegistrationDomain");
                 });
 
+            modelBuilder.Entity("pwnctl.core.Entities.Assets.Email", b =>
+                {
+                    b.HasOne("pwnctl.core.Entities.Assets.Domain", "Domain")
+                        .WithMany()
+                        .HasForeignKey("DomainId");
+
+                    b.Navigation("Domain");
+                });
+
             modelBuilder.Entity("pwnctl.core.Entities.Assets.Endpoint", b =>
                 {
                     b.HasOne("pwnctl.core.Entities.Assets.Service", "Service")
                         .WithMany()
-                        .HasForeignKey("ServiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ServiceId");
 
                     b.Navigation("Service");
+                });
+
+            modelBuilder.Entity("pwnctl.core.Entities.Assets.Keyword", b =>
+                {
+                    b.HasOne("pwnctl.core.Entities.Assets.Domain", "Domain")
+                        .WithMany()
+                        .HasForeignKey("DomainId");
+
+                    b.Navigation("Domain");
                 });
 
             modelBuilder.Entity("pwnctl.core.Entities.Assets.Parameter", b =>
                 {
                     b.HasOne("pwnctl.core.Entities.Assets.Endpoint", "Endpoint")
                         .WithMany()
-                        .HasForeignKey("EndpointId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("EndpointId");
 
                     b.Navigation("Endpoint");
                 });
@@ -636,11 +753,19 @@ namespace pwnctl.infra.Persistence.Migrations
                 {
                     b.HasOne("pwnctl.core.Entities.Assets.Service", "Service")
                         .WithMany()
-                        .HasForeignKey("ServiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ServiceId");
 
                     b.Navigation("Service");
+                });
+
+            modelBuilder.Entity("pwnctl.core.Entities.NotificationChannel", b =>
+                {
+                    b.HasOne("pwnctl.core.Entities.NotificationProviderSettings", "Provider")
+                        .WithMany("Channels")
+                        .HasForeignKey("ProviderId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Provider");
                 });
 
             modelBuilder.Entity("pwnctl.core.Entities.Program", b =>
@@ -672,6 +797,10 @@ namespace pwnctl.infra.Persistence.Migrations
                         .WithMany("Tags")
                         .HasForeignKey("DomainId");
 
+                    b.HasOne("pwnctl.core.Entities.Assets.Email", null)
+                        .WithMany("Tags")
+                        .HasForeignKey("EmailId");
+
                     b.HasOne("pwnctl.core.Entities.Assets.Endpoint", "Endpoint")
                         .WithMany("Tags")
                         .HasForeignKey("EndpointId");
@@ -679,6 +808,10 @@ namespace pwnctl.infra.Persistence.Migrations
                     b.HasOne("pwnctl.core.Entities.Assets.Host", "Host")
                         .WithMany("Tags")
                         .HasForeignKey("HostId");
+
+                    b.HasOne("pwnctl.core.Entities.Assets.Keyword", null)
+                        .WithMany("Tags")
+                        .HasForeignKey("KeywordId");
 
                     b.HasOne("pwnctl.core.Entities.Assets.NetRange", "NetRange")
                         .WithMany("Tags")
@@ -725,6 +858,10 @@ namespace pwnctl.infra.Persistence.Migrations
                         .WithMany("Tasks")
                         .HasForeignKey("DomainId");
 
+                    b.HasOne("pwnctl.core.Entities.Assets.Email", null)
+                        .WithMany("Tasks")
+                        .HasForeignKey("EmailId");
+
                     b.HasOne("pwnctl.core.Entities.Assets.Endpoint", "Endpoint")
                         .WithMany("Tasks")
                         .HasForeignKey("EndpointId");
@@ -732,6 +869,10 @@ namespace pwnctl.infra.Persistence.Migrations
                     b.HasOne("pwnctl.core.Entities.Assets.Host", "Host")
                         .WithMany("Tasks")
                         .HasForeignKey("HostId");
+
+                    b.HasOne("pwnctl.core.Entities.Assets.Keyword", null)
+                        .WithMany("Tasks")
+                        .HasForeignKey("KeywordId");
 
                     b.HasOne("pwnctl.core.Entities.Assets.NetRange", "NetRange")
                         .WithMany("Tasks")
@@ -780,6 +921,13 @@ namespace pwnctl.infra.Persistence.Migrations
                     b.Navigation("Tasks");
                 });
 
+            modelBuilder.Entity("pwnctl.core.Entities.Assets.Email", b =>
+                {
+                    b.Navigation("Tags");
+
+                    b.Navigation("Tasks");
+                });
+
             modelBuilder.Entity("pwnctl.core.Entities.Assets.Endpoint", b =>
                 {
                     b.Navigation("Tags");
@@ -791,6 +939,13 @@ namespace pwnctl.infra.Persistence.Migrations
                 {
                     b.Navigation("AARecords");
 
+                    b.Navigation("Tags");
+
+                    b.Navigation("Tasks");
+                });
+
+            modelBuilder.Entity("pwnctl.core.Entities.Assets.Keyword", b =>
+                {
                     b.Navigation("Tags");
 
                     b.Navigation("Tasks");
@@ -822,6 +977,11 @@ namespace pwnctl.infra.Persistence.Migrations
                     b.Navigation("Tags");
 
                     b.Navigation("Tasks");
+                });
+
+            modelBuilder.Entity("pwnctl.core.Entities.NotificationProviderSettings", b =>
+                {
+                    b.Navigation("Channels");
                 });
 
             modelBuilder.Entity("pwnctl.core.Entities.Program", b =>

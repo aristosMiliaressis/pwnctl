@@ -13,14 +13,13 @@ namespace pwnctl.infra.Persistence.Migrations
                 name: "Domains",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                    Id = table.Column<string>(type: "TEXT", nullable: false),
                     Name = table.Column<string>(type: "TEXT", nullable: true),
                     IsRegistrationDomain = table.Column<bool>(type: "INTEGER", nullable: false),
-                    RegistrationDomainId = table.Column<int>(type: "INTEGER", nullable: true),
+                    RegistrationDomainId = table.Column<string>(type: "TEXT", nullable: true),
                     FoundAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    InScope = table.Column<bool>(type: "INTEGER", nullable: false),
-                    IsRoutable = table.Column<bool>(type: "INTEGER", nullable: false)
+                    FoundBy = table.Column<string>(type: "TEXT", nullable: true),
+                    InScope = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -36,13 +35,12 @@ namespace pwnctl.infra.Persistence.Migrations
                 name: "Hosts",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                    Id = table.Column<string>(type: "TEXT", nullable: false),
                     IP = table.Column<string>(type: "TEXT", nullable: true),
                     Version = table.Column<int>(type: "INTEGER", nullable: false),
                     FoundAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    InScope = table.Column<bool>(type: "INTEGER", nullable: false),
-                    IsRoutable = table.Column<bool>(type: "INTEGER", nullable: false)
+                    FoundBy = table.Column<string>(type: "TEXT", nullable: true),
+                    InScope = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -53,17 +51,46 @@ namespace pwnctl.infra.Persistence.Migrations
                 name: "NetRanges",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                    Id = table.Column<string>(type: "TEXT", nullable: false),
                     FirstAddress = table.Column<string>(type: "TEXT", nullable: true),
                     NetPrefixBits = table.Column<ushort>(type: "INTEGER", nullable: false),
                     FoundAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    InScope = table.Column<bool>(type: "INTEGER", nullable: false),
-                    IsRoutable = table.Column<bool>(type: "INTEGER", nullable: false)
+                    FoundBy = table.Column<string>(type: "TEXT", nullable: true),
+                    InScope = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_NetRanges", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "NotificationProviderSettings",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_NotificationProviderSettings", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "NotificationRules",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    ShortName = table.Column<string>(type: "TEXT", nullable: true),
+                    Subject = table.Column<string>(type: "TEXT", nullable: true),
+                    Filter = table.Column<string>(type: "TEXT", nullable: true),
+                    Topic = table.Column<string>(type: "TEXT", nullable: true),
+                    Severity = table.Column<string>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_NotificationRules", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -76,8 +103,7 @@ namespace pwnctl.infra.Persistence.Migrations
                     Blacklist = table.Column<string>(type: "TEXT", nullable: true),
                     Whitelist = table.Column<string>(type: "TEXT", nullable: true),
                     MaxAggressiveness = table.Column<int>(type: "INTEGER", nullable: true),
-                    AllowActive = table.Column<bool>(type: "INTEGER", nullable: false),
-                    FoundAt = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    AllowActive = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -95,8 +121,7 @@ namespace pwnctl.infra.Persistence.Migrations
                     IsActive = table.Column<bool>(type: "INTEGER", nullable: false),
                     Aggressiveness = table.Column<int>(type: "INTEGER", nullable: false),
                     Subject = table.Column<string>(type: "TEXT", nullable: true),
-                    Filter = table.Column<string>(type: "TEXT", nullable: true),
-                    FoundAt = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    Filter = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -104,21 +129,60 @@ namespace pwnctl.infra.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Emails",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "TEXT", nullable: false),
+                    Address = table.Column<string>(type: "TEXT", nullable: true),
+                    DomainId = table.Column<string>(type: "TEXT", nullable: true),
+                    FoundAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    FoundBy = table.Column<string>(type: "TEXT", nullable: true),
+                    InScope = table.Column<bool>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Emails", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Emails_Domains_DomainId",
+                        column: x => x.DomainId,
+                        principalTable: "Domains",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Keywords",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "TEXT", nullable: false),
+                    Word = table.Column<string>(type: "TEXT", nullable: true),
+                    DomainId = table.Column<string>(type: "TEXT", nullable: true),
+                    FoundAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    FoundBy = table.Column<string>(type: "TEXT", nullable: true),
+                    InScope = table.Column<bool>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Keywords", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Keywords_Domains_DomainId",
+                        column: x => x.DomainId,
+                        principalTable: "Domains",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "DNSRecords",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                    Id = table.Column<string>(type: "TEXT", nullable: false),
                     Type = table.Column<int>(type: "INTEGER", nullable: false),
                     Key = table.Column<string>(type: "TEXT", nullable: true),
                     Value = table.Column<string>(type: "TEXT", nullable: true),
-                    HostId = table.Column<int>(type: "INTEGER", nullable: true),
-                    DomainId = table.Column<int>(type: "INTEGER", nullable: true),
-                    DomainId1 = table.Column<int>(type: "INTEGER", nullable: true),
-                    HostId1 = table.Column<int>(type: "INTEGER", nullable: true),
+                    HostId = table.Column<string>(type: "TEXT", nullable: true),
+                    DomainId = table.Column<string>(type: "TEXT", nullable: true),
                     FoundAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    InScope = table.Column<bool>(type: "INTEGER", nullable: false),
-                    IsRoutable = table.Column<bool>(type: "INTEGER", nullable: false)
+                    FoundBy = table.Column<string>(type: "TEXT", nullable: true),
+                    InScope = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -129,18 +193,8 @@ namespace pwnctl.infra.Persistence.Migrations
                         principalTable: "Domains",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_DNSRecords_Domains_DomainId1",
-                        column: x => x.DomainId1,
-                        principalTable: "Domains",
-                        principalColumn: "Id");
-                    table.ForeignKey(
                         name: "FK_DNSRecords_Hosts_HostId",
                         column: x => x.HostId,
-                        principalTable: "Hosts",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_DNSRecords_Hosts_HostId1",
-                        column: x => x.HostId1,
                         principalTable: "Hosts",
                         principalColumn: "Id");
                 });
@@ -149,17 +203,16 @@ namespace pwnctl.infra.Persistence.Migrations
                 name: "Services",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                    Id = table.Column<string>(type: "TEXT", nullable: false),
                     Port = table.Column<ushort>(type: "INTEGER", nullable: false),
                     Origin = table.Column<string>(type: "TEXT", nullable: true),
                     TransportProtocol = table.Column<int>(type: "INTEGER", nullable: false),
                     ApplicationProtocol = table.Column<string>(type: "TEXT", nullable: true),
-                    HostId = table.Column<int>(type: "INTEGER", nullable: true),
-                    DomainId = table.Column<int>(type: "INTEGER", nullable: true),
+                    HostId = table.Column<string>(type: "TEXT", nullable: true),
+                    DomainId = table.Column<string>(type: "TEXT", nullable: true),
                     FoundAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    InScope = table.Column<bool>(type: "INTEGER", nullable: false),
-                    IsRoutable = table.Column<bool>(type: "INTEGER", nullable: false)
+                    FoundBy = table.Column<string>(type: "TEXT", nullable: true),
+                    InScope = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -177,6 +230,27 @@ namespace pwnctl.infra.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "NotificationChannels",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(type: "TEXT", nullable: true),
+                    Filter = table.Column<string>(type: "TEXT", nullable: true),
+                    ProviderId = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_NotificationChannels", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_NotificationChannels_NotificationProviderSettings_ProviderId",
+                        column: x => x.ProviderId,
+                        principalTable: "NotificationProviderSettings",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Programs",
                 columns: table => new
                 {
@@ -184,8 +258,7 @@ namespace pwnctl.infra.Persistence.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", nullable: true),
                     Platform = table.Column<string>(type: "TEXT", nullable: true),
-                    PolicyId = table.Column<int>(type: "INTEGER", nullable: true),
-                    FoundAt = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    PolicyId = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -201,15 +274,14 @@ namespace pwnctl.infra.Persistence.Migrations
                 name: "Endpoints",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Uri = table.Column<string>(type: "TEXT", nullable: true),
-                    ServiceId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Id = table.Column<string>(type: "TEXT", nullable: false),
+                    Url = table.Column<string>(type: "TEXT", nullable: true),
+                    ServiceId = table.Column<string>(type: "TEXT", nullable: true),
                     Scheme = table.Column<string>(type: "TEXT", nullable: true),
                     Path = table.Column<string>(type: "TEXT", nullable: true),
                     FoundAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    InScope = table.Column<bool>(type: "INTEGER", nullable: false),
-                    IsRoutable = table.Column<bool>(type: "INTEGER", nullable: false)
+                    FoundBy = table.Column<string>(type: "TEXT", nullable: true),
+                    InScope = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -218,21 +290,19 @@ namespace pwnctl.infra.Persistence.Migrations
                         name: "FK_Endpoints_Services_ServiceId",
                         column: x => x.ServiceId,
                         principalTable: "Services",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
                 name: "VirtualHosts",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                    Id = table.Column<string>(type: "TEXT", nullable: false),
                     Name = table.Column<string>(type: "TEXT", nullable: true),
-                    ServiceId = table.Column<int>(type: "INTEGER", nullable: false),
+                    ServiceId = table.Column<string>(type: "TEXT", nullable: true),
                     FoundAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    InScope = table.Column<bool>(type: "INTEGER", nullable: false),
-                    IsRoutable = table.Column<bool>(type: "INTEGER", nullable: false)
+                    FoundBy = table.Column<string>(type: "TEXT", nullable: true),
+                    InScope = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -241,8 +311,7 @@ namespace pwnctl.infra.Persistence.Migrations
                         name: "FK_VirtualHosts_Services_ServiceId",
                         column: x => x.ServiceId,
                         principalTable: "Services",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -254,8 +323,7 @@ namespace pwnctl.infra.Persistence.Migrations
                     Name = table.Column<string>(type: "TEXT", nullable: true),
                     Type = table.Column<int>(type: "INTEGER", nullable: false),
                     Pattern = table.Column<string>(type: "TEXT", nullable: true),
-                    ProgramId = table.Column<int>(type: "INTEGER", nullable: true),
-                    FoundAt = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    ProgramId = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -272,15 +340,15 @@ namespace pwnctl.infra.Persistence.Migrations
                 name: "Parameters",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    EndpointId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Id = table.Column<string>(type: "TEXT", nullable: false),
+                    EndpointId = table.Column<string>(type: "TEXT", nullable: true),
+                    Url = table.Column<string>(type: "TEXT", nullable: true),
                     Name = table.Column<string>(type: "TEXT", nullable: true),
                     Type = table.Column<int>(type: "INTEGER", nullable: false),
                     UrlEncodedCsValues = table.Column<string>(type: "TEXT", nullable: true),
                     FoundAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    InScope = table.Column<bool>(type: "INTEGER", nullable: false),
-                    IsRoutable = table.Column<bool>(type: "INTEGER", nullable: false)
+                    FoundBy = table.Column<string>(type: "TEXT", nullable: true),
+                    InScope = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -289,8 +357,7 @@ namespace pwnctl.infra.Persistence.Migrations
                         name: "FK_Parameters_Endpoints_EndpointId",
                         column: x => x.EndpointId,
                         principalTable: "Endpoints",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -301,15 +368,16 @@ namespace pwnctl.infra.Persistence.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", nullable: true),
                     Value = table.Column<string>(type: "TEXT", nullable: true),
-                    HostId = table.Column<int>(type: "INTEGER", nullable: true),
-                    ServiceId = table.Column<int>(type: "INTEGER", nullable: true),
-                    EndpointId = table.Column<int>(type: "INTEGER", nullable: true),
-                    DomainId = table.Column<int>(type: "INTEGER", nullable: true),
-                    DNSRecordId = table.Column<int>(type: "INTEGER", nullable: true),
-                    NetRangeId = table.Column<int>(type: "INTEGER", nullable: true),
-                    ParameterId = table.Column<int>(type: "INTEGER", nullable: true),
-                    VirtualHostId = table.Column<int>(type: "INTEGER", nullable: true),
-                    FoundAt = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    HostId = table.Column<string>(type: "TEXT", nullable: true),
+                    ServiceId = table.Column<string>(type: "TEXT", nullable: true),
+                    EndpointId = table.Column<string>(type: "TEXT", nullable: true),
+                    DomainId = table.Column<string>(type: "TEXT", nullable: true),
+                    DNSRecordId = table.Column<string>(type: "TEXT", nullable: true),
+                    NetRangeId = table.Column<string>(type: "TEXT", nullable: true),
+                    EmailId = table.Column<string>(type: "TEXT", nullable: true),
+                    KeywordId = table.Column<string>(type: "TEXT", nullable: true),
+                    ParameterId = table.Column<string>(type: "TEXT", nullable: true),
+                    VirtualHostId = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -325,6 +393,11 @@ namespace pwnctl.infra.Persistence.Migrations
                         principalTable: "Domains",
                         principalColumn: "Id");
                     table.ForeignKey(
+                        name: "FK_Tags_Emails_EmailId",
+                        column: x => x.EmailId,
+                        principalTable: "Emails",
+                        principalColumn: "Id");
+                    table.ForeignKey(
                         name: "FK_Tags_Endpoints_EndpointId",
                         column: x => x.EndpointId,
                         principalTable: "Endpoints",
@@ -333,6 +406,11 @@ namespace pwnctl.infra.Persistence.Migrations
                         name: "FK_Tags_Hosts_HostId",
                         column: x => x.HostId,
                         principalTable: "Hosts",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Tags_Keywords_KeywordId",
+                        column: x => x.KeywordId,
+                        principalTable: "Keywords",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Tags_NetRanges_NetRangeId",
@@ -368,15 +446,16 @@ namespace pwnctl.infra.Persistence.Migrations
                     StartedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
                     FinishedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Arguments = table.Column<string>(type: "TEXT", nullable: true),
-                    HostId = table.Column<int>(type: "INTEGER", nullable: true),
-                    ServiceId = table.Column<int>(type: "INTEGER", nullable: true),
-                    EndpointId = table.Column<int>(type: "INTEGER", nullable: true),
-                    DomainId = table.Column<int>(type: "INTEGER", nullable: true),
-                    DNSRecordId = table.Column<int>(type: "INTEGER", nullable: true),
-                    NetRangeId = table.Column<int>(type: "INTEGER", nullable: true),
-                    ParameterId = table.Column<int>(type: "INTEGER", nullable: true),
-                    VirtualHostId = table.Column<int>(type: "INTEGER", nullable: true),
-                    FoundAt = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    HostId = table.Column<string>(type: "TEXT", nullable: true),
+                    ServiceId = table.Column<string>(type: "TEXT", nullable: true),
+                    EndpointId = table.Column<string>(type: "TEXT", nullable: true),
+                    DomainId = table.Column<string>(type: "TEXT", nullable: true),
+                    DNSRecordId = table.Column<string>(type: "TEXT", nullable: true),
+                    NetRangeId = table.Column<string>(type: "TEXT", nullable: true),
+                    EmailId = table.Column<string>(type: "TEXT", nullable: true),
+                    KeywordId = table.Column<string>(type: "TEXT", nullable: true),
+                    ParameterId = table.Column<string>(type: "TEXT", nullable: true),
+                    VirtualHostId = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -392,6 +471,11 @@ namespace pwnctl.infra.Persistence.Migrations
                         principalTable: "Domains",
                         principalColumn: "Id");
                     table.ForeignKey(
+                        name: "FK_Tasks_Emails_EmailId",
+                        column: x => x.EmailId,
+                        principalTable: "Emails",
+                        principalColumn: "Id");
+                    table.ForeignKey(
                         name: "FK_Tasks_Endpoints_EndpointId",
                         column: x => x.EndpointId,
                         principalTable: "Endpoints",
@@ -400,6 +484,11 @@ namespace pwnctl.infra.Persistence.Migrations
                         name: "FK_Tasks_Hosts_HostId",
                         column: x => x.HostId,
                         principalTable: "Hosts",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Tasks_Keywords_KeywordId",
+                        column: x => x.KeywordId,
+                        principalTable: "Keywords",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Tasks_NetRanges_NetRangeId",
@@ -435,19 +524,21 @@ namespace pwnctl.infra.Persistence.Migrations
                 column: "DomainId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DNSRecords_DomainId1",
-                table: "DNSRecords",
-                column: "DomainId1");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_DNSRecords_HostId",
                 table: "DNSRecords",
                 column: "HostId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DNSRecords_HostId1",
+                name: "IX_DNSRecords_Type_Key",
                 table: "DNSRecords",
-                column: "HostId1");
+                columns: new[] { "Type", "Key" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Domains_Name",
+                table: "Domains",
+                column: "Name",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Domains_RegistrationDomainId",
@@ -455,14 +546,65 @@ namespace pwnctl.infra.Persistence.Migrations
                 column: "RegistrationDomainId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Emails_Address",
+                table: "Emails",
+                column: "Address",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Emails_DomainId",
+                table: "Emails",
+                column: "DomainId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Endpoints_ServiceId",
                 table: "Endpoints",
                 column: "ServiceId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Endpoints_Url",
+                table: "Endpoints",
+                column: "Url",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Hosts_IP",
+                table: "Hosts",
+                column: "IP",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Keywords_DomainId",
+                table: "Keywords",
+                column: "DomainId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Keywords_Word",
+                table: "Keywords",
+                column: "Word",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NetRanges_FirstAddress_NetPrefixBits",
+                table: "NetRanges",
+                columns: new[] { "FirstAddress", "NetPrefixBits" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NotificationChannels_ProviderId",
+                table: "NotificationChannels",
+                column: "ProviderId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Parameters_EndpointId",
                 table: "Parameters",
                 column: "EndpointId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Parameters_Url_Name_Type",
+                table: "Parameters",
+                columns: new[] { "Url", "Name", "Type" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Programs_PolicyId",
@@ -486,29 +628,50 @@ namespace pwnctl.infra.Persistence.Migrations
                 column: "HostId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tags_DNSRecordId",
-                table: "Tags",
-                column: "DNSRecordId");
+                name: "IX_Services_Origin",
+                table: "Services",
+                column: "Origin",
+                unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tags_DomainId",
+                name: "IX_Tags_DNSRecordId_Name",
                 table: "Tags",
-                column: "DomainId");
+                columns: new[] { "DNSRecordId", "Name" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tags_EndpointId",
+                name: "IX_Tags_DomainId_Name",
                 table: "Tags",
-                column: "EndpointId");
+                columns: new[] { "DomainId", "Name" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tags_HostId",
+                name: "IX_Tags_EmailId",
                 table: "Tags",
-                column: "HostId");
+                column: "EmailId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tags_NetRangeId",
+                name: "IX_Tags_EndpointId_Name",
                 table: "Tags",
-                column: "NetRangeId");
+                columns: new[] { "EndpointId", "Name" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tags_HostId_Name",
+                table: "Tags",
+                columns: new[] { "HostId", "Name" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tags_KeywordId",
+                table: "Tags",
+                column: "KeywordId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tags_NetRangeId_Name",
+                table: "Tags",
+                columns: new[] { "NetRangeId", "Name" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tags_ParameterId",
@@ -516,9 +679,10 @@ namespace pwnctl.infra.Persistence.Migrations
                 column: "ParameterId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tags_ServiceId",
+                name: "IX_Tags_ServiceId_Name",
                 table: "Tags",
-                column: "ServiceId");
+                columns: new[] { "ServiceId", "Name" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tags_VirtualHostId",
@@ -541,6 +705,11 @@ namespace pwnctl.infra.Persistence.Migrations
                 column: "DomainId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Tasks_EmailId",
+                table: "Tasks",
+                column: "EmailId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Tasks_EndpointId",
                 table: "Tasks",
                 column: "EndpointId");
@@ -549,6 +718,11 @@ namespace pwnctl.infra.Persistence.Migrations
                 name: "IX_Tasks_HostId",
                 table: "Tasks",
                 column: "HostId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tasks_KeywordId",
+                table: "Tasks",
+                column: "KeywordId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tasks_NetRangeId",
@@ -579,6 +753,12 @@ namespace pwnctl.infra.Persistence.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "NotificationChannels");
+
+            migrationBuilder.DropTable(
+                name: "NotificationRules");
+
+            migrationBuilder.DropTable(
                 name: "ScopeDefinitions");
 
             migrationBuilder.DropTable(
@@ -588,10 +768,19 @@ namespace pwnctl.infra.Persistence.Migrations
                 name: "Tasks");
 
             migrationBuilder.DropTable(
+                name: "NotificationProviderSettings");
+
+            migrationBuilder.DropTable(
                 name: "Programs");
 
             migrationBuilder.DropTable(
                 name: "DNSRecords");
+
+            migrationBuilder.DropTable(
+                name: "Emails");
+
+            migrationBuilder.DropTable(
+                name: "Keywords");
 
             migrationBuilder.DropTable(
                 name: "NetRanges");

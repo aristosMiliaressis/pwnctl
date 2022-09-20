@@ -1,21 +1,15 @@
 using Newtonsoft.Json;
 using System.Data.SQLite;
+using pwnctl.infra.Configuration;
 
 namespace pwnctl.infra.Persistence
 {
     public class QueryRunner
     {
-        private readonly string _connectionString;
-
-        public QueryRunner(string connectionString)
-        {
-            _connectionString = connectionString;
-        }
-
         public void Run(string sql)
         {
             // TODO: maybe split sql on ';' semicolon to execute statements separatly
-            using (var connection = new SQLiteConnection(_connectionString))
+            using (var connection = new SQLiteConnection(ConfigurationManager.Config.DbConnectionString))
             {
                 var command = new SQLiteCommand(sql, connection);
                 try

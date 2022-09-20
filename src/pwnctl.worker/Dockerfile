@@ -34,9 +34,7 @@ RUN go get -u github.com/tomnomnom/unfurl
 
 RUN GO111MODULE=on go get -v github.com/projectdiscovery/shuffledns/cmd/shuffledns
 
-RUN mkdir -p /opt/pwntainer/data/ \
-    && mkdir /opt/wordlists \
-    && mkdir /opt/scripts
+RUN mkdir /opt/wordlists && mkdir /opt/scripts
 
 RUN wget https://github.com/RustScan/RustScan/releases/download/2.0.1/rustscan_2.0.1_amd64.deb \
     && dpkg -i rustscan_2.0.1_amd64.deb && rm rustscan_2.0.1_amd64.deb
@@ -85,7 +83,7 @@ COPY wordlists/ /opt/wordlists/
 RUN chmod -R +x /opt/scripts \
     && mv /opt/scripts/* /usr/local/bin/
     
-ENV PWNCTL_INSTALL_PATH "/opt/pwntainer"
+ENV PWNCTL_INSTALL_PATH "/etc/pwnctl"
 
 COPY entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh

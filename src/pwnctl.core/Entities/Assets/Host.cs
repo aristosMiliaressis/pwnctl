@@ -20,7 +20,7 @@ namespace pwnctl.core.Entities.Assets
         public Host(string ip)
         {
             if (!IPAddress.TryParse(ip, out IPAddress address))
-                throw new Exception($"{ip} not a valid ip");
+                throw new ArgumentException($"{ip} not a valid ip", nameof(ip));
 
             IP = ip;
             Version = address.AddressFamily;

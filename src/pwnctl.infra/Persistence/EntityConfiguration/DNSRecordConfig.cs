@@ -14,11 +14,11 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
             builder.HasKey(p => p.Id);
 
             builder.HasOne(e => e.Domain)
-                .WithMany()
+                .WithMany(e => e.DNSRecords)
                 .HasForeignKey(e => e.DomainId);
 
             builder.HasOne(e => e.Host)
-                .WithMany()
+                .WithMany(e => e.AARecords)
                 .HasForeignKey(e => e.HostId);
 
             builder.HasIndex(nameof(DNSRecord.Type), nameof(DNSRecord.Key)).IsUnique();

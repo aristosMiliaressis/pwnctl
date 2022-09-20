@@ -8,11 +8,11 @@ namespace pwnctl.app.Utilities
     {
         public static IJobQueueService Create()
         {
-            if (EnvironmentVariables.PWNCTL_SQS)
+            if (ConfigurationManager.Config.JobQueue.IsSQS)
             {
                 return new SQSJobQueueService();
             }
-            else if (EnvironmentVariables.PWNCTL_TEST)
+            else if (ConfigurationManager.Config.IsTestRun)
             {
                 return new MockJobQueueService();
             }

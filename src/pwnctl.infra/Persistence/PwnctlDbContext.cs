@@ -17,9 +17,7 @@ using YamlDotNet.Serialization.NamingConventions;
 namespace pwnctl.infra.Persistence
 {
     public class PwnctlDbContext : DbContext
-    {
-        public static string ConnectionString = $"Data Source={EnvironmentVariables.PWNCTL_INSTALL_PATH}/pwntainer.db";
-        
+    {     
         public static readonly ILoggerFactory _loggerFactory = LoggerFactory.Create(builder =>
         {
             builder.AddDebug();
@@ -47,6 +45,7 @@ namespace pwnctl.infra.Persistence
         public DbSet<core.Entities.Assets.Service> Services { get; set; }
         public DbSet<core.Entities.Assets.Endpoint> Endpoints { get; set; }
         public DbSet<core.Entities.Assets.Parameter> Parameters { get; set; }
+        public DbSet<core.Entities.Assets.Email> Emails { get; set; }
         public DbSet<core.Entities.Tag> Tags { get; set; }
         public DbSet<core.Entities.Assets.Keyword> Keywords { get; set; }
         public DbSet<core.Entities.NotificationRule> NotificationRules { get; set; }
@@ -57,7 +56,7 @@ namespace pwnctl.infra.Persistence
         {
             PwnctlDbContext instance = new();
 
-            if (EnvironmentVariables.PWNCTL_TEST)
+            if (ConfigurationManager.Config.IsTestRun)
             {
                 instance.Database.EnsureDeleted();
             }
@@ -67,7 +66,7 @@ namespace pwnctl.infra.Persistence
                 instance.Database.Migrate();
             }
 
-            var taskDefinitionFile = $"{EnvironmentVariables.PWNCTL_INSTALL_PATH}/seed/task-definitions.yml";
+            var taskDefinitionFile = $"{AppConfig.InstallPath}/seed/task-definitions.yml";
 
             if (!instance.TaskDefinitions.Any() && File.Exists(taskDefinitionFile))
             {
@@ -86,7 +85,7 @@ namespace pwnctl.infra.Persistence
                 Matcher matcher = new();
                 matcher.AddInclude("target-*.json");
 
-                foreach (string file in matcher.GetResultsInFullPath($"{EnvironmentVariables.PWNCTL_INSTALL_PATH}/seed/"))
+                foreach (string file in matcher.GetResultsInFullPath($"{AppConfig.InstallPath}/seed/"))
                 {
                     var program = JsonConvert.DeserializeObject<Program>(File.ReadAllText(file));
                     instance.ScopeDefinitions.AddRange(program.Scope);
@@ -96,7 +95,7 @@ namespace pwnctl.infra.Persistence
                 }
             }
 
-            var notificationRulesFile = $"{EnvironmentVariables.PWNCTL_INSTALL_PATH}/seed/notification-rules.yml";
+            var notificationRulesFile = $"{AppConfig.InstallPath}/seed/notification-rules.yml";
 
             if (!instance.NotificationRules.Any())
             {
@@ -137,7 +136,7 @@ namespace pwnctl.infra.Persistence
                 optionsBuilder.UseLoggerFactory(_loggerFactory).EnableSensitiveDataLogging(true);
 #endif
                 optionsBuilder.ReplaceService<StringValueGenerator, HashIdValueGenerator>()
-                            .UseSqlite(ConnectionString, x => x.MigrationsHistoryTable("__EFMigrationHistory"));
+                            .UseSqlite(ConfigurationManager.Config.DbConnectionString, x => x.MigrationsHistoryTable("__EFMigrationHistory"));
             }
         }
 

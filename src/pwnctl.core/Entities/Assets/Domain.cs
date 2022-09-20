@@ -36,7 +36,8 @@ namespace pwnctl.core.Entities.Assets
             {
                 if (assetText.Trim().Contains(" ") 
                  || assetText.Trim().Contains("/")
-                 || assetText.Contains("*"))
+                 || assetText.Contains("*")
+                 || assetText.Contains("@"))
                     return false;
 
                 if (!_domainRegex.Match(assetText).Success)
@@ -65,7 +66,7 @@ namespace pwnctl.core.Entities.Assets
                 var regDomain = PwnctlCoreShim.PublicSuffixRepository.GetRegistrationDomain(domain.Name);
                 var pubSuffix = PwnctlCoreShim.PublicSuffixRepository.GetPublicSuffix(domain.Name);
                 var word = regDomain.Substring(0, regDomain.Length - pubSuffix.Suffix.Length - 1);
-                assets = assets.Append(new Keyword(word)).ToArray();
+                assets = assets.Append(new Keyword(domain.IsRegistrationDomain ? domain : domain.RegistrationDomain, word)).ToArray();
 
                 return true;
             }

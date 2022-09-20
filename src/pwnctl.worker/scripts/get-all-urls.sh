@@ -1,11 +1,14 @@
 #!/bin/bash
 
 url=$1
+temp=`mktemp`
 
 echo $url \
-    | gau --fc 404 --blacklist png,jpg,jpeg,gif,ico,svg,ttf,woff,woff2,eot,css,pdf \
+    | gau --blacklist png,jpg,jpeg,gif,ico,svg,ttf,woff,woff2,eot,css,pdf \
     | unfurl format %s://%a%p%?%q \
     | sort -u \
-    | urgo -H "User-Agent: $(uagen)" -sC -rH 'Content-Type' -rH 'Location' 2>/dev/null \
-    | jq '.ResponseHeasers += {"StatusCode": .StatusCode}' \
-    | jq -c '{asset:.Url, tags:.ResponseHeasers}'
+    | httpx -fc 404 -nc -silent -sc -ct -cl -location -json -o $temp 2>&1 >/dev/null
+
+cat $temp | jq -c '{Asset:.url, tags:{StatusCode:.["status-code"], "Content-Type":.["content-type"], "Content-Length":.["content-length"],location:.location}}'
+
+rm $temp

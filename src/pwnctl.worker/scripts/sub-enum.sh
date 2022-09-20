@@ -44,6 +44,8 @@ generate_alterations > $potential_subs_file
 
 resolve_domains | anew $valid_subs_file
 
+echo $domain >> $valid_subs_file
+
 dig-deep.sh $valid_subs_file | sort -u 2>/dev/null
 
 cat $valid_subs_file | sort -u

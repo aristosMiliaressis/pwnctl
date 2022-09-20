@@ -25,9 +25,6 @@ namespace pwnctl.infra.Persistence.Migrations
                     b.Property<string>("DomainId")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("DomainId1")
-                        .HasColumnType("TEXT");
-
                     b.Property<DateTime>("FoundAt")
                         .HasColumnType("TEXT");
 
@@ -35,9 +32,6 @@ namespace pwnctl.infra.Persistence.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("HostId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("HostId1")
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("InScope")
@@ -56,11 +50,7 @@ namespace pwnctl.infra.Persistence.Migrations
 
                     b.HasIndex("DomainId");
 
-                    b.HasIndex("DomainId1");
-
                     b.HasIndex("HostId");
-
-                    b.HasIndex("HostId1");
 
                     b.HasIndex("Type", "Key")
                         .IsUnique();
@@ -99,6 +89,36 @@ namespace pwnctl.infra.Persistence.Migrations
                     b.HasIndex("RegistrationDomainId");
 
                     b.ToTable("Domains");
+                });
+
+            modelBuilder.Entity("pwnctl.core.Entities.Assets.Email", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Address")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DomainId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("FoundAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FoundBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("InScope")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Address")
+                        .IsUnique();
+
+                    b.HasIndex("DomainId");
+
+                    b.ToTable("Emails");
                 });
 
             modelBuilder.Entity("pwnctl.core.Entities.Assets.Endpoint", b =>
@@ -170,6 +190,9 @@ namespace pwnctl.infra.Persistence.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("DomainId")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("FoundAt")
                         .HasColumnType("TEXT");
 
@@ -183,6 +206,8 @@ namespace pwnctl.infra.Persistence.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DomainId");
 
                     b.HasIndex("Word")
                         .IsUnique();
@@ -476,6 +501,9 @@ namespace pwnctl.infra.Persistence.Migrations
                     b.Property<string>("DomainId")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("EmailId")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("EndpointId")
                         .HasColumnType("TEXT");
 
@@ -504,6 +532,8 @@ namespace pwnctl.infra.Persistence.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EmailId");
 
                     b.HasIndex("KeywordId");
 
@@ -550,6 +580,9 @@ namespace pwnctl.infra.Persistence.Migrations
                     b.Property<string>("DomainId")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("EmailId")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("EndpointId")
                         .HasColumnType("TEXT");
 
@@ -590,6 +623,8 @@ namespace pwnctl.infra.Persistence.Migrations
                     b.HasIndex("DefinitionId");
 
                     b.HasIndex("DomainId");
+
+                    b.HasIndex("EmailId");
 
                     b.HasIndex("EndpointId");
 
@@ -640,20 +675,12 @@ namespace pwnctl.infra.Persistence.Migrations
             modelBuilder.Entity("pwnctl.core.Entities.Assets.DNSRecord", b =>
                 {
                     b.HasOne("pwnctl.core.Entities.Assets.Domain", "Domain")
-                        .WithMany()
+                        .WithMany("DNSRecords")
                         .HasForeignKey("DomainId");
 
-                    b.HasOne("pwnctl.core.Entities.Assets.Domain", null)
-                        .WithMany("DNSRecords")
-                        .HasForeignKey("DomainId1");
-
                     b.HasOne("pwnctl.core.Entities.Assets.Host", "Host")
-                        .WithMany()
-                        .HasForeignKey("HostId");
-
-                    b.HasOne("pwnctl.core.Entities.Assets.Host", null)
                         .WithMany("AARecords")
-                        .HasForeignKey("HostId1");
+                        .HasForeignKey("HostId");
 
                     b.Navigation("Domain");
 
@@ -669,6 +696,15 @@ namespace pwnctl.infra.Persistence.Migrations
                     b.Navigation("RegistrationDomain");
                 });
 
+            modelBuilder.Entity("pwnctl.core.Entities.Assets.Email", b =>
+                {
+                    b.HasOne("pwnctl.core.Entities.Assets.Domain", "Domain")
+                        .WithMany()
+                        .HasForeignKey("DomainId");
+
+                    b.Navigation("Domain");
+                });
+
             modelBuilder.Entity("pwnctl.core.Entities.Assets.Endpoint", b =>
                 {
                     b.HasOne("pwnctl.core.Entities.Assets.Service", "Service")
@@ -676,6 +712,15 @@ namespace pwnctl.infra.Persistence.Migrations
                         .HasForeignKey("ServiceId");
 
                     b.Navigation("Service");
+                });
+
+            modelBuilder.Entity("pwnctl.core.Entities.Assets.Keyword", b =>
+                {
+                    b.HasOne("pwnctl.core.Entities.Assets.Domain", "Domain")
+                        .WithMany()
+                        .HasForeignKey("DomainId");
+
+                    b.Navigation("Domain");
                 });
 
             modelBuilder.Entity("pwnctl.core.Entities.Assets.Parameter", b =>
@@ -750,6 +795,10 @@ namespace pwnctl.infra.Persistence.Migrations
                         .WithMany("Tags")
                         .HasForeignKey("DomainId");
 
+                    b.HasOne("pwnctl.core.Entities.Assets.Email", null)
+                        .WithMany("Tags")
+                        .HasForeignKey("EmailId");
+
                     b.HasOne("pwnctl.core.Entities.Assets.Endpoint", "Endpoint")
                         .WithMany("Tags")
                         .HasForeignKey("EndpointId");
@@ -807,6 +856,10 @@ namespace pwnctl.infra.Persistence.Migrations
                         .WithMany("Tasks")
                         .HasForeignKey("DomainId");
 
+                    b.HasOne("pwnctl.core.Entities.Assets.Email", null)
+                        .WithMany("Tasks")
+                        .HasForeignKey("EmailId");
+
                     b.HasOne("pwnctl.core.Entities.Assets.Endpoint", "Endpoint")
                         .WithMany("Tasks")
                         .HasForeignKey("EndpointId");
@@ -861,6 +914,13 @@ namespace pwnctl.infra.Persistence.Migrations
                 {
                     b.Navigation("DNSRecords");
 
+                    b.Navigation("Tags");
+
+                    b.Navigation("Tasks");
+                });
+
+            modelBuilder.Entity("pwnctl.core.Entities.Assets.Email", b =>
+                {
                     b.Navigation("Tags");
 
                     b.Navigation("Tasks");

@@ -53,7 +53,7 @@ namespace pwnctl.app.Utilities
                 }
             }
 
-            throw new UnrecognizableAssetException(assetText);
+            throw new UnparsableAssetException(assetText);
         }
 
         private static void ParseTags(ref string assetText, out List<Tag> tags)

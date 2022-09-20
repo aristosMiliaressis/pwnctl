@@ -16,7 +16,7 @@ var app = CoconaApp.Create();
 
 app.AddCommand("query", () =>
     {
-        var queryRunner = new QueryRunner(PwnctlDbContext.ConnectionString);
+        var queryRunner = new QueryRunner();
         var input = new List<string>();
 
         string line;
@@ -86,8 +86,12 @@ app.AddCommand("list", (string mode) =>
         var assets = repository.ListNetRanges().Select(a => (BaseAsset)a);
         WriteToConsole(assets);
     }
-}
-).WithDescription("List assets");
+    if (mode.ToLower() == "emails")
+    {
+        var assets = repository.ListEmails().Select(a => (BaseAsset)a);
+        WriteToConsole(assets);
+    }
+}).WithDescription("List assets");
 
 app.AddCommand("export", (string path) => {
     void WriteToFile(string filename, IEnumerable<BaseAsset> assets)
@@ -108,6 +112,8 @@ app.AddCommand("export", (string path) => {
     WriteToFile(Path.Combine(path, "records.json"), records);
     var netRanges = repository.ListNetRanges().Select(a => (BaseAsset)a);
     WriteToFile(Path.Combine(path, "netRanges.json"), netRanges);
+    var emails = repository.ListEmails().Select(a => (BaseAsset)a);
+    WriteToFile(Path.Combine(path, "emails.json"), emails);
 });
 
 app.AddCommand("summary", () =>
@@ -120,16 +126,31 @@ app.AddCommand("summary", () =>
     int serviceCount = context.Services.Count();
     int endpointCount = context.Endpoints.Count();
     int paramCount = context.Parameters.Count();
+    int emailCount = context.Emails.Count();
     int tagCount = context.Tags.Count();
+    int inScopeRangesCount = context.NetRanges.Where(a => a.InScope).Count();
+    int insCopeHostCount = context.Hosts.Count();
+    int inScopeDomainCount = context.Domains.Where(a => a.InScope).Count();
+    int inScopeRecordCount = context.DNSRecords.Where(a => a.InScope).Count();
+    int inScopeServiceCount = context.Services.Where(a => a.InScope).Count();
+    int inScopeEndpointCount = context.Endpoints.Where(a => a.InScope).Count();
+    int inScopeParamCount = context.Parameters.Where(a => a.InScope).Count();
+    int inScopeEmailCount = context.Emails.Where(a => a.InScope).Count();
+    var firstTask = context.Tasks.OrderBy(t => t.QueuedAt).First();
+    var lastTask = context.Tasks.OrderBy(t => t.QueuedAt).Last();
 
-    Console.WriteLine("NetRanges: " + netRangeCount);
-    Console.WriteLine("Hosts: " + hostCount);
-    Console.WriteLine("Domains: " + domainCount);
-    Console.WriteLine("DNSRecords: " + recordCount);
-    Console.WriteLine("Services: " + serviceCount);
-    Console.WriteLine("Endpoints: " + endpointCount);
-    Console.WriteLine("Parameters: " + paramCount);
-    Console.WriteLine("Tags: " + tagCount);
+    Console.WriteLine($"NetRanges: {netRangeCount}, InScope: {inScopeRangesCount}");
+    Console.WriteLine($"Hosts: {hostCount}, InScope: {insCopeHostCount}");
+    Console.WriteLine($"Domains: {domainCount}, InScope: {inScopeDomainCount}");
+    Console.WriteLine($"DNSRecords: {recordCount}, InScope: {inScopeRecordCount}");
+    Console.WriteLine($"Services: {serviceCount}, InScope: {inScopeServiceCount}");
+    Console.WriteLine($"Endpoints: {endpointCount}, InScope: {inScopeEndpointCount}");
+    Console.WriteLine($"Parameters: {paramCount}, InScope: {inScopeParamCount}");
+    Console.WriteLine($"Emais: {emailCount}, InScope: {inScopeEmailCount}");
+    Console.WriteLine($"Tags: {tagCount}");
+    Console.WriteLine();
+    Console.WriteLine("First Queued Task: "+ firstTask.QueuedAt);
+    Console.WriteLine("Last Queued Task: " + lastTask.QueuedAt);
 });
 
 app.Run();

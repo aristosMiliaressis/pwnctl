@@ -8,7 +8,7 @@ namespace pwnctl.infra.Queues
 {
     public class BashJobQueueService : IJobQueueService
     {
-        private static readonly string _queueDirectory = Path.Combine(EnvironmentVariables.PWNCTL_INSTALL_PATH , "jobs/");
+        private static readonly string _queueDirectory = Path.Combine($"{AppConfig.InstallPath}/queue" , "jobs/");
 
         /// <summary>
         /// pushes a job to the pending queue.
@@ -19,7 +19,7 @@ namespace pwnctl.infra.Queues
 
             var psi = new ProcessStartInfo();
             psi.FileName = "job-queue.sh";
-            psi.Arguments = $"-w {EnvironmentVariables.PWNCTL_BASH_WORKERS} -q {_queueDirectory}";
+            psi.Arguments = $"-w {EnvironmentVariables.PWNCTL_WORKER_COUNT} -q {_queueDirectory}";
             psi.RedirectStandardOutput = true;
             psi.RedirectStandardInput = true;
             psi.UseShellExecute = false;

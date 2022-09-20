@@ -7,10 +7,10 @@ services:
     hostname: pwntainer
     network_mode: host
     environment:
-      - PWNCTL_BASH_WORKERS=1
+      - PWNCTL_WORKER_COUNT=1
     build:
       context: .
       dockerfile: Dockerfile
     restart: unless-stopped
     volumes:
-      - ./data/:/opt/pwntainer/
+      - ./data/:/etc/pwnctl/
