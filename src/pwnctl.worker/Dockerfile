@@ -73,8 +73,6 @@ RUN git clone https://github.com/xnl-h4ck3r/xnLinkFinder.git \
     && cd xnLinkFinder \
     && python3 setup.py install
 
-RUN curl https://raw.githubusercontent.com/aristosMiliaressis/pwntainer/master/src/pwnctl.cli/install.sh | bash
-
 RUN wget -O /usr/local/bin/job-queue.sh https://raw.githubusercontent.com/aristosMiliaressis/job-queue.sh/master/job-queue.sh \
     && chmod +x /usr/local/bin/job-queue.sh
 
@@ -82,7 +80,9 @@ COPY scripts/* /opt/scripts/
 COPY wordlists/ /opt/wordlists/
 RUN chmod -R +x /opt/scripts \
     && mv /opt/scripts/* /usr/local/bin/
-    
+
+RUN curl https://raw.githubusercontent.com/aristosMiliaressis/pwntainer/master/src/pwnctl.cli/install.sh | bash
+
 ENV PWNCTL_INSTALL_PATH "/etc/pwnctl"
 
 COPY entrypoint.sh /app/entrypoint.sh

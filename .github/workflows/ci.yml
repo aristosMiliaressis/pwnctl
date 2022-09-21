@@ -28,7 +28,7 @@ jobs:
         run: dotnet test
 
       - name: build cli
-        run: dotnet publish "src/pwnctl.cli/pwnctl.cli.csproj" -r linux-x64 -c Release -o ./build -p:PublishSingleFile=true
+        run: dotnet publish "src/pwnctl.cli/pwnctl.cli.csproj" -c Release -o ./build
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
