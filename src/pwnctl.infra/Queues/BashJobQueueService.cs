@@ -8,7 +8,7 @@ namespace pwnctl.infra.Queues
 {
     public class BashJobQueueService : IJobQueueService
     {
-        private static readonly string _queueDirectory = Path.Combine($"{AppConfig.InstallPath}/queue" , "jobs/");
+        private static readonly string _queueDirectory = Path.Combine(AppConfig.InstallPath , "queue/");
 
         /// <summary>
         /// pushes a job to the pending queue.

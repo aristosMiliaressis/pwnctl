@@ -22,4 +22,4 @@ docker rm pwntainer 2>/dev/null
 docker-compose up -d
 
 rm data/pwntainer.* 2>/dev/null
-rm -rf data/jobs 2>/dev/null
+rm -rf data/queue 2>/dev/null
