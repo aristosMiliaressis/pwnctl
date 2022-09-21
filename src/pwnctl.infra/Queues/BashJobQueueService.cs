@@ -19,7 +19,7 @@ namespace pwnctl.infra.Queues
 
             var psi = new ProcessStartInfo();
             psi.FileName = "job-queue.sh";
-            psi.Arguments = $"-w {EnvironmentVariables.PWNCTL_WORKER_COUNT} -q {_queueDirectory}";
+            psi.Arguments = $"-w {ConfigurationManager.Config.JobQueue.WorkerCount} -q {_queueDirectory}";
             psi.RedirectStandardOutput = true;
             psi.RedirectStandardInput = true;
             psi.UseShellExecute = false;

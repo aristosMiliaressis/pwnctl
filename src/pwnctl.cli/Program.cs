@@ -29,7 +29,7 @@ app.AddCommand("query", () =>
     }
 ).WithDescription("Query mode (reads SQL from stdin executes and prints output to stdout)");
 
-app.AddCommand("process", async () => 
+app.AddCommand("process", async () =>
     {
         var processor = new AssetProcessor();
 
@@ -49,16 +49,16 @@ app.AddCommand("process", async () =>
     }
 ).WithDescription("Asset processing mode (reads assets from stdin)");
 
-app.AddCommand("list", (string mode) => 
+app.AddCommand("list", (string mode) =>
 {
     void WriteToConsole(IEnumerable<BaseAsset> assets)
     {
-        assets.ToList().ForEach(a => Console.WriteLine(a.ToJson()+ "\n"));
+        assets.ToList().ForEach(a => Console.WriteLine(a.ToJson() + "\n"));
     }
     AssetRepository repository = new();
-    if (mode.ToLower() == "hosts") 
+    if (mode.ToLower() == "hosts")
     {
-        var assets = repository.ListHosts().Select(a => (BaseAsset) a);
+        var assets = repository.ListHosts().Select(a => (BaseAsset)a);
         WriteToConsole(assets);
     }
     if (mode.ToLower() == "endpoints")
@@ -93,10 +93,11 @@ app.AddCommand("list", (string mode) =>
     }
 }).WithDescription("List assets");
 
-app.AddCommand("export", (string path) => {
+app.AddCommand("export", (string path) =>
+{
     void WriteToFile(string filename, IEnumerable<BaseAsset> assets)
     {
-        assets.ToList().ForEach(a => File.AppendAllText(filename, a.ToJson()+"\n"));
+        assets.ToList().ForEach(a => File.AppendAllText(filename, a.ToJson() + "\n"));
     }
 
     AssetRepository repository = new();
@@ -149,7 +150,7 @@ app.AddCommand("summary", () =>
     Console.WriteLine($"Emais: {emailCount}, InScope: {inScopeEmailCount}");
     Console.WriteLine($"Tags: {tagCount}");
     Console.WriteLine();
-    Console.WriteLine("First Queued Task: "+ firstTask.QueuedAt);
+    Console.WriteLine("First Queued Task: " + firstTask.QueuedAt);
     Console.WriteLine("Last Queued Task: " + lastTask.QueuedAt);
 });
 

@@ -17,7 +17,7 @@ public class Tests
 {
     public Tests()
     {
-        Environment.SetEnvironmentVariable("PWNCTL_TEST", "true");
+        Environment.SetEnvironmentVariable("PWNCTL_IsTestRun", "true");
         Environment.SetEnvironmentVariable("PWNCTL_INSTALL_PATH", ".");
         PwnctlAppFacade.Setup();
 
@@ -115,7 +115,8 @@ public class Tests
         Assert.Contains(assetTypes, t => t == typeof(Domain));
         Assert.Contains(assets, t => t.GetType() == typeof(Domain));
 
-        // TODO: more DNSRecord & Endpoint parsing tests
+        // TODO: SPF parsing test
+        // TODO: test that tags overwrite model properties
     }
 
     [Fact]
