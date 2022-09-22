@@ -140,3 +140,10 @@
   IsActive: true
   Aggressiveness: 5
   Subject: Keyword
+
+- ShortName: shortname_scanning
+  CommandTemplate: shortname-check.sh {{Url}}
+  IsActive: true
+  Aggressiveness: 5
+  Subject: Endpoint
+  Filter: Endpoint["Server"].ToLower().Contains("iis") || Endpoint["Server"].ToLower().Contains("microsoft httpapi")
