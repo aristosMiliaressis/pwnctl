@@ -30,11 +30,14 @@ jobs:
       - name: build cli
         run: dotnet publish "src/pwnctl.cli/pwnctl.cli.csproj" -c Release -o ./build
 
+      - name: create tarball
+        run: tar -zcvf build.tar.gz build
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: executable
-          path: ./build/
+          name: build-tarball
+          path: ./build.tar.gz
           retention-days: 1
 
   release-cli:
@@ -44,7 +47,7 @@ jobs:
       - name: Download build artifacts
         uses: actions/download-artifact@v3
         with:
-          name: executable
+          name: build-tarball
 
       - name: get datetime stamp
         run: echo "::set-output name=STAMP::$(date +%y%m%d%H%M%S)"
@@ -65,8 +68,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_name: pwnctl
-          asset_path: ./build
+          asset_name: pwnctl-linux64
+          asset_path: ./build.tar.gz
           asset_content_type: application/x-elf
 
   build-and-push-worker:
