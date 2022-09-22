@@ -147,3 +147,10 @@
   Aggressiveness: 5
   Subject: Endpoint
   Filter: Endpoint["Server"].ToLower().Contains("iis") || Endpoint["Server"].ToLower().Contains("microsoft httpapi")
+
+- ShortName: cors_check
+  CommandTemplate: cors-check.sh {{Url}}
+  IsActive: true
+  Aggressiveness: 5
+  Subject: Endpoint
+  Filter: Endpoint["Content-Type"].Contains("/json") || Endpoint["Content-Type"].Contains("/xml")

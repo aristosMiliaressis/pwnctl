@@ -86,8 +86,6 @@ RUN chmod -R +x /opt/scripts \
 ENV PWNCTL_INSTALL_PATH "/etc/pwnctl"
 WORKDIR /etc/pwnctl
 
-RUN echo 'get-valid-resolvers.sh' | job-queue.sh -w 1 -q "$PWNCTL_INSTALL_PATH/queue"
-
 COPY entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 ENTRYPOINT ["/app/entrypoint.sh"]

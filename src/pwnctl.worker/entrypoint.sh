@@ -11,4 +11,9 @@ then
     bash "$PWNCTL_INSTALL_PATH/entrypoint_hook.sh"
 fi
 
+if ! test -f "/opt/wordlists/dns/resolvers_top25.txt"; 
+then
+    echo 'get-valid-resolvers.sh' | job-queue.sh -w 1 -q "$PWNCTL_INSTALL_PATH/queue"
+fi
+
 while true; do sleep 10000; done
