@@ -100,6 +100,15 @@ app.AddCommand("export", (string path) =>
         assets.ToList().ForEach(a => File.AppendAllText(filename, a.ToJson() + "\n"));
     }
 
+    try
+    {
+        Directory.CreateDirectory(path);
+    }
+    catch (Exception ex)
+    {
+        throw new Exception($"Unable to create export directory {path}", ex);
+    }
+
     AssetRepository repository = new();
     var hosts = repository.ListHosts().Select(a => (BaseAsset)a);
     WriteToFile(Path.Combine(path, "hosts.json"), hosts);

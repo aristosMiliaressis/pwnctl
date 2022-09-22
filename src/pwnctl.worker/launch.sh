@@ -15,11 +15,6 @@ then
     cp "/opt/provider-config.yaml" ./data/provider-config.yaml
 fi
 
-if test -f "/opt/entrypoint_hook.sh"; 
-then
-    cp "/opt/entrypoint_hook.sh" ./data/entrypoint_hook.sh
-fi
-
 docker stop pwntainer 2>/dev/null
 docker rm pwntainer 2>/dev/null
 

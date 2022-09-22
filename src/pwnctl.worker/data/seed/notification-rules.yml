@@ -8,3 +8,9 @@ Rules:
   - ShortName: default_creds
     Subject: Service
     Filter: Service["vuln-default-creds"] == "true"
+  - ShortName: cors_misconfig
+    Subject: Endpoint
+    Filter: Endpoint["cors-misconfig"] == "true"
+  - ShortName: shortname_misconfig
+    Subject: Endpoint
+    Filter: Endpoint["shortname-misconfig"] == "true"

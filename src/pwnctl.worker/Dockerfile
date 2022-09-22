@@ -56,6 +56,8 @@ RUN pip install useragent-picker-cli && uagen
 RUN mkdir -p /etc/amass/scripts \
     && git clone https://github.com/PatrikFehrenbach/amass-tools.git /etc/amass/scripts
 
+RUN git clone https://github.com/irsdl/IIS-ShortName-Scanner.git
+RUN git clone https://github.com/s0md3v/Corsy.git && pip3 install -r Corsy/requirements.txt && chmod +x Corsy/corsy.py && cp Corsy/corsy.py /usr/local/bin
 RUN git clone https://github.com/ProjectAnte/dnsgen && cd dnsgen && pip3 install -r requirements.txt && python3 setup.py install
 RUN git clone https://github.com/dcsync/recontools.git /opt/recontools
 RUN git clone https://github.com/danielmiessler/SecLists.git /opt/wordlists
@@ -83,6 +85,8 @@ RUN chmod -R +x /opt/scripts \
 
 ENV PWNCTL_INSTALL_PATH "/etc/pwnctl"
 WORKDIR /etc/pwnctl
+
+RUN echo 'get-valid-resolvers.sh' | job-queue.sh -w 1 -q "$PWNCTL_INSTALL_PATH/queue"
 
 COPY entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh

@@ -2,15 +2,12 @@
 
 services:
   pwntainer:
-    image: pwntainer
+    image: aristosmiliaressis/pwnctl:latest
     container_name: pwntainer
     hostname: pwntainer
     network_mode: host
     environment:
       - PWNCTL_JobQueue:WorkerCount=1
-    build:
-      context: .
-      dockerfile: Dockerfile
     restart: unless-stopped
     volumes:
       - ./data/:/etc/pwnctl/
