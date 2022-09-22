@@ -65,7 +65,7 @@ namespace pwnctl.core.Entities.Assets
                 {
                     {"InScope", InScope.ToString()},
                     {"FoundAt", FoundAt.ToString()},
-                    {"FoundBy", FoundBy.ToString()}
+                    {"FoundBy", FoundBy }
                 }
             };
 

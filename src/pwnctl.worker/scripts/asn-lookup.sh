@@ -2,7 +2,7 @@
 
 ip=$1
 
-whois_info=$(whois -h whois.cymru.com "-v $ip" | tail -n 1)
+whois_info=$(whois -h whois.cymru.com -v $ip | tail -n 1)
 asn=$(echo $whois_info | cut -d '|' -f 1 | xargs)
 cidr=$(echo $whois_info | cut -d '|' -f 3 | xargs)
 country=$(echo $whois_info | cut -d '|' -f 4 | xargs)

@@ -15,11 +15,19 @@ then
     cp "/opt/provider-config.yaml" ./data/provider-config.yaml
 fi
 
-docker build . -t pwntainer
+if test -f "/opt/entrypoint_hook.sh"; 
+then
+    cp "/opt/entrypoint_hook.sh" ./data/entrypoint_hook.sh
+fi
+
 docker stop pwntainer 2>/dev/null
 docker rm pwntainer 2>/dev/null
 
+rm -rf data/queue 2>/dev/null
+rm -rf data/pwntainer.* 2>/dev/null
+rm -rf data/pwnctl.log 2>/dev/null
+
+docker-compose pull
 docker-compose up -d
 
-rm data/pwntainer.* 2>/dev/null
-rm -rf data/queue 2>/dev/null
+docker exec -it pwntainer bash

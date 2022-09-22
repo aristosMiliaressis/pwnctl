@@ -95,9 +95,9 @@ namespace pwnctl.core.Entities.Assets
                 },
                 Metadata = new Dictionary<string, string>
                 {
-                    {"InScope", InScope.ToString()},
-                    {"FoundAt", FoundAt.ToString()},
-                    {"FoundBy", FoundBy.ToString()}
+                    {"InScope", InScope.ToString() },
+                    {"FoundAt", FoundAt.ToString() },
+                    {"FoundBy", FoundBy }
                 }
             };
 

@@ -5,8 +5,16 @@ then
     exit
 fi
 
-echo "SELECT Name,Value FROM Tags" | pwnctl query | jq -r 'select( .Name == "foundby" ) | .Value' | sort | uniq -c | sort \
-    && echo "SELECT ShortName FROM Tasks JOIN TaskDefinitions ON Tasks.DefinitionId = TaskDefinitions.Id" | pwnctl query | jq .ShortName -r | sort | uniq -c | sort \
-    && pwnctl summary && echo \
-    && job-queue.sh --status -q $PWNCTL_INSTALL_PATH/queue/ -w $PWNCTL_WorkerCount \
-    | notify -provider discord -id status -bulk
+temp=`mktemp`
+
+echo "SELECT Name,Value FROM Tags" | pwnctl query | jq -r 'select( .Name == "foundby" ) | .Value' | sort | uniq -c | sort  > $temp
+echo >> $temp 
+echo "SELECT ShortName FROM Tasks JOIN TaskDefinitions ON Tasks.DefinitionId = TaskDefinitions.Id" | pwnctl query | jq .ShortName -r | sort | uniq -c | sort >> $temp
+echo >> $temp 
+pwnctl summary >> $temp 
+echo >> $temp 
+job-queue.sh --status -q $PWNCTL_INSTALL_PATH/queue/ >> $temp
+
+cat $temp | notify -provider discord -id status -bulk
+
+rm $temp

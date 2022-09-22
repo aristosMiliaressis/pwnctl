@@ -81,9 +81,8 @@ COPY wordlists/ /opt/wordlists/
 RUN chmod -R +x /opt/scripts \
     && mv /opt/scripts/* /usr/local/bin/
 
-RUN curl https://raw.githubusercontent.com/aristosMiliaressis/pwntainer/master/src/pwnctl.cli/install.sh | bash
-
 ENV PWNCTL_INSTALL_PATH "/etc/pwnctl"
+WORKDIR /etc/pwnctl
 
 COPY entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
