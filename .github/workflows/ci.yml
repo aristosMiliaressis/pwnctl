@@ -28,10 +28,10 @@ jobs:
         run: dotnet test
 
       - name: build cli
-        run: dotnet publish "src/pwnctl.cli/pwnctl.cli.csproj" -c Release -o ./build
+        run: dotnet publish "src/pwnctl.cli/pwnctl.cli.csproj" -c Release -o ./pwnctl
 
       - name: create tarball
-        run: tar -zcvf build.tar.gz build
+        run: tar -zcvf build.tar.gz pwnctl
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3

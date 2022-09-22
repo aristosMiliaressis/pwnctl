@@ -7,9 +7,9 @@ fi
 
 curl https://api.github.com/repos/aristosMiliaressis/pwntainer/releases/latest \
     | jq -r .assets[].browser_download_url \
-    | wget -qi -
+    | wget -qi - 
 
-tar -xzf pwnctl-linux64.tar.gz -C /opt/pwnctl
+tar -xzf pwnctl-linux64.tar.gz -C /opt/
 rm pwnctl-linux64.tar.gz
 
 chmod +x /opt/pwnctl/pwnctl
