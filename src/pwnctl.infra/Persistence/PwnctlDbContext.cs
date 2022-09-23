@@ -7,7 +7,6 @@ using pwnctl.infra.Notifications;
 using System.Reflection;
 using Newtonsoft.Json;
 using Microsoft.Extensions.FileSystemGlobbing;
-using Microsoft.Extensions.DependencyInjection;
 using pwnctl.infra.Configuration;
 using pwnctl.infra.Persistence.IdGenerators;
 using System.Linq.Expressions;
@@ -133,10 +132,17 @@ namespace pwnctl.infra.Persistence
             if (!optionsBuilder.IsConfigured)
             {
 #if DEBUG
-                optionsBuilder.UseLoggerFactory(_loggerFactory).EnableSensitiveDataLogging(true);
+                optionsBuilder = optionsBuilder.UseLoggerFactory(_loggerFactory).EnableSensitiveDataLogging(true);
 #endif
-                optionsBuilder.ReplaceService<StringValueGenerator, HashIdValueGenerator>()
-                            .UseNpgsql(ConfigurationManager.Config.Db.ConnectionString, x => x.MigrationsHistoryTable("__EFMigrationHistory"));
+                optionsBuilder = optionsBuilder.ReplaceService<StringValueGenerator, HashIdValueGenerator>();
+
+                if (ConfigurationManager.Config.IsTestRun)
+                {
+                    optionsBuilder.UseSqlite(ConfigurationManager.Config.Db.ConnectionString, x => x.MigrationsHistoryTable("__EFMigrationHistory"));
+                    return;
+                }
+
+                optionsBuilder.UseNpgsql(ConfigurationManager.Config.Db.ConnectionString, x => x.MigrationsHistoryTable("__EFMigrationHistory"));
             }
         }
 

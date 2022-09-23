@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Ini;
+using Newtonsoft.Json;
 
 namespace pwnctl.infra.Configuration
 {
@@ -17,13 +18,12 @@ namespace pwnctl.infra.Configuration
             }
 
             IConfigurationBuilder builder = new ConfigurationBuilder()
-                                                    .AddIniFile(Path.Combine(AppConfig.InstallPath,"config.ini"), optional: true, reloadOnChange: true)
+                                                    .SetBasePath(Path.GetFullPath(AppConfig.InstallPath))
+                                                    .AddIniFile("config.ini", optional: true, reloadOnChange: true)
                                                     .AddEnvironmentVariables(prefix: "PWNCTL_");
 
             IConfiguration root = builder.Build();
             _config = root.Get<AppConfig>();
-            if (_config.Db.ConnectionString == null)
-                _config.Db.ConnectionString = $"Data Source={AppConfig.InstallPath}/pwntainer.db";
         }
 
         public static AppConfig Config => _config ?? throw new Exception("Configuration hasn't been loaded");
@@ -43,7 +43,6 @@ namespace pwnctl.infra.Configuration
         public class DbConfig
         {
             public string ConnectionString { get; set; }
-            public string TestConnectionString { get; set; }
         }
 
         public class JobQueueConfig

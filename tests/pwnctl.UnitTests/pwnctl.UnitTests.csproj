@@ -26,6 +26,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="config.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content> 
     <Content Include="seed\*.*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content> 

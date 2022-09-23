@@ -9,9 +9,9 @@ namespace pwnctl.infra.Persistence
         public PwnctlDbContext CreateDbContext(string[] args)
         {
             ConfigurationManager.Load();
-            
+
             var optionsBuilder = new DbContextOptionsBuilder<PwnctlDbContext>();
-            optionsBuilder.UseNpgsql(ConfigurationManager.Config.Db.TestConnectionString);
+            optionsBuilder.UseNpgsql(ConfigurationManager.Config.Db.ConnectionString);
 
             return new PwnctlDbContext(optionsBuilder.Options);
         }
