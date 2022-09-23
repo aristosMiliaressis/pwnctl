@@ -13,12 +13,14 @@ namespace pwnctl.app.Repositories
     {
         private PwnctlDbContext _context = new();
 
-        public async Task<BaseAsset> AddOrUpdateAsync(BaseAsset asset)
+        public BaseAsset AddOrUpdate(BaseAsset asset)
         {
-            _context.ChangeTracker.Clear();
+            // creating new instance to prevent concurrency issues.
+            _context = new();
 
-            // replace asset references from db
-            // this prevents some database errors.
+            // replacing asset references from db to prevent ChangeTracker 
+            // from trying to add already existing assets and violating 
+            // uniqness contraints.
             asset.GetType()
                 .GetProperties()
                 .Where(p => p.PropertyType.IsAssignableTo(typeof(BaseAsset)))
@@ -55,7 +57,7 @@ namespace pwnctl.app.Repositories
                 }
             }
 
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
 
             return GetAssetWithReferences(asset);
         }

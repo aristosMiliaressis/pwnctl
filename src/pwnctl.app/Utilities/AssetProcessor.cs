@@ -60,7 +60,7 @@ namespace pwnctl.app.Utilities
                 asset = await handler.HandleAsync(asset);
             }
 
-            asset = await _repository.AddOrUpdateAsync(asset);
+            asset = _repository.AddOrUpdate(asset);
 
             if (asset.InScope)
             {

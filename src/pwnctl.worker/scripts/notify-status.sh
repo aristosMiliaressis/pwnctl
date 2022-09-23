@@ -7,8 +7,6 @@ fi
 
 temp=`mktemp`
 
-echo "SELECT Name,Value FROM Tags" | pwnctl query | jq -r 'select( .Name == "foundby" ) | .Value' | sort | uniq -c | sort  > $temp
-echo >> $temp 
 echo "SELECT ShortName FROM Tasks JOIN TaskDefinitions ON Tasks.DefinitionId = TaskDefinitions.Id" | pwnctl query | jq .ShortName -r | sort | uniq -c | sort >> $temp
 echo >> $temp 
 pwnctl summary >> $temp 

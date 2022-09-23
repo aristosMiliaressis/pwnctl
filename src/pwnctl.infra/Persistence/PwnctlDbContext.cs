@@ -1,17 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
 using Microsoft.Extensions.Logging;
-using pwnctl.core.BaseClasses;
-using pwnctl.core.Entities;
-using pwnctl.infra.Notifications;
 using System.Reflection;
-using Newtonsoft.Json;
-using Microsoft.Extensions.FileSystemGlobbing;
 using pwnctl.infra.Configuration;
+using pwnctl.infra.Persistence.Extensions;
 using pwnctl.infra.Persistence.IdGenerators;
-using System.Linq.Expressions;
-using YamlDotNet.Serialization;
-using YamlDotNet.Serialization.NamingConventions;
 
 namespace pwnctl.infra.Persistence
 {
@@ -51,80 +44,16 @@ namespace pwnctl.infra.Persistence
         public DbSet<core.Entities.NotificationProviderSettings> NotificationProviderSettings { get; set; }
         public DbSet<core.Entities.NotificationChannel> NotificationChannels { get; set; }
         
-        public static PwnctlDbContext Initialize()
+        public override int SaveChanges()
         {
-            PwnctlDbContext instance = new();
-
-            if (ConfigurationManager.Config.IsTestRun)
-            {
-                instance.Database.EnsureDeleted();
-            }
-
-            if (instance.Database.GetPendingMigrations().Any())
-            {
-                instance.Database.Migrate();
-            }
-
-            var taskDefinitionFile = $"{AppConfig.InstallPath}/seed/task-definitions.yml";
-
-            if (!instance.TaskDefinitions.Any() && File.Exists(taskDefinitionFile))
-            {
-                var taskText = File.ReadAllText(taskDefinitionFile);
-                var deserializer = new DeserializerBuilder()
-                           .WithNamingConvention(PascalCaseNamingConvention.Instance) 
-                           .Build();
-                var taskDefinitions = deserializer.Deserialize<List<TaskDefinition>>(taskText);
-
-                instance.TaskDefinitions.AddRange(taskDefinitions);
-                instance.SaveChanges();
-            }
-
-            if (!instance.Programs.Any())
-            {
-                Matcher matcher = new();
-                matcher.AddInclude("target-*.json");
-
-                foreach (string file in matcher.GetResultsInFullPath($"{AppConfig.InstallPath}/seed/"))
-                {
-                    var program = JsonConvert.DeserializeObject<Program>(File.ReadAllText(file));
-                    instance.ScopeDefinitions.AddRange(program.Scope);
-                    instance.OperationalPolicies.Add(program.Policy);
-                    instance.Programs.Add(program);
-                    instance.SaveChanges();
-                }
-            }
-
-            var notificationRulesFile = $"{AppConfig.InstallPath}/seed/notification-rules.yml";
-
-            if (!instance.NotificationRules.Any())
-            {
-                var taskText = File.ReadAllText(notificationRulesFile);
-                var deserializer = new DeserializerBuilder()
-                           .WithNamingConvention(PascalCaseNamingConvention.Instance)
-                           .Build();
-                var notificationSettings = deserializer.Deserialize<NotificationSettings>(taskText);
-
-                instance.NotificationProviderSettings.AddRange(notificationSettings.Providers);
-                instance.NotificationRules.AddRange(notificationSettings.Rules);
-                instance.SaveChanges();
-            }
-
-            return instance;
+            this.ConvertDateTimesToUtc();
+            return base.SaveChanges();
         }
 
-        public BaseEntity FirstFromLambda(LambdaExpression lambda)
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            var type = lambda.Parameters.First().Type;
-
-            var dbSetMethod = _dbSetMethod.MakeGenericMethod(type);
-            var queryableDbSet = dbSetMethod.Invoke(this, null);
-
-            var whereMethod = _whereMethod.MakeGenericMethod(type);
-
-            var filteredQueryable = whereMethod.Invoke(null, new object[] { queryableDbSet, lambda });
-
-            var firstOrDefaultMethod = _firstOrDefaultMethod.MakeGenericMethod(type);
-            return (BaseEntity)firstOrDefaultMethod.Invoke(null, new object[] { filteredQueryable });
+            this.ConvertDateTimesToUtc();
+            return base.SaveChangesAsync();
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -152,9 +81,5 @@ namespace pwnctl.infra.Persistence
 
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
-
-        private static MethodInfo _dbSetMethod = typeof(PwnctlDbContext).GetMethod(nameof(PwnctlDbContext.Set), BindingFlags.Public | BindingFlags.Instance, null, Array.Empty<Type>(), null);
-        private static MethodInfo _whereMethod = typeof(Queryable).GetMethods().Where(m => m.Name == nameof(Queryable.Where)).First();
-        private static MethodInfo _firstOrDefaultMethod = typeof(Queryable).GetMethods().Where(m => m.Name == nameof(Queryable.FirstOrDefault)).First();
-    }
+   }
 }

@@ -2,11 +2,10 @@ using pwnctl.app.Repositories;
 using pwnctl.core.Entities;
 using pwnctl.core.BaseClasses;
 using pwnctl.infra.Persistence;
-using pwnctl.infra.Logging;
+using pwnctl.infra.Persistence.Extensions;
 using pwnctl.infra;
 using pwnctl.core.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 
 namespace pwnctl.app.Utilities
 {

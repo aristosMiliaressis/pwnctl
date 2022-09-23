@@ -246,11 +246,11 @@ public class Tests
         var outOfScope = new Domain("www.outofscope.com");
 
         Assert.False(repository.CheckIfExists(inScopeDomain));
-        repository.AddOrUpdateAsync(inScopeDomain).Wait();
+        repository.AddOrUpdate(inScopeDomain);
         Assert.True(repository.CheckIfExists(inScopeDomain));
         inScopeDomain = context.Domains.First(d => d.Name == "tesla.com");
         Assert.True(inScopeDomain.InScope);
-        repository.AddOrUpdateAsync(outOfScope).Wait();
+        repository.AddOrUpdate(outOfScope);
         outOfScope = context.Domains.First(d => d.Name == "www.outofscope.com");
         Assert.False(outOfScope.InScope);
 
@@ -259,20 +259,20 @@ public class Tests
 
         Assert.False(repository.CheckIfExists(record1));
         Assert.False(repository.CheckIfExists(record2));
-        repository.AddOrUpdateAsync(record1).Wait();
+        repository.AddOrUpdate(record1);
         Assert.True(repository.CheckIfExists(record1));
         Assert.False(repository.CheckIfExists(record2));
-        repository.AddOrUpdateAsync(record2).Wait();
+        repository.AddOrUpdate(record2);
         Assert.True(repository.CheckIfExists(record2));
 
         var netRange = new NetRange("10.1.101.0", 24);
         Assert.False(repository.CheckIfExists(netRange));
-        repository.AddOrUpdateAsync(netRange).Wait();
+        repository.AddOrUpdate(netRange);
         Assert.True(repository.CheckIfExists(netRange));
 
         var service = new Service(inScopeDomain, 443);
         Assert.False(repository.CheckIfExists(service));
-        repository.AddOrUpdateAsync(service).Wait();
+        repository.AddOrUpdate(service);
         Assert.True(repository.CheckIfExists(service));
     }
 

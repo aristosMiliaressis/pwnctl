@@ -2,7 +2,6 @@ using pwnctl.core.BaseClasses;
 using pwnctl.core.Entities;
 using pwnctl.core.Models;
 using pwnctl.app.Exceptions;
-using pwnctl.infra.Configuration;
 using Newtonsoft.Json;
 using System.Reflection;
 
