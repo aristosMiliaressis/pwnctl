@@ -51,6 +51,5 @@ namespace pwnctl.core.Entities.Assets
         {
             throw new NotImplementedException();
         }
-
     }
 }

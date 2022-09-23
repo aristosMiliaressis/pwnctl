@@ -39,6 +39,8 @@ public class Tests
         AssetParser.TryParse("example.com", out Type[] assetTypes, out BaseAsset[] assets);
         Assert.Contains(assetTypes, t => t == typeof(Domain));
         Assert.Contains(assets, t => t.GetType() == typeof(Domain));
+        Assert.Contains(assetTypes, t => t == typeof(Keyword));
+        Assert.Contains(assets, t => t.GetType() == typeof(Keyword));
         Assert.Equal(2, assets.Count());
         Assert.Equal(2, assetTypes.Count());
 
@@ -211,6 +213,11 @@ public class Tests
         var resolutionTask = context.Tasks.Include(t => t.Definition).First(t => t.Definition.ShortName == "domain_resolution");
         Assert.Equal("dig +short sub.tesla.com | awk '{print \"sub.tesla.com IN A \" $1}'| pwnctl process", resolutionTask.Command);
 
+        var keyword = new Keyword(domain, "tesla");
+        jobService.Assign(keyword);
+        var cloudEnumTask = context.Tasks.Include(t => t.Definition).First(t => t.Definition.ShortName == "cloud_enum");
+        Assert.Equal("cloud-enum.sh tesla", cloudEnumTask.Command);
+
         // TODO: AllowActive = false test, csv black&whitelist test
     }
 
@@ -274,14 +281,22 @@ public class Tests
         AssetProcessor processor = new();
         PwnctlDbContext context = new();
 
-        var res = processor.TryProccessAsync("tesla.com IN A 31.3.3.7").Result;
+        var res = processor.TryProccessAsync("tesla.com").Result;
+        Assert.True(res);
+
+        var domain = context.Domains.First(d => d.Name == "tesla.com");
+        Assert.True(domain.InScope);
+
+        var keyword = context.Keywords.First(d => d.Word == "tesla");
+        Assert.True(keyword.InScope);
+        var cloudEnumTask = context.Tasks.Include(t => t.Definition).First(t => t.Definition.ShortName == "cloud_enum");
+        Assert.Equal("cloud-enum.sh tesla", cloudEnumTask.Command);
+
+        res = processor.TryProccessAsync("tesla.com IN A 31.3.3.7").Result;
         Assert.True(res);
 
         var record = context.DNSRecords.First(r => r.Key == "tesla.com" && r.Value == "31.3.3.7");
         Assert.True(record.InScope);
-
-        var domain = context.Domains.First(d => d.Name == "tesla.com");
-        Assert.True(domain.InScope);
 
         var host = context.Hosts.Include(h => h.AARecords).First(host => host.IP == "31.3.3.7");
         Assert.True(host.InScope);

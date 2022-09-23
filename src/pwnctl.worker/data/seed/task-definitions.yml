@@ -146,7 +146,14 @@
   IsActive: true
   Aggressiveness: 5
   Subject: Endpoint
-  Filter: Endpoint["Server"].ToLower().Contains("iis") || Endpoint["Server"].ToLower().Contains("microsoft httpapi")
+  Filter: Endpoint["Title"].Contains("Internet Information Services")
+
+- ShortName: shortname_scanning
+  CommandTemplate: shortname-check.sh {{Origin}}
+  IsActive: true
+  Aggressiveness: 5
+  Subject: Service
+  Filter: Service["Version"].ToLower().Contains("iis") || Service["Version"].Contains("Microsoft HTTPAPI")
 
 - ShortName: cors_check
   CommandTemplate: cors-check.sh {{Url}}

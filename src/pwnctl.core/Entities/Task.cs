@@ -33,6 +33,9 @@ namespace pwnctl.core.Entities
         public NetRange NetRange { get; set; }
         public string NetRangeId { get; set; }
 
+        public Keyword Keyword { get; set; }
+        public string KeywordId { get; set; }
+
         private Task() {}
 
         public Task(TaskDefinition definition, BaseAsset asset)
