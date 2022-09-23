@@ -14,3 +14,6 @@ rm pwnctl-linux64.tar.gz
 
 chmod +x /opt/pwnctl/pwnctl
 ln -s /opt/pwnctl/pwnctl /usr/loca/bin/pwnctl
+
+mkdir /etc/pwnctl
+mv /opt/pwnctl/config.ini /etc/pwnctl

@@ -136,7 +136,7 @@ namespace pwnctl.infra.Persistence
                 optionsBuilder.UseLoggerFactory(_loggerFactory).EnableSensitiveDataLogging(true);
 #endif
                 optionsBuilder.ReplaceService<StringValueGenerator, HashIdValueGenerator>()
-                            .UseSqlite(ConfigurationManager.Config.DbConnectionString, x => x.MigrationsHistoryTable("__EFMigrationHistory"));
+                            .UseNpgsql(ConfigurationManager.Config.Db.ConnectionString, x => x.MigrationsHistoryTable("__EFMigrationHistory"));
             }
         }
 

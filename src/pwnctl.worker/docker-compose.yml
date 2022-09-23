@@ -8,6 +8,7 @@ services:
     network_mode: host
     environment:
       - PWNCTL_JobQueue:WorkerCount=1
+      - PWNCTL_DbConnectionString=""
     restart: unless-stopped
     volumes:
       - ./data/:/etc/pwnctl/

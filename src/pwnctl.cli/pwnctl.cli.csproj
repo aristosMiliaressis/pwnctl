@@ -31,16 +31,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\pwnctl.app\pwnctl.app.csproj" />
-    <ProjectReference Include="..\pwnctl.infra\pwnctl.infra.csproj" />
+    <Content Include="config.ini" CopyToPublishDirectory="Always" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="scripts\*.*">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>  
-        <Content Include="scripts\recon_scripts\*.*">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>  
+    <ProjectReference Include="..\pwnctl.app\pwnctl.app.csproj" />
+    <ProjectReference Include="..\pwnctl.infra\pwnctl.infra.csproj" />
   </ItemGroup>
 </Project>

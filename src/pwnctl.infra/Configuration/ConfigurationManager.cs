@@ -22,8 +22,8 @@ namespace pwnctl.infra.Configuration
 
             IConfiguration root = builder.Build();
             _config = root.Get<AppConfig>();
-            if (_config.DbConnectionString == null)
-                _config.DbConnectionString = $"Data Source={AppConfig.InstallPath}/pwntainer.db";
+            if (_config.Db.ConnectionString == null)
+                _config.Db.ConnectionString = $"Data Source={AppConfig.InstallPath}/pwntainer.db";
         }
 
         public static AppConfig Config => _config ?? throw new Exception("Configuration hasn't been loaded");
@@ -36,8 +36,15 @@ namespace pwnctl.infra.Configuration
                                         ? "/etc/pwnctl/"
                                         : EnvironmentVariables.PWNCTL_INSTALL_PATH;
         public bool IsTestRun { get; set; }
-        public string DbConnectionString { get; set; }
+
+        public DbConfig Db { get; set; } = new DbConfig();
         public JobQueueConfig JobQueue { get; set; } = new JobQueueConfig();
+
+        public class DbConfig
+        {
+            public string ConnectionString { get; set; }
+            public string TestConnectionString { get; set; }
+        }
 
         public class JobQueueConfig
         {

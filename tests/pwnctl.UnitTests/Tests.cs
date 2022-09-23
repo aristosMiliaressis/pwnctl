@@ -19,6 +19,7 @@ public class Tests
     {
         Environment.SetEnvironmentVariable("PWNCTL_IsTestRun", "true");
         Environment.SetEnvironmentVariable("PWNCTL_INSTALL_PATH", ".");
+        
         PwnctlAppFacade.Setup();
 
         var psi = new ProcessStartInfo();

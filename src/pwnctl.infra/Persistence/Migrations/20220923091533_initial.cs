@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -13,13 +14,13 @@ namespace pwnctl.infra.Persistence.Migrations
                 name: "Domains",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "TEXT", nullable: false),
-                    Name = table.Column<string>(type: "TEXT", nullable: true),
-                    IsRegistrationDomain = table.Column<bool>(type: "INTEGER", nullable: false),
-                    RegistrationDomainId = table.Column<string>(type: "TEXT", nullable: true),
-                    FoundAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    FoundBy = table.Column<string>(type: "TEXT", nullable: true),
-                    InScope = table.Column<bool>(type: "INTEGER", nullable: false)
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    IsRegistrationDomain = table.Column<bool>(type: "boolean", nullable: false),
+                    RegistrationDomainId = table.Column<string>(type: "text", nullable: true),
+                    FoundAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    FoundBy = table.Column<string>(type: "text", nullable: true),
+                    InScope = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -35,12 +36,12 @@ namespace pwnctl.infra.Persistence.Migrations
                 name: "Hosts",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "TEXT", nullable: false),
-                    IP = table.Column<string>(type: "TEXT", nullable: true),
-                    Version = table.Column<int>(type: "INTEGER", nullable: false),
-                    FoundAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    FoundBy = table.Column<string>(type: "TEXT", nullable: true),
-                    InScope = table.Column<bool>(type: "INTEGER", nullable: false)
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    IP = table.Column<string>(type: "text", nullable: true),
+                    Version = table.Column<int>(type: "integer", nullable: false),
+                    FoundAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    FoundBy = table.Column<string>(type: "text", nullable: true),
+                    InScope = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -51,12 +52,12 @@ namespace pwnctl.infra.Persistence.Migrations
                 name: "NetRanges",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "TEXT", nullable: false),
-                    FirstAddress = table.Column<string>(type: "TEXT", nullable: true),
-                    NetPrefixBits = table.Column<ushort>(type: "INTEGER", nullable: false),
-                    FoundAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    FoundBy = table.Column<string>(type: "TEXT", nullable: true),
-                    InScope = table.Column<bool>(type: "INTEGER", nullable: false)
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    FirstAddress = table.Column<string>(type: "text", nullable: true),
+                    NetPrefixBits = table.Column<int>(type: "integer", nullable: false),
+                    FoundAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    FoundBy = table.Column<string>(type: "text", nullable: true),
+                    InScope = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -67,9 +68,9 @@ namespace pwnctl.infra.Persistence.Migrations
                 name: "NotificationProviderSettings",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -80,13 +81,13 @@ namespace pwnctl.infra.Persistence.Migrations
                 name: "NotificationRules",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    ShortName = table.Column<string>(type: "TEXT", nullable: true),
-                    Subject = table.Column<string>(type: "TEXT", nullable: true),
-                    Filter = table.Column<string>(type: "TEXT", nullable: true),
-                    Topic = table.Column<string>(type: "TEXT", nullable: true),
-                    Severity = table.Column<string>(type: "TEXT", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    ShortName = table.Column<string>(type: "text", nullable: true),
+                    Subject = table.Column<string>(type: "text", nullable: true),
+                    Filter = table.Column<string>(type: "text", nullable: true),
+                    Topic = table.Column<string>(type: "text", nullable: true),
+                    Severity = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -97,13 +98,13 @@ namespace pwnctl.infra.Persistence.Migrations
                 name: "OperationalPolicies",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", nullable: true),
-                    Blacklist = table.Column<string>(type: "TEXT", nullable: true),
-                    Whitelist = table.Column<string>(type: "TEXT", nullable: true),
-                    MaxAggressiveness = table.Column<int>(type: "INTEGER", nullable: true),
-                    AllowActive = table.Column<bool>(type: "INTEGER", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Blacklist = table.Column<string>(type: "text", nullable: true),
+                    Whitelist = table.Column<string>(type: "text", nullable: true),
+                    MaxAggressiveness = table.Column<int>(type: "integer", nullable: true),
+                    AllowActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -114,14 +115,14 @@ namespace pwnctl.infra.Persistence.Migrations
                 name: "TaskDefinitions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    ShortName = table.Column<string>(type: "TEXT", nullable: true),
-                    CommandTemplate = table.Column<string>(type: "TEXT", nullable: true),
-                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false),
-                    Aggressiveness = table.Column<int>(type: "INTEGER", nullable: false),
-                    Subject = table.Column<string>(type: "TEXT", nullable: true),
-                    Filter = table.Column<string>(type: "TEXT", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    ShortName = table.Column<string>(type: "text", nullable: true),
+                    CommandTemplate = table.Column<string>(type: "text", nullable: true),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    Aggressiveness = table.Column<int>(type: "integer", nullable: false),
+                    Subject = table.Column<string>(type: "text", nullable: true),
+                    Filter = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -132,12 +133,12 @@ namespace pwnctl.infra.Persistence.Migrations
                 name: "Emails",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "TEXT", nullable: false),
-                    Address = table.Column<string>(type: "TEXT", nullable: true),
-                    DomainId = table.Column<string>(type: "TEXT", nullable: true),
-                    FoundAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    FoundBy = table.Column<string>(type: "TEXT", nullable: true),
-                    InScope = table.Column<bool>(type: "INTEGER", nullable: false)
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    Address = table.Column<string>(type: "text", nullable: true),
+                    DomainId = table.Column<string>(type: "text", nullable: true),
+                    FoundAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    FoundBy = table.Column<string>(type: "text", nullable: true),
+                    InScope = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -153,12 +154,12 @@ namespace pwnctl.infra.Persistence.Migrations
                 name: "Keywords",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "TEXT", nullable: false),
-                    Word = table.Column<string>(type: "TEXT", nullable: true),
-                    DomainId = table.Column<string>(type: "TEXT", nullable: true),
-                    FoundAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    FoundBy = table.Column<string>(type: "TEXT", nullable: true),
-                    InScope = table.Column<bool>(type: "INTEGER", nullable: false)
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    Word = table.Column<string>(type: "text", nullable: true),
+                    DomainId = table.Column<string>(type: "text", nullable: true),
+                    FoundAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    FoundBy = table.Column<string>(type: "text", nullable: true),
+                    InScope = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -174,15 +175,15 @@ namespace pwnctl.infra.Persistence.Migrations
                 name: "DNSRecords",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "TEXT", nullable: false),
-                    Type = table.Column<int>(type: "INTEGER", nullable: false),
-                    Key = table.Column<string>(type: "TEXT", nullable: true),
-                    Value = table.Column<string>(type: "TEXT", nullable: true),
-                    HostId = table.Column<string>(type: "TEXT", nullable: true),
-                    DomainId = table.Column<string>(type: "TEXT", nullable: true),
-                    FoundAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    FoundBy = table.Column<string>(type: "TEXT", nullable: true),
-                    InScope = table.Column<bool>(type: "INTEGER", nullable: false)
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    Type = table.Column<int>(type: "integer", nullable: false),
+                    Key = table.Column<string>(type: "text", nullable: true),
+                    Value = table.Column<string>(type: "text", nullable: true),
+                    HostId = table.Column<string>(type: "text", nullable: true),
+                    DomainId = table.Column<string>(type: "text", nullable: true),
+                    FoundAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    FoundBy = table.Column<string>(type: "text", nullable: true),
+                    InScope = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -203,16 +204,16 @@ namespace pwnctl.infra.Persistence.Migrations
                 name: "Services",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "TEXT", nullable: false),
-                    Port = table.Column<ushort>(type: "INTEGER", nullable: false),
-                    Origin = table.Column<string>(type: "TEXT", nullable: true),
-                    TransportProtocol = table.Column<int>(type: "INTEGER", nullable: false),
-                    ApplicationProtocol = table.Column<string>(type: "TEXT", nullable: true),
-                    HostId = table.Column<string>(type: "TEXT", nullable: true),
-                    DomainId = table.Column<string>(type: "TEXT", nullable: true),
-                    FoundAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    FoundBy = table.Column<string>(type: "TEXT", nullable: true),
-                    InScope = table.Column<bool>(type: "INTEGER", nullable: false)
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    Port = table.Column<int>(type: "integer", nullable: false),
+                    Origin = table.Column<string>(type: "text", nullable: true),
+                    TransportProtocol = table.Column<int>(type: "integer", nullable: false),
+                    ApplicationProtocol = table.Column<string>(type: "text", nullable: true),
+                    HostId = table.Column<string>(type: "text", nullable: true),
+                    DomainId = table.Column<string>(type: "text", nullable: true),
+                    FoundAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    FoundBy = table.Column<string>(type: "text", nullable: true),
+                    InScope = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -233,11 +234,11 @@ namespace pwnctl.infra.Persistence.Migrations
                 name: "NotificationChannels",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", nullable: true),
-                    Filter = table.Column<string>(type: "TEXT", nullable: true),
-                    ProviderId = table.Column<int>(type: "INTEGER", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Filter = table.Column<string>(type: "text", nullable: true),
+                    ProviderId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -254,11 +255,11 @@ namespace pwnctl.infra.Persistence.Migrations
                 name: "Programs",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", nullable: true),
-                    Platform = table.Column<string>(type: "TEXT", nullable: true),
-                    PolicyId = table.Column<int>(type: "INTEGER", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Platform = table.Column<string>(type: "text", nullable: true),
+                    PolicyId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -274,14 +275,14 @@ namespace pwnctl.infra.Persistence.Migrations
                 name: "Endpoints",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "TEXT", nullable: false),
-                    Url = table.Column<string>(type: "TEXT", nullable: true),
-                    ServiceId = table.Column<string>(type: "TEXT", nullable: true),
-                    Scheme = table.Column<string>(type: "TEXT", nullable: true),
-                    Path = table.Column<string>(type: "TEXT", nullable: true),
-                    FoundAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    FoundBy = table.Column<string>(type: "TEXT", nullable: true),
-                    InScope = table.Column<bool>(type: "INTEGER", nullable: false)
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    Url = table.Column<string>(type: "text", nullable: true),
+                    ServiceId = table.Column<string>(type: "text", nullable: true),
+                    Scheme = table.Column<string>(type: "text", nullable: true),
+                    Path = table.Column<string>(type: "text", nullable: true),
+                    FoundAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    FoundBy = table.Column<string>(type: "text", nullable: true),
+                    InScope = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -297,12 +298,12 @@ namespace pwnctl.infra.Persistence.Migrations
                 name: "VirtualHosts",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "TEXT", nullable: false),
-                    Name = table.Column<string>(type: "TEXT", nullable: true),
-                    ServiceId = table.Column<string>(type: "TEXT", nullable: true),
-                    FoundAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    FoundBy = table.Column<string>(type: "TEXT", nullable: true),
-                    InScope = table.Column<bool>(type: "INTEGER", nullable: false)
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    ServiceId = table.Column<string>(type: "text", nullable: true),
+                    FoundAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    FoundBy = table.Column<string>(type: "text", nullable: true),
+                    InScope = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -318,12 +319,12 @@ namespace pwnctl.infra.Persistence.Migrations
                 name: "ScopeDefinitions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", nullable: true),
-                    Type = table.Column<int>(type: "INTEGER", nullable: false),
-                    Pattern = table.Column<string>(type: "TEXT", nullable: true),
-                    ProgramId = table.Column<int>(type: "INTEGER", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Type = table.Column<int>(type: "integer", nullable: false),
+                    Pattern = table.Column<string>(type: "text", nullable: true),
+                    ProgramId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -340,15 +341,15 @@ namespace pwnctl.infra.Persistence.Migrations
                 name: "Parameters",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "TEXT", nullable: false),
-                    EndpointId = table.Column<string>(type: "TEXT", nullable: true),
-                    Url = table.Column<string>(type: "TEXT", nullable: true),
-                    Name = table.Column<string>(type: "TEXT", nullable: true),
-                    Type = table.Column<int>(type: "INTEGER", nullable: false),
-                    UrlEncodedCsValues = table.Column<string>(type: "TEXT", nullable: true),
-                    FoundAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    FoundBy = table.Column<string>(type: "TEXT", nullable: true),
-                    InScope = table.Column<bool>(type: "INTEGER", nullable: false)
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    EndpointId = table.Column<string>(type: "text", nullable: true),
+                    Url = table.Column<string>(type: "text", nullable: true),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Type = table.Column<int>(type: "integer", nullable: false),
+                    UrlEncodedCsValues = table.Column<string>(type: "text", nullable: true),
+                    FoundAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    FoundBy = table.Column<string>(type: "text", nullable: true),
+                    InScope = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -364,20 +365,20 @@ namespace pwnctl.infra.Persistence.Migrations
                 name: "Tags",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", nullable: true),
-                    Value = table.Column<string>(type: "TEXT", nullable: true),
-                    HostId = table.Column<string>(type: "TEXT", nullable: true),
-                    ServiceId = table.Column<string>(type: "TEXT", nullable: true),
-                    EndpointId = table.Column<string>(type: "TEXT", nullable: true),
-                    DomainId = table.Column<string>(type: "TEXT", nullable: true),
-                    DNSRecordId = table.Column<string>(type: "TEXT", nullable: true),
-                    NetRangeId = table.Column<string>(type: "TEXT", nullable: true),
-                    EmailId = table.Column<string>(type: "TEXT", nullable: true),
-                    KeywordId = table.Column<string>(type: "TEXT", nullable: true),
-                    ParameterId = table.Column<string>(type: "TEXT", nullable: true),
-                    VirtualHostId = table.Column<string>(type: "TEXT", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Value = table.Column<string>(type: "text", nullable: true),
+                    HostId = table.Column<string>(type: "text", nullable: true),
+                    ServiceId = table.Column<string>(type: "text", nullable: true),
+                    EndpointId = table.Column<string>(type: "text", nullable: true),
+                    DomainId = table.Column<string>(type: "text", nullable: true),
+                    DNSRecordId = table.Column<string>(type: "text", nullable: true),
+                    NetRangeId = table.Column<string>(type: "text", nullable: true),
+                    EmailId = table.Column<string>(type: "text", nullable: true),
+                    KeywordId = table.Column<string>(type: "text", nullable: true),
+                    ParameterId = table.Column<string>(type: "text", nullable: true),
+                    VirtualHostId = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -438,24 +439,24 @@ namespace pwnctl.infra.Persistence.Migrations
                 name: "Tasks",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    DefinitionId = table.Column<int>(type: "INTEGER", nullable: false),
-                    ReturnCode = table.Column<int>(type: "INTEGER", nullable: true),
-                    QueuedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    StartedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    FinishedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    Arguments = table.Column<string>(type: "TEXT", nullable: true),
-                    HostId = table.Column<string>(type: "TEXT", nullable: true),
-                    ServiceId = table.Column<string>(type: "TEXT", nullable: true),
-                    EndpointId = table.Column<string>(type: "TEXT", nullable: true),
-                    DomainId = table.Column<string>(type: "TEXT", nullable: true),
-                    DNSRecordId = table.Column<string>(type: "TEXT", nullable: true),
-                    NetRangeId = table.Column<string>(type: "TEXT", nullable: true),
-                    EmailId = table.Column<string>(type: "TEXT", nullable: true),
-                    KeywordId = table.Column<string>(type: "TEXT", nullable: true),
-                    ParameterId = table.Column<string>(type: "TEXT", nullable: true),
-                    VirtualHostId = table.Column<string>(type: "TEXT", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    DefinitionId = table.Column<int>(type: "integer", nullable: false),
+                    ReturnCode = table.Column<int>(type: "integer", nullable: true),
+                    QueuedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    StartedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    FinishedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Arguments = table.Column<string>(type: "text", nullable: true),
+                    HostId = table.Column<string>(type: "text", nullable: true),
+                    ServiceId = table.Column<string>(type: "text", nullable: true),
+                    EndpointId = table.Column<string>(type: "text", nullable: true),
+                    DomainId = table.Column<string>(type: "text", nullable: true),
+                    DNSRecordId = table.Column<string>(type: "text", nullable: true),
+                    NetRangeId = table.Column<string>(type: "text", nullable: true),
+                    KeywordId = table.Column<string>(type: "text", nullable: true),
+                    EmailId = table.Column<string>(type: "text", nullable: true),
+                    ParameterId = table.Column<string>(type: "text", nullable: true),
+                    VirtualHostId = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {

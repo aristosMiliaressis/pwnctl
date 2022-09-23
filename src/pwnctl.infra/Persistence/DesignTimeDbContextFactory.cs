@@ -8,8 +8,10 @@ namespace pwnctl.infra.Persistence
     {
         public PwnctlDbContext CreateDbContext(string[] args)
         {
+            ConfigurationManager.Load();
+            
             var optionsBuilder = new DbContextOptionsBuilder<PwnctlDbContext>();
-            optionsBuilder.UseSqlite($"Data Source={AppConfig.InstallPath}/pwntainer.db");
+            optionsBuilder.UseNpgsql(ConfigurationManager.Config.Db.TestConnectionString);
 
             return new PwnctlDbContext(optionsBuilder.Options);
         }
