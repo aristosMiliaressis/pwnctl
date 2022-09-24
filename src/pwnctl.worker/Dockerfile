@@ -85,23 +85,23 @@ RUN chmod -R +x /opt/scripts \
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 
-COPY ["/src/pwnctl.core/pwnctl.core.csproj", "/src/pwnctl.core/"]
-RUN dotnet restore "/src/pwnctl.core/pwnctl.core.csproj"
-COPY ["/src/pwnctl.infra/pwnctl.infra.csproj", "/src/pwnctl.infra/"]
-RUN dotnet restore "/src/pwnctl.infra/pwnctl.infra.csproj"
-COPY ["/src/pwnctl.app/pwnctl.app.csproj", "/src/pwnctl.app/"]
-RUN dotnet restore "/src/pwnctl.app/pwnctl.app.csproj"
-COPY ["/src/pwnctl.worker/pwnctl.worker.csproj", "/src/pwnctl.worker/"]
-RUN dotnet restore "/src/pwnctl.worker/pwnctl.worker.csproj"
+# COPY ["/src/pwnctl.core/pwnctl.core.csproj", "/src/pwnctl.core/"]
+# RUN dotnet restore "/src/pwnctl.core/pwnctl.core.csproj"
+# COPY ["/src/pwnctl.infra/pwnctl.infra.csproj", "/src/pwnctl.infra/"]
+# RUN dotnet restore "/src/pwnctl.infra/pwnctl.infra.csproj"
+# COPY ["/src/pwnctl.app/pwnctl.app.csproj", "/src/pwnctl.app/"]
+# RUN dotnet restore "/src/pwnctl.app/pwnctl.app.csproj"
+# COPY ["/src/pwnctl.worker/pwnctl.worker.csproj", "/src/pwnctl.worker/"]
+# RUN dotnet restore "/src/pwnctl.worker/pwnctl.worker.csproj"
 
-COPY src/ src/
+# COPY src/ src/
 
-RUN dotnet publish "/src/pwnctl.worker/pwnctl.worker.csproj" -c Release -o /app/publish
+# RUN dotnet publish "/src/pwnctl.worker/pwnctl.worker.csproj" -c Release -o /app/publish
 
 FROM base AS release
 
-COPY --from=build /app/publish /opt/pwnwrk
-RUN ln -s /opt/pwnwrk/pwnwrk /usr/local/bin/
+# COPY --from=build /app/publish /opt/pwnwrk
+# RUN ln -s /opt/pwnwrk/pwnwrk /usr/local/bin/
 
 ENV PWNCTL_INSTALL_PATH "/etc/pwnctl"
 WORKDIR /etc/pwnctl
