@@ -1,6 +1,7 @@
 using Newtonsoft.Json;
 using pwnctl.infra.Configuration;
 using System.Data.SqlClient;
+using Npgsql;
 
 namespace pwnctl.infra.Persistence
 {
@@ -9,14 +10,15 @@ namespace pwnctl.infra.Persistence
         public void Run(string sql)
         {
             //TODO: maybe split sql on ';' semicolon to execute statements separatly
-            using (var connection = new SqlConnection(ConfigurationManager.Config.Db.ConnectionString))
+            using (var connection = new NpgsqlConnection(ConfigurationManager.Config.Db.ConnectionString))
             {
-                var command = new SqlCommand(sql, connection);
+                var command = new NpgsqlCommand(sql, connection);
                 try
                 {
                     connection.Open();
-                    SqlDataReader reader = command.ExecuteReader();
+                    NpgsqlDataReader reader = command.ExecuteReader();
                     var row = Serialize(reader);
+                    Console.WriteLine(row.Count());
                     string json = string.Join("\n", row.Select(r => JsonConvert.SerializeObject(r, Formatting.Indented)));
                     //string json = JsonConvert.SerializeObject(row, Formatting.Indented);
                     Console.WriteLine(json);
@@ -29,7 +31,7 @@ namespace pwnctl.infra.Persistence
             }
         }
         
-        private IEnumerable<Dictionary<string, object>> Serialize(SqlDataReader reader)
+        private IEnumerable<Dictionary<string, object>> Serialize(NpgsqlDataReader reader)
         {
             var results = new List<Dictionary<string, object>>();
             var cols = new List<string>();
@@ -42,7 +44,7 @@ namespace pwnctl.infra.Persistence
             return results;
         }
         
-        private Dictionary<string, object> SerializeRow(IEnumerable<string> cols, SqlDataReader reader) 
+        private Dictionary<string, object> SerializeRow(IEnumerable<string> cols, NpgsqlDataReader reader) 
         {
             var result = new Dictionary<string, object>();
             foreach (var col in cols) 

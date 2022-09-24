@@ -1,4 +1,4 @@
-FROM aaaguirrep/offensive-docker AS base
+FROM aaaguirrep/offensive-docker
 
 # install .NET runtime
 RUN apt-get update \

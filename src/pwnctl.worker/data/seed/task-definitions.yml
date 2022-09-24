@@ -93,8 +93,8 @@
   Filter: Endpoint.Path == "/"
   Subject: Endpoint
 
-- ShortName: waf_print
-  CommandTemplate: waf-print.sh {{Url}}
+- ShortName: wafw00f
+  CommandTemplate: wafw00f.sh {{Url}}
   IsActive: true
   Aggressiveness: 2
   Filter: Endpoint.Path == "/"

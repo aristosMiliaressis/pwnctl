@@ -4,6 +4,7 @@ using pwnctl.app.Repositories;
 using pwnctl.app.Utilities;
 using pwnctl.infra.Persistence;
 using pwnctl.infra.Repositories;
+using pwnctl.infra.Logging;
 using pwnctl.core.Entities.Assets;
 using pwnctl.core.Entities;
 using pwnctl.core.BaseClasses;
@@ -405,15 +406,31 @@ public class Tests
         Assert.Equal("ssh", service.ApplicationProtocol);
     }
 
+    // [Fact]
+    // public void QueryRunner_Tests()
+    // {
+    //     var queryRunner = new QueryRunner();
+
+    //     try
+    //     {
+    //         queryRunner.Run("SELECT \"ShortName\" FROM \"Tasks\" JOIN \"TaskDefinitions\" ON \"Tasks\".\"DefinitionId\" = \"TaskDefinitions\".\"Id\"");
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         Console.WriteLine("AA");
+    //         Console.WriteLine(ex.ToRecursiveExInfo());
+    //     }
+    // }
+
     //[Fact]
     // public void NotificationRuleChecker_Tests()
     // {
-    //     // TODO:
+    //     // TODO: NotificationRuleChecker_Tests
     // }
 
     // [Fact]
     // public void IP_Host_Url_Normalization_Tests()
     // {
-        // TODO: IP_Host_Url_Normalization_Tests
+    // TODO: IP_Host_Url_Normalization_Tests
     // }
 }

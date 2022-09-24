@@ -17,7 +17,3 @@ then
     (crontab -l ; echo "00 */2 * * * BASH_ENV=/etc/profile /usr/local/bin/notify-status.sh") | crontab
 fi
 
-if ! test -f "/opt/wordlists/dns/public_suffix_list.dat"; 
-then
-    get-psl.sh
-fi

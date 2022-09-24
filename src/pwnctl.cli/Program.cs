@@ -146,8 +146,8 @@ app.AddCommand("summary", () =>
     int inScopeEndpointCount = context.Endpoints.Where(a => a.InScope).Count();
     int inScopeParamCount = context.Parameters.Where(a => a.InScope).Count();
     int inScopeEmailCount = context.Emails.Where(a => a.InScope).Count();
-    var firstTask = context.Tasks.OrderBy(t => t.QueuedAt).First();
-    var lastTask = context.Tasks.OrderBy(t => t.QueuedAt).Last();
+    var firstTask = context.Tasks.OrderBy(t => t.QueuedAt).FirstOrDefault();
+    var lastTask = context.Tasks.OrderBy(t => t.QueuedAt).FirstOrDefault();
 
     Console.WriteLine($"NetRanges: {netRangeCount}, InScope: {inScopeRangesCount}");
     Console.WriteLine($"Hosts: {hostCount}, InScope: {insCopeHostCount}");
@@ -158,9 +158,12 @@ app.AddCommand("summary", () =>
     Console.WriteLine($"Parameters: {paramCount}, InScope: {inScopeParamCount}");
     Console.WriteLine($"Emais: {emailCount}, InScope: {inScopeEmailCount}");
     Console.WriteLine($"Tags: {tagCount}");
-    Console.WriteLine();
-    Console.WriteLine("First Queued Task: " + firstTask.QueuedAt);
-    Console.WriteLine("Last Queued Task: " + lastTask.QueuedAt);
+    if (firstTask != null)
+    {
+        Console.WriteLine();
+        Console.WriteLine("First Queued Task: " + firstTask.QueuedAt);
+        Console.WriteLine("Last Queued Task: " + lastTask.QueuedAt);
+    }    
 });
 
 app.Run();

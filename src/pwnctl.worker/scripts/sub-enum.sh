@@ -6,7 +6,6 @@ DNS_RESOLVERS_FILE='/opt/wordlists/dns/resolvers_top25.txt'
 
 potential_subs_file=`mktemp`
 valid_subs_file=`mktemp`
-trusted_resolvers=`mktemp`
 
 osint_subs() {
 	temp=`mktemp`
@@ -23,7 +22,7 @@ osint_subs() {
 }
 
 generate_brute_gueses() {
-    cat $dict | xargs -I _ echo _.$domain
+    cat $dict | xargs -I _ echo _.$domain | anew $potential_subs_file > /dev/null
 }
 
 resolve_domains() {
@@ -31,25 +30,23 @@ resolve_domains() {
 }
 
 generate_alterations() {
-	dnsgen -f $valid_subs_file | sort -u
+	dnsgen -f $valid_subs_file | sort -u > $potential_subs_file
 }
+
+echo $domain > $valid_subs_file
 
 osint_subs
 
-generate_brute_gueses | anew $potential_subs_file > /dev/null
+generate_brute_gueses
 
-resolve_domains > $valid_subs_file
+resolve_domains >> $valid_subs_file
 
-generate_alterations > $potential_subs_file
+generate_alterations
 
 resolve_domains | anew $valid_subs_file
 
-echo $domain >> $valid_subs_file
-
 dig-deep.sh $valid_subs_file | sort -u 2>/dev/null
-
 cat $valid_subs_file | sort -u
+
 rm $potential_subs_file
 rm $valid_subs_file
-rm $trusted_resolvers
-
