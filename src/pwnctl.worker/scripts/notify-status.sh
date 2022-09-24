@@ -7,7 +7,7 @@ fi
 
 temp=`mktemp`
 
-echo "SELECT ShortName FROM Tasks JOIN TaskDefinitions ON Tasks.DefinitionId = TaskDefinitions.Id" | pwnctl query | jq .ShortName -r | sort | uniq -c | sort >> $temp
+echo 'SELECT "ShortName" FROM "Tasks" JOIN "TaskDefinitions" ON "Tasks"."DefinitionId" = "TaskDefinitions"."Id"' | pwnctl query | jq .ShortName -r | sort | uniq -c | sort >> $temp
 echo >> $temp 
 pwnctl summary >> $temp 
 echo >> $temp 
