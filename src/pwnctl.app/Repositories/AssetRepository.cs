@@ -1,5 +1,6 @@
 using pwnctl.app.Utilities;
 using pwnctl.infra;
+using pwnctl.infra.Extensions;
 using pwnctl.infra.Logging;
 using pwnctl.infra.Persistence;
 using pwnctl.infra.Persistence.Extensions;
@@ -7,9 +8,6 @@ using pwnctl.core.BaseClasses;
 using pwnctl.core.Entities.Assets;
 using pwnctl.core.Interfaces;
 using Microsoft.EntityFrameworkCore;
-
-// TODO: look into ForEachAsync & cleaner DbContext usage
-// https://stackoverflow.com/questions/18667633/how-can-i-use-async-with-foreach
 
 namespace pwnctl.app.Repositories
 {
@@ -24,16 +22,16 @@ namespace pwnctl.app.Repositories
             // replacing asset references from db to prevent ChangeTracker 
             // from trying to add already existing assets and violating 
             // uniqness contraints.
-            asset.GetType()
+            await asset.GetType()
                 .GetProperties()
                 .Where(p => p.PropertyType.IsAssignableTo(typeof(BaseAsset)))
-                .ToList().ForEach(reference =>
+                .ToList().ForEachAsync(async reference =>
                 {
                     var assetRef = (BaseAsset)reference.GetValue(asset);
                     if (assetRef == null)
                         return;
 
-                    assetRef = GetAssetWithReferencesAsync(assetRef).Result;
+                    assetRef = await GetAssetWithReferencesAsync(assetRef);
                     if (assetRef != null)
                         reference.SetValue(asset, assetRef);
                 });

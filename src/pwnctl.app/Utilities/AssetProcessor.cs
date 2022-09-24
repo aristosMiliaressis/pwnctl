@@ -1,4 +1,5 @@
 ﻿using pwnctl.app.Repositories;
+using pwnctl.infra.Extensions;
 using pwnctl.infra.Logging;
 using pwnctl.infra.Notifications;
 using pwnctl.core.BaseClasses;
@@ -45,12 +46,12 @@ namespace pwnctl.app.Utilities
         {
             // recursivly process all parsed assets
             // starting from the botton of the ref tree.
-            asset.GetType()
+            await asset.GetType()
                 .GetProperties()
                 .Where(p => p.PropertyType.IsAssignableTo(typeof(BaseAsset)))
                 .Select(rf => (BaseAsset) rf.GetValue(asset))
                 .Where(a => a != null)
-                .ToList().ForEach(refAsset => HandleAssetAsync(refAsset).Wait());
+                .ToList().ForEachAsync(async refAsset => await HandleAssetAsync(refAsset));
 
             // apply class specific processing
             if (_assetHandlerMap[asset.GetType()] != null)

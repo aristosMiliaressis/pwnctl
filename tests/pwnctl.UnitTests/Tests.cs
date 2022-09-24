@@ -377,8 +377,6 @@ public class Tests
         Assert.Equal("IIS", srvTag.Value);
         Assert.Contains(tasks, t => t.Definition.ShortName == "shortname_scanner");
 
-        tasks.ForEach(t => Console.WriteLine(t.WrappedCommand));
-
         var apacheTeslaUrl = new
         {
             asset = "https://apache.tesla.com",
