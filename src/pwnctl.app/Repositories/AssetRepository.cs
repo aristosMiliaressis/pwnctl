@@ -1,5 +1,6 @@
 using pwnctl.app.Utilities;
 using pwnctl.infra;
+using pwnctl.infra.Logging;
 using pwnctl.infra.Persistence;
 using pwnctl.infra.Persistence.Extensions;
 using pwnctl.core.BaseClasses;
@@ -79,6 +80,7 @@ namespace pwnctl.app.Repositories
             asset = GetMatchingAsset(asset);
             if (asset == null)
                 return null;
+            Logger.Instance.Info(asset.DomainIdentifier);
             _context.Entry(asset).LoadReferencesRecursivelyAsync().Wait();
 
             return asset;
