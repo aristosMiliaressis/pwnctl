@@ -13,7 +13,7 @@ namespace pwnctl.core.Entities
         public int? ProgramId { get; set; }
         public Program Program { get; set; }
 
-        private ScopeDefinition() {}
+        public ScopeDefinition() {}
 
         public ScopeDefinition(Program program)
         {

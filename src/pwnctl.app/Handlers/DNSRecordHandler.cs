@@ -32,7 +32,7 @@ namespace pwnctl.app.Handlers
             {
                 domain.InScope = true;
                 await _context.SaveChangesAsync();
-                _jobService.Assign(domain);
+                await _jobService.AssignAsync(domain);
             }
 
             if (host != null && !host.InScope)
@@ -47,7 +47,7 @@ namespace pwnctl.app.Handlers
                 host.InScope = true;
                 await _context.SaveChangesAsync();
                 host.AARecords.Add(record);
-                _jobService.Assign(host);
+                await _jobService.AssignAsync(host);
             }
 
             return record;

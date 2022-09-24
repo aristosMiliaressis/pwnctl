@@ -2,7 +2,7 @@ using pwnctl.core.BaseClasses;
 using pwnctl.core.Entities;
 using pwnctl.core.Models;
 using pwnctl.app.Exceptions;
-using Newtonsoft.Json;
+using System.Text.Json;
 using System.Reflection;
 
 namespace pwnctl.app.Utilities
@@ -61,7 +61,11 @@ namespace pwnctl.app.Utilities
             if (!assetText.TrimStart().StartsWith("{"))
                 return;
 
-            var entry = JsonConvert.DeserializeObject<AssetDTO>(assetText);
+            var entry = JsonSerializer.Deserialize<AssetDTO>(assetText, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+            
             assetText = entry.Asset;
             tags = entry.Tags.Select(t => new Tag(t.Key, t.Value)).ToList();
         }

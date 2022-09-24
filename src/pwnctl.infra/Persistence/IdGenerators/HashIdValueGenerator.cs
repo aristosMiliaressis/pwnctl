@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
 using System.Text;
 using System.Reflection;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace pwnctl.infra.Persistence.IdGenerators
 {
@@ -19,7 +19,7 @@ namespace pwnctl.infra.Persistence.IdGenerators
                         .GetProperties()
                         .Where(p => p.GetCustomAttribute(typeof(UniquenessAttribute)) != null)
                         .Select(p => p.GetValue(asset));
-            var json = JsonConvert.SerializeObject(uniqnessValues);
+            var json = JsonSerializer.Serialize(uniqnessValues);
             var bytes = Encoding.UTF8.GetBytes(json);
             return Convert.ToHexString(_md5.ComputeHash(bytes));
         }

@@ -14,6 +14,6 @@ namespace pwnctl.core.Entities
 		public int? MaxAggressiveness { get; set; }
 		public bool AllowActive { get; set; }
 
-        private OperationalPolicy() {}
+        public OperationalPolicy() {}
     }
 }

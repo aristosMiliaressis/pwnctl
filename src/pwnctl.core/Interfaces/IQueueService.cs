@@ -9,6 +9,6 @@ namespace pwnctl.core.Interfaces
         /// pushes a job to the pending queue.
         /// </summary>
         /// <param name="task"></param>
-        public void Enqueue(core.Entities.Task job);
+        public Task EnqueueAsync(core.Entities.Task job);
     }
 }

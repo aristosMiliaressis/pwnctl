@@ -11,10 +11,10 @@ using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 
-PwnctlAppFacade.Setup();
+await PwnctlAppFacade.SetupAsync();
 var app = CoconaApp.Create();
 
-app.AddCommand("query", () =>
+app.AddCommand("query", async () =>
     {
         var queryRunner = new QueryRunner();
         var input = new List<string>();
@@ -25,7 +25,7 @@ app.AddCommand("query", () =>
             input.Add(line);
         }
 
-        queryRunner.Run(string.Join("\n", input));
+        await queryRunner.RunAsync(string.Join("\n", input));
     }
 ).WithDescription("Query mode (reads SQL from stdin executes and prints output to stdout)");
 

@@ -13,19 +13,14 @@ namespace pwnctl.app.Utilities
     {
         private static readonly IJobQueueService _jobQueueService = JobQueueFactory.Create();
         private readonly PwnctlDbContext _context = new();
-        private readonly AssetRepository _repository = new();
         private readonly List<TaskDefinition> _taskDefinitions;
-        private readonly List<ScopeDefinition> _scopeDefinitions;
 
         public JobAssignmentService()
         {
             _taskDefinitions = _context.TaskDefinitions.ToList();
-            _scopeDefinitions = _context.ScopeDefinitions
-                                .Include(s => s.Program)
-                                .ThenInclude(p => p.Policy).ToList();
         }
 
-        public void Assign(BaseAsset asset)
+        public async System.Threading.Tasks.Task AssignAsync(BaseAsset asset)
         {
             var program = ScopeChecker.Singleton.GetApplicableProgram(asset);
             if (program == null)
@@ -42,7 +37,7 @@ namespace pwnctl.app.Utilities
                 }
                 else if (whitelist.Contains(definition.ShortName))
                 {
-                    queueJob(definition, asset);
+                    await EnqueueJobAsync(definition, asset);
                     continue;
                 }
                 else if (definition.IsActive && !program.Policy.AllowActive)
@@ -51,12 +46,12 @@ namespace pwnctl.app.Utilities
                 }
                 else if (definition.Aggressiveness <= program.Policy.MaxAggressiveness)
                 {
-                    queueJob(definition, asset);
+                    await EnqueueJobAsync(definition, asset);
                 }
             }
         }
 
-        private void queueJob(TaskDefinition definition, BaseAsset asset)
+        private async System.Threading.Tasks.Task EnqueueJobAsync(TaskDefinition definition, BaseAsset asset)
         {
             if (!string.IsNullOrEmpty(definition.Filter) && !CSharpScriptHelper.Evaluate(definition.Filter, asset))
             {
@@ -65,16 +60,16 @@ namespace pwnctl.app.Utilities
 
             var lambda = ExpressionTreeBuilder.BuildTaskMatchingLambda(asset, definition);
 
-            var task = (core.Entities.Task)_context.FirstFromLambda(lambda);
+            var task = (core.Entities.Task) _context.FirstFromLambda(lambda);
             if (task != null)
                 return;
 
             task = new core.Entities.Task(definition, asset);
 
-            _jobQueueService.Enqueue(task);
+            await _jobQueueService.EnqueueAsync(task);
 
             _context.Tasks.Add(task);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
     }
 }

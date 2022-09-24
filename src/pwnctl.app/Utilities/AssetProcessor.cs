@@ -37,11 +37,11 @@ namespace pwnctl.app.Utilities
 
             foreach (var asset in assets)
             {
-                await HandleAsset((BaseAsset)asset);
+                await HandleAssetAsync((BaseAsset)asset);
             }
         }
 
-        private async Task HandleAsset(BaseAsset asset)
+        private async Task HandleAssetAsync(BaseAsset asset)
         {
             // recursivly process all parsed assets
             // starting from the botton of the ref tree.
@@ -50,7 +50,7 @@ namespace pwnctl.app.Utilities
                 .Where(p => p.PropertyType.IsAssignableTo(typeof(BaseAsset)))
                 .Select(rf => (BaseAsset) rf.GetValue(asset))
                 .Where(a => a != null)
-                .ToList().ForEach(async refAsset => await HandleAsset(refAsset));
+                .ToList().ForEach(refAsset => HandleAssetAsync(refAsset).Wait());
 
             // apply class specific processing
             if (_assetHandlerMap[asset.GetType()] != null)
@@ -60,7 +60,7 @@ namespace pwnctl.app.Utilities
                 asset = await handler.HandleAsync(asset);
             }
 
-            asset = _repository.AddOrUpdate(asset);
+            asset = await _repository.AddOrUpdateAsync(asset);
 
             if (asset.InScope)
             {
@@ -70,7 +70,7 @@ namespace pwnctl.app.Utilities
                    _notificationSender.Send(asset, rule);
                 }
 
-                _jobService.Assign(asset);
+                await _jobService.AssignAsync(asset);
             }
         }
     }

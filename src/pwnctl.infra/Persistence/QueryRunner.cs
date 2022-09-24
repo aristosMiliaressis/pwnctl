@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+using System.Text.Json;
 using pwnctl.infra.Configuration;
 using System.Data.SqlClient;
 using Npgsql;
@@ -7,7 +7,7 @@ namespace pwnctl.infra.Persistence
 {
     public class QueryRunner
     {
-        public void Run(string sql)
+        public async Task RunAsync(string sql)
         {
             //TODO: maybe split sql on ';' semicolon to execute statements separatly
             using (var connection = new NpgsqlConnection(ConfigurationManager.Config.Db.ConnectionString))
@@ -15,14 +15,13 @@ namespace pwnctl.infra.Persistence
                 var command = new NpgsqlCommand(sql, connection);
                 try
                 {
-                    connection.Open();
-                    NpgsqlDataReader reader = command.ExecuteReader();
+                    await connection.OpenAsync();
+                    NpgsqlDataReader reader = await command.ExecuteReaderAsync();
                     var row = Serialize(reader);
-                    Console.WriteLine(row.Count());
-                    string json = string.Join("\n", row.Select(r => JsonConvert.SerializeObject(r, Formatting.Indented)));
-                    //string json = JsonConvert.SerializeObject(row, Formatting.Indented);
+                    string json = string.Join("\n", row.Select(r => JsonSerializer.Serialize(r)));
+                    //string json = JsonSerializer.Serialize(row, Formatting.Indented);
                     Console.WriteLine(json);
-                    reader.Close();
+                    await reader.CloseAsync();
                 }
                 catch (Exception ex)
                 {

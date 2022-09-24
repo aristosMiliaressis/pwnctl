@@ -7,11 +7,11 @@ namespace pwnctl.app
 {
     public static class PwnctlAppFacade
     {
-        public static void Setup()
+        public static async Task SetupAsync()
         {
             ConfigurationManager.Load();
             PwnctlCoreShim.PublicSuffixRepository = CachedPublicSuffixRepository.Singleton;
-            DatabaseInitializer.Initialize();
+            await DatabaseInitializer.InitializeAsync();
         }
     }    
 }

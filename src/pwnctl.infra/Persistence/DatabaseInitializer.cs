@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using pwnctl.core.Entities;
 using pwnctl.infra.Notifications;
-using Newtonsoft.Json;
+using System.Text.Json;
 using Microsoft.Extensions.FileSystemGlobbing;
 using pwnctl.infra.Configuration;
 using YamlDotNet.Serialization;
@@ -11,18 +11,18 @@ namespace pwnctl.infra.Persistence
 {
     public static class DatabaseInitializer
     {
-        public static PwnctlDbContext Initialize()
+        public static async Task<PwnctlDbContext> InitializeAsync()
         {
             PwnctlDbContext instance = new();
 
             if (ConfigurationManager.Config.IsTestRun)
             {
-                instance.Database.EnsureDeleted();
+                await instance.Database.EnsureDeletedAsync();
             }
 
             if (instance.Database.GetPendingMigrations().Any())
             {
-                instance.Database.Migrate();
+                await instance.Database.MigrateAsync();
             }
 
             var taskDefinitionFile = $"{AppConfig.InstallPath}/seed/task-definitions.yml";
@@ -36,7 +36,7 @@ namespace pwnctl.infra.Persistence
                 var taskDefinitions = deserializer.Deserialize<List<TaskDefinition>>(taskText);
 
                 instance.TaskDefinitions.AddRange(taskDefinitions);
-                instance.SaveChanges();
+                await instance.SaveChangesAsync();
             }
 
             if (!instance.Programs.Any())
@@ -46,11 +46,14 @@ namespace pwnctl.infra.Persistence
 
                 foreach (string file in matcher.GetResultsInFullPath($"{AppConfig.InstallPath}/seed/"))
                 {
-                    var program = JsonConvert.DeserializeObject<Program>(File.ReadAllText(file));
+                    var program = JsonSerializer.Deserialize<Program>(File.ReadAllText(file), new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
                     instance.ScopeDefinitions.AddRange(program.Scope);
                     instance.OperationalPolicies.Add(program.Policy);
                     instance.Programs.Add(program);
-                    instance.SaveChanges();
+                    await instance.SaveChangesAsync();
                 }
             }
 
@@ -66,7 +69,7 @@ namespace pwnctl.infra.Persistence
 
                 instance.NotificationProviderSettings.AddRange(notificationSettings.Providers);
                 instance.NotificationRules.AddRange(notificationSettings.Rules);
-                instance.SaveChanges();
+                await instance.SaveChangesAsync();
             }
 
             return instance;

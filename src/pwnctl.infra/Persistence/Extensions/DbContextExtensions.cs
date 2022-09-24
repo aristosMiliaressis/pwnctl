@@ -52,7 +52,8 @@ namespace pwnctl.infra.Persistence.Extensions
                     if (originalValue == null)
                         continue;
 
-                    prop.SetValue(entity, TimeZoneInfo.ConvertTimeToUtc(originalValue.Value, TimeZoneInfo.Local));
+                    if (originalValue.Value.Kind == DateTimeKind.Local)
+                        prop.SetValue(entity, TimeZoneInfo.ConvertTimeToUtc(originalValue.Value, TimeZoneInfo.Local));
                 }
             }
         }

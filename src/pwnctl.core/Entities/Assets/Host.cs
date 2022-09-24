@@ -3,7 +3,7 @@ using System.Net.Sockets;
 using System.Net;
 using pwnctl.core.BaseClasses;
 using pwnctl.core.Models;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace pwnctl.core.Entities.Assets
 {
@@ -71,7 +71,7 @@ namespace pwnctl.core.Entities.Assets
 
             Tags.ForEach(t => dto.Tags.Add(t.Name, t.Value));
 
-            return JsonConvert.SerializeObject(dto);
+            return JsonSerializer.Serialize(dto);
         }
     }
 }

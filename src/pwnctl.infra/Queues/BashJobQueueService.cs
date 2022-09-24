@@ -14,7 +14,7 @@ namespace pwnctl.infra.Queues
         /// pushes a job to the pending queue.
         /// </summary>
         /// <param name="command"></param>
-        public void Enqueue(core.Entities.Task job)
+        public async Task EnqueueAsync(core.Entities.Task job)
         {
 
             var psi = new ProcessStartInfo();
@@ -28,17 +28,7 @@ namespace pwnctl.infra.Queues
             using var process = Process.Start(psi);
             using (StreamWriter sr = process.StandardInput)
             {
-                var command = @$"{job.Command} | while read assetLine;
-                do 
-                    if [[ ${{assetLine::1}} == '{{' ]]; 
-                    then 
-                        echo $assetLine | jq -c '.tags += {{""FoundBy"": ""{job.Definition.ShortName}""}}';
-                    else 
-                        echo '{{""asset"":""'$assetLine'"", ""tags"":{{""FoundBy"":""{job.Definition.ShortName}""}}}}'; 
-                    fi; 
-                done | pwnctl process".Replace("\r\n", "");
-
-                sr.WriteLine(command);
+                await sr.WriteLineAsync(job.WrappedCommand);
                 sr.Flush();
                 sr.Close();
             }

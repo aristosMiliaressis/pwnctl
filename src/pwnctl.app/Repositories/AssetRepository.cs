@@ -8,16 +8,18 @@ using pwnctl.core.Entities.Assets;
 using pwnctl.core.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
+// TODO: look into ForEachAsync & cleaner DbContext usage
+// https://stackoverflow.com/questions/18667633/how-can-i-use-async-with-foreach
+
 namespace pwnctl.app.Repositories
 {
     public class AssetRepository : IAssetRepository
     {
         private PwnctlDbContext _context = new();
 
-        public BaseAsset AddOrUpdate(BaseAsset asset)
+        public async Task<BaseAsset> AddOrUpdateAsync(BaseAsset asset)
         {
-            // creating new instance to prevent concurrency issues.
-            _context = new();
+            _context = new PwnctlDbContext();
 
             // replacing asset references from db to prevent ChangeTracker 
             // from trying to add already existing assets and violating 
@@ -31,12 +33,12 @@ namespace pwnctl.app.Repositories
                     if (assetRef == null)
                         return;
 
-                    assetRef = GetAssetWithReferences(assetRef);
+                    assetRef = GetAssetWithReferencesAsync(assetRef).Result;
                     if (assetRef != null)
                         reference.SetValue(asset, assetRef);
                 });
 
-            if (!CheckIfExists(asset))
+            if (GetMatchingAsset(asset) == null)
             {
                 asset.FoundAt = DateTime.Now;
                 asset.InScope = ScopeChecker.Singleton.IsInScope(asset);
@@ -58,9 +60,9 @@ namespace pwnctl.app.Repositories
                 }
             }
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
-            return GetAssetWithReferences(asset);
+            return await GetAssetWithReferencesAsync(asset);
         }
 
         public bool CheckIfExists(BaseAsset asset)
@@ -68,22 +70,22 @@ namespace pwnctl.app.Repositories
             return GetMatchingAsset(asset) != null;
         }
 
-        public BaseAsset GetMatchingAsset(BaseAsset asset)
-        {
-            var lambda = ExpressionTreeBuilder.BuildAssetMatchingLambda(asset);
-
-            return (BaseAsset)_context.FirstFromLambda(lambda);
-        }
-
-        public BaseAsset GetAssetWithReferences(BaseAsset asset)
+        private async Task<BaseAsset> GetAssetWithReferencesAsync(BaseAsset asset)
         {
             asset = GetMatchingAsset(asset);
             if (asset == null)
                 return null;
             Logger.Instance.Info(asset.DomainIdentifier);
-            _context.Entry(asset).LoadReferencesRecursivelyAsync().Wait();
+            await _context.Entry(asset).LoadReferencesRecursivelyAsync();
 
             return asset;
+        }
+
+        private BaseAsset GetMatchingAsset(BaseAsset asset)
+        {
+            var lambda = ExpressionTreeBuilder.BuildAssetMatchingLambda(asset);
+
+            return (BaseAsset) _context.FirstFromLambda(lambda);
         }
 
         public List<Host> ListHosts()

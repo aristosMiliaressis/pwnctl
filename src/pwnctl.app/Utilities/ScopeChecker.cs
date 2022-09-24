@@ -9,6 +9,15 @@ namespace pwnctl.app.Utilities
     {
         private readonly PwnctlDbContext _context = new();
         private static ScopeChecker _singleton = new();
+        private readonly List<ScopeDefinition> _scopeDefinitions;
+
+        public ScopeChecker()
+        {
+            _scopeDefinitions = _context.ScopeDefinitions
+                                .Include(d => d.Program)
+                                    .ThenInclude(p => p.Policy)
+                                .ToList();
+        }
 
         public static ScopeChecker Singleton
         {
@@ -23,16 +32,12 @@ namespace pwnctl.app.Utilities
 
         public bool IsInScope(BaseAsset asset)
         {
-            return _context.ScopeDefinitions.ToList().Any(d => asset.Matches(d));
+            return _scopeDefinitions.Any(d => asset.Matches(d));
         }
 
         public Program GetApplicableProgram(BaseAsset asset)
         {
-            var scope = _context.ScopeDefinitions
-                                .Include(d => d.Program)
-                                    .ThenInclude(p => p.Policy)
-                                .ToList()
-                                .FirstOrDefault(d => asset.Matches(d));
+            var scope = _scopeDefinitions.FirstOrDefault(d => asset.Matches(d));
 
             return scope?.Program;
         }

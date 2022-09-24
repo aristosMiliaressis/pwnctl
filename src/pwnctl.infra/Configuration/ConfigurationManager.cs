@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Ini;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace pwnctl.infra.Configuration
 {

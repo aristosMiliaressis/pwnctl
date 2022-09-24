@@ -11,7 +11,7 @@ namespace pwnctl.infra.Queues
         /// pushes a job to the pending queue.
         /// </summary>
         /// <param name="command"></param>
-        public void Enqueue(core.Entities.Task job)
+        public Task EnqueueAsync(core.Entities.Task job)
         {
             var psi = new ProcessStartInfo();
             psi.FileName = "/bin/bash";
@@ -23,6 +23,8 @@ namespace pwnctl.infra.Queues
             using var process = Process.Start(psi);
 
             process.WaitForExit();
+
+            return Task.CompletedTask;
         }
     }
 }

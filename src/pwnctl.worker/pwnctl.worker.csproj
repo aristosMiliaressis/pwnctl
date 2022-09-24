@@ -1,14 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>pwnwrk</AssemblyName>
     <TargetFramework>net6.0</TargetFramework>
-    <LangVersion>preview</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
-    <NoWarn>8618</NoWarn>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="MimeKitLite" Version="3.4.1" />
-  </ItemGroup>
 
 </Project>

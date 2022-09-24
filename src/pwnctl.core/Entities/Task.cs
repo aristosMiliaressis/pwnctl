@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+using System.Text.Json;
 using pwnctl.core.BaseClasses;
 using pwnctl.core.Entities.Assets;
 
@@ -52,7 +52,7 @@ namespace pwnctl.core.Entities
                 var arg = asset.GetType().GetProperty(param).GetValue(asset);
                 arguments.Add(arg);
             }
-            Arguments = JsonConvert.SerializeObject(arguments);
+            Arguments = JsonSerializer.Serialize(arguments);
         }
 
         public string Command {
@@ -60,7 +60,10 @@ namespace pwnctl.core.Entities
             {
                 string command = Definition.CommandTemplate;
 
-                var args = JsonConvert.DeserializeObject<List<string>>(Arguments).Distinct();
+                var args = JsonSerializer.Deserialize<List<string>>(Arguments, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                }).Distinct();
                 foreach (var arg in args)
                 {
                     command = command.Replace("{{" + command.Split("{{")[1].Split("}}")[0] + "}}", arg);
@@ -69,5 +72,15 @@ namespace pwnctl.core.Entities
                 return command;
             }
         }
+
+        public string WrappedCommand => @$"{Command} | while read assetLine;
+                do 
+                    if [[ ${{assetLine::1}} == '{{' ]]; 
+                    then 
+                        echo $assetLine | jq -c '.tags += {{""FoundBy"": ""{Definition.ShortName}""}}';
+                    else 
+                        echo '{{""asset"":""'$assetLine'"", ""tags"":{{""FoundBy"":""{Definition.ShortName}""}}}}'; 
+                    fi; 
+                done | pwnctl process".Replace("\r\n", "").Replace("\n", "");
     }
 }

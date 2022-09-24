@@ -9,7 +9,6 @@ namespace pwnctl.app.Handlers
 {
     public abstract class BaseAssetHandler<TAsset> : IAssetHandler where TAsset : BaseAsset
     {
-        protected IAssetRepository _repository = new AssetRepository();
         protected PwnctlDbContext _context = new();
 
         public async Task<BaseAsset> HandleAsync(BaseAsset asset)

@@ -11,7 +11,7 @@ using pwnctl.core.BaseClasses;
 using pwnctl.app;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
-using Newtonsoft.Json;
+using System.Text.Json;
 using pwnctl.infra.Configuration;
 
 public class Tests
@@ -21,7 +21,7 @@ public class Tests
         Environment.SetEnvironmentVariable("PWNCTL_IsTestRun", "true");
         Environment.SetEnvironmentVariable("PWNCTL_INSTALL_PATH", ".");
         
-        PwnctlAppFacade.Setup();
+        PwnctlAppFacade.SetupAsync().Wait();
 
         var psi = new ProcessStartInfo();
         psi.FileName = "/bin/bash";
@@ -124,7 +124,7 @@ public class Tests
     }
 
     [Fact]
-    public void ScopeChecker_Tests()
+    public async System.Threading.Tasks.Task ScopeChecker_Tests()
     {
         // net range
         Assert.True(ScopeChecker.Singleton.IsInScope(new NetRange("172.16.17.0", 24)));
@@ -163,13 +163,13 @@ public class Tests
         // test for inscope host from domain relationship
         AssetProcessor processor = new();
         PwnctlDbContext context = new();
-        processor.ProcessAsync("xyz.tesla.com IN A 1.3.3.7").Wait();
+        await processor.ProcessAsync("xyz.tesla.com IN A 1.3.3.7");
         var host = context.Hosts.First(h => h.IP == "1.3.3.7");
         Assert.True(host.InScope);
     }
 
     [Fact]
-    public void JobAssignment_Tests()
+    public async System.Threading.Tasks.Task JobAssignment_Tests()
     {
         JobAssignmentService jobService = new();
         PwnctlDbContext context = new();
@@ -177,7 +177,7 @@ public class Tests
         var netRange = new NetRange("172.16.17.0", 24);
         context.Add(netRange);
         context.SaveChanges();
-        jobService.Assign(netRange);
+        await jobService.AssignAsync(netRange);
 
         // blacklist test
         Assert.False(context.Tasks.Include(t => t.Definition).Any(t => t.Definition.ShortName == "nmap_basic"));
@@ -187,7 +187,7 @@ public class Tests
         context.Add(endpoint);
         context.SaveChanges();
         var service = context.Services.First(h => h.Origin == "tcp://172.16.17.15:443");
-        jobService.Assign(endpoint);
+        await jobService.AssignAsync(endpoint);
         // TaskDefinition.Filter fail test
         Assert.False(context.Tasks.Include(t => t.Definition).Any(t => t.Definition.ShortName == "ffuf_common"));
 
@@ -202,7 +202,7 @@ public class Tests
         endpoint = new Endpoint("https", service, "/");
         context.Add(endpoint);
         context.SaveChanges();
-        jobService.Assign(endpoint);
+        await jobService.AssignAsync(endpoint);
         
         // TaskDefinition.Filter pass test
         Assert.True(context.Tasks.Include(t => t.Definition).Any(t => t.Definition.ShortName == "ffuf_common"));
@@ -211,12 +211,12 @@ public class Tests
         var domain = new Domain("sub.tesla.com");
         context.Add(domain);
         context.SaveChanges();
-        jobService.Assign(domain);
+        await jobService.AssignAsync(domain);
         var resolutionTask = context.Tasks.Include(t => t.Definition).First(t => t.Definition.ShortName == "domain_resolution");
         Assert.Equal("dig +short sub.tesla.com | awk '{print \"sub.tesla.com IN A \" $1}'| pwnctl process", resolutionTask.Command);
 
         var keyword = new Keyword(domain, "tesla");
-        jobService.Assign(keyword);
+        await jobService.AssignAsync(keyword);
         var cloudEnumTask = context.Tasks.Include(t => t.Definition).First(t => t.Definition.ShortName == "cloud_enum");
         Assert.Equal("cloud-enum.sh tesla", cloudEnumTask.Command);
 
@@ -238,7 +238,7 @@ public class Tests
     }
 
     [Fact]
-    public void AssetRepository_Tests()
+    public async System.Threading.Tasks.Task AssetRepository_Tests()
     {
         AssetRepository repository = new();
         PwnctlDbContext context = new();
@@ -247,11 +247,11 @@ public class Tests
         var outOfScope = new Domain("www.outofscope.com");
 
         Assert.False(repository.CheckIfExists(inScopeDomain));
-        repository.AddOrUpdate(inScopeDomain);
+        await repository.AddOrUpdateAsync(inScopeDomain);
         Assert.True(repository.CheckIfExists(inScopeDomain));
         inScopeDomain = context.Domains.First(d => d.Name == "tesla.com");
         Assert.True(inScopeDomain.InScope);
-        repository.AddOrUpdate(outOfScope);
+        await repository.AddOrUpdateAsync(outOfScope);
         outOfScope = context.Domains.First(d => d.Name == "www.outofscope.com");
         Assert.False(outOfScope.InScope);
 
@@ -260,30 +260,30 @@ public class Tests
 
         Assert.False(repository.CheckIfExists(record1));
         Assert.False(repository.CheckIfExists(record2));
-        repository.AddOrUpdate(record1);
+        await repository.AddOrUpdateAsync(record1);
         Assert.True(repository.CheckIfExists(record1));
         Assert.False(repository.CheckIfExists(record2));
-        repository.AddOrUpdate(record2);
+        await repository.AddOrUpdateAsync(record2);
         Assert.True(repository.CheckIfExists(record2));
 
         var netRange = new NetRange("10.1.101.0", 24);
         Assert.False(repository.CheckIfExists(netRange));
-        repository.AddOrUpdate(netRange);
+        await repository.AddOrUpdateAsync(netRange);
         Assert.True(repository.CheckIfExists(netRange));
 
         var service = new Service(inScopeDomain, 443);
         Assert.False(repository.CheckIfExists(service));
-        repository.AddOrUpdate(service);
+        await repository.AddOrUpdateAsync(service);
         Assert.True(repository.CheckIfExists(service));
     }
 
     [Fact]
-    public void AssetProcessor_Tests()
+    public async System.Threading.Tasks.Task AssetProcessor_Tests()
     {
         AssetProcessor processor = new();
         PwnctlDbContext context = new();
 
-        var res = processor.TryProccessAsync("tesla.com").Result;
+        var res = await processor.TryProccessAsync("tesla.com");
         Assert.True(res);
 
         var domain = context.Domains.First(d => d.Name == "tesla.com");
@@ -294,7 +294,7 @@ public class Tests
         var cloudEnumTask = context.Tasks.Include(t => t.Definition).First(t => t.Definition.ShortName == "cloud_enum");
         Assert.Equal("cloud-enum.sh tesla", cloudEnumTask.Command);
 
-        res = processor.TryProccessAsync("tesla.com IN A 31.3.3.7").Result;
+        res = await processor.TryProccessAsync("tesla.com IN A 31.3.3.7");
         Assert.True(res);
 
         var record = context.DNSRecords.First(r => r.Key == "tesla.com" && r.Value == "31.3.3.7");
@@ -309,14 +309,14 @@ public class Tests
         var program = ScopeChecker.Singleton.GetApplicableProgram(host);
         Assert.NotNull(program);
 
-        res = processor.TryProccessAsync("85.25.105.204:65530").Result;
+        res = await processor.TryProccessAsync("85.25.105.204:65530");
         host = context.Hosts.First(h => h.IP == "85.25.105.204");
         Assert.True(res);
         var service = context.Services.First(srv => srv.Origin == "tcp://85.25.105.204:65530");
     }
 
     [Fact]
-    public void Tagging_Tests()
+    public async System.Threading.Tasks.Task Tagging_Tests()
     {
         AssetProcessor processor = new();
         PwnctlDbContext context = new();
@@ -330,7 +330,7 @@ public class Tests
             }
         };
 
-        BaseAsset[] assets = AssetParser.Parse(JsonConvert.SerializeObject(exampleUrl), out Type[] assetTypes);
+        BaseAsset[] assets = AssetParser.Parse(JsonSerializer.Serialize(exampleUrl), out Type[] assetTypes);
 
         var endpoint = (Endpoint) assets.First(a => a.GetType() == typeof(Endpoint));
         Assert.NotNull(endpoint.Tags);
@@ -344,7 +344,7 @@ public class Tests
         var srvTag = endpoint.Tags.First(t => t.Name == "server");
         Assert.Equal("IIS", srvTag.Value);
 
-        processor.ProcessAsync(JsonConvert.SerializeObject(exampleUrl)).Wait();
+        await processor.ProcessAsync(JsonSerializer.Serialize(exampleUrl));
 
         endpoint = context.Endpoints.Include(e => e.Tags).Where(ep => ep.Url == "https://example.com:443/").First();
         ctTag = endpoint.Tags.First(t => t.Name == "content-type");
@@ -356,7 +356,7 @@ public class Tests
         srvTag = endpoint.Tags.First(t => t.Name == "server");
         Assert.Equal("IIS", srvTag.Value);
 
-        processor.ProcessAsync(JsonConvert.SerializeObject(exampleUrl)).Wait();
+        await processor.ProcessAsync(JsonSerializer.Serialize(exampleUrl));
 
         var teslaUrl = new
         {
@@ -369,13 +369,15 @@ public class Tests
         };
 
         // process same asset twice and make sure tasks are only assigned once
-        processor.ProcessAsync(JsonConvert.SerializeObject(teslaUrl)).Wait();
+        await processor.ProcessAsync(JsonSerializer.Serialize(teslaUrl));
         endpoint = (Endpoint) context.Endpoints.Include(e => e.Tags).Where(ep => ep.Url == "https://iis.tesla.com:443/").First();
         var tasks = context.Tasks.Include(t => t.Definition).Where(t => t.EndpointId == endpoint.Id).ToList();
         Assert.True(!tasks.GroupBy(t => t.DefinitionId).Any(g => g.Count() > 1));
         srvTag = endpoint.Tags.First(t => t.Name == "protocol");
         Assert.Equal("IIS", srvTag.Value);
         Assert.Contains(tasks, t => t.Definition.ShortName == "shortname_scanner");
+
+        tasks.ForEach(t => Console.WriteLine(t.WrappedCommand));
 
         var apacheTeslaUrl = new
         {
@@ -388,7 +390,7 @@ public class Tests
         };
 
         // test Tag filter
-        processor.ProcessAsync(JsonConvert.SerializeObject(apacheTeslaUrl)).Wait();
+        await processor.ProcessAsync(JsonSerializer.Serialize(apacheTeslaUrl));
         endpoint = context.Endpoints.Include(e => e.Tags).Where(ep => ep.Url == "https://apache.tesla.com:443/").First();
         tasks = context.Tasks.Include(t => t.Definition).Where(t => t.EndpointId == endpoint.Id).ToList();
         Assert.DoesNotContain(tasks, t => t.Definition.ShortName == "shortname_scanner");
@@ -401,7 +403,7 @@ public class Tests
             }
         };
 
-        processor.ProcessAsync(JsonConvert.SerializeObject(sshService)).Wait();
+        await processor.ProcessAsync(JsonSerializer.Serialize(sshService));
         var service = context.Services.Where(ep => ep.Origin == "tcp://1.3.3.7:22").First();
         Assert.Equal("ssh", service.ApplicationProtocol);
     }

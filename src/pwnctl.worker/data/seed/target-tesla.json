@@ -10,11 +10,7 @@
     "Scope": [
         {
             "Type": 0,
-            "Pattern": "^tesla\\.com$"
-        },
-        {
-            "Type": 0,
-            "Pattern": ".*\\.tesla\\.com$"
+            "Pattern": "(^tesla\\.com$|.*\\.tesla\\.com$)"
         },
         {
             "Type": 2,

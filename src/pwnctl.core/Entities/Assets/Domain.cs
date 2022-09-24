@@ -2,7 +2,7 @@
 using pwnctl.core.BaseClasses;
 using pwnctl.core.Models;
 using System.Text.RegularExpressions;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace pwnctl.core.Entities.Assets
 {
@@ -103,7 +103,7 @@ namespace pwnctl.core.Entities.Assets
 
             Tags.ForEach(t => dto.Tags.Add(t.Name, t.Value));
 
-            return JsonConvert.SerializeObject(dto);
+            return JsonSerializer.Serialize(dto);
         }
 
         private static readonly Regex _domainRegex = new Regex("(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]");

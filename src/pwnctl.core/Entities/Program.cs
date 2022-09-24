@@ -11,6 +11,6 @@ namespace pwnctl.core.Entities
         public OperationalPolicy Policy { get; set; }
         public List<ScopeDefinition> Scope { get; set; }
 
-        private Program() {}
+        public Program() {}
     }
 }
