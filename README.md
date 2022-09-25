@@ -177,7 +177,7 @@ CLI Install
 
 **To Do**
 - [x] PostgreSQL db
-- [ ] AWS SQS queue 
+- [x] sqs producer
 - [ ] sqs consumer daemon service
 - [ ] ECS with Fargate autoscalling
 - [ ] EFS for configuration & script delivery

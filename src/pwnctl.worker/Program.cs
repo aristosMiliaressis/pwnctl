@@ -6,27 +6,10 @@ using Microsoft.Extensions.Logging;
 using pwnctl.worker;
 using pwnctl.infra.Configuration;
 
-var builder = new HostBuilder()
-    .ConfigureAppConfiguration((hostingContext, config) =>
+IHost host = Host.CreateDefaultBuilder(args)
+    .UseSystemd()
+    .ConfigureServices(services =>
     {
-        config.AddEnvironmentVariables();
-
-        if (args != null)
-        {
-            config.AddCommandLine(args);
-        }
+        services.AddHostedService<JobConsumerService>();
     })
-    .ConfigureServices((hostContext, services) =>
-    {
-        services.AddOptions();
-        services.Configure<AppConfig>(hostContext.Configuration);
-
-        services.AddSingleton<BackgroundService, JobConsumerService>();
-    })
-    .ConfigureLogging((hostingContext, logging) =>
-    {
-        logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
-        logging.AddConsole();
-    });
-
-await builder.RunConsoleAsync();
+    .Build();

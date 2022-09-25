@@ -1,0 +1,14 @@
+[Unit]
+Description=pwnctl worker daemon
+
+[Service]
+ExecStart=/usr/bin/dotnet /opt/pwnwrk/pwnwrk.dll
+WorkingDirectory=/opt/pwnwrk
+SyslogIdentifier=pwnwrk
+Type=notify
+User=root
+Restart=always
+RestartSec=5 
+
+[Install]
+WantedBy=multi-user.target
