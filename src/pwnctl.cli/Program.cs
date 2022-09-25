@@ -147,7 +147,7 @@ app.AddCommand("summary", () =>
     int inScopeParamCount = context.Parameters.Where(a => a.InScope).Count();
     int inScopeEmailCount = context.Emails.Where(a => a.InScope).Count();
     var firstTask = context.Tasks.OrderBy(t => t.QueuedAt).FirstOrDefault();
-    var lastTask = context.Tasks.OrderBy(t => t.QueuedAt).FirstOrDefault();
+    var lastTask = context.Tasks.OrderBy(t => t.QueuedAt).LastOrDefault();
 
     Console.WriteLine($"NetRanges: {netRangeCount}, InScope: {inScopeRangesCount}");
     Console.WriteLine($"Hosts: {hostCount}, InScope: {insCopeHostCount}");

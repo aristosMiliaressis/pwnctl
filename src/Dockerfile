@@ -78,34 +78,34 @@ RUN git clone https://github.com/xnl-h4ck3r/xnLinkFinder.git \
 RUN wget -O /usr/local/bin/job-queue.sh https://raw.githubusercontent.com/aristosMiliaressis/job-queue.sh/master/job-queue.sh \
     && chmod +x /usr/local/bin/job-queue.sh
 
-COPY scripts/* /opt/scripts/
-COPY wordlists/ /opt/wordlists/
+COPY pwnctl.worker/scripts/* /opt/scripts/
+COPY pwnctl.worker/wordlists/ /opt/wordlists/
 RUN chmod -R +x /opt/scripts \
     && mv /opt/scripts/* /usr/local/bin/
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 
-# COPY ["/src/pwnctl.core/pwnctl.core.csproj", "/src/pwnctl.core/"]
-# RUN dotnet restore "/src/pwnctl.core/pwnctl.core.csproj"
-# COPY ["/src/pwnctl.infra/pwnctl.infra.csproj", "/src/pwnctl.infra/"]
-# RUN dotnet restore "/src/pwnctl.infra/pwnctl.infra.csproj"
-# COPY ["/src/pwnctl.app/pwnctl.app.csproj", "/src/pwnctl.app/"]
-# RUN dotnet restore "/src/pwnctl.app/pwnctl.app.csproj"
-# COPY ["/src/pwnctl.worker/pwnctl.worker.csproj", "/src/pwnctl.worker/"]
-# RUN dotnet restore "/src/pwnctl.worker/pwnctl.worker.csproj"
+COPY ["/pwnctl.core/pwnctl.core.csproj", "/src/pwnctl.core/"]
+RUN dotnet restore "/src/pwnctl.core/pwnctl.core.csproj"
+COPY ["/pwnctl.infra/pwnctl.infra.csproj", "/src/pwnctl.infra/"]
+RUN dotnet restore "/src/pwnctl.infra/pwnctl.infra.csproj"
+COPY ["/pwnctl.app/pwnctl.app.csproj", "/src/pwnctl.app/"]
+RUN dotnet restore "/src/pwnctl.app/pwnctl.app.csproj"
+COPY ["/pwnctl.worker/pwnctl.worker.csproj", "/src/pwnctl.worker/"]
+RUN dotnet restore "/src/pwnctl.worker/pwnctl.worker.csproj"
 
-# COPY src/ src/
+COPY . src/
 
-# RUN dotnet publish "/src/pwnctl.worker/pwnctl.worker.csproj" -c Release -o /app/publish
+RUN dotnet publish "/src/pwnctl.worker/pwnctl.worker.csproj" -c Release -o /app/publish
 
 FROM base AS release
 
-# COPY --from=build /app/publish /opt/pwnwrk
-# RUN ln -s /opt/pwnwrk/pwnwrk /usr/local/bin/
+COPY --from=build /app/publish /opt/pwnwrk
+RUN ln -s /opt/pwnwrk/pwnwrk /usr/local/bin/
 
 ENV PWNCTL_INSTALL_PATH "/etc/pwnctl"
 WORKDIR /etc/pwnctl
 
-COPY entrypoint.sh /app/entrypoint.sh
-RUN chmod +x /app/entrypoint.sh
-ENTRYPOINT ["/app/entrypoint.sh"]
+COPY entrypoint.sh /opt/pwnwrk/entrypoint.sh
+RUN chmod +x /opt/pwnwrk/entrypoint.sh
+ENTRYPOINT ["/opt/pwnwrk/entrypoint.sh"]

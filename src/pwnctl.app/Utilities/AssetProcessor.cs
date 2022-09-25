@@ -1,4 +1,5 @@
-﻿using pwnctl.app.Repositories;
+﻿using pwnctl.app.Exceptions;
+using pwnctl.app.Repositories;
 using pwnctl.infra.Extensions;
 using pwnctl.infra.Logging;
 using pwnctl.infra.Notifications;
@@ -8,7 +9,6 @@ namespace pwnctl.app.Utilities
 {
     public class AssetProcessor
     {
-        private readonly AssetHandlerMap _assetHandlerMap = new();
         private readonly AssetRepository _repository = new();
         private readonly JobAssignmentService _jobService = new();
         private readonly NotificationSender _notificationSender = new();
@@ -33,7 +33,7 @@ namespace pwnctl.app.Utilities
             bool parsed = AssetParser.TryParse(assetText, out Type[] assetTypes, out BaseAsset[] assets);
             if (!parsed)
             {
-                return;
+                throw new UnparsableAssetException(assetText);
             }
 
             foreach (var asset in assets)
@@ -51,18 +51,17 @@ namespace pwnctl.app.Utilities
                 .Where(p => p.PropertyType.IsAssignableTo(typeof(BaseAsset)))
                 .Select(rf => (BaseAsset) rf.GetValue(asset))
                 .Where(a => a != null)
-                .ToList().ForEachAsync(async refAsset => await HandleAssetAsync(refAsset));
+                .ToList().ForEachAsync(async refAsset => 
+                {
+                    await HandleAssetAsync(refAsset);
+                });
 
-            // apply class specific processing
-            if (_assetHandlerMap[asset.GetType()] != null)
-            {
-                var handler = _assetHandlerMap[asset.GetType()];
+            await _repository.AddOrUpdateAsync(asset);
 
-                asset = await handler.HandleAsync(asset);
-            }
+            // load asset references to be used in scope checking process
+            asset = await _repository.GetAssetWithReferencesAsync(asset);
 
-            asset = await _repository.AddOrUpdateAsync(asset);
-
+            asset.InScope = ScopeChecker.Singleton.IsInScope(asset);
             if (asset.InScope)
             {
                 var rule = _notificationRuleChecker.Check(asset);
@@ -72,6 +71,8 @@ namespace pwnctl.app.Utilities
                 }
 
                 await _jobService.AssignAsync(asset);
+
+                await _repository.UpdateAsync(asset);
             }
         }
     }

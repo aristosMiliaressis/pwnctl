@@ -7,13 +7,13 @@ namespace pwnctl.app.Utilities
 {
     public class ScopeChecker
     {
-        private readonly PwnctlDbContext _context = new();
         private static ScopeChecker _singleton = new();
         private readonly List<ScopeDefinition> _scopeDefinitions;
 
         public ScopeChecker()
         {
-            _scopeDefinitions = _context.ScopeDefinitions
+            PwnctlDbContext context = new();
+            _scopeDefinitions = context.ScopeDefinitions
                                 .Include(d => d.Program)
                                     .ThenInclude(p => p.Policy)
                                 .ToList();

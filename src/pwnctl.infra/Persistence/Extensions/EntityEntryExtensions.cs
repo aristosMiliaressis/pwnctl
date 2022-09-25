@@ -25,34 +25,28 @@ namespace pwnctl.infra.Persistence.Extensions
                 return;
             refChain.Add(type);
 
-            if (entry.References.Any())
+            foreach (var nestedReference in entry.References)
             {
-                foreach (var nestedReference in entry.References)
-                {
-                    await nestedReference.LoadAsync(token);
-                    await nestedReference.TargetEntry.LoadReferencesRecursivelyAsync(token, refChain);
-                }
+                await nestedReference.LoadAsync(token);
+                await nestedReference.TargetEntry.LoadReferencesRecursivelyAsync(token, refChain);
             }
 
-            if (entry.Collections.Any())
+            foreach (var nestedCollection in entry.Collections)
             {
-                foreach (var nestedCollection in entry.Collections)
+                try
                 {
-                    try
-                    {
-                        await nestedCollection.LoadAsync(token);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Instance.Info(ex.ToRecursiveExInfo());
-                        continue;
-                    }
+                    await nestedCollection.LoadAsync(token);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Instance.Info(ex.ToRecursiveExInfo());
+                    continue;
+                }
 
-                    var enumerator = nestedCollection.CurrentValue.GetEnumerator();
-                    while (enumerator.MoveNext())
-                    {
-                        await nestedCollection.FindEntry(enumerator.Current).LoadReferencesRecursivelyAsync(token, refChain);
-                    }
+                var enumerator = nestedCollection.CurrentValue.GetEnumerator();
+                while (enumerator.MoveNext())
+                {
+                    await nestedCollection.FindEntry(enumerator.Current).LoadReferencesRecursivelyAsync(token, refChain);
                 }
             }
         }

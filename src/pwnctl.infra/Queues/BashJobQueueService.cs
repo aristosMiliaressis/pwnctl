@@ -16,7 +16,6 @@ namespace pwnctl.infra.Queues
         /// <param name="command"></param>
         public async Task EnqueueAsync(core.Entities.Task job)
         {
-
             var psi = new ProcessStartInfo();
             psi.FileName = "job-queue.sh";
             psi.Arguments = $"-w {ConfigurationManager.Config.JobQueue.WorkerCount} -q {_queueDirectory}";

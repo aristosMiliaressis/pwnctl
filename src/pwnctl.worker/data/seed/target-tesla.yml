@@ -1,0 +1,13 @@
+Name: EXAMPLE BB TARGET
+Platform: HackerOne
+Policy:
+    Whitelist: ffuf_common
+    Blacklist: nmap_basic
+    MaxAggressiveness: 6
+    AllowActive: true
+
+Scope: 
+    - Type: domain-regex
+    Pattern: (^tesla\.com$|.*\.tesla\.com$)
+    - Type: cidr
+    Pattern: 172.16.17.0/24

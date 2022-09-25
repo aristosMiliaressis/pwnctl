@@ -250,10 +250,8 @@ public class Tests
         await repository.AddOrUpdateAsync(inScopeDomain);
         Assert.True(repository.CheckIfExists(inScopeDomain));
         inScopeDomain = context.Domains.First(d => d.Name == "tesla.com");
-        Assert.True(inScopeDomain.InScope);
         await repository.AddOrUpdateAsync(outOfScope);
         outOfScope = context.Domains.First(d => d.Name == "www.outofscope.com");
-        Assert.False(outOfScope.InScope);
 
         var record1 = new DNSRecord(DNSRecord.RecordType.A, "hackerone.com", "1.3.3.7");
         var record2 = new DNSRecord(DNSRecord.RecordType.AAAA, "hackerone.com", "dead:beef::::");
@@ -417,7 +415,6 @@ public class Tests
     //     }
     //     catch (Exception ex)
     //     {
-    //         Console.WriteLine("AA");
     //         Console.WriteLine(ex.ToRecursiveExInfo());
     //     }
     // }

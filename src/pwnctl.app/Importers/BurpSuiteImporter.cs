@@ -1,7 +1,6 @@
 using pwnctl;
 using pwnctl.infra.Persistence;
 using pwnctl.core.Entities.Assets;
-using pwnctl.app.Handlers;
 using pwnctl.app.Utilities;
 using System;
 using System.Linq;

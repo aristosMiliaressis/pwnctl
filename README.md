@@ -54,13 +54,9 @@ scope definitions are configured in `target-*.json` files along with some policy
     },
     "Scope": [
         {
-	    // DomainRegex = 0, UrlRegex = 1, CIDR = 2
+	          // DomainRegex = 0, UrlRegex = 1, CIDR = 2
             "Type": 0,
-            "Pattern": "^tesla\\.com$"
-        },
-        {
-            "Type": 0,
-            "Pattern": ".*\\.tesla\\.com$"
+            "Pattern": "(^tesla\\.com$|.*\\.tesla\\.com$)"
         },
         {
             "Type": 2,

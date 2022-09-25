@@ -7,8 +7,8 @@ services:
     hostname: pwntainer
     network_mode: host
     environment:
-      - PWNCTL_JobQueue:WorkerCount=1
-      - PWNCTL_Db:ConnectionString=Host=my_host;Database=my_db;Username=my_user;Password=my_pw
+      - PWNCTL_JobQueue__WorkerCount=1
+      - PWNCTL_Db__ConnectionString=Host=my_host;Database=my_db;Username=my_user;Password=my_pw
     restart: unless-stopped
     volumes:
       - ./data/:/etc/pwnctl/

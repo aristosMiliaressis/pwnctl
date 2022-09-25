@@ -93,6 +93,6 @@ jobs:
         with:
           push: true
           tags: aristosmiliaressis/pwnctl:latest
-          context: src/pwnctl.worker
+          context: src
           cache-from: type=gha
           cache-to: type=gha,mode=max

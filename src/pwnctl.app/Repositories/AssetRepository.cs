@@ -15,10 +15,14 @@ namespace pwnctl.app.Repositories
     {
         private PwnctlDbContext _context = new();
 
-        public async Task<BaseAsset> AddOrUpdateAsync(BaseAsset asset)
+        public async Task UpdateAsync(BaseAsset asset)
         {
-            _context = new PwnctlDbContext();
+            _context.Update(asset);
+            await _context.SaveChangesAsync();
+        }
 
+        public async Task AddOrUpdateAsync(BaseAsset asset)
+        {
             // replacing asset references from db to prevent ChangeTracker 
             // from trying to add already existing assets and violating 
             // uniqness contraints.
@@ -32,14 +36,12 @@ namespace pwnctl.app.Repositories
                         return;
 
                     assetRef = await GetAssetWithReferencesAsync(assetRef);
-                    if (assetRef != null)
-                        reference.SetValue(asset, assetRef);
+                    reference.SetValue(asset, assetRef);
                 });
 
-            if (GetMatchingAsset(asset) == null)
+            if (!CheckIfExists(asset))
             {
                 asset.FoundAt = DateTime.Now;
-                asset.InScope = ScopeChecker.Singleton.IsInScope(asset);
 
                 _context.Add(asset);
             }
@@ -59,8 +61,6 @@ namespace pwnctl.app.Repositories
             }
 
             await _context.SaveChangesAsync();
-
-            return await GetAssetWithReferencesAsync(asset);
         }
 
         public bool CheckIfExists(BaseAsset asset)
@@ -68,12 +68,12 @@ namespace pwnctl.app.Repositories
             return GetMatchingAsset(asset) != null;
         }
 
-        private async Task<BaseAsset> GetAssetWithReferencesAsync(BaseAsset asset)
+        public async Task<BaseAsset> GetAssetWithReferencesAsync(BaseAsset asset)
         {
             asset = GetMatchingAsset(asset);
             if (asset == null)
                 return null;
-            Logger.Instance.Info(asset.DomainIdentifier);
+
             await _context.Entry(asset).LoadReferencesRecursivelyAsync();
 
             return asset;

@@ -53,13 +53,14 @@ namespace pwnctl.app.Utilities
 
         private async System.Threading.Tasks.Task EnqueueJobAsync(TaskDefinition definition, BaseAsset asset)
         {
+            // check filter
             if (!string.IsNullOrEmpty(definition.Filter) && !CSharpScriptHelper.Evaluate(definition.Filter, asset))
             {
                 return;
             }
 
+            // check if task has already been queued
             var lambda = ExpressionTreeBuilder.BuildTaskMatchingLambda(asset, definition);
-
             var task = (core.Entities.Task) _context.FirstFromLambda(lambda);
             if (task != null)
                 return;
