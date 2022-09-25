@@ -5,6 +5,17 @@ then
     cp "$PWNCTL_INSTALL_PATH/amass.ini" /etc/amass/config.ini
 fi
 
+if test -f "$PWNCTL_INSTALL_PATH/aws.config"; 
+then
+    mkdir ~/.aws
+    cp "$PWNCTL_INSTALL_PATH/aws.config" ~/.aws/config
+fi
+
+if test -f "$PWNCTL_INSTALL_PATH/aws.credentials"; 
+then
+    cp "$PWNCTL_INSTALL_PATH/aws.credentials" ~/.aws/credentials
+fi
+
 if test -f "$PWNCTL_INSTALL_PATH/provider-config.yaml"; 
 then
     mkdir -p $HOME/.config/notify/

@@ -72,6 +72,13 @@ RUN git clone https://github.com/initstring/cloud_enum.git && cd cloud_enum && p
 RUN pip3 install arjun
 RUN apt-get install -y ldnsutils
 
+RUN apt-get install -y groff
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o awscliv2.zip \
+    && unzip awscliv2.zip \
+    && rm awscliv2.zip \
+    && ./aws/install --update \
+    && rm -rf ./aws
+
 RUN git clone https://github.com/xnl-h4ck3r/xnLinkFinder.git \
     && cd xnLinkFinder \
     && python3 setup.py install

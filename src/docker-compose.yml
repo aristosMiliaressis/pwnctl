@@ -8,6 +8,7 @@ services:
     network_mode: host
     environment:
       - PWNCTL_JobQueue__WorkerCount=1
+      - PWNCTL_JobQueue__IsSQS=true
       - PWNCTL_Db__ConnectionString=Host=my_host;Database=my_db;Username=my_user;Password=my_pw
     restart: unless-stopped
     volumes:

@@ -8,7 +8,8 @@ namespace pwnctl.infra.Queues
 {
     public class SQSJobQueueService : IJobQueueService
     {
-        private static readonly string _queueName = "jobs";
+        private static readonly string _queueName = "pwnctl.fifo";
+        private static readonly string _dlqName = "pwnctl-dlq.fifo";
         private readonly AmazonSQSClient _sqsClient = new();
 
         /// <summary>
@@ -23,6 +24,7 @@ namespace pwnctl.infra.Queues
 
             var request = new SendMessageRequest
             {
+                MessageGroupId = "jobs",
                 QueueUrl = queueUrlResponse.QueueUrl,
                 MessageBody = JsonSerializer.Serialize(task)
             };
