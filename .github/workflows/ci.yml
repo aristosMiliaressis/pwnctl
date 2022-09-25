@@ -92,7 +92,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: aristosmiliaressis/pwnctl:latest
+          tags: aristosmiliaressis/pwnwrk:latest
           context: src
           cache-from: type=gha
           cache-to: type=gha,mode=max

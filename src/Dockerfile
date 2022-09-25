@@ -109,8 +109,6 @@ RUN dotnet publish "/src/pwnctl.worker/pwnctl.worker.csproj" -c Release -o /app/
 FROM base AS release
 
 COPY --from=build /app/publish /opt/pwnwrk
-RUN cp /opt/pwnwrk/pwnwrk.service /etc/systemd/system/
-RUN systemctl enable pwnwrk && systemctl start pwnwrk
 
 ENV PWNCTL_INSTALL_PATH "/etc/pwnctl"
 WORKDIR /etc/pwnctl

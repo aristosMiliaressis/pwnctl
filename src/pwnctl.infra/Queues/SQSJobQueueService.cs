@@ -9,7 +9,7 @@ namespace pwnctl.infra.Queues
     public class SQSJobQueueService : IJobQueueService
     {
         private static readonly string _queueName = "pwnctl.fifo";
-        private static readonly string _dlqName = "pwnctl-dlq.fifo";
+        //private static readonly string _dlqName = "pwnctl-dlq.fifo";
         private readonly AmazonSQSClient _sqsClient = new();
 
         /// <summary>
@@ -32,17 +32,29 @@ namespace pwnctl.infra.Queues
             await _sqsClient.SendMessageAsync(request);
         }
 
-        public async Task<string> DequeueAsync()
+        public async Task<Message> ReceiveAsync(CancellationToken ct)
         {
-            var queueUrlResponse = await _sqsClient.GetQueueUrlAsync(_queueName);
+            var queueUrlResponse = await _sqsClient.GetQueueUrlAsync(_queueName, ct);
             var receiveRequest = new ReceiveMessageRequest
             {
                 QueueUrl = queueUrlResponse.QueueUrl,
                 MaxNumberOfMessages = 1
             };
 
-            var messageResponse = await _sqsClient.ReceiveMessageAsync(receiveRequest, CancellationToken.None);
-            return messageResponse.Messages.FirstOrDefault()?.Body;
+            var messageResponse = await _sqsClient.ReceiveMessageAsync(receiveRequest, ct);
+            if (messageResponse.HttpStatusCode != System.Net.HttpStatusCode.OK)
+            {
+                // TODO: error handling
+            }
+
+            return messageResponse.Messages.FirstOrDefault();
+        }
+
+        public async Task DequeueAsync(Message message, CancellationToken ct)
+        {
+            var queueUrlResponse = await _sqsClient.GetQueueUrlAsync(_queueName, ct);
+
+            await _sqsClient.DeleteMessageAsync(queueUrlResponse.QueueUrl, message.ReceiptHandle, ct);
         }
     }
 

@@ -1,10 +1,10 @@
 ﻿version: '3.4'
 
 services:
-  pwnctl:
-    image: aristosmiliaressis/pwnctl:latest
-    container_name: pwnctl
-    hostname: pwnctl
+  pwnwrk:
+    image: aristosmiliaressis/pwnwrk:latest
+    container_name: pwnwrk
+    hostname: pwnwrk
     network_mode: host
     environment:
       - PWNCTL_JobQueue__WorkerCount=1
@@ -12,4 +12,4 @@ services:
       - PWNCTL_Db__ConnectionString=Host=my_host;Database=my_db;Username=my_user;Password=my_pw
     restart: unless-stopped
     volumes:
-      - ./data/:/etc/pwnctl/
+      - ./pwnctl.worker/data/:/etc/pwnctl/

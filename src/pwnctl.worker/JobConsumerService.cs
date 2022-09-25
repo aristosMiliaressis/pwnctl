@@ -1,6 +1,7 @@
 using pwnctl.infra.Configuration;
 using pwnctl.infra.Queues;
 using System.Diagnostics;
+using System.Threading;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -23,12 +24,15 @@ namespace pwnctl.worker
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                var command = await _queueService.DequeueAsync();
-                await ExecuteCommandAsync(command);
+                var message = await _queueService.ReceiveAsync(stoppingToken);
+                
+                bool succeded = await ExecuteCommandAsync(message.Body);
+                if (succeded)
+                    await _queueService.DequeueAsync(message, stoppingToken);
             }            
         }
 
-        private async Task ExecuteCommandAsync(string command)
+        private async Task<bool> ExecuteCommandAsync(string command)
         {
             var psi = new ProcessStartInfo();
             psi.FileName = "/bin/bash";
@@ -40,7 +44,7 @@ namespace pwnctl.worker
             using var process = Process.Start(psi);
             {
                 if (process == null)
-                    return;
+                    return false;
 
                 using (StreamWriter sr = process.StandardInput)
                 {
@@ -57,6 +61,8 @@ namespace pwnctl.worker
             //process.ExitTime
             //var output = await process.StandardOutput.ReadToEndAsync();
             //var errors = await process.StandardError.ReadToEndAsync();
+
+            return true;
         }
     }
 }

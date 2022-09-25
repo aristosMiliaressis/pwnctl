@@ -21,4 +21,4 @@ then
     bash "$PWNCTL_INSTALL_PATH/entrypoint_hook.sh"
 fi
 
-while true; do sleep 10000; done
+/opt/pwnwrk/pwnwrk
