@@ -51,6 +51,7 @@ RUN go install github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
 RUN go install github.com/aristosMiliaressis/urgo@latest
 RUN go install github.com/projectdiscovery/dnsx/cmd/dnsx@latest
 RUN go install github.com/projectdiscovery/notify/cmd/notify@latest
+RUN rm /usr/bin/httpx && go install github.com/projectdiscovery/httpx/cmd/httpx@latest
 RUN git clone https://github.com/zmap/zdns.git && cd zdns && go build && cp zdns /usr/bin
 RUN pip install useragent-picker-cli && uagen
 RUN mkdir -p /etc/amass/scripts \
