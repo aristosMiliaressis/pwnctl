@@ -5,7 +5,7 @@ if [ "$EUID" -ne 0 ]
   exit
 fi
 
-curl https://api.github.com/repos/aristosMiliaressis/pwntainer/releases/latest 2>/dev/null \
+curl https://api.github.com/repos/aristosMiliaressis/pwnctl/releases/latest 2>/dev/null \
     | jq -r .assets[].browser_download_url \
     | wget -qi -
 

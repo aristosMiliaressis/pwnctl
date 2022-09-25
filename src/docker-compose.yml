@@ -1,10 +1,10 @@
 ﻿version: '3.4'
 
 services:
-  pwntainer:
+  pwnctl:
     image: aristosmiliaressis/pwnctl:latest
-    container_name: pwntainer
-    hostname: pwntainer
+    container_name: pwnctl
+    hostname: pwnctl
     network_mode: host
     environment:
       - PWNCTL_JobQueue__WorkerCount=1

@@ -1,7 +1,7 @@
 
-# Pwntainer
+# PWNCTL
 
-![ci: tag](https://github.com/aristosMiliaressis/pwntainer/actions/workflows/ci.yml/badge.svg)
+![ci: tag](https://github.com/aristosMiliaressis/pwnctl/actions/workflows/ci.yml/badge.svg)
 
  a recursive rule based asset discovery, scanning and reporting framework 
 

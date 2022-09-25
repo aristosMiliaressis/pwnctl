@@ -15,14 +15,14 @@ then
     cp "/opt/provider-config.yaml" ./data/provider-config.yaml
 fi
 
-docker stop pwntainer 2>/dev/null
-docker rm pwntainer 2>/dev/null
+docker stop pwnctl 2>/dev/null
+docker rm pwnctl 2>/dev/null
 
 rm -rf data/queue 2>/dev/null
-rm -rf data/pwntainer.* 2>/dev/null
+rm -rf data/pwnctl.* 2>/dev/null
 rm -rf data/pwnctl.log 2>/dev/null
 
 docker-compose pull
 docker-compose up -d
 
-docker exec -it pwntainer bash
+docker exec -it pwnctl bash
