@@ -1,0 +1,142 @@
+[
+    {
+        "RegistrationDomain": "accesscontrol.windows.net",
+        "Service": "Azure Access Control Service",
+        "Provider": "Azure"
+    },
+    {
+        "RegistrationDomain": "graph.windows.net",
+        "Service": "Azure Active Directory",
+        "Provider": "Azure"
+    },
+    {
+        "RegistrationDomain": "onmicrosoft.com",
+        "Service": "Azure Active Directory",
+        "Provider": "Azure"
+    },
+    {
+        "RegistrationDomain": "azure-api.net",
+        "Service": "Azure API Management",
+        "Provider": "Azure"
+    },
+    {
+        "RegistrationDomain": "biztalk.windows.net",
+        "Service": "Azure BizTalk Services",
+        "Provider": "Azure"
+    },
+    {
+        "RegistrationDomain": "blob.core.windows.net",
+        "Service": "Azure Blob storage",
+        "Provider": "Azure"
+    },
+    {
+        "RegistrationDomain": "cloudapp.net",
+        "Service": "Azure Cloud Services and Azure Virtual Machines",
+        "Provider": "Azure"
+    }, 
+    {
+        "RegistrationDomain": "cloudapp.azure.com",
+        "Service": "Azure Cloud Services and Azure Virtual Machines",
+        "Provider": "Azure"
+    }, 
+    {
+        "RegistrationDomain": "azurecr.io",
+        "Service": "Azure Container Registry",
+        "Provider": "Azure"
+    }, 
+    {
+        "RegistrationDomain": "azurecontainer.io",
+        "Service": "Azure Container Service (ACS)",
+        "Provider": "Azure"
+    }, 
+    {
+        "RegistrationDomain": "vo.msecnd.net",
+        "Service": "Azure Content Delivery Network",
+        "Provider": "Azure"
+    }, 
+    {
+        "RegistrationDomain": "cosmos.azure.com",
+        "Service": "Azure Cosmos DB",
+        "Provider": "Azure"
+    }, 
+    {
+        "RegistrationDomain": "documents.azure.com",
+        "Service": "Azure Cosmos DB",
+        "Provider": "Azure"
+    }, 
+    {
+        "RegistrationDomain": "file.core.windows.net",
+        "Service": "Azure Files",
+        "Provider": "Azure"
+    }, 
+    {
+        "RegistrationDomain": "azurefd.net",
+        "Service": "Azure Front Door",
+        "Provider": "Azure"
+    }, 
+    {
+        "RegistrationDomain": "vault.azure.net",
+        "Service": "Azure Key Vault",
+        "Provider": "Azure"
+    }, 
+    {
+        "RegistrationDomain": "management.core.windows.net",
+        "Service": "Azure Management Services",
+        "Provider": "Azure"
+    }, 
+    {
+        "RegistrationDomain": "origin.mediaservices.windows.net",
+        "Service": "Azure Media Services",
+        "Provider": "Azure"
+    }, 
+    {
+        "RegistrationDomain": "azure-mobile.net",
+        "Service": "Azure Mobile Apps",
+        "Provider": "Azure"
+    }, 
+    {
+        "RegistrationDomain": "queue.core.windows.net",
+        "Service": "Azure Queue Storage",
+        "Provider": "Azure"
+    }, 
+    {
+        "RegistrationDomain": "servicebus.windows.net",
+        "Service": "Azure Service Bus",
+        "Provider": "Azure"
+    }, 
+    {
+        "RegistrationDomain": "database.windows.net",
+        "Service": "Azure SQL Database",
+        "Provider": "Azure"
+    }, 
+    {
+        "RegistrationDomain": "azureedge.net",
+        "Service": "Azure Stack Edge and Azure IoT Edge",
+        "Provider": "Azure"
+    }, 
+    {
+        "RegistrationDomain": "table.core.windows.net",
+        "Service": "Azure Table Storage",
+        "Provider": "Azure"
+    }, 
+    {
+        "RegistrationDomain": "trafficmanager.net",
+        "Service": "Azure Traffic Manager",
+        "Provider": "Azure"
+    }, 
+    {
+        "RegistrationDomain": "azurewebsites.net",
+        "Service": "Azure Websites",
+        "Provider": "Azure"
+    }, 
+    {
+        "RegistrationDomain": "visualstudio.com",
+        "Service": "Visual Studio Codespaces",
+        "Provider": "Azure"
+    },
+    {
+        "RegistrationDomain": "rds.amazonaws.com",
+        "Service": "Amazon RDS",
+        "Provider": "Amazon"        
+    }
+]

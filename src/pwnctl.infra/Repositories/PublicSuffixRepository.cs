@@ -2,24 +2,22 @@ using pwnctl.infra.Configuration;
 using pwnctl.core.Interfaces;
 using pwnctl.core.ValueObjects;
 
-// TODO: look into Nager.PublicSuffix && use in-memory cache
-
 namespace pwnctl.infra.Repositories
 {
-    public class CachedPublicSuffixRepository : IPublicSuffixRepository
+    public class PublicSuffixRepository : IPublicSuffixRepository
     {
         private List<PublicSuffix> _publicSuffixes;
-        private static CachedPublicSuffixRepository _singleton;
+        private static PublicSuffixRepository _singleton;
         private string _publicSuffixDataFile = ConfigurationManager.Config.IsTestRun
                                     ? $"{AppConfig.InstallPath}/dns/public_suffix_list.dat"
                                     : "/opt/wordlists/dns/public_suffix_list.dat";
         
-        public static CachedPublicSuffixRepository Singleton
+        public static PublicSuffixRepository Singleton
         {
             get
             {
                 if (_singleton == null)
-                    _singleton = new CachedPublicSuffixRepository();
+                    _singleton = new PublicSuffixRepository();
     
                 return _singleton;
             }

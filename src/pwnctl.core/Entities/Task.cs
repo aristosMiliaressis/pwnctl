@@ -36,6 +36,9 @@ namespace pwnctl.core.Entities
         public Keyword Keyword { get; set; }
         public string KeywordId { get; set; }
 
+        public CloudService CloudService { get; set; }
+        public string CloudServiceId { get; set; }
+
         private Task() {}
 
         public Task(TaskDefinition definition, BaseAsset asset)

@@ -38,6 +38,7 @@ namespace pwnctl.infra.Persistence
         public DbSet<core.Entities.Assets.Endpoint> Endpoints { get; set; }
         public DbSet<core.Entities.Assets.Parameter> Parameters { get; set; }
         public DbSet<core.Entities.Assets.Email> Emails { get; set; }
+        public DbSet<core.Entities.Assets.CloudService> CloudService { get; set; }
         public DbSet<core.Entities.Tag> Tags { get; set; }
         public DbSet<core.Entities.Assets.Keyword> Keywords { get; set; }
         public DbSet<core.Entities.NotificationRule> NotificationRules { get; set; }

@@ -224,15 +224,15 @@ public class Tests
     }
 
     [Fact]
-    public void CachedPublicSuffixRepository_Tests()
+    public void PublicSuffixRepository_Tests()
     {
-        var regDomain = CachedPublicSuffixRepository.Singleton.GetRegistrationDomain("xyz.example.com");
-        var publicSuffix = CachedPublicSuffixRepository.Singleton.GetPublicSuffix("xyz.example.com");
+        var regDomain = PublicSuffixRepository.Singleton.GetRegistrationDomain("xyz.example.com");
+        var publicSuffix = PublicSuffixRepository.Singleton.GetPublicSuffix("xyz.example.com");
         Assert.Equal("example.com", regDomain);
         Assert.Equal("com", publicSuffix.Suffix);
 
-        regDomain = CachedPublicSuffixRepository.Singleton.GetRegistrationDomain("sub.example.azurewebsites.net");
-        publicSuffix = CachedPublicSuffixRepository.Singleton.GetPublicSuffix("sub.example.azurewebsites.net");
+        regDomain = PublicSuffixRepository.Singleton.GetRegistrationDomain("sub.example.azurewebsites.net");
+        publicSuffix = PublicSuffixRepository.Singleton.GetPublicSuffix("sub.example.azurewebsites.net");
         Assert.Equal("example.azurewebsites.net", regDomain);
         Assert.Equal("azurewebsites.net", publicSuffix.Suffix);
     }

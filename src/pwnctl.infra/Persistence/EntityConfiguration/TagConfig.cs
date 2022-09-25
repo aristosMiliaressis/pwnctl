@@ -34,6 +34,10 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
                 .WithMany(a => a.Tags)
                 .HasForeignKey(t => t.DNSRecordId);
 
+            builder.HasOne(t => t.CloudService)
+                .WithMany(a => a.Tags)
+                .HasForeignKey(t => t.CloudServiceId);
+
             builder.HasIndex(nameof(Tag.NetRangeId), nameof(Tag.Name)).IsUnique();
             builder.HasIndex(nameof(Tag.HostId), nameof(Tag.Name)).IsUnique();
             builder.HasIndex(nameof(Tag.DomainId), nameof(Tag.Name)).IsUnique();

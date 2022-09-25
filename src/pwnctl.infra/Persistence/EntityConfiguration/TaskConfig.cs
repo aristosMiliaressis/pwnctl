@@ -37,6 +37,10 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
                 .WithMany(a => a.Tasks)
                 .HasForeignKey(t => t.DNSRecordId);
 
+            builder.HasOne(t => t.CloudService)
+                .WithMany(a => a.Tasks)
+                .HasForeignKey(t => t.CloudServiceId);
+
             builder.HasOne(t => t.Keyword)
                 .WithMany(a => a.Tasks)
                 .HasForeignKey(t => t.KeywordId);

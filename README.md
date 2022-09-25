@@ -120,7 +120,8 @@ tags are a way to store arbitary metadata relating to an asset, they can be used
 
 ## Notification Configuration
 
-...
+- [x] schedulted status notification
+- [x] configurable notification rules
 
 **`notification-rules.yml`**
 ```YAML

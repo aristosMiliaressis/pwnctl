@@ -27,6 +27,9 @@ namespace pwnctl.core.Entities
         public NetRange NetRange { get; set; }
         public string NetRangeId { get; set; }
 
+        public CloudService CloudService { get; set; }
+        public string CloudServiceId { get; set; }
+
         private Tag() {}
 
         public Tag(string name, string value)

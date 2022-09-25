@@ -10,7 +10,7 @@ namespace pwnctl.app
         public static async Task SetupAsync()
         {
             ConfigurationManager.Load();
-            PwnctlCoreShim.PublicSuffixRepository = CachedPublicSuffixRepository.Singleton;
+            PwnctlCoreShim.PublicSuffixRepository = PublicSuffixRepository.Singleton;
             await DatabaseInitializer.InitializeAsync();
         }
     }    
