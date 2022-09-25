@@ -3,7 +3,7 @@
 
 ![ci: tag](https://github.com/aristosMiliaressis/pwnctl/actions/workflows/ci.yml/badge.svg)
 
- a recursive rule based asset discovery, scanning and reporting framework 
+recursive configuration based engine for external recon.
 
 ### Implementation Phase #0
 
@@ -15,6 +15,8 @@
 
 - decentralized AWS architecture with autoscaling worker instances and centralized data collection
 - hopefully will be as easy as swapping out a `BashJobQueueService` class for a `SQSJobQueueService` a sqlite conn str for postgre and a bit of orchestration shenanigans :)
+
+![arch-phase0](img/arch-phase1.png)
 
 # `pwnctl --process`
 
@@ -122,43 +124,59 @@ tags are a way to store arbitary metadata relating to an asset, they can be used
 
 **`notification-rules.yml`**
 ```YAML
+
+Providers:
+  - Name: DiscordNotificationProvider
+    Channels:
+      - Name: misconfigs
+
+Rules:
+  - ShortName: default_creds
+    Subject: Service
+    Filter: Service["vuln-default-creds"] == "true"
+    Topic: misconfigs
+  - ShortName: cors_misconfig
+    Subject: Endpoint
+    Filter: Endpoint["cors-misconfig"] == "true"
+    Topic: misconfigs
+  - ShortName: shortname_misconfig
+    Subject: Endpoint
+    Filter: Endpoint["shortname-misconfig"] == "true"
+    Topic: misconfigs
 ```
 
 ## `pwnctl --query`
 
 - [x] read sql queries from stdin, execute them and print output
-- [x] json output format
+- [x] jsonl output format
 
 ## `pwnctl list --mode <domains/hosts/endpoints/etc>`
 
-...
+lists assets of a the specified class in JSONL(ine) format
 
 ## `pwnctl export --path out/`
 
-...
+exports all found assets in JSONL(ine) format at the specified directory
 
 ## `pwnctl summary`
 
-...
+prints a summary about queued tasks and found assets
 
 ## `pwnctl -i/--import <importer> -s/--source <source>`
 
 **To Do**
 - burp suite importer
 
+## Setup
+
+CLI Install
+> curl https://raw.githubusercontent.com/aristosMiliaressis/pwnctl/master/src/pwnctl.cli/install.sh | sudo bash
+
 ## Workers & Scaling
 
 **To Do**
-- PostgreSQL db
-- AWS SQS queue 
-- job runner that will run command and pipe output to `pwnctl` than record task metadata (i.e return code, start/finish timestamp) to db
-- EKS with Fargate for serverless autoscaling worker deployment
-- slimer worker images for faster worker creation&teardown
-
-## Miscellaneous Stuff
-
-**To Do**
-- non deterministic methods of inscope detection for cloud assets, CIDRs, etc (favicon, legal text, keyword, CT time correlation)
-- ip/hostname/url normalization
-- IP blocking detection & recycling of cloud ips
-- WebUI, graphs and stuff
+- [x] PostgreSQL db
+- [ ] AWS SQS queue 
+- [ ] sqs consumer daemon service
+- [ ] ECS with Fargate autoscalling
+- [ ] EFS for configuration & script delivery
