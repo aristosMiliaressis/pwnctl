@@ -57,7 +57,7 @@ namespace pwnctl.core.Entities.Assets
             var dto = new AssetDTO
             {
                 Asset = IP,
-                Tags = new Dictionary<string, string>
+                Tags = new Dictionary<string, object>
                 {
                     {"Version", Version.ToString()}
                 },

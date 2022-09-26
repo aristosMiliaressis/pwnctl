@@ -89,7 +89,7 @@ namespace pwnctl.core.Entities.Assets
             var dto = new AssetDTO
             {
                 Asset = Name,
-                Tags = new Dictionary<string, string>
+                Tags = new Dictionary<string, object>
                 {
                     {"IsRegistrationDomain", IsRegistrationDomain.ToString()}
                 },

@@ -49,7 +49,7 @@ namespace pwnctl.core.Entities.Assets
             var dto = new AssetDTO
             {
                 Asset = Address,
-                Tags = new Dictionary<string, string>
+                Tags = new Dictionary<string, object>
                 {
                     {"Domain", Domainname}
                 },

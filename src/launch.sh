@@ -10,6 +10,16 @@ then
     cp "/opt/amass.ini" ./data/amass.ini
 fi
 
+if test -f "/opt/aws.config"; 
+then
+    cp "/opt/aws.config" ./data/aws.config
+fi
+
+if test -f "/opt/aws.credentials"; 
+then
+    cp "/opt/aws.credentials" ./data/aws.credentials
+fi
+
 if test -f "/opt/provider-config.yaml"; 
 then
     cp "/opt/provider-config.yaml" ./data/provider-config.yaml

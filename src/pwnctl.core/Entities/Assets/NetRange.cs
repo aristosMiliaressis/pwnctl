@@ -63,7 +63,7 @@ namespace pwnctl.core.Entities.Assets
             var dto = new AssetDTO
             {
                 Asset = CIDR,
-                Tags = new Dictionary<string, string>
+                Tags = new Dictionary<string, object>
                 {
                     {"FirstAddress", FirstAddress},
                     {"NetPrefixBits", NetPrefixBits.ToString()}

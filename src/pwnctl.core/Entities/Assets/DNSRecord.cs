@@ -89,7 +89,7 @@ namespace pwnctl.core.Entities.Assets
             var dto = new AssetDTO
             {
                 Asset = $"{Key} IN {Type} {Value}",
-                Tags = new Dictionary<string, string>
+                Tags = new Dictionary<string, object>
                 {
                     {"Key", Key},
                     {"Value", Value},

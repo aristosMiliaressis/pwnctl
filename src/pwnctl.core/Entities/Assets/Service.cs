@@ -102,7 +102,7 @@ namespace pwnctl.core.Entities.Assets
             var dto = new AssetDTO
             {
                 Asset = Origin,
-                Tags = new Dictionary<string, string>
+                Tags = new Dictionary<string, object>
                 {
                     {"Port", Port.ToString()},
                     {"Host", Host?.IP},

@@ -2,6 +2,7 @@ using pwnctl.core.BaseClasses;
 using pwnctl.core.Entities;
 using pwnctl.core.Models;
 using pwnctl.app.Exceptions;
+using pwnctl.infra.Logging;
 using System.Text.Json;
 using System.Reflection;
 
@@ -65,9 +66,9 @@ namespace pwnctl.app.Utilities
             {
                 PropertyNameCaseInsensitive = true
             });
-            
+
             assetText = entry.Asset;
-            tags = entry.Tags.Select(t => new Tag(t.Key, t.Value)).ToList();
+            tags = entry.Tags.Select(t => new Tag(t.Key, t.Value.ToString())).ToList();
         }
 
         private static readonly IEnumerable<MethodInfo> _tryParseMethods = Assembly.GetAssembly(typeof(BaseAsset))

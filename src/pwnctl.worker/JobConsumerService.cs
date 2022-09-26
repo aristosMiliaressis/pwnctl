@@ -25,7 +25,9 @@ namespace pwnctl.worker
             while (!stoppingToken.IsCancellationRequested)
             {
                 var message = await _queueService.ReceiveAsync(stoppingToken);
-                
+                if (message == null)
+                    continue;
+                    
                 bool succeded = await ExecuteCommandAsync(message.Body);
                 if (succeded)
                     await _queueService.DequeueAsync(message, stoppingToken);
