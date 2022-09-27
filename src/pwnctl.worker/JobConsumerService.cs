@@ -20,7 +20,8 @@ namespace pwnctl.worker
         private readonly IOptions<AppConfig> _config;
         private readonly SQSJobQueueService _queueService = new();
         private CancellationToken _stoppingToken;
-        private List<Amazon.SQS.Model.Message> _unprocessedMessages;
+        private List<Amazon.SQS.Model.Message> _unprocessedMessages = new List<Amazon.SQS.Model.Message>();
+
         public JobConsumerService(ILogger<JobConsumerService> logger, IOptions<AppConfig> config)
         {
             _logger = logger;
@@ -44,7 +45,7 @@ namespace pwnctl.worker
                 _unprocessedMessages = messages;
 
                 var timer = new System.Timers.Timer(1000 * 60 * (pwnctl.infra.Configuration.ConfigurationManager.Config.JobQueue.VisibilityTimeout - 1));
-                timer.Elapsed += async (sender, e) => await ChallengeMessageVisibility(null);
+                timer.Elapsed += async (sender, e) => await ChallengeMessageVisibility();
                 timer.AutoReset = false;
                 timer.Start();
                     
@@ -99,7 +100,7 @@ namespace pwnctl.worker
             return true;
         }
 
-        public async Task ChallengeMessageVisibility(object state)
+        public async Task ChallengeMessageVisibility()
         {
             await _queueService.ChangeBatchVisibility(_unprocessedMessages, _stoppingToken);
         }

@@ -1,5 +1,5 @@
 
-# PWNCTL
+## PWNCTL
 
 ![ci: tag](https://github.com/aristosMiliaressis/pwnctl/actions/workflows/ci.yml/badge.svg)
 
@@ -7,8 +7,7 @@ recursive configuration based engine for external recon.
 
 ### Architecture
 
-- decentralized AWS architecture with autoscaling worker instances and centralized data collection
-- hopefully will be as easy as swapping out a `BashJobQueueService` class for a `SQSJobQueueService` a sqlite conn str for postgre and a bit of orchestration shenanigans :)
+`pwnctl` writes assets to aws aurora, sends discord notifications according to configured rules and puts tasks into sqs, `pwnwrk` service runs in container and polls sqs for tasks, executes them & pipes the output back into `pwnctl` to recursivly crawl the configured scope, the worker will be hosted in ECS with Fargate for autoscalling and EFS for delivering configuration & scripts.
 
 ![arch-phase0](img/arch-phase1.png)
 
@@ -18,10 +17,10 @@ recursive configuration based engine for external recon.
 - [x] sqs consumer daemon service
 - [ ] ECS with Fargate autoscalling
 - [ ] EFS for configuration & script delivery
-- [ ] cdk or cloudformation for IaC
+- [ ] cdk for IaC
 
 
-# `pwnctl --process`
+## `pwnctl --process`
 
 - [x] reads assets from stdin
 - [x] classifies assets into classes (Endpoint/Host/Domain/Service/DNSRecord)
@@ -33,7 +32,7 @@ recursive configuration based engine for external recon.
 - [x] arbitary key/value metadata `Tags`
 - [x] bash job queue
 
-## In Scope checking process
+### In Scope checking process
 
 - [x] select all ScopeDefinitions from all programs in db
 - [x] iterate over definitions and call bool Matches(ScopeDefinition def) on asset object.
@@ -71,7 +70,7 @@ scope definitions are configured in `target-*.json` files along with some policy
 }
 ```
 
-## Task Configuration
+### Task Configuration
 
 tasks are configured per asset class and can be filtered trough C# script in the `Filter` field. 
 
