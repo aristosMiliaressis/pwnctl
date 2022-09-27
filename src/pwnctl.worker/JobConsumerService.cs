@@ -20,7 +20,7 @@ namespace pwnctl.worker
         private readonly IOptions<AppConfig> _config;
         private readonly SQSJobQueueService _queueService = new();
         private CancellationToken _stoppingToken;
-
+        private List<Amazon.SQS.Model.Message> _unprocessedMessages;
         public JobConsumerService(ILogger<JobConsumerService> logger, IOptions<AppConfig> config)
         {
             _logger = logger;
@@ -41,13 +41,12 @@ namespace pwnctl.worker
                     continue;
                 }
 
-                foreach (var message in messages)
-                {
-                    var timer = new System.Timers.Timer(1000 * 60 * (pwnctl.infra.Configuration.ConfigurationManager.Config.JobQueue.VisibilityTimeout - 1));
-                    timer.Elapsed += async (sender, e) => await ChallengeMessageVisibility(message);
-                    timer.AutoReset = false;
-                    timer.Start();
-                }
+                _unprocessedMessages = messages;
+
+                var timer = new System.Timers.Timer(1000 * 60 * (pwnctl.infra.Configuration.ConfigurationManager.Config.JobQueue.VisibilityTimeout - 1));
+                timer.Elapsed += async (sender, e) => await ChallengeMessageVisibility(null);
+                timer.AutoReset = false;
+                timer.Start();
                     
                 foreach (var message in messages)
                 {
@@ -58,6 +57,8 @@ namespace pwnctl.worker
                     await _queueService.DequeueAsync(message, stoppingToken);
                     //else
                     // TODO: move to dead letter queue
+
+                    _unprocessedMessages.Remove(message);
                 }
             }            
         }
@@ -100,9 +101,7 @@ namespace pwnctl.worker
 
         public async Task ChallengeMessageVisibility(object state)
         {
-            var message = state as Amazon.SQS.Model.Message;
-
-            await _queueService.ChangeVisibility(message, _stoppingToken);
+            await _queueService.ChangeBatchVisibility(_unprocessedMessages, _stoppingToken);
         }
     }
 }

@@ -77,11 +77,22 @@ namespace pwnctl.infra.Queues
             Logger.Instance.Info("DeleteMessage: " + JsonSerializer.Serialize(response));
         }
 
-        public async Task ChangeVisibility(Message message, CancellationToken ct)
+        public async Task ChangeBatchVisibility(List<Message> messages, CancellationToken ct)
         {
             // TODO: what if timeout exhedded for second time?
 
-            var response = await _sqsClient.ChangeMessageVisibilityAsync(this[ConfigurationManager.Config.JobQueue.QueueName], message.ReceiptHandle, 60*60, ct);
+            var request = new ChangeMessageVisibilityBatchRequest
+            {
+                QueueUrl = this[ConfigurationManager.Config.JobQueue.QueueName],
+                Entries = messages.Select(msg => new ChangeMessageVisibilityBatchRequestEntry 
+                {
+                    Id = msg.MessageId,
+                    ReceiptHandle = msg.ReceiptHandle,
+                    VisibilityTimeout = 60*60
+                }).ToList()
+            };
+
+            var response = await _sqsClient.ChangeMessageVisibilityBatchAsync(request, ct);
 
             Logger.Instance.Info("ChangeMessageVisibility: " + JsonSerializer.Serialize(response));
         }
