@@ -19,12 +19,14 @@ namespace pwnctl.core.Entities.Assets
 
         public Domain(string domain)
         {
+            domain = domain.EndsWith(".") ? domain.Substring(0, domain.Length - 1) : domain;
+
             Name = domain;
-            IsRegistrationDomain = PwnctlCoreShim.PublicSuffixRepository.GetRegistrationDomain(domain) == domain;
+            var regDomain = PwnctlCoreShim.PublicSuffixRepository.GetRegistrationDomain(domain);
+            IsRegistrationDomain = regDomain == domain;
             if (!IsRegistrationDomain)
             {
-                var registrationDomain = new Domain(PwnctlCoreShim.PublicSuffixRepository.GetRegistrationDomain(domain));
-                RegistrationDomain = registrationDomain;
+                RegistrationDomain = new Domain(regDomain);
             }
         }
 
@@ -45,6 +47,7 @@ namespace pwnctl.core.Entities.Assets
 
                 var domain = new Domain(assetText);
                 domain.AddTags(tags);
+
                 assets = new BaseAsset[] { domain };
                 if (domain.RegistrationDomain != null)
                 {

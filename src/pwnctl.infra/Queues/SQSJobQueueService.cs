@@ -1,4 +1,5 @@
 ﻿using pwnctl.core.Interfaces;
+using pwnctl.infra.Logging;
 using Amazon.SQS;
 using Amazon.SQS.Model;
 using System.Text.Json;
@@ -44,6 +45,8 @@ namespace pwnctl.infra.Queues
             var messageResponse = await _sqsClient.ReceiveMessageAsync(receiveRequest, ct);
             if (messageResponse.HttpStatusCode != System.Net.HttpStatusCode.OK)
             {
+                Logger.Instance.Info($"HttpStatusCode: {messageResponse.HttpStatusCode}");
+                Logger.Instance.Info(JsonSerializer.Serialize(messageResponse));
                 // TODO: error handling
             }
 

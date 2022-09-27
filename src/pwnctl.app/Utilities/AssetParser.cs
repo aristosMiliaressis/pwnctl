@@ -30,27 +30,27 @@ namespace pwnctl.app.Utilities
             if (string.IsNullOrWhiteSpace(assetText))
                 throw new ArgumentException("Null or whitespace asset.", nameof(assetText));
 
+            assetText = assetText.Trim();
+
             ParseTags(ref assetText, out List<Tag> tags);
 
             object[] parameters = new object[] { assetText, tags, null };
             foreach (var tryParseMethod in _tryParseMethods)
             {
-                bool parsed = false;
                 try
                 {
-                    parsed = (bool)tryParseMethod.Invoke(null, parameters);
+                    bool parsed = (bool)tryParseMethod.Invoke(null, parameters);
+                    if (!parsed)
+                        continue;
                 }
                 catch
                 {
                     continue;
                 }
 
-                if (parsed)
-                {
-                    var assets = (BaseAsset[])parameters[2];
-                    assetTypes = assets.Select(a => a.GetType()).ToArray();
-                    return assets;
-                }
+                var assets = (BaseAsset[])parameters[2];
+                assetTypes = assets.Select(a => a.GetType()).ToArray();
+                return assets;
             }
 
             throw new UnparsableAssetException(assetText);
@@ -59,7 +59,7 @@ namespace pwnctl.app.Utilities
         private static void ParseTags(ref string assetText, out List<Tag> tags)
         {
             tags = new();
-            if (!assetText.TrimStart().StartsWith("{"))
+            if (!assetText.StartsWith("{"))
                 return;
 
             var entry = JsonSerializer.Deserialize<AssetDTO>(assetText, new JsonSerializerOptions

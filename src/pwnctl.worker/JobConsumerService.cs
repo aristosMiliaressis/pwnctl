@@ -1,7 +1,8 @@
 using pwnctl.infra.Configuration;
 using pwnctl.infra.Queues;
+using pwnctl.infra.Logging;
 using System.Diagnostics;
-using System.Threading;
+using System.Text.Json;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -28,7 +29,9 @@ namespace pwnctl.worker
                 if (message == null)
                     continue;
                     
-                bool succeded = await ExecuteCommandAsync(message.Body);
+                var task = JsonSerializer.Deserialize<TaskAssigned>(message.Body);
+
+                bool succeded = await ExecuteCommandAsync(task.Command);
                 if (succeded)
                     await _queueService.DequeueAsync(message, stoppingToken);
             }            
@@ -36,6 +39,7 @@ namespace pwnctl.worker
 
         private async Task<bool> ExecuteCommandAsync(string command)
         {
+            Logger.Instance.Info(command);
             var psi = new ProcessStartInfo();
             psi.FileName = "/bin/bash";
             psi.RedirectStandardOutput = true;
@@ -59,6 +63,8 @@ namespace pwnctl.worker
             process.WaitForExit();
 
             // TODO: record metadata
+            Logger.Instance.Info($"ExitCode: {process.ExitCode}, ExitTime: {process.ExitTime}");
+
             //process.ExitCode
             //process.ExitTime
             //var output = await process.StandardOutput.ReadToEndAsync();
