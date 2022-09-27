@@ -5,18 +5,21 @@
 
 recursive configuration based engine for external recon.
 
-### Implementation Phase #0
-
-- all in one docker container with bash job queue and sqlite db
-
-![arch-phase0](img/arch-phase0.png)
-
-### Implementation Phase #1
+### Architecture
 
 - decentralized AWS architecture with autoscaling worker instances and centralized data collection
 - hopefully will be as easy as swapping out a `BashJobQueueService` class for a `SQSJobQueueService` a sqlite conn str for postgre and a bit of orchestration shenanigans :)
 
 ![arch-phase0](img/arch-phase1.png)
+
+**To Do**
+- [x] PostgreSQL db
+- [x] sqs producer
+- [x] sqs consumer daemon service
+- [ ] ECS with Fargate autoscalling
+- [ ] EFS for configuration & script delivery
+- [ ] cdk or cloudformation for IaC
+
 
 # `pwnctl --process`
 
@@ -170,14 +173,9 @@ prints a summary about queued tasks and found assets
 
 ## Setup
 
-CLI Install
+**CLI Install**
 > curl https://raw.githubusercontent.com/aristosMiliaressis/pwnctl/master/src/pwnctl.cli/install.sh | sudo bash
 
-## Workers & Scaling
+**Worker Setup**
 
-**To Do**
-- [x] PostgreSQL db
-- [x] sqs producer
-- [ ] sqs consumer daemon service
-- [ ] ECS with Fargate autoscalling
-- [ ] EFS for configuration & script delivery
+... To Be Documented ...

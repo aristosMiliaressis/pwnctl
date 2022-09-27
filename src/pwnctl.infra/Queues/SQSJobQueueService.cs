@@ -6,8 +6,6 @@ using Amazon.SQS.Model;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-//TODO: look into batching for more economical usage
-
 namespace pwnctl.infra.Queues
 {
     public class SQSJobQueueService : IJobQueueService
@@ -72,6 +70,8 @@ namespace pwnctl.infra.Queues
 
         public async Task DequeueAsync(Message message, CancellationToken ct)
         {
+            // TODO: delete batching?
+
             var response = await _sqsClient.DeleteMessageAsync(this[ConfigurationManager.Config.JobQueue.QueueName], message.ReceiptHandle, ct);
 
             Logger.Instance.Info("DeleteMessage: " + JsonSerializer.Serialize(response));
@@ -79,7 +79,7 @@ namespace pwnctl.infra.Queues
 
         public async Task ChangeBatchVisibility(List<Message> messages, CancellationToken ct)
         {
-            // TODO: what if timeout exhedded for second time?
+            // TODO: what if timeout exhedded more than once?
 
             var request = new ChangeMessageVisibilityBatchRequest
             {
@@ -88,7 +88,7 @@ namespace pwnctl.infra.Queues
                 {
                     Id = msg.MessageId,
                     ReceiptHandle = msg.ReceiptHandle,
-                    VisibilityTimeout = 60*60
+                    VisibilityTimeout = ConfigurationManager.Config.JobQueue.VisibilityTimeout*2*60
                 }).ToList()
             };
 

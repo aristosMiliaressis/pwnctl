@@ -11,7 +11,6 @@ services:
       - PWNCTL_JobQueue__IsSQS=true
       - PWNCTL_JobQueue__QueueName=pwnctl.fifo
       - PWNCTL_JobQueue__DLQName=pwnctl-dlg.fifo
-      - PWNCTL_JobQueue__MessageGroup=jobs
       - PWNCTL_JobQueue__VisibilityTimeout=30
       - PWNCTL_Db__ConnectionString=Host=my_host;Database=my_db;Username=my_user;Password=my_pw
     restart: unless-stopped
