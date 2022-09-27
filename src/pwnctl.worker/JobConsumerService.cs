@@ -23,6 +23,8 @@ namespace pwnctl.worker
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            Logger.Instance.Info($"{nameof(JobConsumerService)} started.");
+            
             while (!stoppingToken.IsCancellationRequested)
             {
                 var message = await _queueService.ReceiveAsync(stoppingToken);

@@ -5,6 +5,8 @@ using Amazon.SQS.Model;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
+//TODO: look into batching for more economical usage
+
 namespace pwnctl.infra.Queues
 {
     public class SQSJobQueueService : IJobQueueService
@@ -43,10 +45,10 @@ namespace pwnctl.infra.Queues
             };
 
             var messageResponse = await _sqsClient.ReceiveMessageAsync(receiveRequest, ct);
+            Logger.Instance.Info(JsonSerializer.Serialize(messageResponse));
             if (messageResponse.HttpStatusCode != System.Net.HttpStatusCode.OK)
             {
                 Logger.Instance.Info($"HttpStatusCode: {messageResponse.HttpStatusCode}");
-                Logger.Instance.Info(JsonSerializer.Serialize(messageResponse));
                 // TODO: error handling
             }
 
