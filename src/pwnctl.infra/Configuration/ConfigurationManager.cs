@@ -49,6 +49,10 @@ namespace pwnctl.infra.Configuration
         {
             public bool IsSQS { get; set; }
             public int WorkerCount { get; set; }
+            public string QueueName { get; set; }
+            public string DLQName { get; set; }
+            public string MessageGroup { get; set; }
+            public int VisibilityTimeout { get; set; }
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using pwnctl.core.Interfaces;
+using pwnctl.infra.Configuration;
 using pwnctl.infra.Logging;
 using Amazon.SQS;
 using Amazon.SQS.Model;
@@ -11,9 +12,26 @@ namespace pwnctl.infra.Queues
 {
     public class SQSJobQueueService : IJobQueueService
     {
-        private static readonly string _queueName = "pwnctl.fifo";
-        //private static readonly string _dlqName = "pwnctl-dlq.fifo";
         private readonly AmazonSQSClient _sqsClient = new();
+
+        private Dictionary<string,string> _queueUrls;
+        private string this[string queueName]
+        {
+            get
+            {
+                if (_queueUrls == null)
+                    _queueUrls = new();
+
+                if (!_queueUrls.TryGetValue(queueName, out string queueUrl))
+                {
+                    var queueUrlResponse = _sqsClient.GetQueueUrlAsync(ConfigurationManager.Config.JobQueue.QueueName).Result;
+                    queueUrl = queueUrlResponse.QueueUrl;
+                    _queueUrls[queueName] = queueUrl;
+                }
+
+                return queueUrl;
+            }
+        }
 
         /// <summary>
         /// pushes a job to the pending queue.
@@ -21,27 +39,24 @@ namespace pwnctl.infra.Queues
         /// <param name="command"></param>
         public async Task EnqueueAsync(core.Entities.Task job)
         {
-            var queueUrlResponse = await _sqsClient.GetQueueUrlAsync(_queueName);
-
             var task = new TaskAssigned() { Command = job.WrappedCommand };
 
             var request = new SendMessageRequest
             {
-                MessageGroupId = "jobs",
-                QueueUrl = queueUrlResponse.QueueUrl,
+                MessageGroupId = ConfigurationManager.Config.JobQueue.MessageGroup,
+                QueueUrl = this[ConfigurationManager.Config.JobQueue.QueueName],
                 MessageBody = JsonSerializer.Serialize(task)
             };
 
             await _sqsClient.SendMessageAsync(request);
         }
 
-        public async Task<Message> ReceiveAsync(CancellationToken ct)
+        public async Task<List<Message>> ReceiveAsync(CancellationToken ct)
         {
-            var queueUrlResponse = await _sqsClient.GetQueueUrlAsync(_queueName, ct);
             var receiveRequest = new ReceiveMessageRequest
             {
-                QueueUrl = queueUrlResponse.QueueUrl,
-                MaxNumberOfMessages = 1
+                QueueUrl = this[ConfigurationManager.Config.JobQueue.QueueName],
+                MaxNumberOfMessages = 10
             };
 
             var messageResponse = await _sqsClient.ReceiveMessageAsync(receiveRequest, ct);
@@ -52,14 +67,23 @@ namespace pwnctl.infra.Queues
                 // TODO: error handling
             }
 
-            return messageResponse.Messages.FirstOrDefault();
+            return messageResponse.Messages;
         }
 
         public async Task DequeueAsync(Message message, CancellationToken ct)
         {
-            var queueUrlResponse = await _sqsClient.GetQueueUrlAsync(_queueName, ct);
+            var response = await _sqsClient.DeleteMessageAsync(this[ConfigurationManager.Config.JobQueue.QueueName], message.ReceiptHandle, ct);
 
-            await _sqsClient.DeleteMessageAsync(queueUrlResponse.QueueUrl, message.ReceiptHandle, ct);
+            Logger.Instance.Info("DeleteMessage: " + JsonSerializer.Serialize(response));
+        }
+
+        public async Task ChangeVisibility(Message message, CancellationToken ct)
+        {
+            // TODO: what if timeout exhedded for second time?
+
+            var response = await _sqsClient.ChangeMessageVisibilityAsync(this[ConfigurationManager.Config.JobQueue.QueueName], message.ReceiptHandle, 60*60, ct);
+
+            Logger.Instance.Info("ChangeMessageVisibility: " + JsonSerializer.Serialize(response));
         }
     }
 

@@ -3,8 +3,13 @@ using pwnctl.infra.Queues;
 using pwnctl.infra.Logging;
 using System.Diagnostics;
 using System.Text.Json;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Timers;
 using Microsoft.Extensions.Options;
 
 namespace pwnctl.worker
@@ -14,6 +19,7 @@ namespace pwnctl.worker
         private readonly ILogger _logger;
         private readonly IOptions<AppConfig> _config;
         private readonly SQSJobQueueService _queueService = new();
+        private CancellationToken _stoppingToken;
 
         public JobConsumerService(ILogger<JobConsumerService> logger, IOptions<AppConfig> config)
         {
@@ -24,22 +30,39 @@ namespace pwnctl.worker
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             Logger.Instance.Info($"{nameof(JobConsumerService)} started.");
-            
+            _stoppingToken = stoppingToken;
+
             while (!stoppingToken.IsCancellationRequested)
             {
-                var message = await _queueService.ReceiveAsync(stoppingToken);
-                if (message == null)
+                var messages = await _queueService.ReceiveAsync(stoppingToken);
+                if (messages == null || !messages.Any())
+                {
+                    Thread.Sleep(60000);
                     continue;
-                    
-                var task = JsonSerializer.Deserialize<TaskAssigned>(message.Body);
+                }
 
-                bool succeded = await ExecuteCommandAsync(task.Command);
-                if (succeded)
+                foreach (var message in messages)
+                {
+                    var timer = new System.Timers.Timer(1000 * 60 * (pwnctl.infra.Configuration.ConfigurationManager.Config.JobQueue.VisibilityTimeout - 1));
+                    timer.Elapsed += async (sender, e) => await ChallengeMessageVisibility(message);
+                    timer.AutoReset = false;
+                    timer.Start();
+                }
+                    
+                foreach (var message in messages)
+                {
+                    var task = JsonSerializer.Deserialize<TaskAssigned>(message.Body);
+
+                    bool succeded = await ExecuteCommandAsync(task.Command, stoppingToken);
+                    //if (succeded)
                     await _queueService.DequeueAsync(message, stoppingToken);
+                    //else
+                    // TODO: move to dead letter queue
+                }
             }            
         }
 
-        private async Task<bool> ExecuteCommandAsync(string command)
+        private async Task<bool> ExecuteCommandAsync(string command, CancellationToken stoppingToken)
         {
             Logger.Instance.Info(command);
             var psi = new ProcessStartInfo();
@@ -62,7 +85,7 @@ namespace pwnctl.worker
                 }
             }
 
-            process.WaitForExit();
+            await process.WaitForExitAsync(stoppingToken);
 
             // TODO: record metadata
             Logger.Instance.Info($"ExitCode: {process.ExitCode}, ExitTime: {process.ExitTime}");
@@ -73,6 +96,13 @@ namespace pwnctl.worker
             //var errors = await process.StandardError.ReadToEndAsync();
 
             return true;
+        }
+
+        public async Task ChallengeMessageVisibility(object state)
+        {
+            var message = state as Amazon.SQS.Model.Message;
+
+            await _queueService.ChangeVisibility(message, _stoppingToken);
         }
     }
 }
