@@ -66,11 +66,10 @@ namespace pwnctl.app.Utilities
                 return;
 
             task = new core.Entities.Task(definition, asset);
-
-            await _jobQueueService.EnqueueAsync(task);
-
             _context.Tasks.Add(task);
             await _context.SaveChangesAsync();
+
+            await _jobQueueService.EnqueueAsync(task);
         }
     }
 }

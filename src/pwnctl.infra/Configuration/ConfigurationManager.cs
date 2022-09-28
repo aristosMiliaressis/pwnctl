@@ -51,7 +51,6 @@ namespace pwnctl.infra.Configuration
             public int WorkerCount { get; set; }
             public string QueueName { get; set; }
             public string DLQName { get; set; }
-            public string MessageGroup { get; set; }
             public int VisibilityTimeout { get; set; }
         }
     }

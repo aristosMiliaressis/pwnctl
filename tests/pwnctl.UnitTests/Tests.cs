@@ -107,6 +107,10 @@ public class Tests
         Assert.Contains(assets, t => ((Domain)t).Name == "level.sub.example.com");
         Assert.Contains(assets, t => ((Domain)t).Name == "multi.level.sub.example.com");
 
+        AssetParser.TryParse("fqdn.example.com.", out assetTypes, out assets);
+        Assert.Contains(assets, t => ((Domain)t).Name == "example.com");
+        Assert.Contains(assets, t => ((Domain)t).Name == "fqdn.example.com");
+
         AssetParser.TryParse("no-reply@tesla.com", out assetTypes, out assets);
         Assert.Contains(assetTypes, t => t == typeof(Email));
         Assert.Contains(assets, t => t.GetType() == typeof(Email));

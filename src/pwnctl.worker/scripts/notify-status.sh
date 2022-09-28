@@ -1,17 +1,11 @@
 #!/bin/bash
 
-if [[ $(wc -l $PWNCTL_INSTALL_PATH/queue/pending | cut -d ' ' -f 1) -eq 1 ]]
-then 
-    exit
-fi
-
 temp=`mktemp`
 
 echo 'SELECT "ShortName" FROM "Tasks" JOIN "TaskDefinitions" ON "Tasks"."DefinitionId" = "TaskDefinitions"."Id"' | pwnctl query | jq .ShortName -r 2>/dev/null | sort | uniq -c | sort >> $temp
 echo >> $temp 
 pwnctl summary >> $temp 
 echo >> $temp 
-job-queue.sh --status -q $PWNCTL_INSTALL_PATH/queue/ >> $temp
 
 cat $temp | notify -provider discord -id status -bulk
 
