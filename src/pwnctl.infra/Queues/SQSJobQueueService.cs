@@ -45,7 +45,7 @@ namespace pwnctl.infra.Queues
 
             var request = new SendMessageRequest
             {
-                MessageGroupId = ConfigurationManager.Config.JobQueue.MessageGroup,
+                MessageGroupId = Guid.NewGuid().ToString(),
                 QueueUrl = this[ConfigurationManager.Config.JobQueue.QueueName],
                 MessageBody = JsonSerializer.Serialize(task)
             };
