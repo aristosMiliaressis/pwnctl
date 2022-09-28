@@ -69,10 +69,6 @@ namespace pwnctl.worker
                         task.StartedAt = DateTime.UtcNow;
 
                         Process process = await ExecuteCommandAsync(queuedTask.Command, stoppingToken);
-                        if (process == null || process.HasExited)
-                        {
-                            // 
-                        }
 
                         task.FinishedAt = DateTime.UtcNow;
                         task.ReturnCode = process.ExitCode;
@@ -97,6 +93,7 @@ namespace pwnctl.worker
         private async Task<Process> ExecuteCommandAsync(string command, CancellationToken stoppingToken)
         {
             Logger.Instance.Info(command);
+            
             var psi = new ProcessStartInfo();
             psi.FileName = "/bin/bash";
             psi.RedirectStandardOutput = true;
@@ -107,7 +104,7 @@ namespace pwnctl.worker
             var process = Process.Start(psi);
             {
                 if (process == null)
-                    return null;
+                    throw new Exception("bash process failed to start");
 
                 using (StreamWriter sr = process.StandardInput)
                 {
