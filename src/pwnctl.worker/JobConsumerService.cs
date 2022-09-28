@@ -104,7 +104,7 @@ namespace pwnctl.worker
             psi.UseShellExecute = false;
             psi.CreateNoWindow = true;
 
-            using var process = Process.Start(psi);
+            var process = Process.Start(psi);
             {
                 if (process == null)
                     return null;
@@ -118,8 +118,8 @@ namespace pwnctl.worker
             }
 
             await process.WaitForExitAsync(stoppingToken);
-            
-            //Logger.Instance.Info($"ExitCode: {process.ExitCode}, ExitTime: {process.ExitTime}");
+
+            Logger.Instance.Info($"ExitCode: {process.ExitCode}, ExitTime: {process.ExitTime}");
 
             return process;
         }
