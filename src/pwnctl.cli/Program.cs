@@ -36,15 +36,7 @@ app.AddCommand("process", async () =>
         string line;
         while (!string.IsNullOrEmpty(line = Console.ReadLine()))
         {
-            try
-            {
-                await processor.TryProccessAsync(line);
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Info(line);
-                Logger.Instance.Info(ex.ToRecursiveExInfo());
-            }
+            await processor.TryProccessAsync(line);
         }
     }
 ).WithDescription("Asset processing mode (reads assets from stdin)");

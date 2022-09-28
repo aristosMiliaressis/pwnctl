@@ -37,7 +37,11 @@ namespace pwnctl.infra.Queues
         /// <param name="command"></param>
         public async Task EnqueueAsync(core.Entities.Task job)
         {
-            var task = new TaskAssigned() { Command = job.WrappedCommand };
+            var task = new TaskAssigned() 
+            { 
+                TaskId = job.Id,
+                Command = job.WrappedCommand
+            };
 
             var request = new SendMessageRequest
             {
@@ -73,8 +77,8 @@ namespace pwnctl.infra.Queues
             // TODO: delete batching?
 
             var response = await _sqsClient.DeleteMessageAsync(this[ConfigurationManager.Config.JobQueue.QueueName], message.ReceiptHandle, ct);
-
-            Logger.Instance.Info("DeleteMessage: " + JsonSerializer.Serialize(response));
+            if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
+                Logger.Instance.Info("DeleteMessage: " + JsonSerializer.Serialize(response));
         }
 
         public async Task ChangeBatchVisibility(List<Message> messages, CancellationToken ct)
@@ -93,13 +97,16 @@ namespace pwnctl.infra.Queues
             };
 
             var response = await _sqsClient.ChangeMessageVisibilityBatchAsync(request, ct);
-
-            Logger.Instance.Info("ChangeMessageVisibility: " + JsonSerializer.Serialize(response));
+            if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
+                Logger.Instance.Info("ChangeMessageVisibility: " + JsonSerializer.Serialize(response));
         }
     }
 
     public class TaskAssigned
     {
+        [JsonPropertyName("taskId")]
+        public int TaskId { get; init; }
+
         [JsonPropertyName("command")]
         public string Command { get; init; }
     }

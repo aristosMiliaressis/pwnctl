@@ -1,6 +1,7 @@
 using pwnctl.infra.Configuration;
 using pwnctl.infra.Queues;
 using pwnctl.infra.Logging;
+using pwnctl.infra.Persistence;
 using System.Diagnostics;
 using System.Text.Json;
 using System;
@@ -19,6 +20,7 @@ namespace pwnctl.worker
         private readonly ILogger _logger;
         private readonly IOptions<AppConfig> _config;
         private readonly SQSJobQueueService _queueService = new();
+        private readonly PwnctlDbContext _context = new();
         private CancellationToken _stoppingToken;
         private List<Amazon.SQS.Model.Message> _unprocessedMessages = new List<Amazon.SQS.Model.Message>();
 
@@ -44,25 +46,39 @@ namespace pwnctl.worker
                         continue;
                     }
 
-                    _unprocessedMessages = messages;
+                    _unprocessedMessages = new(messages);
 
                     var timer = new System.Timers.Timer(1000 * 60 * (pwnctl.infra.Configuration.ConfigurationManager.Config.JobQueue.VisibilityTimeout - 1));
                     timer.Elapsed += async (sender, e) => await ChallengeMessageVisibility();
                     timer.AutoReset = false;
                     timer.Start();
 
-                    Logger.Instance.Info("message count:" + messages.Count());
                     foreach (var message in messages)
-                    {
-                        Logger.Instance.Info("processing message:" + message.Body);
+                    {                      
+                        var queuedTask = JsonSerializer.Deserialize<TaskAssigned>(message.Body);
 
-                        var task = JsonSerializer.Deserialize<TaskAssigned>(message.Body);
+                        var task = await _context.Tasks.FindAsync(queuedTask.TaskId);
+                        if (task == null)
+                        {
+                            // normaly this should never happen, log and continue.
+                            Logger.Instance.Info($"Task: {queuedTask.TaskId}:'{queuedTask.Command}' not found");
+                            await _queueService.DequeueAsync(message, stoppingToken);
+                            continue;
+                        }
 
-                        bool succeded = await ExecuteCommandAsync(task.Command, stoppingToken);
-                        //if (succeded)
+                        task.StartedAt = DateTime.UtcNow;
+
+                        Process process = await ExecuteCommandAsync(queuedTask.Command, stoppingToken);
+
+                        task.FinishedAt = DateTime.UtcNow;
+                        task.ExitCode = process.ExitCode;
+                        _context.Update(task);
+                        await _context.SaveChangesAsync();
+
+                        //if (process.ExitCode == 0) ??
                         await _queueService.DequeueAsync(message, stoppingToken);
                         //else
-                        // TODO: move to dead letter queue
+                        // move to dead letter queue
 
                         _unprocessedMessages.Remove(message);
                     }
@@ -74,7 +90,7 @@ namespace pwnctl.worker
             }            
         }
 
-        private async Task<bool> ExecuteCommandAsync(string command, CancellationToken stoppingToken)
+        private async Task<Process> ExecuteCommandAsync(string command, CancellationToken stoppingToken)
         {
             Logger.Instance.Info(command);
             var psi = new ProcessStartInfo();
@@ -87,7 +103,7 @@ namespace pwnctl.worker
             using var process = Process.Start(psi);
             {
                 if (process == null)
-                    return false;
+                    return null;
 
                 using (StreamWriter sr = process.StandardInput)
                 {
@@ -99,15 +115,9 @@ namespace pwnctl.worker
 
             await process.WaitForExitAsync(stoppingToken);
 
-            // TODO: record metadata
             Logger.Instance.Info($"ExitCode: {process.ExitCode}, ExitTime: {process.ExitTime}");
 
-            //process.ExitCode
-            //process.ExitTime
-            //var output = await process.StandardOutput.ReadToEndAsync();
-            //var errors = await process.StandardError.ReadToEndAsync();
-
-            return true;
+            return process;
         }
 
         public async Task ChallengeMessageVisibility()

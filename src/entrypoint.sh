@@ -23,4 +23,8 @@ then
     get-valid-resolvers.sh
 fi
 
+echo "pwnwrk service started" | notify -provider discord -id status
+
 /opt/pwnwrk/pwnwrk
+
+echo "pwnwrk service stoped" | notify -provider discord -id status

@@ -9,7 +9,7 @@ namespace pwnctl.core.Entities
         public int DefinitionId { get; set; }
         public TaskDefinition Definition { get; set; }
 
-		public int? ReturnCode { get; set; }
+		public int? ExitCode { get; set; }
 		public DateTime QueuedAt { get; set; }
 		public DateTime StartedAt { get; set; }
 		public DateTime FinishedAt { get; set; }
