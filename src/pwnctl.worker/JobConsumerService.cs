@@ -69,6 +69,10 @@ namespace pwnctl.worker
                         task.StartedAt = DateTime.UtcNow;
 
                         Process process = await ExecuteCommandAsync(queuedTask.Command, stoppingToken);
+                        if (process == null || process.HasExited)
+                        {
+                            // 
+                        }
 
                         task.FinishedAt = DateTime.UtcNow;
                         task.ReturnCode = process.ExitCode;
@@ -114,8 +118,8 @@ namespace pwnctl.worker
             }
 
             await process.WaitForExitAsync(stoppingToken);
-
-            Logger.Instance.Info($"ExitCode: {process.ExitCode}, ExitTime: {process.ExitTime}");
+            
+            //Logger.Instance.Info($"ExitCode: {process.ExitCode}, ExitTime: {process.ExitTime}");
 
             return process;
         }

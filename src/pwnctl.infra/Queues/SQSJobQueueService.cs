@@ -37,6 +37,8 @@ namespace pwnctl.infra.Queues
         /// <param name="command"></param>
         public async Task EnqueueAsync(core.Entities.Task job)
         {
+            Logger.Instance.Info("Enqueue: " + job.WrappedCommand);
+
             var task = new TaskAssigned() 
             { 
                 TaskId = job.Id,
