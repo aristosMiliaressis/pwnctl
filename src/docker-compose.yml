@@ -2,7 +2,7 @@
 
 services:
   pwnwrk:
-    image: aristosmiliaressis/pwnwrk:latest
+    image: public.ecr.aws/i0m2p7r6/pwnwrk:latest
     container_name: pwnwrk
     hostname: pwnwrk
     network_mode: host
