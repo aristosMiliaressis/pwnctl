@@ -71,7 +71,7 @@ namespace pwnctl.worker
                         Process process = await ExecuteCommandAsync(queuedTask.Command, stoppingToken);
 
                         task.FinishedAt = DateTime.UtcNow;
-                        task.ExitCode = process.ExitCode;
+                        task.ReturnCode = process.ExitCode;
                         _context.Update(task);
                         await _context.SaveChangesAsync();
 
