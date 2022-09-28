@@ -35,31 +35,41 @@ namespace pwnctl.worker
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                var messages = await _queueService.ReceiveAsync(stoppingToken);
-                if (messages == null || !messages.Any())
+                try
                 {
-                    Thread.Sleep(60000);
-                    continue;
+                    var messages = await _queueService.ReceiveAsync(stoppingToken);
+                    if (messages == null || !messages.Any())
+                    {
+                        Thread.Sleep(60000);
+                        continue;
+                    }
+
+                    _unprocessedMessages = messages;
+
+                    var timer = new System.Timers.Timer(1000 * 60 * (pwnctl.infra.Configuration.ConfigurationManager.Config.JobQueue.VisibilityTimeout - 1));
+                    timer.Elapsed += async (sender, e) => await ChallengeMessageVisibility();
+                    timer.AutoReset = false;
+                    timer.Start();
+
+                    Logger.Instance.Info("message count:" + messages.Count());
+                    foreach (var message in messages)
+                    {
+                        Logger.Instance.Info("processing message:" + message.Body);
+
+                        var task = JsonSerializer.Deserialize<TaskAssigned>(message.Body);
+
+                        bool succeded = await ExecuteCommandAsync(task.Command, stoppingToken);
+                        //if (succeded)
+                        await _queueService.DequeueAsync(message, stoppingToken);
+                        //else
+                        // TODO: move to dead letter queue
+
+                        _unprocessedMessages.Remove(message);
+                    }
                 }
-
-                _unprocessedMessages = messages;
-
-                var timer = new System.Timers.Timer(1000 * 60 * (pwnctl.infra.Configuration.ConfigurationManager.Config.JobQueue.VisibilityTimeout - 1));
-                timer.Elapsed += async (sender, e) => await ChallengeMessageVisibility();
-                timer.AutoReset = false;
-                timer.Start();
-                    
-                foreach (var message in messages)
+                catch (Exception ex)
                 {
-                    var task = JsonSerializer.Deserialize<TaskAssigned>(message.Body);
-
-                    bool succeded = await ExecuteCommandAsync(task.Command, stoppingToken);
-                    //if (succeded)
-                    await _queueService.DequeueAsync(message, stoppingToken);
-                    //else
-                    // TODO: move to dead letter queue
-
-                    _unprocessedMessages.Remove(message);
+                    Logger.Instance.Info(ex.ToRecursiveExInfo());
                 }
             }            
         }

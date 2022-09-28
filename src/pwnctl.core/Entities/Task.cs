@@ -77,13 +77,13 @@ namespace pwnctl.core.Entities
         }
 
         public string WrappedCommand => @$"{Command} | while read assetLine;
-                do 
-                    if [[ ${{assetLine::1}} == '{{' ]]; 
-                    then 
-                        echo $assetLine | jq -c '.tags += {{""FoundBy"": ""{Definition.ShortName}""}}';
-                    else 
-                        echo '{{""asset"":""'$assetLine'"", ""tags"":{{""FoundBy"":""{Definition.ShortName}""}}}}'; 
-                    fi; 
-                done | pwnctl process".Replace("\r\n", "").Replace("\n", "");
+do 
+    if [[ ${{assetLine::1}} == '{{' ]]; 
+    then 
+        echo $assetLine | jq -c '.tags += {{""FoundBy"": ""{Definition.ShortName}""}}';
+    else 
+        echo '{{""asset"":""'$assetLine'"", ""tags"":{{""FoundBy"":""{Definition.ShortName}""}}}}'; 
+    fi; 
+done | pwnctl process".Replace("\r\n", "").Replace("\n", "");
     }
 }

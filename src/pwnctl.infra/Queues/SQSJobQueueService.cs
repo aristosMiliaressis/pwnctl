@@ -58,9 +58,9 @@ namespace pwnctl.infra.Queues
             };
 
             var messageResponse = await _sqsClient.ReceiveMessageAsync(receiveRequest, ct);
-            Logger.Instance.Info(JsonSerializer.Serialize(messageResponse));
             if (messageResponse.HttpStatusCode != System.Net.HttpStatusCode.OK)
             {
+                Logger.Instance.Info(JsonSerializer.Serialize(messageResponse));
                 Logger.Instance.Info($"HttpStatusCode: {messageResponse.HttpStatusCode}");
                 // TODO: error handling
             }

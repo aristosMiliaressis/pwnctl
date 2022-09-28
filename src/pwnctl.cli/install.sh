@@ -6,7 +6,7 @@ if [ "$EUID" -ne 0 ]
 fi
 
 curl https://api.github.com/repos/aristosMiliaressis/pwnctl/releases/latest 2>/dev/null \
-    | jq -r .assets[].browser_download_url \
+    | grep browser_download_url | awk '{print $2}' | tr -d '"' \
     | wget -qi -
 
 tar -xzf pwnctl-linux64.tar.gz -C /opt/
