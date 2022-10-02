@@ -2,13 +2,16 @@
 
 # downloading executable in entrypoint to ensure we always get the latest
 curl https://raw.githubusercontent.com/aristosMiliaressis/pwnctl/master/src/pwnctl.cli/install.sh | bash
-curl -o /usr/local/bin/job-queue.sh https://raw.githubusercontent.com/aristosMiliaressis/job-queue.sh/master/job-queue.sh
+
+cp -r /mnt/efs/seed $PWNCTL_INSTALL_PATH
+cp -r /mnt/efs/config.ini $PWNCTL_INSTALL_PATH
 
 # volume mapped entrypoint_hook.sh for injecting resources and 
 # running commands at startup without needing to rebuild the image
-if test -f "$PWNCTL_INSTALL_PATH/entrypoint_hook.sh"; 
+if test -f "/mnt/efs/entrypoint_hook.sh"; 
 then
-    bash "$PWNCTL_INSTALL_PATH/entrypoint_hook.sh"
+    chmod +x /mnt/efs/entrypoint_hook.sh
+    /mnt/efs/entrypoint_hook.sh
 fi
 
 if ! test -f "/opt/wordlists/dns/public_suffix_list.dat"; 
@@ -16,13 +19,18 @@ then
     get-psl.sh
 fi
 
-if ! test -f "/opt/wordlists/dns/resolvers_top25.txt"; 
+# if the resolver list is older than 6 hours replace it with a new one
+if [ ! -f "/mnt/efs/resolvers_top25.txt" ] || [ $(((`date +%s` - `stat -L --format %Y /mnt/efs/resolvers_top25.txt`))) > 60*60*6 ]
 then
-    get-valid-resolvers.sh
+    echo "Getting fresh resolvers"
+    get-valid-resolvers.sh 2>&1 >/dev/null
+    cp /opt/wordlists/dns/resolvers_top25.txt /mnt/efs/resolvers_top25.txt
+else
+    cp /mnt/efs/resolvers_top25.txt /opt/wordlists/dns/resolvers_top25.txt
 fi
 
-echo "pwnwrk service started" | notify -provider discord -id status
+echo "pwnwrk service started on $HOSTNAME" | notify -provider discord -id status
 
 /opt/pwnwrk/pwnwrk
 
-echo "pwnwrk service stoped" | notify -provider discord -id status
+echo "pwnwrk service stoped on $HOSTNAME" | notify -provider discord -id status

@@ -15,10 +15,11 @@ recursive configuration based engine for external recon.
 - [x] PostgreSQL db
 - [x] sqs producer
 - [x] sqs consumer daemon service
-- [ ] ECS with Fargate autoscalling
-- [ ] EFS for configuration & script delivery
-- [ ] cdk for IaC
-
+- [x] ECS cluster & task definition
+- [x] Fargate autoscaling based on SQS queue depth
+- [x] EFS for configuration & script delivery
+- [ ] cdk to automate deployments
+- [ ] awslogs for centralized logging
 
 ## `pwnctl --process`
 

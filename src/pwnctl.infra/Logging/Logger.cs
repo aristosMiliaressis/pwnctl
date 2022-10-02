@@ -11,7 +11,7 @@ namespace pwnctl.infra.Logging
 
         public void Info(string msg)
         {
-            File.AppendAllText($"{AppConfig.InstallPath}/pwnctl.log", $"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")}] {msg} \n");
+            File.AppendAllText($"/mnt/efs/pwnctl.log", $"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")}] {msg} \n");
         }
     }    
 }

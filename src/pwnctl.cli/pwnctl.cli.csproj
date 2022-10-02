@@ -5,12 +5,12 @@
     <TargetFramework>net6.0</TargetFramework>
     <NoWarn>8618</NoWarn>
     <AssemblyName>pwnctl</AssemblyName>
-    <!-- <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
+    <!-- <PublishSingleFile>true</PublishSingleFile>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <PublishReadyToRun>true</PublishReadyToRun>
     <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch> -->
-    <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
   </PropertyGroup>
 
   <ItemGroup>

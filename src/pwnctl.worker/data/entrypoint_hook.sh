@@ -1,25 +1,26 @@
 #!/bin/bash
 
-if test -f "$PWNCTL_INSTALL_PATH/amass.ini"; 
+if test -f "/mnt/efs/amass.ini"; 
 then
-    cp "$PWNCTL_INSTALL_PATH/amass.ini" /etc/amass/config.ini
+    cp "/mnt/efs/amass.ini" /etc/amass/config.ini
 fi
 
-if test -f "$PWNCTL_INSTALL_PATH/aws.config"; 
+if test -f "/mnt/efs/aws.config"; 
 then
     mkdir ~/.aws
-    cp "$PWNCTL_INSTALL_PATH/aws.config" ~/.aws/config
+    cp "/mnt/efs/aws.config" ~/.aws/config
 fi
 
-if test -f "$PWNCTL_INSTALL_PATH/aws.credentials"; 
+if test -f "/mnt/efs/aws.credentials"; 
 then
-    cp "$PWNCTL_INSTALL_PATH/aws.credentials" ~/.aws/credentials
+    cp "/mnt/efs/aws.credentials" ~/.aws/credentials
 fi
 
-if test -f "$PWNCTL_INSTALL_PATH/provider-config.yaml"; 
+
+if test -f "/mnt/efs/provider-config.yaml"; 
 then
     mkdir -p $HOME/.config/notify/
-    cp "$PWNCTL_INSTALL_PATH/provider-config.yaml" $HOME/.config/notify/provider-config.yaml
+    cp "/mnt/efs/provider-config.yaml" $HOME/.config/notify/provider-config.yaml
 
     /sbin/service cron start
 
