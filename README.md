@@ -23,24 +23,24 @@ recursive configuration based engine for external recon.
 
 ## `pwnctl --process`
 
-- [x] reads assets from stdin
-- [x] classifies assets into classes (Endpoint/Host/Domain/Service/DNSRecord)
-- [x] check if exist in db
-- [x] if yes do nothing
-- [x] if no check if in scope
-- [x] if not in scope do nothing
-- [x] if inscope query configured task definitions for asset class and queue tasks
-- [x] arbitary key/value metadata `Tags`
-- [x] bash job queue
+1. reads from stdin line by line
+2. classifies lines into asset classes (NetRange/Host/Domain/Service/DNSRecord/Endpoint/Parameter)
+3. checks if it exists in db
+4. if not adds it
+5. checks if it is in scope according to `ScopeDefinitions`
+6. if not in scope continues to next line
+7. checks `NotificationRules` and sends notifications if any apply
+8. checks `TaskDefinitions` for the asset class and queue them according to Task Filter & rules
+- [x] JSONL(ine) input format with arbitary key/value `Tags` for storing metadata about assets
 
 ### In Scope checking process
 
-- [x] select all ScopeDefinitions from all programs in db
-- [x] iterate over definitions and call bool Matches(ScopeDefinition def) on asset object.
-- [x] if any returns true asset is in scope.
+1. selects all ScopeDefinitions from all programs in db
+2. iterates over definitions and calls `bool Matches(ScopeDefinition def)` on asset objects.
+3. if any returns true asset is in scope.
 
 **To Do**
-- out of scope flag on ScopeDefinition
+- [ ] out of scope flag on ScopeDefinition
 
 ### Scope Configuration
 
@@ -151,8 +151,7 @@ Rules:
 
 ## `pwnctl --query`
 
-- [x] read sql queries from stdin, execute them and print output
-- [x] jsonl output format
+reads sql queries from stdin, executes them and prints the output in JSONL(ine) format
 
 ## `pwnctl list --mode <domains/hosts/endpoints/etc>`
 
@@ -169,7 +168,7 @@ prints a summary about queued tasks and found assets
 ## `pwnctl -i/--import <importer> -s/--source <source>`
 
 **To Do**
-- burp suite importer
+- [ ] burp suite importer
 
 ## Setup
 
