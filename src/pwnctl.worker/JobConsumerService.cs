@@ -42,6 +42,7 @@ namespace pwnctl.worker
                     var messages = await _queueService.ReceiveAsync(stoppingToken);
                     if (messages == null || !messages.Any())
                     {
+                        Logger.Instance.Info($"queue is empty");
                         Thread.Sleep(60000);
                         continue;
                     }

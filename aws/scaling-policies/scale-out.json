@@ -1,0 +1,16 @@
+{
+	"AdjustmentType": "ExactCapacity",
+	"Cooldown": 300,
+	"MetricAggregationType": "Minimum",
+	"StepAdjustments": [
+		{
+			"MetricIntervalLowerBound": 0.0,
+			"MetricIntervalUpperBound": 50.0,
+			"ScalingAdjustment": 1
+		},
+		{
+			"MetricIntervalLowerBound": 50.0,
+			"ScalingAdjustment": 2
+		}
+	]
+}

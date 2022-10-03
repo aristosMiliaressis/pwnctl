@@ -16,20 +16,20 @@ RUN apt-get update \
     wget
 
 # Setting up .NET runtime
-RUN apt-get update \
-    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    ca-certificates \
-    # .NET dependencies
-    libc6 \
-    libgcc1 \
-    libgssapi-krb5-2 \
-    libstdc++6 \
-    zlib1g \
-    && rm -rf /var/lib/apt/lists/*
+#RUN apt-get update \
+#    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+#    ca-certificates \
+#    # .NET dependencies
+#    libc6 \
+#    libgcc1 \
+#    libgssapi-krb5-2 \
+#    libstdc++6 \
+#    zlib1g \
+#    && rm -rf /var/lib/apt/lists/*
 
-RUN curl -sSL https://dot.net/v1/dotnet-install.sh \
-    | bash /dev/stdin -Channel 6.0 -Runtime aspnetcore -InstallDir /usr/share/dotnet --architecture x64 \
-    && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet
+#RUN curl -sSL https://dot.net/v1/dotnet-install.sh \
+#    | bash /dev/stdin -Channel 6.0 -Runtime aspnetcore -InstallDir /usr/share/dotnet --architecture x64 \
+#    && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet
 
 # Setting up python
 RUN apt-get update \
@@ -103,15 +103,16 @@ RUN git clone https://github.com/initstring/cloud_enum.git \
 RUN pip3 install arjun
 RUN apt-get install -y ldnsutils
 
+RUN git clone https://github.com/xnl-h4ck3r/xnLinkFinder.git \
+    && cd xnLinkFinder \
+    && python3 setup.py install
+
+# Setting up the aws cli
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o awscliv2.zip \
     && unzip awscliv2.zip \
     && rm awscliv2.zip \
     && ./aws/install --update \
     && rm -rf ./aws
-
-RUN git clone https://github.com/xnl-h4ck3r/xnLinkFinder.git \
-    && cd xnLinkFinder \
-    && python3 setup.py install
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 
@@ -132,8 +133,8 @@ RUN dotnet publish "/src/pwnctl.worker/pwnctl.worker.csproj" -c Release -o /app/
 FROM base AS release
 
 COPY --from=build /app/publish /opt/pwnwrk
-COPY pwnctl.worker/scripts/* /opt/scripts/
 COPY pwnctl.worker/wordlists/ /opt/wordlists/
+COPY pwnctl.worker/scripts/* /opt/scripts/
 RUN chmod -R +x /opt/scripts \
     && mv /opt/scripts/* /usr/local/bin/
 
