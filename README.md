@@ -7,7 +7,7 @@ recursive configuration based engine for external recon.
 
 ### Architecture
 
-`pwnctl` writes assets to aws aurora, sends discord notifications according to configured rules and puts tasks into sqs, `pwnwrk` service runs in container and polls sqs for tasks, executes them & pipes the output back into `pwnctl` to recursivly crawl the configured scope, the worker will be hosted in ECS with Fargate for autoscalling and EFS for delivering configuration & scripts.
+`pwnctl` cli utility writes assets to postgreSQL, sends discord notifications according to configured rules and puts tasks into sqs, `pwnwrk` service runs in container and polls sqs for tasks, executes them & pipes the output back into `pwnctl` to recursivly crawl the configured scope, the workers are running in a fargate ECS cluster with autoscalling based on the sqs queue depth.
 
 ![arch-phase0](img/arch-phase1.png)
 
@@ -19,7 +19,6 @@ recursive configuration based engine for external recon.
 - [x] Fargate autoscaling based on SQS queue depth
 - [x] EFS for configuration & script delivery
 - [ ] cdk to automate deployments
-- [ ] awslogs for centralized logging
 
 ## `pwnctl --process`
 
@@ -123,8 +122,9 @@ tags are a way to store arbitary metadata relating to an asset, they can be used
 
 ## Notification Configuration
 
-- [x] schedulted status notification
-- [x] configurable notification rules
+1. workers send status notification at start up & shutdown
+2. cronjob sends report detailing findings by asset class & task status (pending/completed/failed)
+3. configurable notification rules with CSharpScript `Filter` field like `TaskDefinitions`
 
 **`notification-rules.yml`**
 ```YAML
@@ -155,17 +155,26 @@ reads sql queries from stdin, executes them and prints the output in JSONL(ine) 
 
 ## `pwnctl list --mode <domains/hosts/endpoints/etc>`
 
-lists assets of a the specified class in JSONL(ine) format
+lists assets of the specified class in JSONL(ine) format
 
 ## `pwnctl export --path out/`
 
-exports all found assets in JSONL(ine) format at the specified directory
+exports all assets in JSONL(ine) format at the specified directory
 
 ## `pwnctl summary`
 
 prints a summary about queued tasks and found assets
 
-## `pwnctl -i/--import <importer> -s/--source <source>`
+## `pwnctl monitor`
+
+**To Do**
+- [ ] add a `MonitorInterval` & `OnlyExplicitMonitoring` fields on `TaskDefinitions`
+- [ ] add `Monitor` flag on asset base class (t explicitly specify assets for monitoring)
+- [ ] setup some cloud native scheduled task to spin up minimal containers with `pwnctl` only
+- [ ] implement `pwnctl` `monitor` mode to find all tasks past the monitor interval & re-run them
+- [ ] add `found-by-monitoring` tag to all newly found assets to allow easy integration with `NotificationRules`
+
+## `pwnctl import -s/--source <source>`
 
 **To Do**
 - [ ] burp suite importer
@@ -177,4 +186,6 @@ prints a summary about queued tasks and found assets
 
 **Worker Setup**
 
-... To Be Documented ...
+**To Do**
+- [ ] Automate with CDK
+- [ ] Document

@@ -1,4 +1,4 @@
-#!/bib/bash
+#!/bin/bash
 
 url=$1
 

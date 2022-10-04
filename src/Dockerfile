@@ -8,6 +8,7 @@ RUN apt-get update \
     gcc \
     git \
     groff \
+    jq \
     make \
     moreutils \
     nano \
@@ -16,20 +17,20 @@ RUN apt-get update \
     wget
 
 # Setting up .NET runtime
-#RUN apt-get update \
-#    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-#    ca-certificates \
-#    # .NET dependencies
-#    libc6 \
-#    libgcc1 \
-#    libgssapi-krb5-2 \
-#    libstdc++6 \
-#    zlib1g \
-#    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    ca-certificates \
+    # .NET dependencies
+    libc6 \
+    libgcc1 \
+    libgssapi-krb5-2 \
+    libstdc++6 \
+    zlib1g \
+    && rm -rf /var/lib/apt/lists/*
 
-#RUN curl -sSL https://dot.net/v1/dotnet-install.sh \
-#    | bash /dev/stdin -Channel 6.0 -Runtime aspnetcore -InstallDir /usr/share/dotnet --architecture x64 \
-#    && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet
+RUN curl -sSL https://dot.net/v1/dotnet-install.sh \
+    | bash /dev/stdin -Channel 6.0 -Runtime aspnetcore -InstallDir /usr/share/dotnet --architecture x64 \
+    && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet
 
 # Setting up python
 RUN apt-get update \
@@ -39,15 +40,32 @@ RUN apt-get update \
 
 RUN python3 -m pip install --upgrade pip
 
+# Setting up Ruby
+RUN apt-get install -y ruby ruby-dev \
+    && gem install bundler
+
+# Setting up java
+RUN apt-get install -y openjdk-8-jdk
+
 # Setting up Go lang
 COPY --from=golang:1.19-buster /usr/local/go/ /usr/local/go/
 ENV GOROOT "/usr/local/go"
 ENV GOPATH "/root/go"
 ENV PATH "$PATH:$GOPATH/bin:$GOROOT/bin"
 
+# Setting up the aws cli
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o awscliv2.zip \
+    && unzip awscliv2.zip \
+    && rm awscliv2.zip \
+    && ./aws/install --update \
+    && rm -rf ./aws
+
 # Installing recon tools
-WORKDIR /opt
-RUN mkdir /opt/wordlists && mkdir /opt/scripts
+RUN mkdir /opt/wordlists \
+ && mkdir /opt/scripts \
+ && mkdir /opt/tools
+
+RUN apt-get install -y nmap whois ldnsutils
 
 RUN go install github.com/tomnomnom/unfurl@latest
 RUN go install github.com/projectdiscovery/shuffledns/cmd/shuffledns@latest
@@ -61,58 +79,55 @@ RUN go install github.com/aristosMiliaressis/urgo@latest
 RUN go install github.com/projectdiscovery/dnsx/cmd/dnsx@latest
 RUN go install github.com/projectdiscovery/notify/cmd/notify@latest
 RUN go install github.com/projectdiscovery/httpx/cmd/httpx@latest
-RUN git clone https://github.com/zmap/zdns.git && cd zdns && go build && cp zdns /usr/bin
+RUN go install github.com/tomnomnom/waybackurls@latest
+RUN go install github.com/ffuf/ffuf@latest
 RUN pip install useragent-picker-cli && uagen
+RUN pip3 install arjun
 RUN mkdir -p /etc/amass/scripts \
     && git clone https://github.com/PatrikFehrenbach/amass-tools.git /etc/amass/scripts
-
-RUN git clone https://github.com/blechschmidt/massdns.git \
-    && cd massdns && make \
-    && ln -s /opt/massdns/bin/massdns /usr/local/bin/ \
-    && ln -s /opt/massdns/scripts/subbrute.py /usr/local/bin/
-
-RUN git clone https://github.com/vortexau/dnsvalidator.git \
-    && cd dnsvalidator && python3 setup.py install
-
-RUN apt-get install -y nmap
-
 RUN wget https://github.com/RustScan/RustScan/releases/download/2.0.1/rustscan_2.0.1_amd64.deb \
     && dpkg -i rustscan_2.0.1_amd64.deb && rm rustscan_2.0.1_amd64.deb
+RUN git clone https://github.com/danielmiessler/SecLists.git /opt/wordlists
+RUN wget -O /opt/wordlists/commonspeak2.txt https://raw.githubusercontent.com/assetnote/commonspeak2-wordlists/master/subdomains/subdomains.txt
 
+WORKDIR /opt/tools
+
+RUN git clone https://github.com/zmap/zdns.git && cd zdns && go build && cp zdns /usr/bin
+RUN git clone https://github.com/blechschmidt/massdns.git \
+    && cd massdns && make \
+    && ln -s /opt/tools/massdns/bin/massdns /usr/local/bin/ \
+    && ln -s /opt/tools/massdns/scripts/subbrute.py /usr/local/bin/
+RUN git clone https://github.com/vortexau/dnsvalidator.git \
+    && cd dnsvalidator && python3 setup.py install
 RUN git clone https://github.com/irsdl/IIS-ShortName-Scanner.git
 RUN git clone https://github.com/s0md3v/Corsy.git \
     && pip3 install -r Corsy/requirements.txt \
     && chmod +x Corsy/corsy.py \
-    && cp Corsy/corsy.py /usr/local/bin
+    && ln -s /opt/tools/Corsy/corsy.py /usr/local/bin
 RUN git clone https://github.com/ProjectAnte/dnsgen \
     && cd dnsgen \
     && pip3 install -r requirements.txt \
     && python3 setup.py install
-RUN git clone https://github.com/dcsync/recontools.git /opt/recontools
-RUN git clone https://github.com/danielmiessler/SecLists.git /opt/wordlists
-RUN wget -O /opt/wordlists/commonspeak2.txt https://raw.githubusercontent.com/assetnote/commonspeak2-wordlists/master/subdomains/subdomains.txt
+RUN git clone https://github.com/dcsync/recontools.git
 RUN curl -L https://github.com/OWASP/Amass/releases/download/v3.19.3/amass_linux_amd64.zip -o /tmp/amass_linux_amd64.zip \
-    && unzip -o /tmp/amass_linux_amd64.zip -d /opt/amass/ \
-    && rm /tmp/amass_linux_amd64.zip
+    && unzip -o /tmp/amass_linux_amd64.zip -d /opt/tools/amass/ \
+    && rm /tmp/amass_linux_amd64.zip \
+    && ln -s /opt/tools/amass/amass_linux_amd64/amass /usr/local/bin
 RUN git clone https://github.com/darkoperator/dnsrecon.git \
     && cd dnsrecon && pip install -r requirements.txt && python3 setup.py install
 RUN git clone https://github.com/initstring/cloud_enum.git \
     && cd cloud_enum \
     && pip install -r requirements.txt
-
-RUN pip3 install arjun
-RUN apt-get install -y ldnsutils
-
 RUN git clone https://github.com/xnl-h4ck3r/xnLinkFinder.git \
     && cd xnLinkFinder \
     && python3 setup.py install
-
-# Setting up the aws cli
-RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o awscliv2.zip \
-    && unzip awscliv2.zip \
-    && rm awscliv2.zip \
-    && ./aws/install --update \
-    && rm -rf ./aws
+RUN curl https://github.com/urbanadventurer/WhatWeb/archive/refs/tags/v0.5.5.zip -L -o whatweb.zip \
+    && unzip whatweb.zip \
+    && rm whatweb.zip \
+    && cd WhatWeb* \
+    && make install
+RUN git clone https://github.com/EnableSecurity/wafw00f.git \
+    && cd wafw00f && python3 setup.py install
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 
