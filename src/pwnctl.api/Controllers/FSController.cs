@@ -1,0 +1,117 @@
+namespace pwnctl.api.Controllers;
+
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.StaticFiles;
+using System.IO;
+
+[ApiController]
+[Route("[controller]")]
+public class FSController : ControllerBase
+{
+    private static readonly string _efsPathPrefix = "/mnt/efs";
+    private readonly ILogger<FSController> _logger;
+
+    public FSController(ILogger<FSController> logger)
+    {
+        _logger = logger;
+    }
+
+    [HttpGet]
+    public ActionResult<string[]> DirectoryListing([FromQuery] string path)
+    {
+        string filePath = FullPath(path);
+
+        if (!Directory.Exists(filePath))
+            return NotFound();
+
+        var directoryListing = Directory.GetDirectories(filePath).ToList();
+        directoryListing.AddRange(Directory.GetFiles(filePath));
+
+        return Ok(directoryListing.Select(f => f.Replace(_efsPathPrefix, "")));
+    }
+
+    [HttpGet("download")]
+    public ActionResult Download([FromQuery] string path)
+    {
+        string filePath = FullPath(path);
+
+        if (!System.IO.File.Exists(filePath))
+            return NotFound();
+
+        string contentType = GetFileContentType(filePath);
+
+        var bytes = System.IO.File.ReadAllBytes(filePath);
+        var content = new System.IO.MemoryStream(bytes);
+
+        return File(content, contentType, Path.GetFileName(filePath));
+    }
+
+    [HttpPut("upload")]
+    public async Task<ActionResult> Upload([FromQuery] string path, IFormFile file)
+    {
+        string filePath = FullPath(path);
+
+        byte[] buffer = new byte[1024];
+        int len;
+
+        using (FileStream fileStream = System.IO.File.Open(filePath, FileMode.Create))
+        {
+            while ((len = await Request.Body.ReadAsync(buffer, 0, buffer.Length)) > 0)
+            {
+                fileStream.Write(buffer, 0, len);
+            }
+        }
+
+        return Ok();
+    }
+
+    [HttpDelete("delete")]
+    public ActionResult Delete([FromQuery] string path)
+    {
+        string filePath = FullPath(path);
+
+        if (System.IO.File.Exists(filePath))
+        {
+            System.IO.File.Delete(filePath);
+
+            return Ok();
+        }
+
+        if (Directory.Exists(filePath))
+        {
+            Directory.Delete(filePath);
+
+            return Ok();
+        }
+
+        return NotFound();
+    }
+
+    [HttpPut("create")]
+    public ActionResult Create([FromQuery] string path)
+    {
+        string filePath = FullPath(path);
+
+        if (System.IO.File.Exists(filePath) || Directory.Exists(filePath))
+            return BadRequest();
+
+        Directory.CreateDirectory(filePath);
+
+        return Ok();
+    }
+
+    private string FullPath(string path) => _efsPathPrefix + (path.StartsWith("/") ? "" : "/") + path;
+
+    private string GetFileContentType(string filePath)
+    {
+        const string defaultContentType = "application/octet-stream";
+
+        var provider = new FileExtensionContentTypeProvider();
+        if (!provider.TryGetContentType(filePath, out string contentType))
+        {
+            contentType = defaultContentType;
+        }
+
+        return contentType;
+    }
+}

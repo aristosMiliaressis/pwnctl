@@ -18,6 +18,7 @@ recursive configuration based engine for external recon.
 - [x] ECS cluster & task definition
 - [x] Fargate autoscaling based on SQS queue depth
 - [x] EFS for configuration & script delivery
+- [x] lambda api for EFS managment
 - [ ] cdk to automate deployments
 
 ## `pwnctl --process`

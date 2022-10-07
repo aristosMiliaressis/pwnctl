@@ -24,6 +24,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pwnctl.infra", "src\pwnctl.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pwnctl.worker", "src\pwnctl.worker\pwnctl.worker.csproj", "{6573D72F-BEA8-4E13-B30C-2B052CEF6D74}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pwnctl.api", "src\pwnctl.api\pwnctl.api.csproj", "{6B1243F9-9397-4768-BA21-50E9A8BF9688}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -54,6 +56,10 @@ Global
 		{6573D72F-BEA8-4E13-B30C-2B052CEF6D74}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6573D72F-BEA8-4E13-B30C-2B052CEF6D74}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6573D72F-BEA8-4E13-B30C-2B052CEF6D74}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B1243F9-9397-4768-BA21-50E9A8BF9688}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B1243F9-9397-4768-BA21-50E9A8BF9688}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B1243F9-9397-4768-BA21-50E9A8BF9688}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B1243F9-9397-4768-BA21-50E9A8BF9688}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -66,5 +72,6 @@ Global
 		{5F7EF01F-40AA-4FC6-884B-52B570E606B6} = {D4A71E40-B8E5-494B-ACEF-4D8AECAE21ED}
 		{AD2C7CAF-CA90-452D-A03A-C736572F1355} = {D4A71E40-B8E5-494B-ACEF-4D8AECAE21ED}
 		{6573D72F-BEA8-4E13-B30C-2B052CEF6D74} = {D4A71E40-B8E5-494B-ACEF-4D8AECAE21ED}
+		{6B1243F9-9397-4768-BA21-50E9A8BF9688} = {D4A71E40-B8E5-494B-ACEF-4D8AECAE21ED}
 	EndGlobalSection
 EndGlobal
