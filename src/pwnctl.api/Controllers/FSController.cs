@@ -47,19 +47,21 @@ public class FSController : ControllerBase
     }
 
     [HttpPut("upload")]
-    public async Task<ActionResult> Upload([FromQuery] string path, IFormFile file)
+    public async Task<ActionResult> Upload([FromQuery] string path)
     {
         string filePath = FullPath(path);
 
         byte[] buffer = new byte[1024];
         int len;
 
-        using (FileStream fileStream = System.IO.File.Open(filePath, FileMode.Create))
+        using (MemoryStream stream = new())
         {
             while ((len = await Request.Body.ReadAsync(buffer, 0, buffer.Length)) > 0)
             {
-                fileStream.Write(buffer, 0, len);
+                stream.Write(buffer, 0, len);
             }
+
+            System.IO.File.WriteAllBytes(filePath, stream.ToArray());
         }
 
         return Ok();

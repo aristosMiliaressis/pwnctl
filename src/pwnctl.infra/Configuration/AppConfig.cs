@@ -13,6 +13,7 @@ namespace pwnctl.infra.Configuration
 
         public DbConfig Db { get; set; } = new DbConfig();
         public JobQueueConfig JobQueue { get; set; } = new JobQueueConfig();
+        public LogConfig Logging { get; set; } = new LogConfig();
 
         public class DbConfig
         {
@@ -26,6 +27,11 @@ namespace pwnctl.infra.Configuration
             public string QueueName { get; set; }
             public string DLQName { get; set; }
             public int VisibilityTimeout { get; set; }
+        }
+
+        public class LogConfig
+        {
+            public string LogPath { get; set; }
         }
     }
 }

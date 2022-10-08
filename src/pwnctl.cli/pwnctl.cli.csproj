@@ -7,10 +7,15 @@
     <AssemblyName>pwnctl</AssemblyName>
     <SelfContained>true</SelfContained>
     <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
-    <!-- <PublishSingleFile>true</PublishSingleFile>
-    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <PublishReadyToRun>true</PublishReadyToRun>
-    <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch> -->
+    <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
+    <!-- 
+      unfortunately single file publish isn't compatible with CSharpScript at the moment 
+      https://github.com/dotnet/roslyn/issues/50719
+    
+      <PublishSingleFile>true</PublishSingleFile>
+      <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract> 
+    -->
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,9 +23,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Cocona" Version="2.0.3" />
-    <PackageReference Include="Cocona.Lite" Version="2.0.3" />
-    <PackageReference Include="CommandLineParser" Version="2.8.0" />
     <PackageReference Include="DnsClient" Version="1.5.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.8" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.0" />

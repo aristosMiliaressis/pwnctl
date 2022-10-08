@@ -18,5 +18,7 @@ ln -s /opt/pwnctl/pwnctl /usr/local/bin/pwnctl 2>/dev/null
 mkdir /etc/pwnctl 2>/dev/null
 mv /opt/pwnctl/config.ini /etc/pwnctl
 
+curl https://raw.githubusercontent.com/aristosMiliaressis/pwnctl/master/src/pwnctl.worker/scripts/get-psl.sh | bash
+
 echo "All done!"
 echo "Remember to setup your connection string in /etc/pwnctl/config.ini"

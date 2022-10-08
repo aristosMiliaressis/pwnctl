@@ -37,7 +37,7 @@ namespace pwnctl.core.Entities.Assets
             try
             {
                 if (assetText.Trim().Contains(" ") 
-                 || assetText.Trim().Contains("/")
+                 || assetText.Contains("/")
                  || assetText.Contains("*")
                  || assetText.Contains("@"))
                     return false;

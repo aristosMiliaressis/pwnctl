@@ -4,13 +4,6 @@ using pwnctl.infra.Logging;
 using pwnctl.infra.Persistence;
 using System.Diagnostics;
 using System.Text.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Timers;
 using Microsoft.Extensions.Options;
 
 namespace pwnctl.worker

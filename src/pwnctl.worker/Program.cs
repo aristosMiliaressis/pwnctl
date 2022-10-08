@@ -1,5 +1,4 @@
 ﻿using pwnctl.worker;
-using pwnctl.infra.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
