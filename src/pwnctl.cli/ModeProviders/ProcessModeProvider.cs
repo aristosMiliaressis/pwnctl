@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-using pwnctl.app.Utilities;
+using pwnctl.cli.Utilities;
 
 namespace pwnctl.cli.ModeProviders
 {

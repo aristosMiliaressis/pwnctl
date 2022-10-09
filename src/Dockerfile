@@ -133,30 +133,26 @@ RUN git clone https://github.com/EnableSecurity/wafw00f.git \
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 
 # building worker service
-COPY ["/pwnctl.core/pwnctl.core.csproj", "/src/pwnctl.core/"]
-RUN dotnet restore "/src/pwnctl.core/pwnctl.core.csproj"
-COPY ["/pwnctl.infra/pwnctl.infra.csproj", "/src/pwnctl.infra/"]
-RUN dotnet restore "/src/pwnctl.infra/pwnctl.infra.csproj"
-COPY ["/pwnctl.app/pwnctl.app.csproj", "/src/pwnctl.app/"]
-RUN dotnet restore "/src/pwnctl.app/pwnctl.app.csproj"
-COPY ["/pwnctl.worker/pwnctl.worker.csproj", "/src/pwnctl.worker/"]
-RUN dotnet restore "/src/pwnctl.worker/pwnctl.worker.csproj"
+COPY ["/core/pwnwrk.infra/pwnwrk.infra.csproj", "/src/pwnwrk.infra/"]
+RUN dotnet restore "/src/pwnwrk.infra/pwnwrk.infra.csproj"
+COPY ["/pwnwrk.svc/pwnwrk.svc.csproj", "/src/pwnwrk.svc/"]
+RUN dotnet restore "/src/pwnwrk.svc/pwnwrk.svc.csproj"
 
 COPY . src/
 
-RUN dotnet publish "/src/pwnctl.worker/pwnctl.worker.csproj" -c Release -o /app/publish
+RUN dotnet publish "/src/pwnwrk.svc/pwnwrk.svc.csproj" -c Release -o /app/publish
 
 FROM base AS release
 
 COPY --from=build /app/publish /opt/pwnwrk
-COPY pwnctl.worker/wordlists/ /opt/wordlists/
-COPY pwnctl.worker/scripts/* /opt/scripts/
+COPY pwnwrk.svc/wordlists/ /opt/wordlists/
+COPY pwnwrk.svc/scripts/* /opt/scripts/
 RUN chmod -R +x /opt/scripts \
     && mv /opt/scripts/* /usr/local/bin/
 
 ENV PWNCTL_INSTALL_PATH "/etc/pwnctl"
 WORKDIR /etc/pwnctl
 
-COPY entrypoint.sh /opt/pwnwrk/entrypoint.sh
+COPY pwnwrk.svc/entrypoint.sh /opt/pwnwrk/entrypoint.sh
 RUN chmod +x /opt/pwnwrk/entrypoint.sh
 ENTRYPOINT ["/opt/pwnwrk/entrypoint.sh"]

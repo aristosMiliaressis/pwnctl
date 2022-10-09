@@ -117,7 +117,7 @@ namespace pwnctl.cdk
             container.AddEnvironment("PWNCTL_JobQueue__DLQName", "pwnwrk-dlq.fifo");
             container.AddEnvironment("PWNCTL_JobQueue__IsSQS", "true");
             container.AddEnvironment("PWNCTL_JobQueue__VisibilityTimeout", "30");
-            container.AddEnvironment("PWNCTL_Db__ConnectionString", "Host=pwnctl-aurora-instance-1.cobjrgcsfydh.us-east-1.rds.amazonaws.com;Database=pwnctl-aurora;Username=postgres;Password=j6EextV8rHGPCwpTxDXx"); // TODO: dont hard code this
+            container.AddEnvironment("PWNCTL_Db__ConnectionString", "");
             container.AddEnvironment("PWNCTL_EFS_MOUNT_POINT", "/mnt/efs");
 
             var volume = new Amazon.CDK.AWS.ECS.Volume

@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-using pwnctl.infra.Persistence;
+using pwnwrk.infra.Persistence;
 
 namespace pwnctl.cli.ModeProviders
 {

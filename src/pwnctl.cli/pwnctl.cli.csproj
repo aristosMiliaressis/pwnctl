@@ -36,7 +36,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\pwnctl.app\pwnctl.app.csproj" />
-    <ProjectReference Include="..\pwnctl.infra\pwnctl.infra.csproj" />
+    <ProjectReference Include="..\core\pwnwrk.infra\pwnwrk.infra.csproj" />
+    <ProjectReference Include="..\core\pwnwrk.domain\pwnwrk.domain.csproj" />
   </ItemGroup>
 </Project>

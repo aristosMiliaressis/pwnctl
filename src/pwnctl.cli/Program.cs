@@ -1,5 +1,5 @@
 ﻿using pwnctl.cli.ModeProviders;
-using pwnctl.app;
+using pwnctl.cli;
 using System;
 using System.IO;
 using System.Linq;

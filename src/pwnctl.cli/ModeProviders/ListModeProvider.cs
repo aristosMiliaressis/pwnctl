@@ -3,8 +3,8 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using pwnctl.app.Repositories;
-using pwnctl.core.BaseClasses;
+using pwnctl.cli.Repositories;
+using pwnwrk.domain.BaseClasses;
 
 namespace pwnctl.cli.ModeProviders
 {
