@@ -55,6 +55,7 @@ namespace pwnctl.cli.ModeProviders
         public void PrintHelpSection()
         {
             Console.WriteLine($"\t{ModeName}");
+            Console.WriteLine($"\t\tprints a summary of the found assets and queued tasks");
         }
     }
 }

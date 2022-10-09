@@ -20,7 +20,20 @@ namespace pwnctl.cli.ModeProviders
                 assets.ToList().ForEach(a => File.AppendAllText(filename, a.ToJson() + "\n"));
             }
 
-            string path = args[1];
+            if (args.Length < 2 || args[1] != "--path")
+            {
+                Console.WriteLine("--path option is required");
+                PrintHelpSection();
+                return Task.CompletedTask;
+            }
+            else if (args.Length < 3)
+            {
+                Console.WriteLine("No value provided for --path option");
+                PrintHelpSection();
+                return Task.CompletedTask;
+            }
+
+            var path = args[2];
 
             try
             {
@@ -53,7 +66,9 @@ namespace pwnctl.cli.ModeProviders
         public void PrintHelpSection()
         {
             Console.WriteLine($"\t{ModeName}");
-
+            Console.WriteLine($"\t\texports assets in jsonline format at the specified path.");
+            Console.WriteLine($"\t\tArguments:");
+            Console.WriteLine($"\t\t\t--path\tthe export path.");
         }
     }
 }

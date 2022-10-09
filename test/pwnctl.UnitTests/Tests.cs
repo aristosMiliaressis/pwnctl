@@ -1,4 +1,4 @@
-namespace pwnctl.tests;
+namespace pwnctl.test;
 
 using pwnctl.app.Repositories;
 using pwnctl.app.Utilities;

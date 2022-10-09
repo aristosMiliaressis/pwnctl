@@ -19,7 +19,20 @@ namespace pwnctl.cli.ModeProviders
                 assets.ToList().ForEach(a => Console.WriteLine(a.ToJson() + "\n"));
             }
 
-            var @class = args[1];
+            if (args.Length < 2 || args[1] != "--class")
+            {
+                Console.WriteLine("--class option is required");
+                PrintHelpSection();
+                return Task.CompletedTask;
+            }
+            else if (args.Length < 3)
+            {
+                Console.WriteLine("No value provided for --class option");
+                PrintHelpSection();
+                return Task.CompletedTask;
+            }
+
+            var @class = args[2];
 
             AssetRepository repository = new();
             if (@class.ToLower() == "hosts")
@@ -64,7 +77,9 @@ namespace pwnctl.cli.ModeProviders
         public void PrintHelpSection()
         {
             Console.WriteLine($"\t{ModeName}");
-
+            Console.WriteLine($"\t\tlists asset of the specified class in jsonline format.");
+            Console.WriteLine($"\t\tArguments:");
+            Console.WriteLine($"\t\t\t--class\tthe asset class (hosts/endpoints/domains/services/dnsrecords/netranges/emails).");
         }
     }
 }

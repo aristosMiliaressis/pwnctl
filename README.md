@@ -154,7 +154,7 @@ Rules:
 
 reads sql queries from stdin, executes them and prints the output in JSONL(ine) format
 
-## `pwnctl list --mode <domains/hosts/endpoints/etc>`
+## `pwnctl list --class <domains/hosts/endpoints/etc>`
 
 lists assets of the specified class in JSONL(ine) format
 

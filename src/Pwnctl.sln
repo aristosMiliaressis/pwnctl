@@ -12,9 +12,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pwnctl.core", "src\pwnctl.core\pwnctl.core.csproj", "{2B8C1C80-005D-4CDD-BEA1-5D6C742307FD}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{4BDA0EA5-4222-4435-A9F3-F8F063B2EBA7}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{4BDA0EA5-4222-4435-A9F3-F8F063B2EBA7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pwnctl", "tests\pwnctl.UnitTests\pwnctl.UnitTests.csproj", "{867D4C71-8705-41F3-BA95-3A547A02DCB8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pwnctl", "test\pwnctl.UnitTests\pwnctl.UnitTests.csproj", "{867D4C71-8705-41F3-BA95-3A547A02DCB8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D4A71E40-B8E5-494B-ACEF-4D8AECAE21ED}"
 EndProject
