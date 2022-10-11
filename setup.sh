@@ -34,4 +34,9 @@ cd ../..
 # install pwnctl cli
 curl https://raw.githubusercontent.com/aristosMiliaressis/pwnctl/master/src/pwnctl.cli/install.sh | sudo bash
 
+region=$1
+accountId=$(aws sts get-caller-identity --query "Account" --output text)
+
+cdk bootstrap aws://$accountId/$region
+
 # TODO: provision resources with cdk

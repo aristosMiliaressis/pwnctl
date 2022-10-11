@@ -22,7 +22,7 @@ namespace pwnwrk.domain.Entities.Assets
             domain = domain.EndsWith(".") ? domain.Substring(0, domain.Length - 1) : domain;
 
             Name = domain;
-            var regDomain = PwnwrkCoreShim.PublicSuffixRepository.GetRegistrationDomain(domain);
+            var regDomain = PwnwrkDomainShim.PublicSuffixRepository.GetRegistrationDomain(domain);
             IsRegistrationDomain = regDomain == domain;
             if (!IsRegistrationDomain)
             {
@@ -66,8 +66,8 @@ namespace pwnwrk.domain.Entities.Assets
                     assets = assets.Append(domain.RegistrationDomain).ToArray();
                 }
 
-                var regDomain = PwnwrkCoreShim.PublicSuffixRepository.GetRegistrationDomain(domain.Name);
-                var pubSuffix = PwnwrkCoreShim.PublicSuffixRepository.GetPublicSuffix(domain.Name);
+                var regDomain = PwnwrkDomainShim.PublicSuffixRepository.GetRegistrationDomain(domain.Name);
+                var pubSuffix = PwnwrkDomainShim.PublicSuffixRepository.GetPublicSuffix(domain.Name);
                 var word = regDomain.Substring(0, regDomain.Length - pubSuffix.Suffix.Length - 1);
                 assets = assets.Append(new Keyword(domain.IsRegistrationDomain ? domain : domain.RegistrationDomain, word)).ToArray();
 

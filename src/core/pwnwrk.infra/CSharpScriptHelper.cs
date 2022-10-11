@@ -8,6 +8,9 @@ namespace pwnwrk.infra
 {
     public static class CSharpScriptHelper
     {
+        /// <summary>
+        /// evaluates a CSharpScript expression taking one argument of a type derived from BaseAsset
+        /// </summary>
         public static bool Evaluate(string script, BaseAsset asset)
         {
             var options = ScriptOptions.Default.AddReferences(typeof(BaseAsset).Assembly)

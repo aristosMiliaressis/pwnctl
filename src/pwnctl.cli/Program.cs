@@ -1,12 +1,11 @@
 ﻿using pwnctl.cli.ModeProviders;
-using pwnctl.cli;
+using pwnwrk.infra;
 using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
 
 internal class Program
 {
@@ -19,7 +18,7 @@ internal class Program
 
     static async Task Main(string[] args)
     {
-        await PwnctlAppFacade.SetupAsync();
+        await PwnwrkInfraFacade.SetupAsync();
 
         if (args.Length < 1)
         {

@@ -55,13 +55,12 @@ namespace pwnctl.cli.Utilities
 
         private async System.Threading.Tasks.Task EnqueueJobAsync(TaskDefinition definition, BaseAsset asset)
         {
-            // check filter
             if (!string.IsNullOrEmpty(definition.Filter) && !CSharpScriptHelper.Evaluate(definition.Filter, asset))
             {
                 return;
             }
 
-            // check if task has already been queued
+            // only queue one task per TaskDefinition/Asset pair
             var lambda = ExpressionTreeBuilder.BuildTaskMatchingLambda(asset, definition);
             var task = (pwnwrk.domain.Entities.Task) _context.FirstFromLambda(lambda);
             if (task != null)
@@ -69,6 +68,7 @@ namespace pwnctl.cli.Utilities
 
             task = new pwnwrk.domain.Entities.Task(definition, asset);
             _context.Tasks.Add(task);
+
             await _context.SaveChangesAsync();
 
             await _jobQueueService.EnqueueAsync(task);

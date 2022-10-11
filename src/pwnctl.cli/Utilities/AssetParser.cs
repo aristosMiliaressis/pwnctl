@@ -62,6 +62,8 @@ namespace pwnctl.cli.Utilities
         private static void ParseTags(ref string assetText, out List<Tag> tags)
         {
             tags = new();
+
+            // raw non json input doesn't support tags
             if (!assetText.StartsWith("{"))
                 return;
 

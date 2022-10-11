@@ -21,7 +21,7 @@ recursive configuration based engine for external recon.
 - [x] lambda api for EFS managment
 - [ ] cdk to automate deployments
 
-## `pwnctl --process`
+## `pwnctl process`
 
 1. reads from stdin line by line
 2. classifies lines into asset classes (NetRange/Host/Domain/Service/DNSRecord/Endpoint/Parameter)
@@ -44,31 +44,27 @@ recursive configuration based engine for external recon.
 
 ### Scope Configuration
 
-scope definitions are configured in `target-*.json` files along with some policy rules effecting which tasks are allowed to be run against the given scope.
+scope definitions are configured in `target-*.yml` files along with some policy rules effecting which tasks are allowed to be run against the given scope.
 
-**`target-*.json`**
-```JSON
-{
-    "Name": "EXAMPLE BB TARGET",
-    "Platform": "HackerOne",
-    "Policy": {
-        "Whitelist": "ffuf_common",
-        "Blacklist": "nmap_basic",
-        "MaxAggressiveness": 6,
-        "AllowActive": true
-    },
-    "Scope": [
-        {
-	          // DomainRegex = 0, UrlRegex = 1, CIDR = 2
-            "Type": 0,
-            "Pattern": "(^tesla\\.com$|.*\\.tesla\\.com$)"
-        },
-        {
-            "Type": 2,
-            "Pattern": "172.16.17.0/24"
-        }
-    ]
-}
+**`target-*.yml`**
+```YAML
+Name: EXAMPLE BB TARGET
+Platform: HackerOne
+Policy:
+    Whitelist: ffuf_common
+    Blacklist: nmap_basic
+    MaxAggressiveness: 6
+    AllowActive: true
+
+Scope: 
+    - Type: DomainRegex
+      Pattern: (^tesla\.com$|.*\.tesla\.com$)
+    
+    - Type: UrlRegex
+      Pattern: (.*:\/\/tsl\.com\/app\/.*$)
+    
+    - Type: CIDR
+      Pattern: 172.16.17.0/24
 ```
 
 ### Task Configuration
@@ -150,7 +146,7 @@ Rules:
     Topic: misconfigs
 ```
 
-## `pwnctl --query`
+## `pwnctl query`
 
 reads sql queries from stdin, executes them and prints the output in JSONL(ine) format
 

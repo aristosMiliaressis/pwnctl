@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using pwnwrk.domain.Entities;
 using pwnwrk.infra.Notifications;
-using System.Text.Json;
 using Microsoft.Extensions.FileSystemGlobbing;
 using pwnwrk.infra.Configuration;
 using YamlDotNet.Serialization;
@@ -25,14 +24,14 @@ namespace pwnwrk.infra.Persistence
                 await instance.Database.MigrateAsync();
             }
 
-            var taskDefinitionFile = $"{AppConfig.InstallPath}/seed/task-definitions.yml";
+            var deserializer = new DeserializerBuilder()
+                .WithNamingConvention(PascalCaseNamingConvention.Instance)
+                .Build();
 
-            if (!instance.TaskDefinitions.Any() && File.Exists(taskDefinitionFile))
+            if (!instance.TaskDefinitions.Any())
             {
-                var taskText = File.ReadAllText(taskDefinitionFile);
-                var deserializer = new DeserializerBuilder()
-                           .WithNamingConvention(PascalCaseNamingConvention.Instance)
-                           .Build();
+                var taskText = File.ReadAllText($"{AppConfig.InstallPath}/seed/task-definitions.yml");
+
                 var taskDefinitions = deserializer.Deserialize<List<TaskDefinition>>(taskText);
 
                 instance.TaskDefinitions.AddRange(taskDefinitions);
@@ -42,14 +41,13 @@ namespace pwnwrk.infra.Persistence
             if (!instance.Programs.Any())
             {
                 Matcher matcher = new();
-                matcher.AddInclude("target-*.json");
+                matcher.AddInclude("target-*.yml");
 
                 foreach (string file in matcher.GetResultsInFullPath($"{AppConfig.InstallPath}/seed/"))
                 {
-                    var program = JsonSerializer.Deserialize<Program>(File.ReadAllText(file), new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    });
+                    var programText = File.ReadAllText(file);
+                    var program = deserializer.Deserialize<Program>(programText);
+
                     instance.ScopeDefinitions.AddRange(program.Scope);
                     instance.OperationalPolicies.Add(program.Policy);
                     instance.Programs.Add(program);
@@ -57,14 +55,9 @@ namespace pwnwrk.infra.Persistence
                 }
             }
 
-            var notificationRulesFile = $"{AppConfig.InstallPath}/seed/notification-rules.yml";
-
             if (!instance.NotificationRules.Any())
             {
-                var taskText = File.ReadAllText(notificationRulesFile);
-                var deserializer = new DeserializerBuilder()
-                           .WithNamingConvention(PascalCaseNamingConvention.Instance)
-                           .Build();
+                var taskText = File.ReadAllText($"{AppConfig.InstallPath}/seed/notification-rules.yml");
                 var notificationSettings = deserializer.Deserialize<NotificationSettings>(taskText);
 
                 instance.NotificationProviderSettings.AddRange(notificationSettings.Providers);

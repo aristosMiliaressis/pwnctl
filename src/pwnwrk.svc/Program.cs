@@ -1,10 +1,11 @@
-﻿using pwnwrk.svc;
+﻿using pwnwrk.infra;
+using pwnwrk.svc;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddHostedService<JobConsumerService>();
 
-pwnwrk.infra.Configuration.ConfigurationManager.Load();
+await PwnwrkInfraFacade.SetupAsync();
 
 var app = builder.Build();
 

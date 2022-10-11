@@ -4,7 +4,7 @@ using pwnctl.cli.Repositories;
 using pwnctl.cli.Utilities;
 using pwnwrk.infra.Persistence;
 using pwnwrk.infra.Repositories;
-using pwnwrk.infra.Logging;
+using pwnwrk.infra;
 using pwnwrk.domain.Entities.Assets;
 using pwnwrk.domain.Entities;
 using pwnwrk.domain.BaseClasses;
@@ -21,7 +21,7 @@ public class Tests
         Environment.SetEnvironmentVariable("PWNCTL_IsTestRun", "true");
         Environment.SetEnvironmentVariable("PWNCTL_INSTALL_PATH", ".");
         
-        PwnctlAppFacade.SetupAsync().Wait();
+        PwnwrkInfraFacade.SetupAsync().Wait();
 
         var psi = new ProcessStartInfo();
         psi.FileName = "/bin/bash";

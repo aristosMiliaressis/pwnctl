@@ -4,14 +4,14 @@ using pwnwrk.infra.Persistence;
 using pwnwrk.domain;
 using System.Threading.Tasks;
 
-namespace pwnctl.cli
+namespace pwnwrk.infra
 {
-    public static class PwnctlAppFacade
+    public static class PwnwrkInfraFacade
     {
         public static async Task SetupAsync()
         {
             ConfigurationManager.Load();
-            PwnwrkCoreShim.PublicSuffixRepository = PublicSuffixRepository.Singleton;
+            PwnwrkDomainShim.PublicSuffixRepository = PublicSuffixRepository.Singleton;
             await DatabaseInitializer.InitializeAsync();
         }
     }    
