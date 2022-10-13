@@ -11,17 +11,7 @@ recursive configuration based engine for external recon.
 
 ![arch-phase0](img/arch-phase1.png)
 
-**To Do**
-- [x] PostgreSQL db
-- [x] sqs producer
-- [x] sqs consumer daemon service
-- [x] ECS cluster & task definition
-- [x] Fargate autoscaling based on SQS queue depth
-- [x] EFS for configuration & script delivery
-- [x] lambda api for EFS managment
-- [ ] cdk to automate deployments
-
-## `pwnctl process`
+## `$ pwnctl process`
 
 1. reads from stdin line by line
 2. classifies lines into asset classes (NetRange/Host/Domain/Service/DNSRecord/Endpoint/Parameter)
@@ -146,23 +136,23 @@ Rules:
     Topic: misconfigs
 ```
 
-## `pwnctl query`
+## `$ pwnctl query`
 
 reads sql queries from stdin, executes them and prints the output in JSONL(ine) format
 
-## `pwnctl list --class <domains/hosts/endpoints/etc>`
+## `$ pwnctl list --class <domains/hosts/endpoints/etc>`
 
 lists assets of the specified class in JSONL(ine) format
 
-## `pwnctl export --path out/`
+## `$ pwnctl export --path out/`
 
 exports all assets in JSONL(ine) format at the specified directory
 
-## `pwnctl summary`
+## `$ pwnctl summary`
 
 prints a summary about queued tasks and found assets
 
-## `pwnctl monitor`
+## `$ pwnctl monitor`
 
 **To Do**
 - [ ] add a `MonitorInterval` & `OnlyExplicitMonitoring` fields on `TaskDefinitions`
@@ -171,7 +161,7 @@ prints a summary about queued tasks and found assets
 - [ ] implement `pwnctl` `monitor` mode to find all tasks past the monitor interval & re-run them
 - [ ] add `found-by-monitoring` tag to all newly found assets to allow easy integration with `NotificationRules`
 
-## `pwnctl import -s/--source <source>`
+## `$ pwnctl import -s/--source <source>`
 
 **To Do**
 - [ ] burp suite importer

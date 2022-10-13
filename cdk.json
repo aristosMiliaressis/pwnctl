@@ -1,11 +1,13 @@
 {
-  "app": "dotnet run --project pwnctl.cdk.csproj",
+  "app": "dotnet run --project aws/pwnctl.cdk/pwnctl.cdk.csproj",
   "watch": {
     "include": [
       "**"
     ],
     "exclude": [
       "README.md",
+      "deploy.sh",
+      "setup.sh",
       "cdk*.json",
       "src/*/obj",
       "src/*/bin",

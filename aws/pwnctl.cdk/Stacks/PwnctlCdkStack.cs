@@ -1,17 +1,13 @@
 using Amazon.CDK;
 using Amazon.CDK.AWS.EC2;
 using Amazon.CDK.AWS.ECS;
-using Amazon.CDK.AWS.ECR;
 using Amazon.CDK.AWS.EFS;
 using Amazon.CDK.AWS.SQS;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.Lambda;
 using Amazon.CDK.AWS.CloudWatch;
-using Amazon.CDK.AWS.AutoScaling;
 using Amazon.CDK.AWS.ApplicationAutoScaling;
-using System.Linq;
 using System.Collections.Generic;
-using System;
 
 namespace pwnctl.cdk
 {
@@ -51,8 +47,8 @@ namespace pwnctl.cdk
             var handler = new Function(this, "pwnctl-lambda-api", new FunctionProps
             {
                 Runtime = Runtime.DOTNET_6,
-                Code = Code.FromAsset("../../src/pwnctl.api"),
-                Handler = "../../src/pwnctl.api",
+                Code = Code.FromAsset("src/pwnctl.api"),
+                Handler = "src/pwnctl.api",
                 Vpc = vpc,
                 Role = pwnctlApiRole,
                 Filesystem = Amazon.CDK.AWS.Lambda.FileSystem.FromEfsAccessPoint(accessPoint, "/mnt/efs")
@@ -98,6 +94,9 @@ namespace pwnctl.cdk
             });
 
             ecsTaskExecutionRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonECSTaskExecutionRolePolicy"));
+            ecsTaskExecutionRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonElasticFileSystemClientFullAccess"));
+            queue.GrantConsumeMessages(ecsTaskExecutionRole);
+            queue.GrantSendMessages(ecsTaskExecutionRole);
 
             // ECS Fargate Task Definition
             var fargateTaskDefinition = new FargateTaskDefinition(this, "pwnwrk-def", new FargateTaskDefinitionProps {
@@ -177,8 +176,12 @@ namespace pwnctl.cdk
                     }, 
                     new Amazon.CDK.AWS.ApplicationAutoScaling.ScalingInterval 
                     { 
-                        Upper = 80, Change = 2 
-                    } 
+                        Upper = 30, Change = 2 
+                    } ,
+                    new Amazon.CDK.AWS.ApplicationAutoScaling.ScalingInterval
+                    {
+                        Upper = 60, Change = 3
+                    }
                 }
             });
 
@@ -190,7 +193,12 @@ namespace pwnctl.cdk
                 {
                     new Amazon.CDK.AWS.ApplicationAutoScaling.ScalingInterval
                     {
-                        Lower = 80,
+                        Lower = 60,
+                        Change = 2
+                    },
+                    new Amazon.CDK.AWS.ApplicationAutoScaling.ScalingInterval
+                    {
+                        Lower = 30,
                         Change = 1
                     },
                     new Amazon.CDK.AWS.ApplicationAutoScaling.ScalingInterval

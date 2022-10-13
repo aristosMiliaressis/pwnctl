@@ -107,8 +107,8 @@
   Filter: Endpoint.Path == "/"
   Subject: Endpoint
 
-- ShortName: whatweb
-  CommandTemplate: whatweb.sh {{Url}}
+- ShortName: webanalyze
+  CommandTemplate: webanalyze.sh {{Url}}
   IsActive: true
   Aggressiveness: 5
   Filter: Endpoint.Path == "/"

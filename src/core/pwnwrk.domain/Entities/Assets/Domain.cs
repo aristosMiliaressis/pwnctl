@@ -19,6 +19,7 @@ namespace pwnwrk.domain.Entities.Assets
 
         public Domain(string domain)
         {
+            // support FQDNs ending with a dot.
             domain = domain.EndsWith(".") ? domain.Substring(0, domain.Length - 1) : domain;
 
             Name = domain;
@@ -55,9 +56,8 @@ namespace pwnwrk.domain.Entities.Assets
                     var subs = domain.Name.Replace(parentDomain, "")
                                 .Split(".")
                                 .Where(sub => !string.IsNullOrEmpty(sub))
-                                .Skip(1)
-                                .Reverse()
-                                .ToList();
+                                .Skip(1).Reverse().ToList();
+                                
                     foreach (var sub in subs)
                     {
                         parentDomain = sub + "." + parentDomain;

@@ -130,6 +130,9 @@ RUN curl https://github.com/urbanadventurer/WhatWeb/archive/refs/tags/v0.5.5.zip
 RUN git clone https://github.com/EnableSecurity/wafw00f.git \
     && cd wafw00f && python3 setup.py install
 
+RUN go install github.com/rverton/webanalyze/cmd/webanalyze@latest \
+    && webanalyze -update
+
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 
 # building worker service

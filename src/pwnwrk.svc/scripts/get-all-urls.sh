@@ -13,7 +13,7 @@ echo $url | waybackurls \
 cat $temp | sort -u \
     | httpx -fc 404 -nc -silent -sc -ct -cl -location -json -o $temp2 2>&1 >/dev/null
 
-cat $temp2 | jq -c '{Asset:.url, tags:{StatusCode:.["status-code"], "Content-Type":.["content-type"], "Content-Length":.["content-length"],location:.location}}'
+cat $temp2 | jq -c '{Asset:.url, tags:{Status:.["status-code"], "Content-Type":.["content-type"], "Content-Length":.["content-length"],location:.location}}'
 
 rm $temp2
 rm $temp

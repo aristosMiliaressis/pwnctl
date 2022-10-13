@@ -106,7 +106,7 @@ namespace pwnwrk.domain.Entities.Assets
                 {
                     {"Port", Port.ToString()},
                     {"Host", Host?.IP},
-                    {"Domain", Domain?.ToString()},
+                    {"Domain", Domain?.Name},
                     {"TransportProtocol", TransportProtocol.ToString()}
                 },
                 Metadata = new Dictionary<string, string>
