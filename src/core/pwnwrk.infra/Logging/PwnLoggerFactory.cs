@@ -8,8 +8,8 @@ namespace pwnwrk.infra.Logging
 {
     public static class PwnLoggerFactory
     {
-        private static LoggerConfiguration _loggerConfig = new LoggerConfiguration()
-                    .MinimumLevel.Is(Enum.Parse<LogEventLevel>(ConfigurationManager.Config.Logging.MinLevel))
+        private static LoggerConfiguration _loggerConfig => new LoggerConfiguration()
+                    .MinimumLevel.Is(Enum.Parse<LogEventLevel>(ConfigurationManager.Config.Logging.MinLevel ?? "Information"))
                     .WriteTo.Console()
                     .WriteTo.AmazonCloudWatch(
                         logGroup: ConfigurationManager.Config.Logging.LogGroup ?? "/aws/ecs/pwnctl",
