@@ -6,10 +6,10 @@ namespace pwnwrk.domain.Entities.Assets
     public class Keyword : BaseAsset
     {
         [UniquenessAttribute]
-        public string Word { get; set; }
+        public string Word { get; private init; }
 
-        public Domain Domain { get; set; }
-        public string DomainId { get; set; }
+        public Domain Domain { get; private init; }
+        public string DomainId { get; private init; }
 
         public Keyword() {}
 

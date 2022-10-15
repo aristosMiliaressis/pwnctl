@@ -4,13 +4,13 @@ using System.Threading.Tasks;
 
 using pwnwrk.infra.Persistence;
 
-namespace pwnctl.cli.ModeProviders
+namespace pwnctl.cli.ModeHandlers
 {
-    public class SummaryModeProvider : IModeProvider
+    public class SummaryModeHandler : IModeHandler
     {
         public string ModeName => "summary";
         
-        public Task Run(string[] args)
+        public Task Handle(string[] args)
         {
             PwnctlDbContext context = new();
             int netRangeCount = context.NetRanges.Count();

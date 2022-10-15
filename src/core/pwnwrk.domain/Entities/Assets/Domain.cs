@@ -9,11 +9,11 @@ namespace pwnwrk.domain.Entities.Assets
     public class Domain : BaseAsset
     {
         [UniquenessAttribute]
-        public string Name { get; set; }
-        public bool IsRegistrationDomain { get; set; }
-        public string RegistrationDomainId { get; set; }
-        public Domain RegistrationDomain { get; set; }
-        public List<DNSRecord> DNSRecords { get; set; }
+        public string Name { get; private init; }
+        public bool IsRegistrationDomain { get; private init; }
+        public string RegistrationDomainId { get; private init; }
+        public Domain RegistrationDomain { get; private init; }
+        public List<DNSRecord> DNSRecords { get; private init; }
 
         private Domain() {}
 

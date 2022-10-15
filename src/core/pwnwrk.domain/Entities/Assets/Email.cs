@@ -9,10 +9,10 @@ namespace pwnwrk.domain.Entities.Assets
     public class Email : BaseAsset
     {
         [UniquenessAttribute]
-        public string Address { get; set; }
+        public string Address { get; private init; }
         public string Domainname  => Address.Split("@").Last();
-        public Domain Domain { get; set; }
-        public string DomainId { get; set; }
+        public Domain Domain { get; private init; }
+        public string DomainId { get; private init; }
 
         private Email() { }
 

@@ -4,13 +4,13 @@ using System.Threading.Tasks;
 
 using pwnwrk.infra.Persistence;
 
-namespace pwnctl.cli.ModeProviders
+namespace pwnctl.cli.ModeHandlers
 {
-    public class QueryModeProvider : IModeProvider
+    public class QueryModeHandler : IModeHandler
     {
         public string ModeName => "query";
         
-        public async Task Run(string[] args)
+        public async Task Handle(string[] args)
         {
             var queryRunner = new QueryRunner();
             var input = new List<string>();

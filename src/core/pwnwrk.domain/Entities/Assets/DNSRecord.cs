@@ -8,17 +8,17 @@ namespace pwnwrk.domain.Entities.Assets
     public class DNSRecord : BaseAsset
     {
         [UniquenessAttribute]
-        public RecordType Type { get; set; }
+        public RecordType Type { get; private init; }
 
         [UniquenessAttribute]
-        public string Key {get; set;}
-        public string Value { get; set; }
+        public string Key {get; private init;}
+        public string Value { get; private init; }
 
-        public string HostId { get; set; }
-        public string DomainId { get; set; }
+        public string HostId { get; private init; }
+        public string DomainId { get; private init; }
 
-        public Host Host { get; set; }
-        public Domain Domain { get; set; }
+        public Host Host { get; private init; }
+        public Domain Domain { get; private init; }
 
         private DNSRecord() {}
         

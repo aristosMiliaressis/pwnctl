@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 using pwnctl.cli.Repositories;
 using pwnwrk.domain.BaseClasses;
 
-namespace pwnctl.cli.ModeProviders
+namespace pwnctl.cli.ModeHandlers
 {
-    public class ListModeProvider : IModeProvider
+    public class ListModeHandler : IModeHandler
     {
         public string ModeName => "list";
         
-        public Task Run(string[] args)
+        public Task Handle(string[] args)
         {
             void WriteToConsole(IEnumerable<BaseAsset> assets)
             {

@@ -8,13 +8,13 @@ namespace pwnwrk.domain.Entities.Assets
     public class Endpoint : BaseAsset
     {
         [UniquenessAttribute]
-        public string Url { get; set; }
+        public string Url { get; private init; }
 
-        public string ServiceId { get; set; }
-        public Service Service { get; set; }
+        public string ServiceId { get; private init; }
+        public Service Service { get; private init; }
 
-        public string Scheme { get; set; }
-        public string Path { get; set; }
+        public string Scheme { get; private init; }
+        public string Path { get; private init; }
         public string Filename 
         {
             get

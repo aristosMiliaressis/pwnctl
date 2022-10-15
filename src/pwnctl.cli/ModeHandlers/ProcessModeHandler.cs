@@ -3,13 +3,13 @@ using System.Threading.Tasks;
 
 using pwnctl.cli.Utilities;
 
-namespace pwnctl.cli.ModeProviders
+namespace pwnctl.cli.ModeHandlers
 {
-    public class ProcessModeProvider : IModeProvider
+    public class ProcessModeHandler : IModeHandler
     {
         public string ModeName => "process";
         
-        public async Task Run(string[] args)
+        public async Task Handle(string[] args)
         {
             var processor = new AssetProcessor();
 

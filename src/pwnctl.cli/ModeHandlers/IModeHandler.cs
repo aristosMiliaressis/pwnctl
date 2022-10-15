@@ -1,11 +1,11 @@
 using System.Threading.Tasks;
 
-namespace pwnctl.cli.ModeProviders
+namespace pwnctl.cli.ModeHandlers
 {
-    public interface IModeProvider
+    public interface IModeHandler
     {
         public string ModeName { get; }
-        public Task Run(string[] args);
+        public Task Handle(string[] args);
         public void PrintHelpSection();
     }
 }

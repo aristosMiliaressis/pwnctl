@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 using pwnctl.cli.Repositories;
 using pwnwrk.domain.BaseClasses;
 
-namespace pwnctl.cli.ModeProviders
+namespace pwnctl.cli.ModeHandlers
 {
-    public class ExportModeProvider : IModeProvider
+    public class ExportModeHandler : IModeHandler
     {
         public string ModeName => "export";
         
-        public Task Run(string[] args)
+        public Task Handle(string[] args)
         {
             void WriteToFile(string filename, IEnumerable<BaseAsset> assets)
             {

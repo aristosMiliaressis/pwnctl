@@ -6,38 +6,38 @@ namespace pwnwrk.domain.Entities
 {
     public class Task : BaseEntity<int>
     {
-        public int DefinitionId { get; set; }
-        public TaskDefinition Definition { get; set; }
+        public int DefinitionId { get; private init; }
+        public TaskDefinition Definition { get; private init; }
 
 		public int? ReturnCode { get; set; }
-		public DateTime QueuedAt { get; set; }
+		public DateTime QueuedAt { get; private init; }
 		public DateTime StartedAt { get; set; }
 		public DateTime FinishedAt { get; set; }
-		public string Arguments { get; set; }
+		public string Arguments { get; private init; }
 
-        public Host Host { get; set; }
-        public string HostId { get; set; }
+        public Host Host { get; private init; }
+        public string HostId { get; private init; }
 
-        public Service Service { get; set; }
-        public string ServiceId { get; set; }
+        public Service Service { get; private init; }
+        public string ServiceId { get; private init; }
 
-        public Endpoint Endpoint { get; set; }
-        public string EndpointId { get; set; }
+        public Endpoint Endpoint { get; private init; }
+        public string EndpointId { get; private init; }
 
-        public Domain Domain { get; set; }
-        public string DomainId { get; set; }
+        public Domain Domain { get; private init; }
+        public string DomainId { get; private init; }
 
-        public DNSRecord DNSRecord { get; set; }
-        public string DNSRecordId { get; set; }
+        public DNSRecord DNSRecord { get; private init; }
+        public string DNSRecordId { get; private init; }
 
-        public NetRange NetRange { get; set; }
-        public string NetRangeId { get; set; }
+        public NetRange NetRange { get; private init; }
+        public string NetRangeId { get; private init; }
 
-        public Keyword Keyword { get; set; }
-        public string KeywordId { get; set; }
+        public Keyword Keyword { get; private init; }
+        public string KeywordId { get; private init; }
 
-        public CloudService CloudService { get; set; }
-        public string CloudServiceId { get; set; }
+        public CloudService CloudService { get; private init; }
+        public string CloudServiceId { get; private init; }
 
         private Task() {}
 

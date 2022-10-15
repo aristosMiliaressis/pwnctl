@@ -9,8 +9,8 @@ namespace pwnwrk.infra.Configuration
         public static string InstallPath = string.IsNullOrWhiteSpace(EnvironmentVariables.PWNCTL_INSTALL_PATH)
                                         ? "/etc/pwnctl/"
                                         : EnvironmentVariables.PWNCTL_INSTALL_PATH;
-        public bool IsTestRun { get; set; }
 
+        public bool IsTestRun { get; set; }
         public DbConfig Db { get; set; } = new DbConfig();
         public JobQueueConfig JobQueue { get; set; } = new JobQueueConfig();
         public LogConfig Logging { get; set; } = new LogConfig();

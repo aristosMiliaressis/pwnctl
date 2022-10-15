@@ -10,10 +10,10 @@ namespace pwnwrk.domain.Entities.Assets
     public class Host : BaseAsset
     {
         [UniquenessAttribute]
-        public string IP { get; set; }
-        public AddressFamily Version { get; set; }
+        public string IP { get; private init; }
+        public AddressFamily Version { get; private init; }
 
-        public List<DNSRecord> AARecords { get; set; } = new List<DNSRecord>();
+        public List<DNSRecord> AARecords { get; private init; } = new List<DNSRecord>();
 
         private Host() {}
 

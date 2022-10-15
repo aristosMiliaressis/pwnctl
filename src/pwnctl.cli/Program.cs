@@ -1,4 +1,4 @@
-﻿using pwnctl.cli.ModeProviders;
+﻿using pwnctl.cli.ModeHandlers;
 using pwnwrk.infra;
 using System;
 using System.IO;
@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 internal class Program
 {
-    static Dictionary<string, IModeProvider> _modeProviders = 
+    static Dictionary<string, IModeHandler> _modeProviders = 
             AppDomain.CurrentDomain.GetAssemblies()
                     .SelectMany(s => s.GetTypes())
-                    .Where(t => !t.IsInterface && typeof(IModeProvider).IsAssignableFrom(t))
-                    .Select(t => (IModeProvider)Activator.CreateInstance(t)) 
+                    .Where(t => !t.IsInterface && typeof(IModeHandler).IsAssignableFrom(t))
+                    .Select(t => (IModeHandler)Activator.CreateInstance(t)) 
                     .ToDictionary(p => p.ModeName, p => p);
 
     static async Task Main(string[] args)
@@ -38,7 +38,7 @@ internal class Program
 
         var provider = _modeProviders[mode];
 
-        await provider.Run(args);
+        await provider.Handle(args);
     }
 
     static void PrintHelpPage()

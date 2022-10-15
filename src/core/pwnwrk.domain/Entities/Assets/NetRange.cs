@@ -9,9 +9,9 @@ namespace pwnwrk.domain.Entities.Assets
     public class NetRange : BaseAsset
     {
         [UniquenessAttribute]
-        public string FirstAddress { get; set; }
+        public string FirstAddress { get; private init; }
         [UniquenessAttribute]
-        public ushort NetPrefixBits { get; set; }
+        public ushort NetPrefixBits { get; private init; }
 
         public string CIDR => $"{FirstAddress}/{NetPrefixBits}";
     

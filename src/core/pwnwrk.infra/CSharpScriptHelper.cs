@@ -9,7 +9,8 @@ namespace pwnwrk.infra
     public static class CSharpScriptHelper
     {
         /// <summary>
-        /// evaluates a CSharpScript expression taking one argument of a type derived from BaseAsset
+        /// constructs and evaluates a CSharpScript expression by prefixing the `script` parameter
+        /// with a lambda parameter expression `X => ` where X is the name of the concrete type of parameter `asset`
         /// </summary>
         public static bool Evaluate(string script, BaseAsset asset)
         {

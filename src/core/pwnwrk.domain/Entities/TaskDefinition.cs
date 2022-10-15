@@ -4,12 +4,12 @@ namespace pwnwrk.domain.Entities
 {
     public class TaskDefinition : BaseEntity<int>
     {
-        public string ShortName { get; set; }
-		public string CommandTemplate { get; set; }
-		public bool IsActive { get; set; }
-		public int Aggressiveness { get; set; }
-		public string Subject { get; set; }
-        public string Filter { get; set; }
+        public string ShortName { get; private init; }
+		public string CommandTemplate { get; private init; }
+		public bool IsActive { get; private init; }
+		public int Aggressiveness { get; private init; }
+		public string Subject { get; private init; }
+        public string Filter { get; private init; }
 
         public TaskDefinition() {}
 

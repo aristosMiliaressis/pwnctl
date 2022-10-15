@@ -5,6 +5,18 @@ namespace pwnwrk.domain.Entities.Assets
 {
     public class Parameter : BaseAsset
     {
+        public Endpoint Endpoint { get; private init; }
+        public string EndpointId { get; private init; }
+        [UniquenessAttribute]
+        public string Url { get; private init; }
+
+        [UniquenessAttribute]
+        public string Name { get; private init; }
+        [UniquenessAttribute]
+        public ParamType Type { get; private init; }
+
+        public string UrlEncodedCsValues { get; private init; }
+
         private Parameter() {}
         
         public Parameter(Endpoint endpoint, string name, ParamType type, string urlEncodedCsValues)
@@ -25,18 +37,6 @@ namespace pwnwrk.domain.Entities.Assets
         {
             return Endpoint.Matches(definition);
         }
-
-        public Endpoint Endpoint { get; set; }
-        public string EndpointId { get; set; }
-        [UniquenessAttribute]
-        public string Url { get; set; }
-
-        [UniquenessAttribute]
-        public string Name { get; set; }
-        [UniquenessAttribute]
-        public ParamType Type { get; set; }
-
-        public string UrlEncodedCsValues { get; set; }
 
         public enum ParamType
         {

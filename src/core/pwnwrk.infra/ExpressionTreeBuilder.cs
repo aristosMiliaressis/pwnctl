@@ -8,6 +8,9 @@ namespace pwnwrk.infra
 {
     public static class ExpressionTreeBuilder
     {
+        /// <summary>
+        /// builds a LambdaExpression object that matches the `asset` parameter
+        /// </summary>
         public static LambdaExpression BuildAssetMatchingLambda(BaseAsset asset)
         {
             var type = asset.GetType();
@@ -34,6 +37,9 @@ namespace pwnwrk.infra
             return lambda;
         }
 
+        /// <summary>
+        /// builds a LambdaExpression object that matches a task of the provided TaskDefinition that has been queued against the provided asset.
+        /// </summary>
         public static LambdaExpression BuildTaskMatchingLambda(BaseAsset asset, TaskDefinition definition)
         {
             var type = typeof(domain.Entities.Task);
@@ -56,6 +62,9 @@ namespace pwnwrk.infra
             return lambda;
         }
 
+        /// <summary>
+        /// builds a LambdaExpression object that matches the provided tag & asset combination 
+        /// </summary>
         public static LambdaExpression BuildTagMatchingLambda(BaseAsset asset, Tag tag)
         {
             var type = typeof(Tag);

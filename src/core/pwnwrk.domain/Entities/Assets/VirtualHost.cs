@@ -4,9 +4,9 @@ namespace pwnwrk.domain.Entities.Assets
 {
     public class VirtualHost : BaseAsset
     {
-        public string Name { get; set; }
-        public Service Service { get; set; }
-        public string ServiceId { get; set; }
+        public string Name { get; private init; }
+        public Service Service { get; private init; }
+        public string ServiceId { get; private init; }
 
         private VirtualHost() {}
 

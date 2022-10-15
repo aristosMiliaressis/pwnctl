@@ -17,13 +17,13 @@ namespace pwnwrk.infra.Configuration
                 throw new Exception($"Unable to create installation directory {AppConfig.InstallPath}", ex);
             }
 
-            IConfigurationBuilder builder = new ConfigurationBuilder()
+            IConfiguration cfg = new ConfigurationBuilder()
                                                     .SetBasePath(Path.GetFullPath(AppConfig.InstallPath))
                                                     .AddIniFile("config.ini", optional: true, reloadOnChange: true)
-                                                    .AddEnvironmentVariables(prefix: "PWNCTL_");
+                                                    .AddEnvironmentVariables(prefix: "PWNCTL_")
+                                                    .Build();
 
-            IConfiguration root = builder.Build();
-            _config = root.Get<AppConfig>();
+            _config = cfg.Get<AppConfig>();
         }
 
         public static AppConfig Config => _config ?? throw new Exception("Configuration hasn't been loaded");

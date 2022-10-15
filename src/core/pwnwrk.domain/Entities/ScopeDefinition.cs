@@ -6,12 +6,12 @@ namespace pwnwrk.domain.Entities
 {
     public class ScopeDefinition : BaseEntity<int>
     {
-        public string Name { get; set; }
-        public ScopeType Type { get; set; }
-        public string Pattern { get; set; }
+        public string Name { get; private init; }
+        public ScopeType Type { get; private init; }
+        public string Pattern { get; private init; }
 
-        public int? ProgramId { get; set; }
-        public Program Program { get; set; }
+        public int? ProgramId { get; private init; }
+        public Program Program { get; private init; }
 
         public ScopeDefinition() {}
 
