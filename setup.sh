@@ -26,17 +26,14 @@ then
   npm install -g aws-cdk
 fi
 
-# deploying lambda api
-cd src/pwnctl.api
-echo PwnctlApi | dotnet lambda deploy-function
-cd ../..
-
 # install pwnctl cli
 curl https://raw.githubusercontent.com/aristosMiliaressis/pwnctl/master/src/pwnctl.cli/install.sh | sudo bash
 
 region=$1
+connectionString=$2
 accountId=$(aws sts get-caller-identity --query "Account" --output text)
 
+# bootsrap aws env & deploy app
 cdk bootstrap aws://$accountId/$region
 
-# TODO: provision resources with cdk
+cdk deploy PwnctlCdkStack --parameters connectionString="$connectionString"

@@ -15,6 +15,12 @@ namespace pwnctl.cdk
     {
         internal PwnctlCdkStack(Construct scope, string id, IStackProps props = null) : base(scope, id, props)
         {
+            var connectionString = new CfnParameter(this, "connectionString", new CfnParameterProps
+            {
+                Type = "String",
+                Description = "The database connection string"
+            });
+
             // create the VPC
             var vpc = new Vpc(this, "pwnwrk-vpc", new VpcProps { MaxAzs = 1 });
 
@@ -39,12 +45,12 @@ namespace pwnctl.cdk
                 AssumedBy = new ServicePrincipal("lambda.amazonaws.com")
             });
 
-            pwnctlApiRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AWSLambdaBasicExecutionRole"));
-            pwnctlApiRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AWSLambdaVPCAccessExecutionRole"));
+            pwnctlApiRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole"));
+            pwnctlApiRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("service-role/AWSLambdaVPCAccessExecutionRole"));
             pwnctlApiRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonElasticFileSystemClientFullAccess"));
 
             // Create the lambda function
-            var handler = new Function(this, "pwnctl-lambda-api", new FunctionProps
+            var function = new Function(this, "pwnctl-lambda-api", new FunctionProps
             {
                 Runtime = Runtime.DOTNET_6,
                 Code = Code.FromAsset("src/pwnctl.api"),
@@ -54,7 +60,7 @@ namespace pwnctl.cdk
                 Filesystem = Amazon.CDK.AWS.Lambda.FileSystem.FromEfsAccessPoint(accessPoint, "/mnt/efs")
             });
 
-            handler.AddFunctionUrl(new FunctionUrlOptions {
+            function.AddFunctionUrl(new FunctionUrlOptions {
                 AuthType = FunctionUrlAuthType.NONE
             });
 
@@ -88,12 +94,12 @@ namespace pwnctl.cdk
                 Vpc = vpc
             });
 
-            var ecsTaskExecutionRole = new Role(this, "pwnwrk-queue-consumer-role", new RoleProps
+            var ecsTaskExecutionRole = new Role(this, "pwnwrk-role", new RoleProps
             {
                 AssumedBy = new ServicePrincipal("ecs-tasks.amazonaws.com")
             });
 
-            ecsTaskExecutionRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonECSTaskExecutionRolePolicy"));
+            ecsTaskExecutionRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("service-role/AmazonECSTaskExecutionRolePolicy"));
             ecsTaskExecutionRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonElasticFileSystemClientFullAccess"));
             queue.GrantConsumeMessages(ecsTaskExecutionRole);
             queue.GrantSendMessages(ecsTaskExecutionRole);
@@ -106,18 +112,23 @@ namespace pwnctl.cdk
                 ExecutionRole = ecsTaskExecutionRole
             });
 
-            var container = fargateTaskDefinition.AddContainer("pwnwrk", new ContainerDefinitionOptions
+            fargateTaskDefinition.AddContainer("pwnwrk", new ContainerDefinitionOptions
             {
+                ContainerName = "pwnwrk",
+                Cpu = 512,
+                MemoryLimitMiB = 2048,
                 Image = ContainerImage.FromRegistry("public.ecr.aws/i0m2p7r6/pwnwrk:latest"),
-                Logging = LogDriver.AwsLogs(new AwsLogDriverProps { StreamPrefix = "pwnwrk-log" })
+                Logging = LogDriver.AwsLogs(new AwsLogDriverProps { StreamPrefix = "pwnwrk-log" }),
+                Environment = new Dictionary<string, string>()
+                {
+                    {"PWNCTL_JobQueue__QueueName", "pwnwrk.fifo"},
+                    {"PWNCTL_JobQueue__DLQName", "pwnwrk-dlq.fifo"},
+                    {"PWNCTL_JobQueue__IsSQS", "true"},
+                    {"PWNCTL_JobQueue__VisibilityTimeout", "30"},
+                    {"PWNCTL_Db__ConnectionString", connectionString.ValueAsString},
+                    {"PWNCTL_EFS_MOUNT_POINT", "/mnt/efs"}
+                }
             });
-
-            container.AddEnvironment("PWNCTL_JobQueue__QueueName", "pwnwrk.fifo");
-            container.AddEnvironment("PWNCTL_JobQueue__DLQName", "pwnwrk-dlq.fifo");
-            container.AddEnvironment("PWNCTL_JobQueue__IsSQS", "true");
-            container.AddEnvironment("PWNCTL_JobQueue__VisibilityTimeout", "30");
-            container.AddEnvironment("PWNCTL_Db__ConnectionString", "");
-            container.AddEnvironment("PWNCTL_EFS_MOUNT_POINT", "/mnt/efs");
 
             var volume = new Amazon.CDK.AWS.ECS.Volume
             {
@@ -127,7 +138,8 @@ namespace pwnctl.cdk
                     FileSystemId = fs.FileSystemId,
                     AuthorizationConfig = new AuthorizationConfig
                     {
-                        Iam = "DISABLED"
+                        //Iam = "DISABLED",
+                        AccessPointId = accessPoint.AccessPointId
                     },
                     RootDirectory = "/",
                     TransitEncryption = "ENABLED"
@@ -140,6 +152,7 @@ namespace pwnctl.cdk
             var fargateService = new FargateService(this, "pwnwrk-svc", new FargateServiceProps {
                 Cluster = cluster,
                 TaskDefinition = fargateTaskDefinition,
+                DesiredCount = 0,
                 CapacityProviderStrategies = new [] { new CapacityProviderStrategy {
                     CapacityProvider = "FARGATE_SPOT",
                     Weight = 2
@@ -148,6 +161,8 @@ namespace pwnctl.cdk
                     Weight = 1
                 } }
             });
+
+            fs.Connections.AllowFrom(fargateService, Amazon.CDK.AWS.EC2.Port.Tcp(2049));
 
             var queueDepthMetric = new Metric(new MetricProps
             {

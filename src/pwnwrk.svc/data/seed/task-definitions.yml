@@ -80,7 +80,7 @@
   Filter: Endpoint.Path == "/"
 
 - ShortName: dir_brute_common
-  CommandTemplate: dir-brute.sh {{Url}} /opt/wordlists/Discovery/Web-Content/common.txt
+  CommandTemplate: dir-brute.sh {{Url}} /opt/wordlists/common.txt
   IsActive: true
   Aggressiveness: 8
   Filter: Endpoint.Path == "/"
@@ -128,18 +128,12 @@
   Filter: Endpoint.Extension == "js" || Endpoint.Extension == "jsm" || Endpoint["Content-Type"].Contains("/javascript")
   Subject: Endpoint
 
-- ShortName: zone_walking
-  CommandTemplate: ldns-walk {{Key}} | tail -n +2 | cut -d ' ' -f 1
-  IsActive: true
-  Aggressiveness: 1
-  Filter: DNSRecord.Type == pwnwrk.domain.Entities.Assets.DNSRecord.RecordType.NSEC
-  Subject: DNSRecord
-
-- ShortName: cloud_enum
-  CommandTemplate: cloud-enum.sh {{Word}}
+- ShortName: cors_check
+  CommandTemplate: cors-check.sh {{Url}}
   IsActive: true
   Aggressiveness: 5
-  Subject: Keyword
+  Subject: Endpoint
+  Filter: Endpoint["Content-Type"].Contains("/json") || Endpoint["Content-Type"].Contains("/xml")
 
 - ShortName: shortname_scanning
   CommandTemplate: shortname-check.sh {{Url}}
@@ -155,9 +149,15 @@
   Subject: Service
   Filter: Service["Version"].Contains("IIS") || Service["Version"].Contains("Microsoft HTTPAPI")
 
-- ShortName: cors_check
-  CommandTemplate: cors-check.sh {{Url}}
+- ShortName: zone_walking
+  CommandTemplate: ldns-walk {{Key}} | tail -n +2 | cut -d ' ' -f 1
+  IsActive: true
+  Aggressiveness: 1
+  Filter: DNSRecord.Type == pwnwrk.domain.Entities.Assets.DNSRecord.RecordType.NSEC
+  Subject: DNSRecord
+
+- ShortName: cloud_enum
+  CommandTemplate: cloud-enum.sh {{Word}}
   IsActive: true
   Aggressiveness: 5
-  Subject: Endpoint
-  Filter: Endpoint["Content-Type"].Contains("/json") || Endpoint["Content-Type"].Contains("/xml")
+  Subject: Keyword
