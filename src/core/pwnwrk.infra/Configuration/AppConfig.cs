@@ -31,7 +31,9 @@ namespace pwnwrk.infra.Configuration
 
         public class LogConfig
         {
-            public string LogPath { get; set; }
+            public string MinLevel { get; set; }
+            public string LogGroup { get; set; }
+            public string RetentionPeriod { get; set; }
         }
     }
 }

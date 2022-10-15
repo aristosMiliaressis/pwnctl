@@ -5,27 +5,27 @@ using pwnwrk.infra.Persistence;
 using System.Diagnostics;
 using System.Text.Json;
 using Microsoft.Extensions.Options;
+using Serilog.Core;
 
 namespace pwnwrk.svc
 {
     public class JobConsumerService : BackgroundService
     {
-        private readonly ILogger _logger;
         private readonly IOptions<AppConfig> _config;
         private readonly SQSJobQueueService _queueService = new();
         private readonly PwnctlDbContext _context = new();
+        private readonly Logger _logger = PwnLoggerFactory.Create();
         private CancellationToken _stoppingToken;
         private List<Amazon.SQS.Model.Message> _unprocessedMessages = new List<Amazon.SQS.Model.Message>();
 
-        public JobConsumerService(ILogger<JobConsumerService> logger, IOptions<AppConfig> config)
+        public JobConsumerService(IOptions<AppConfig> config)
         {
-            _logger = logger;
             _config = config;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            Logger.Instance.Info($"{nameof(JobConsumerService)} started.");
+            _logger.Information($"{nameof(JobConsumerService)} started.");
             _stoppingToken = stoppingToken;
 
             while (!stoppingToken.IsCancellationRequested)
@@ -35,7 +35,7 @@ namespace pwnwrk.svc
                     var messages = await _queueService.ReceiveAsync(stoppingToken);
                     if (messages == null || !messages.Any())
                     {
-                        Logger.Instance.Info($"queue is empty");
+                        _logger.Information($"queue is empty");
                         Thread.Sleep(60000);
                         continue;
                     }
@@ -55,7 +55,7 @@ namespace pwnwrk.svc
                         if (task == null)
                         {
                             // normaly this should never happen, log and continue.
-                            Logger.Instance.Info($"Task: {queuedTask.TaskId}:'{queuedTask.Command}' not found");
+                            _logger.Error($"Task: {queuedTask.TaskId}:'{queuedTask.Command}' not found");
                             await _queueService.DequeueAsync(message, stoppingToken);
                             continue;
                         }
@@ -79,14 +79,14 @@ namespace pwnwrk.svc
                 }
                 catch (Exception ex)
                 {
-                    Logger.Instance.Info(ex.ToRecursiveExInfo());
+                    _logger.Error(ex.ToRecursiveExInfo());
                 }
             }            
         }
 
         private async Task<Process> ExecuteCommandAsync(string command, CancellationToken stoppingToken)
         {
-            Logger.Instance.Info(command);
+            _logger.Debug(command);
             
             var psi = new ProcessStartInfo();
             psi.FileName = "/bin/bash";
@@ -110,7 +110,7 @@ namespace pwnwrk.svc
 
             await process.WaitForExitAsync(stoppingToken);
 
-            Logger.Instance.Info($"ExitCode: {process.ExitCode}, ExitTime: {process.ExitTime}");
+            _logger.Debug($"ExitCode: {process.ExitCode}, ExitTime: {process.ExitTime}");
 
             return process;
         }

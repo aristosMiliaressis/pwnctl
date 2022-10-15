@@ -5,12 +5,14 @@ using Amazon.SQS;
 using Amazon.SQS.Model;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Serilog.Core;
 
 namespace pwnwrk.infra.Queues
 {
     public class SQSJobQueueService : IJobQueueService
     {
         private readonly AmazonSQSClient _sqsClient = new();
+        private readonly Logger _logger = PwnLoggerFactory.Create();
 
         private Dictionary<string,string> _queueUrls;
         private string this[string queueName]
@@ -37,7 +39,7 @@ namespace pwnwrk.infra.Queues
         /// <param name="command"></param>
         public async Task EnqueueAsync(domain.Entities.Task job)
         {
-            Logger.Instance.Info("Enqueue: " + job.WrappedCommand);
+            _logger.Debug("Enqueue: " + job.WrappedCommand);
 
             var task = new TaskAssigned() 
             { 
@@ -66,8 +68,8 @@ namespace pwnwrk.infra.Queues
             var messageResponse = await _sqsClient.ReceiveMessageAsync(receiveRequest, ct);
             if (messageResponse.HttpStatusCode != System.Net.HttpStatusCode.OK)
             {
-                Logger.Instance.Info(JsonSerializer.Serialize(messageResponse));
-                Logger.Instance.Info($"HttpStatusCode: {messageResponse.HttpStatusCode}");
+                _logger.Warning(JsonSerializer.Serialize(messageResponse));
+                _logger.Warning($"HttpStatusCode: {messageResponse.HttpStatusCode}");
                 // TODO: error handling
             }
 
@@ -80,7 +82,7 @@ namespace pwnwrk.infra.Queues
 
             var response = await _sqsClient.DeleteMessageAsync(this[ConfigurationManager.Config.JobQueue.QueueName], message.ReceiptHandle, ct);
             if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
-                Logger.Instance.Info("DeleteMessage: " + JsonSerializer.Serialize(response));
+                _logger.Debug("DeleteMessage: " + JsonSerializer.Serialize(response));
         }
 
         public async Task ChangeBatchVisibility(List<Message> messages, CancellationToken ct)
@@ -100,7 +102,7 @@ namespace pwnwrk.infra.Queues
 
             var response = await _sqsClient.ChangeMessageVisibilityBatchAsync(request, ct);
             if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
-                Logger.Instance.Info("ChangeMessageVisibility: " + JsonSerializer.Serialize(response));
+                _logger.Debug("ChangeMessageVisibility: " + JsonSerializer.Serialize(response));
         }
     }
 

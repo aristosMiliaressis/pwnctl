@@ -2,7 +2,6 @@ using pwnwrk.infra.Configuration;
 using pwnwrk.infra.Repositories;
 using pwnwrk.infra.Persistence;
 using pwnwrk.domain;
-using System.Threading.Tasks;
 
 namespace pwnwrk.infra
 {

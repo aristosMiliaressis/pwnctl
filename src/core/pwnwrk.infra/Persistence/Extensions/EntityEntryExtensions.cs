@@ -1,10 +1,13 @@
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using pwnwrk.infra.Logging;
+using Serilog.Core;
 
 namespace pwnwrk.infra.Persistence.Extensions
 {
     public static class EntityEntryExtensions
     {
+        private static readonly Logger _logger = PwnLoggerFactory.Create();
+
         public static async Task LoadReferencesRecursivelyAsync(this EntityEntry entry, CancellationToken token = default, List<Type> refChain = null)
         {
             if (entry == null)
@@ -39,7 +42,7 @@ namespace pwnwrk.infra.Persistence.Extensions
                 }
                 catch (Exception ex)
                 {
-                    Logger.Instance.Info(ex.ToRecursiveExInfo());
+                    _logger.Error(ex.ToRecursiveExInfo());
                     continue;
                 }
 

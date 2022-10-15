@@ -5,9 +5,9 @@ using pwnwrk.infra.Logging;
 using pwnwrk.infra.Notifications;
 using pwnwrk.domain.BaseClasses;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 using System;
 using System.Linq;
+using Serilog.Core;
 
 namespace pwnctl.cli.Utilities
 {
@@ -17,6 +17,7 @@ namespace pwnctl.cli.Utilities
         private readonly JobAssignmentService _jobService = new();
         private readonly NotificationSender _notificationSender = new();
         private readonly NotificationRuleChecker _notificationRuleChecker = new();
+        private readonly Logger _logger = PwnLoggerFactory.Create();
 
         public async Task<bool> TryProccessAsync(string assetText)
         {
@@ -27,7 +28,7 @@ namespace pwnctl.cli.Utilities
             } 
             catch (Exception ex)
             {
-                Logger.Instance.Info(ex.ToRecursiveExInfo());
+                _logger.Error(ex.ToRecursiveExInfo());
                 return false;
             }
         }
