@@ -8,18 +8,32 @@ namespace pwnwrk.infra.Logging
 {
     public static class PwnLoggerFactory
     {
-        private static LoggerConfiguration _loggerConfig => new LoggerConfiguration()
-                    .MinimumLevel.Is(Enum.Parse<LogEventLevel>(ConfigurationManager.Config.Logging.MinLevel ?? "Information"))
-                    .WriteTo.Console()
-                    .WriteTo.AmazonCloudWatch(
-                        logGroup: ConfigurationManager.Config.Logging.LogGroup ?? "/aws/ecs/pwnctl",
-                        logStreamPrefix: DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff"),
-                        logGroupRetentionPolicy: Enum.Parse<LogGroupRetentionPolicy>(ConfigurationManager.Config.Logging.RetentionPeriod ?? "OneWeek")
-                    );
-
         public static Logger Create()
         {
-            return _loggerConfig.CreateLogger();
+            return PwnContext.Config.IsTestRun
+                ? CreateFileLogger()
+                : CreateCloudWatchLogger();
+        }
+
+        private static Logger CreateCloudWatchLogger()
+        {
+            return new LoggerConfiguration()
+                    .MinimumLevel.Is(Enum.Parse<LogEventLevel>(PwnContext.Config.Logging.MinLevel ?? "Information"))
+                    .WriteTo.AmazonCloudWatch(
+                        logGroup: PwnContext.Config.Logging.LogGroup ?? "/aws/ecs/pwnctl",
+                        logStreamPrefix: DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff"),
+                        logGroupRetentionPolicy: Enum.Parse<LogGroupRetentionPolicy>(PwnContext.Config.Logging.RetentionPeriod ?? "OneWeek")
+                    ).CreateLogger();
+        }
+
+        private static Logger CreateFileLogger()
+        {
+            return new LoggerConfiguration()
+                    .MinimumLevel.Is(Enum.Parse<LogEventLevel>(PwnContext.Config.Logging.MinLevel ?? "Information"))
+                    .WriteTo.File(
+                        path: Path.Combine(EnvironmentVariables.PWNCTL_INSTALL_PATH, "pwnctl.log"), 
+                        restrictedToMinimumLevel: Enum.Parse<LogEventLevel>(PwnContext.Config.Logging.MinLevel ?? "Information"))
+                    .CreateLogger();        
         }
     }
 }

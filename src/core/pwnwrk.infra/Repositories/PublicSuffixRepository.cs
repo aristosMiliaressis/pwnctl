@@ -6,12 +6,12 @@ namespace pwnwrk.infra.Repositories
 {
     public class PublicSuffixRepository : IPublicSuffixRepository
     {
+        private string _publicSuffixDataFile = PwnContext.Config.IsTestRun
+                            ? $"{AppConfig.InstallPath}/dns/public_suffix_list.dat"
+                            : "/opt/wordlists/dns/public_suffix_list.dat";
         private List<PublicSuffix> _publicSuffixes;
         private static PublicSuffixRepository _singleton;
-        private string _publicSuffixDataFile = ConfigurationManager.Config.IsTestRun
-                                    ? $"{AppConfig.InstallPath}/dns/public_suffix_list.dat"
-                                    : "/opt/wordlists/dns/public_suffix_list.dat";
-        
+
         public static PublicSuffixRepository Singleton
         {
             get
@@ -34,26 +34,6 @@ namespace pwnwrk.infra.Repositories
             }
     
             return _publicSuffixes;
-        }
-
-        public string GetRegistrationDomain(string domain)
-        {
-            var suffix = GetPublicSuffix(domain);
-            if (suffix == null)
-                return null;
-
-            return domain
-                    .Substring(0, domain.Length - suffix.Suffix.Length - 1)
-                    .Split(".")
-                    .Last() + "." + suffix.Suffix;
-        }
-
-        public PublicSuffix GetPublicSuffix(string domain)
-        {
-            return GetSuffixes()
-                         .Where(suffix => domain.EndsWith($".{suffix.Suffix}"))
-                         .OrderByDescending(s => s.Suffix.Length)
-                         .FirstOrDefault();
         }
     }
 }

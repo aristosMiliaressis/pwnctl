@@ -68,13 +68,13 @@ namespace pwnwrk.infra.Persistence
 #endif
                 optionsBuilder = optionsBuilder.ReplaceService<StringValueGenerator, HashIdValueGenerator>();
 
-                if (ConfigurationManager.Config.IsTestRun)
+                if (PwnContext.Config.IsTestRun)
                 {
-                    optionsBuilder.UseSqlite(ConfigurationManager.Config.Db.ConnectionString, x => x.MigrationsHistoryTable("__EFMigrationHistory"));
+                    optionsBuilder.UseSqlite(PwnContext.Config.Db.ConnectionString, x => x.MigrationsHistoryTable("__EFMigrationHistory"));
                     return;
                 }
 
-                optionsBuilder.UseNpgsql(ConfigurationManager.Config.Db.ConnectionString, x => x.MigrationsHistoryTable("__EFMigrationHistory"));
+                optionsBuilder.UseNpgsql(PwnContext.Config.Db.ConnectionString, x => x.MigrationsHistoryTable("__EFMigrationHistory"));
             }
         }
 

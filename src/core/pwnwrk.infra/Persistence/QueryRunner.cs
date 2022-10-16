@@ -10,7 +10,7 @@ namespace pwnwrk.infra.Persistence
         public async Task RunAsync(string sql)
         {
             //TODO: maybe split sql on ';' semicolon to execute statements separatly
-            using (var connection = new NpgsqlConnection(ConfigurationManager.Config.Db.ConnectionString))
+            using (var connection = new NpgsqlConnection(PwnContext.Config.Db.ConnectionString))
             {
                 var command = new NpgsqlCommand(sql, connection);
                 try

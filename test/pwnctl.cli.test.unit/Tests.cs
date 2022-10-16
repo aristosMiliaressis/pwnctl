@@ -242,15 +242,15 @@ public class Tests
     [Fact]
     public void PublicSuffixRepository_Tests()
     {
-        var regDomain = PublicSuffixRepository.Singleton.GetRegistrationDomain("xyz.example.com");
-        var publicSuffix = PublicSuffixRepository.Singleton.GetPublicSuffix("xyz.example.com");
-        Assert.Equal("example.com", regDomain);
-        Assert.Equal("com", publicSuffix.Suffix);
+        var exampleDomain = new Domain("xyz.example.com");
 
-        regDomain = PublicSuffixRepository.Singleton.GetRegistrationDomain("sub.example.azurewebsites.net");
-        publicSuffix = PublicSuffixRepository.Singleton.GetPublicSuffix("sub.example.azurewebsites.net");
-        Assert.Equal("example.azurewebsites.net", regDomain);
-        Assert.Equal("azurewebsites.net", publicSuffix.Suffix);
+        Assert.Equal("example.com", exampleDomain.GetRegistrationDomain());
+        Assert.Equal("com", exampleDomain.GetPublicSuffix().Suffix);
+
+        var exampleSubDomain = new Domain("sub.example.azurewebsites.net");
+
+        Assert.Equal("example.azurewebsites.net", exampleSubDomain.GetRegistrationDomain());
+        Assert.Equal("azurewebsites.net", exampleSubDomain.GetPublicSuffix().Suffix);
     }
 
     [Fact]

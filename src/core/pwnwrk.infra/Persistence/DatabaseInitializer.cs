@@ -14,7 +14,7 @@ namespace pwnwrk.infra.Persistence
         {
             PwnctlDbContext instance = new();
 
-            if (ConfigurationManager.Config.IsTestRun)
+            if (PwnContext.Config.IsTestRun)
             {
                 await instance.Database.EnsureDeletedAsync();
             }

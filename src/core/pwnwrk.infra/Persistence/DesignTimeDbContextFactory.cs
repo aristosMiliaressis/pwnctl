@@ -8,10 +8,10 @@ namespace pwnwrk.infra.Persistence
     {
         public PwnctlDbContext CreateDbContext(string[] args)
         {
-            ConfigurationManager.Load();
+            var config = PwnConfigFactory.Create();
 
             var optionsBuilder = new DbContextOptionsBuilder<PwnctlDbContext>();
-            optionsBuilder.UseNpgsql(ConfigurationManager.Config.Db.ConnectionString);
+            optionsBuilder.UseNpgsql(config.Db.ConnectionString);
 
             return new PwnctlDbContext(optionsBuilder.Options);
         }

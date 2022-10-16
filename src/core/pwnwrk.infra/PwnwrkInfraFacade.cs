@@ -1,4 +1,5 @@
 using pwnwrk.infra.Configuration;
+using pwnwrk.infra.Logging;
 using pwnwrk.infra.Repositories;
 using pwnwrk.infra.Persistence;
 using pwnwrk.domain;
@@ -9,7 +10,8 @@ namespace pwnwrk.infra
     {
         public static async Task SetupAsync()
         {
-            ConfigurationManager.Load();
+            PwnContext.Config = PwnConfigFactory.Create();
+            PwnContext.Logger = PwnLoggerFactory.Create();
             PwnwrkDomainShim.PublicSuffixRepository = PublicSuffixRepository.Singleton;
             await DatabaseInitializer.InitializeAsync();
         }

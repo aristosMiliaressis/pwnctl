@@ -18,7 +18,7 @@ namespace pwnwrk.infra.Queues
         {
             var psi = new ProcessStartInfo();
             psi.FileName = "job-queue.sh";
-            psi.Arguments = $"-w {ConfigurationManager.Config.JobQueue.WorkerCount} -q {_queueDirectory}";
+            psi.Arguments = $"-w {PwnContext.Config.JobQueue.WorkerCount} -q {_queueDirectory}";
             psi.RedirectStandardOutput = true;
             psi.RedirectStandardInput = true;
             psi.UseShellExecute = false;

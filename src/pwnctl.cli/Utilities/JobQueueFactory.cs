@@ -1,4 +1,4 @@
-using pwnwrk.infra.Configuration;
+using pwnwrk.infra;
 using pwnwrk.infra.Queues;
 using pwnwrk.domain.Interfaces;
 
@@ -8,11 +8,11 @@ namespace pwnctl.cli.Utilities
     {
         public static IJobQueueService Create()
         {
-            if (ConfigurationManager.Config.JobQueue.IsSQS)
+            if (PwnContext.Config.JobQueue.IsSQS)
             {
                 return new SQSJobQueueService();
             }
-            else if (ConfigurationManager.Config.IsTestRun)
+            else if (PwnContext.Config.IsTestRun)
             {
                 return new MockJobQueueService();
             }

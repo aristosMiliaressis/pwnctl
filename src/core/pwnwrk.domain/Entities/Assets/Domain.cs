@@ -1,6 +1,7 @@
 ﻿using pwnwrk.domain.Attributes;
 using pwnwrk.domain.BaseClasses;
 using pwnwrk.domain.Models;
+using pwnwrk.domain.ValueObjects;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 
@@ -23,7 +24,7 @@ namespace pwnwrk.domain.Entities.Assets
             domain = domain.EndsWith(".") ? domain.Substring(0, domain.Length - 1) : domain;
 
             Name = domain;
-            var regDomain = PwnwrkDomainShim.PublicSuffixRepository.GetRegistrationDomain(domain);
+            var regDomain = GetRegistrationDomain();
             IsRegistrationDomain = regDomain == domain;
             if (!IsRegistrationDomain)
             {
@@ -66,8 +67,8 @@ namespace pwnwrk.domain.Entities.Assets
                     assets = assets.Append(domain.RegistrationDomain).ToArray();
                 }
 
-                var regDomain = PwnwrkDomainShim.PublicSuffixRepository.GetRegistrationDomain(domain.Name);
-                var pubSuffix = PwnwrkDomainShim.PublicSuffixRepository.GetPublicSuffix(domain.Name);
+                var regDomain = domain.GetRegistrationDomain();
+                var pubSuffix = domain.GetPublicSuffix();
                 var word = regDomain.Substring(0, regDomain.Length - pubSuffix.Suffix.Length - 1);
                 assets = assets.Append(new Keyword(domain.IsRegistrationDomain ? domain : domain.RegistrationDomain, word)).ToArray();
 
@@ -79,6 +80,26 @@ namespace pwnwrk.domain.Entities.Assets
             }            
 
             return false;
+        }
+
+        public string GetRegistrationDomain()
+        {
+            var suffix = GetPublicSuffix();
+            if (suffix == null)
+                return null;
+
+            return Name
+                    .Substring(0, Name.Length - suffix.Suffix.Length - 1)
+                    .Split(".")
+                    .Last() + "." + suffix.Suffix;
+        }
+
+        public PublicSuffix GetPublicSuffix()
+        {
+            return PwnwrkDomainShim.PublicSuffixRepository.GetSuffixes()
+                         .Where(suffix => Name.EndsWith($".{suffix.Suffix}"))
+                         .OrderByDescending(s => s.Suffix.Length)
+                         .FirstOrDefault();
         }
 
         public override bool Matches(ScopeDefinition definition)

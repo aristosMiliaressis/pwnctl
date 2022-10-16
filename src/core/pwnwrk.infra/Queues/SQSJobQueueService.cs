@@ -12,7 +12,6 @@ namespace pwnwrk.infra.Queues
     public class SQSJobQueueService : IJobQueueService
     {
         private readonly AmazonSQSClient _sqsClient = new();
-        private readonly Logger _logger = PwnLoggerFactory.Create();
 
         private Dictionary<string,string> _queueUrls;
         private string this[string queueName]
@@ -24,7 +23,7 @@ namespace pwnwrk.infra.Queues
 
                 if (!_queueUrls.TryGetValue(queueName, out string queueUrl))
                 {
-                    var queueUrlResponse = _sqsClient.GetQueueUrlAsync(ConfigurationManager.Config.JobQueue.QueueName).Result;
+                    var queueUrlResponse = _sqsClient.GetQueueUrlAsync(PwnContext.Config.JobQueue.QueueName).Result;
                     queueUrl = queueUrlResponse.QueueUrl;
                     _queueUrls[queueName] = queueUrl;
                 }
@@ -39,7 +38,7 @@ namespace pwnwrk.infra.Queues
         /// <param name="command"></param>
         public async Task EnqueueAsync(domain.Entities.Task job)
         {
-            _logger.Debug("Enqueue: " + job.WrappedCommand);
+            PwnContext.Logger.Debug("Enqueue: " + job.WrappedCommand);
 
             var task = new TaskAssigned() 
             { 
@@ -50,7 +49,7 @@ namespace pwnwrk.infra.Queues
             var request = new SendMessageRequest
             {
                 MessageGroupId = Guid.NewGuid().ToString(),
-                QueueUrl = this[ConfigurationManager.Config.JobQueue.QueueName],
+                QueueUrl = this[PwnContext.Config.JobQueue.QueueName],
                 MessageBody = JsonSerializer.Serialize(task)
             };
 
@@ -61,15 +60,15 @@ namespace pwnwrk.infra.Queues
         {
             var receiveRequest = new ReceiveMessageRequest
             {
-                QueueUrl = this[ConfigurationManager.Config.JobQueue.QueueName],
+                QueueUrl = this[PwnContext.Config.JobQueue.QueueName],
                 MaxNumberOfMessages = 10
             };
 
             var messageResponse = await _sqsClient.ReceiveMessageAsync(receiveRequest, ct);
             if (messageResponse.HttpStatusCode != System.Net.HttpStatusCode.OK)
             {
-                _logger.Warning(JsonSerializer.Serialize(messageResponse));
-                _logger.Warning($"HttpStatusCode: {messageResponse.HttpStatusCode}");
+                PwnContext.Logger.Warning(JsonSerializer.Serialize(messageResponse));
+                PwnContext.Logger.Warning($"HttpStatusCode: {messageResponse.HttpStatusCode}");
                 // TODO: error handling
             }
 
@@ -80,9 +79,9 @@ namespace pwnwrk.infra.Queues
         {
             // TODO: delete batching?
 
-            var response = await _sqsClient.DeleteMessageAsync(this[ConfigurationManager.Config.JobQueue.QueueName], message.ReceiptHandle, ct);
+            var response = await _sqsClient.DeleteMessageAsync(this[PwnContext.Config.JobQueue.QueueName], message.ReceiptHandle, ct);
             if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
-                _logger.Debug("DeleteMessage: " + JsonSerializer.Serialize(response));
+                PwnContext.Logger.Debug("DeleteMessage: " + JsonSerializer.Serialize(response));
         }
 
         public async Task ChangeBatchVisibility(List<Message> messages, CancellationToken ct)
@@ -91,18 +90,18 @@ namespace pwnwrk.infra.Queues
 
             var request = new ChangeMessageVisibilityBatchRequest
             {
-                QueueUrl = this[ConfigurationManager.Config.JobQueue.QueueName],
+                QueueUrl = this[PwnContext.Config.JobQueue.QueueName],
                 Entries = messages.Select(msg => new ChangeMessageVisibilityBatchRequestEntry 
                 {
                     Id = msg.MessageId,
                     ReceiptHandle = msg.ReceiptHandle,
-                    VisibilityTimeout = ConfigurationManager.Config.JobQueue.VisibilityTimeout*2*60
+                    VisibilityTimeout = PwnContext.Config.JobQueue.VisibilityTimeout*2*60
                 }).ToList()
             };
 
             var response = await _sqsClient.ChangeMessageVisibilityBatchAsync(request, ct);
             if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
-                _logger.Debug("ChangeMessageVisibility: " + JsonSerializer.Serialize(response));
+                PwnContext.Logger.Debug("ChangeMessageVisibility: " + JsonSerializer.Serialize(response));
         }
     }
 

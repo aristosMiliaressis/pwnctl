@@ -6,8 +6,6 @@ namespace pwnwrk.infra.Persistence.Extensions
 {
     public static class EntityEntryExtensions
     {
-        private static readonly Logger _logger = PwnLoggerFactory.Create();
-
         public static async Task LoadReferencesRecursivelyAsync(this EntityEntry entry, CancellationToken token = default, List<Type> refChain = null)
         {
             if (entry == null)
@@ -42,7 +40,7 @@ namespace pwnwrk.infra.Persistence.Extensions
                 }
                 catch (Exception ex)
                 {
-                    _logger.Error(ex.ToRecursiveExInfo());
+                    PwnContext.Logger.Error(ex.ToRecursiveExInfo());
                     continue;
                 }
 

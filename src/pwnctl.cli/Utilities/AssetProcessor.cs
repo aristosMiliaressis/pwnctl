@@ -1,5 +1,6 @@
 ﻿using pwnctl.cli.Exceptions;
 using pwnctl.cli.Repositories;
+using pwnwrk.infra;
 using pwnwrk.infra.Extensions;
 using pwnwrk.infra.Logging;
 using pwnwrk.infra.Notifications;
@@ -7,7 +8,6 @@ using pwnwrk.domain.BaseClasses;
 using System.Threading.Tasks;
 using System;
 using System.Linq;
-using Serilog.Core;
 
 namespace pwnctl.cli.Utilities
 {
@@ -17,7 +17,6 @@ namespace pwnctl.cli.Utilities
         private readonly JobAssignmentService _jobService = new();
         private readonly NotificationSender _notificationSender = new();
         private readonly NotificationRuleChecker _notificationRuleChecker = new();
-        private readonly Logger _logger = PwnLoggerFactory.Create();
 
         public async Task<bool> TryProccessAsync(string assetText)
         {
@@ -28,7 +27,7 @@ namespace pwnctl.cli.Utilities
             } 
             catch (Exception ex)
             {
-                _logger.Error(ex.ToRecursiveExInfo());
+                PwnContext.Logger.Error(ex.ToRecursiveExInfo());
                 return false;
             }
         }

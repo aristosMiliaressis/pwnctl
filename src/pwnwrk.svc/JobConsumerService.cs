@@ -1,3 +1,4 @@
+using pwnwrk.infra;
 using pwnwrk.infra.Configuration;
 using pwnwrk.infra.Queues;
 using pwnwrk.infra.Logging;
@@ -14,7 +15,6 @@ namespace pwnwrk.svc
         private readonly IOptions<AppConfig> _config;
         private readonly SQSJobQueueService _queueService = new();
         private readonly PwnctlDbContext _context = new();
-        private readonly Logger _logger = PwnLoggerFactory.Create();
         private CancellationToken _stoppingToken;
         private List<Amazon.SQS.Model.Message> _unprocessedMessages = new List<Amazon.SQS.Model.Message>();
 
@@ -25,7 +25,7 @@ namespace pwnwrk.svc
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.Information($"{nameof(JobConsumerService)} started.");
+            PwnContext.Logger.Information($"{nameof(JobConsumerService)} started.");
             _stoppingToken = stoppingToken;
 
             while (!stoppingToken.IsCancellationRequested)
@@ -35,14 +35,14 @@ namespace pwnwrk.svc
                     var messages = await _queueService.ReceiveAsync(stoppingToken);
                     if (messages == null || !messages.Any())
                     {
-                        _logger.Information($"queue is empty");
+                        PwnContext.Logger.Information($"queue is empty");
                         Thread.Sleep(60000);
                         continue;
                     }
 
                     _unprocessedMessages = new(messages);
 
-                    var timer = new System.Timers.Timer(1000 * 60 * (pwnwrk.infra.Configuration.ConfigurationManager.Config.JobQueue.VisibilityTimeout - 1));
+                    var timer = new System.Timers.Timer(1000 * 60 * (PwnContext.Config.JobQueue.VisibilityTimeout - 1));
                     timer.Elapsed += async (sender, e) => await ChallengeMessageVisibility();
                     timer.AutoReset = false;
                     timer.Start();
@@ -55,7 +55,7 @@ namespace pwnwrk.svc
                         if (task == null)
                         {
                             // normaly this should never happen, log and continue.
-                            _logger.Error($"Task: {queuedTask.TaskId}:'{queuedTask.Command}' not found");
+                            PwnContext.Logger.Error($"Task: {queuedTask.TaskId}:'{queuedTask.Command}' not found");
                             await _queueService.DequeueAsync(message, stoppingToken);
                             continue;
                         }
@@ -79,14 +79,14 @@ namespace pwnwrk.svc
                 }
                 catch (Exception ex)
                 {
-                    _logger.Error(ex.ToRecursiveExInfo());
+                    PwnContext.Logger.Error(ex.ToRecursiveExInfo());
                 }
             }            
         }
 
         private async Task<Process> ExecuteCommandAsync(string command, CancellationToken stoppingToken)
         {
-            _logger.Debug(command);
+            PwnContext.Logger.Debug(command);
             
             var psi = new ProcessStartInfo();
             psi.FileName = "/bin/bash";
@@ -110,7 +110,7 @@ namespace pwnwrk.svc
 
             await process.WaitForExitAsync(stoppingToken);
 
-            _logger.Debug($"ExitCode: {process.ExitCode}, ExitTime: {process.ExitTime}");
+            PwnContext.Logger.Debug($"ExitCode: {process.ExitCode}, ExitTime: {process.ExitTime}");
 
             return process;
         }

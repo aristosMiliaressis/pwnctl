@@ -9,11 +9,9 @@ namespace pwnwrk.infra.Notifications
 {
     public class NotificationSender
     {
-        private readonly Logger _logger = PwnLoggerFactory.Create();
-
         public void Send(BaseAsset asset, NotificationRule rule)
         {
-            _logger.Debug("Send( " + rule.ShortName + ")");
+            PwnContext.Logger.Debug("Send( " + rule.ShortName + ")");
 
             var psi = new ProcessStartInfo();
             psi.FileName = "notify";
