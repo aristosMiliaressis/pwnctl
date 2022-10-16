@@ -8,6 +8,7 @@ using Amazon.CDK.AWS.Lambda;
 using Amazon.CDK.AWS.CloudWatch;
 using Amazon.CDK.AWS.ApplicationAutoScaling;
 using System.Collections.Generic;
+using System.IO;
 
 namespace pwnctl.cdk
 {
@@ -22,7 +23,10 @@ namespace pwnctl.cdk
             });
 
             // create the VPC
-            var vpc = new Vpc(this, "pwnwrk-vpc", new VpcProps { MaxAzs = 1 });
+            var vpc = new Vpc(this, "pwnwrk-vpc", new VpcProps { 
+                MaxAzs = 1,
+                NatGateways = 0
+            });
 
             // Create a file system in EFS to store information
             var fs = new Amazon.CDK.AWS.EFS.FileSystem(this, "pwnwrk-fs", new FileSystemProps
@@ -30,11 +34,11 @@ namespace pwnctl.cdk
                 Vpc = vpc,
                 RemovalPolicy = RemovalPolicy.DESTROY
             });
-            
+
             // Create a access point to EFS
             var accessPoint = fs.AddAccessPoint("pwnctl-lambda-api-fsap", new AccessPointOptions
             {
-                CreateAcl = new Acl { OwnerGid = "1001", OwnerUid = "1001", Permissions = "777"},
+                CreateAcl = new Acl { OwnerGid = "1001", OwnerUid = "1001", Permissions = "777" },
                 Path = "/",
                 PosixUser = new PosixUser { Gid = "0", Uid = "0" }
             });
@@ -50,18 +54,25 @@ namespace pwnctl.cdk
             pwnctlApiRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonElasticFileSystemClientFullAccess"));
 
             // Create the lambda function
-            var function = new Function(this, "pwnctl-lambda-api", new FunctionProps
+            var function = new Function(this, "pwnctl-api", new FunctionProps
             {
                 Runtime = Runtime.DOTNET_6,
-                Code = Code.FromAsset("src/pwnctl.api"),
-                Handler = "src/pwnctl.api",
+                Code = Code.FromAsset(Path.Join("src", "pwnctl.api", "bin", "Release", "net6.0")),
+                Handler = "pwnctl.api",
                 Vpc = vpc,
                 Role = pwnctlApiRole,
                 Filesystem = Amazon.CDK.AWS.Lambda.FileSystem.FromEfsAccessPoint(accessPoint, "/mnt/efs")
             });
 
-            function.AddFunctionUrl(new FunctionUrlOptions {
+            var fnUrl = function.AddFunctionUrl(new FunctionUrlOptions
+            {
                 AuthType = FunctionUrlAuthType.NONE
+            });
+
+            new CfnOutput(this, "PwnctlApiUrl", new CfnOutputProps
+            {
+                // The .url attributes will return the unique Function URL
+                Value = fnUrl.Url
             });
 
             // SQS

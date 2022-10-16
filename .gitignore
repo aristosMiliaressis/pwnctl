@@ -363,4 +363,5 @@ src/pwnwrk.svc/data/queue/
 *.txt
 *.db
 
+cdk.out/*
 deployment/*

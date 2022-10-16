@@ -29,11 +29,17 @@ fi
 # install pwnctl cli
 curl https://raw.githubusercontent.com/aristosMiliaressis/pwnctl/master/src/pwnctl.cli/install.sh | sudo bash
 
-region=$1
+apikey=$1
 connectionString=$2
+region=$(aws configure get region)
 accountId=$(aws sts get-caller-identity --query "Account" --output text)
 
 # bootsrap aws env & deploy app
 cdk bootstrap aws://$accountId/$region
 
+dotnet publish src/pwnctl.api/pwnctl.api.csproj -c Release
+
 cdk deploy PwnctlCdkStack --parameters connectionString="$connectionString"
+
+chmod +x deploy.sh
+./deploy.sh $apikey

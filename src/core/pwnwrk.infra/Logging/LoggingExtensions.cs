@@ -1,6 +1,6 @@
 namespace pwnwrk.infra.Logging
 {
-    public static class Extensions
+    public static class LoggingExtensions
     {
         public static string ToRecursiveExInfo(this Exception ex)
         {

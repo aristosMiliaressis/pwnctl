@@ -1,28 +1,24 @@
-#!/bin.bash
+#!/bin/bash
 
 apiKey=$1
-functionUrl=$(aws lambda get-function-url-config --function-name PwnctlApi | jq -r .FunctionUrl)
+functionName=$(aws lambda list-functions | jq -r '.Functions[] | select( .FunctionName  | startswith("PwnctlCdkStack-pwnctlapi")) | .FunctionName')
+functionUrl=$(aws lambda get-function-url-config --function-name $functionName | jq -r .FunctionUrl)
 
-url -XPUT ${functionUrl}fs/create?path=/seed -H "X-Api-Key: $apiKey"
+uploadDirectory() {
+     dir=$1
+     for file in $dir/*; 
+     do 
+          if [ -d $file ];
+          then
+               uploadDirectory $file
+          else
+               echo "Uploading $file"
+               curl -XPUT ${functionUrl}fs/upload?path=/${file#"$dir"} \
+                    -H "X-Api-Key: $apiKey" \
+                    -H 'Content-Type: text/plain' \
+                    --data-binary @$file
+          fi          
+     done
+}
 
-curl -XPUT ${functionUrl}fs/upload?path=/entrypoint_hook.sh \
-     -H "X-Api-Key: $apiKey" \
-     -H 'Content-Type: text/plain' \
-     --data-binary @src/pwnwrk.svc/data/entrypoint_hook.sh
-
-curl -XPUT ${functionUrl}fs/upload?path=/seed/task-definitions.yml \
-     -H "X-Api-Key: $apiKey" \
-     -H 'Content-Type: text/plain' \
-     --data-binary @src/pwnwrk.svc/data/seed/task-definitions.yml
-
-curl -XPUT ${functionUrl}fs/upload?path=/seed/notification-rules.yml \
-     -H "X-Api-Key: $apiKey" \
-     -H 'Content-Type: text/plain' \
-     --data-binary @src/pwnwrk.svc/data/seed/notification-rules.yml
-
-# seed/target-*.json
-# config.ini
-# amass.ini
-# aws.credentials
-# aws.config
-# provider-config.yaml
+uploadDirectory ./deployment

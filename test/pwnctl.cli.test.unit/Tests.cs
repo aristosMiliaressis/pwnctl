@@ -20,8 +20,9 @@ public class Tests
     {
         Environment.SetEnvironmentVariable("PWNCTL_IsTestRun", "true");
         Environment.SetEnvironmentVariable("PWNCTL_INSTALL_PATH", ".");
-        
-        PwnwrkInfraFacade.SetupAsync().Wait();
+
+        // reset the database for every test method
+        DatabaseInitializer.InitializeAsync().Wait();
 
         var psi = new ProcessStartInfo();
         psi.FileName = "/bin/bash";

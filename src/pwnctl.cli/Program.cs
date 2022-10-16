@@ -18,8 +18,6 @@ internal class Program
 
     static async Task Main(string[] args)
     {
-        await PwnwrkInfraFacade.SetupAsync();
-
         if (args.Length < 1)
         {
             Console.WriteLine("No mode provided");

@@ -173,6 +173,20 @@ prints a summary about queued tasks and found assets
 
 **Worker Setup**
 
+1. manually provision a public facing PostgreSQL instance
+2. create an iam user with the policy provided in `aws/pwnctl.cdk/pwnctl-cdk-role.json`
+3. put all configuration/seed/script files in a `deployment/` folder in the root of the repo.
+4. run `setup.sh`
+
+`setup.sh` will do the following.
+- make sure you have the `aws` and `aws cdk` cli installed & install them if not
+- install the pwnctl cli locally
+- bootstrap your configured aws environment for use with cdk.
+- provision all aws resources trough cdk & deploy the app
+- upload all files in `deployment/` to the EFS
+
 **To Do**
-- [ ] Automate with CDK
-- [ ] Document
+- [ ] setup secret manager for the db connection string & api key(or use iam auth instead of api key)
+- [ ] cli install from source mode
+- [ ] private ecr registry (+ cdk integration with github action in `ci.yml`)
+- [ ] terraform
