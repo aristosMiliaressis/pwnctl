@@ -55,7 +55,8 @@ namespace pwnctl.cli.Utilities
                 .Where(p => p.PropertyType.IsAssignableTo(typeof(BaseAsset)))
                 .Select(rf => (BaseAsset) rf.GetValue(asset))
                 .Where(a => a != null)
-                .ToList().ForEachAsync(async refAsset => 
+                .ToList()
+                .ForEachAsync(async refAsset => 
                 {
                     await HandleAssetAsync(refAsset);
                 });
@@ -66,18 +67,20 @@ namespace pwnctl.cli.Utilities
             asset = await _repository.GetAssetWithReferencesAsync(asset);
 
             asset.InScope = ScopeChecker.Singleton.IsInScope(asset);
-            if (asset.InScope)
+            if (!asset.InScope)
             {
-                var rule = _notificationRuleChecker.Check(asset);
-                if (rule != null)
-                {
-                   _notificationSender.Send(asset, rule);
-                }
-
-                await _jobService.AssignAsync(asset);
-
-                await _repository.UpdateAsync(asset);
+                return;
             }
+
+            var rule = _notificationRuleChecker.Check(asset);
+            if (rule != null)
+            {
+                _notificationSender.Send(asset, rule);
+            }
+
+            await _jobService.AssignAsync(asset);
+
+            await _repository.UpdateAsync(asset);
         }
     }
 }

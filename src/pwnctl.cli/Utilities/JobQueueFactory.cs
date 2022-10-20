@@ -8,16 +8,16 @@ namespace pwnctl.cli.Utilities
     {
         public static IJobQueueService Create()
         {
-            if (PwnContext.Config.JobQueue.IsSQS)
-            {
-                return new SQSJobQueueService();
-            }
-            else if (PwnContext.Config.IsTestRun)
+            if (PwnContext.Config.IsTestRun)
             {
                 return new MockJobQueueService();
             }
+            else if (PwnContext.Config.JobQueue.UseBash)
+            {
+                return new BashJobQueueService();
+            }
 
-            return new BashJobQueueService();
+            return new SQSJobQueueService();
         }
     }
 }

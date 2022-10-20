@@ -31,7 +31,7 @@ namespace pwnwrk.infra.Logging
             return new LoggerConfiguration()
                     .MinimumLevel.Is(Enum.Parse<LogEventLevel>(PwnContext.Config.Logging.MinLevel ?? "Information"))
                     .WriteTo.File(
-                        path: Path.Combine(EnvironmentVariables.PWNCTL_INSTALL_PATH, "pwnctl.log"), 
+                        path: Path.Combine(AppConfig.InstallPath, "pwnctl.log"), 
                         restrictedToMinimumLevel: Enum.Parse<LogEventLevel>(PwnContext.Config.Logging.MinLevel ?? "Information"))
                     .CreateLogger();        
         }

@@ -7,6 +7,7 @@ using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.Lambda;
 using Amazon.CDK.AWS.CloudWatch;
 using Amazon.CDK.AWS.ApplicationAutoScaling;
+using Amazon.CDK.AWS.Logs;
 using System.Collections.Generic;
 using System.IO;
 
@@ -14,6 +15,8 @@ namespace pwnctl.cdk
 {
     internal class PwnctlCdkStack : Stack
     {
+
+
         internal PwnctlCdkStack(Construct scope, string id, IStackProps props = null) : base(scope, id, props)
         {
             var connectionString = new CfnParameter(this, "connectionString", new CfnParameterProps
@@ -22,29 +25,72 @@ namespace pwnctl.cdk
                 Description = "The database connection string"
             });
 
-            // create the VPC
-            var vpc = new Vpc(this, "pwnwrk-vpc", new VpcProps { 
+            var vpc = new Vpc(this, Constants.VpcId, new VpcProps { 
                 MaxAzs = 1,
                 NatGateways = 0
             });
 
-            // Create a file system in EFS to store information
-            var fs = new Amazon.CDK.AWS.EFS.FileSystem(this, "pwnwrk-fs", new FileSystemProps
+            var (queue, dlq) = CreateQueues();
+
+            var fs = new Amazon.CDK.AWS.EFS.FileSystem(this, Constants.EfsId, new FileSystemProps
             {
                 Vpc = vpc,
                 RemovalPolicy = RemovalPolicy.DESTROY
             });
 
-            // Create a access point to EFS
-            var accessPoint = fs.AddAccessPoint("pwnctl-lambda-api-fsap", new AccessPointOptions
+            var accessPoint = fs.AddAccessPoint(Constants.EfsApId, new AccessPointOptions
             {
                 CreateAcl = new Acl { OwnerGid = "1001", OwnerUid = "1001", Permissions = "777" },
                 Path = "/",
                 PosixUser = new PosixUser { Gid = "0", Uid = "0" }
             });
 
-            // Create Lambda role
-            var pwnctlApiRole = new Role(this, "pwnctl-api-role", new RoleProps
+            CreateLambdaApi(vpc, accessPoint);
+            
+            var cluster = new Cluster(this, Constants.EcsClusterName, new ClusterProps {
+                Vpc = vpc
+            });
+
+            var taskDef = CreateTaskDefinition(connectionString, fs, accessPoint, queue, dlq);
+
+            CreateFargateService(cluster, taskDef, fs, queue);
+        }
+
+        internal (Queue, Queue) CreateQueues()
+        {
+            var dlq = new Queue(this, Constants.DLQName, new QueueProps
+            {
+                QueueName = Constants.DLQName,
+                Encryption = QueueEncryption.UNENCRYPTED,
+                ContentBasedDeduplication = true,
+                MaxMessageSizeBytes = 8192,
+                ReceiveMessageWaitTime = Duration.Seconds(20),
+                RetentionPeriod = Duration.Days(14),
+                VisibilityTimeout = Duration.Seconds(Constants.QueueVisibilityTimeoutInSec)
+            });
+
+            var queue = new Queue(this, Constants.QueueName, new QueueProps
+            {
+                QueueName = Constants.QueueName,
+                Encryption = QueueEncryption.UNENCRYPTED,
+                ContentBasedDeduplication = true,
+                MaxMessageSizeBytes = 8192,
+                ReceiveMessageWaitTime = Duration.Seconds(20),
+                RetentionPeriod = Duration.Days(1),
+                VisibilityTimeout = Duration.Seconds(Constants.QueueVisibilityTimeoutInSec),
+                DeadLetterQueue = new DeadLetterQueue
+                {
+                    MaxReceiveCount = 10,
+                    Queue = dlq
+                }
+            });
+
+            return (queue, dlq);
+        }
+
+        public void CreateLambdaApi(Vpc vpc, AccessPoint accessPoint)
+        {
+            var pwnctlApiRole = new Role(this, Constants.LambdaRole, new RoleProps
             {
                 AssumedBy = new ServicePrincipal("lambda.amazonaws.com")
             });
@@ -53,15 +99,14 @@ namespace pwnctl.cdk
             pwnctlApiRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("service-role/AWSLambdaVPCAccessExecutionRole"));
             pwnctlApiRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonElasticFileSystemClientFullAccess"));
 
-            // Create the lambda function
-            var function = new Function(this, "pwnctl-api", new FunctionProps
+            var function = new Function(this, Constants.LambdaName, new FunctionProps
             {
                 Runtime = Runtime.DOTNET_6,
                 Code = Code.FromAsset(Path.Join("src", "pwnctl.api", "bin", "Release", "net6.0")),
                 Handler = "pwnctl.api",
                 Vpc = vpc,
                 Role = pwnctlApiRole,
-                Filesystem = Amazon.CDK.AWS.Lambda.FileSystem.FromEfsAccessPoint(accessPoint, "/mnt/efs")
+                Filesystem = Amazon.CDK.AWS.Lambda.FileSystem.FromEfsAccessPoint(accessPoint, Constants.EfsMountPoint)
             });
 
             var fnUrl = function.AddFunctionUrl(new FunctionUrlOptions
@@ -71,100 +116,92 @@ namespace pwnctl.cdk
 
             new CfnOutput(this, "PwnctlApiUrl", new CfnOutputProps
             {
-                // The .url attributes will return the unique Function URL
                 Value = fnUrl.Url
             });
+        }
 
-            // SQS
-            var dlq = new Queue(this, "pwnwrk-dlq.fifo", new QueueProps {
-                QueueName = "pwnwrk-dlq.fifo",
-                Encryption = QueueEncryption.UNENCRYPTED,
-                ContentBasedDeduplication = true,
-                MaxMessageSizeBytes = 8192,
-                ReceiveMessageWaitTime = Duration.Seconds(20),
-                RetentionPeriod = Duration.Days(14),
-                VisibilityTimeout = Duration.Seconds(30)
-            });
-
-            var queue = new Queue(this, "pwnwrk.fifo", new QueueProps {
-                QueueName = "pwnwrk.fifo",
-                Encryption = QueueEncryption.UNENCRYPTED,
-                ContentBasedDeduplication = true,
-                MaxMessageSizeBytes = 8192,
-                ReceiveMessageWaitTime = Duration.Seconds(20),
-                RetentionPeriod = Duration.Days(1),
-                VisibilityTimeout = Duration.Seconds(30),
-                DeadLetterQueue = new DeadLetterQueue {
-                    MaxReceiveCount = 10,
-                    Queue = dlq
-                }
-            });
-
-            // Create an ECS cluster
-            var cluster = new Cluster(this, "pwnwrk-cluster", new ClusterProps {
-                Vpc = vpc
-            });
-
-            var ecsTaskExecutionRole = new Role(this, "pwnwrk-role", new RoleProps
+        public FargateTaskDefinition CreateTaskDefinition(CfnParameter connectionString, Amazon.CDK.AWS.EFS.FileSystem fs, AccessPoint accessPoint, Queue queue, Queue dlq)
+        {
+            var ecsTaskExecutionRole = new Role(this, Constants.EcsRoleName, new RoleProps
             {
                 AssumedBy = new ServicePrincipal("ecs-tasks.amazonaws.com")
             });
 
             ecsTaskExecutionRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("service-role/AmazonECSTaskExecutionRolePolicy"));
             ecsTaskExecutionRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonElasticFileSystemClientFullAccess"));
+            ecsTaskExecutionRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonEC2ContainerRegistryReadOnly"));
             queue.GrantConsumeMessages(ecsTaskExecutionRole);
             queue.GrantSendMessages(ecsTaskExecutionRole);
 
-            // ECS Fargate Task Definition
-            var fargateTaskDefinition = new FargateTaskDefinition(this, "pwnwrk-def", new FargateTaskDefinitionProps {
+            var taskDef = new FargateTaskDefinition(this, Constants.TaskDefinitionId, new FargateTaskDefinitionProps
+            {
                 MemoryLimitMiB = 2048,
                 Cpu = 512,
                 TaskRole = ecsTaskExecutionRole,
-                ExecutionRole = ecsTaskExecutionRole
+                ExecutionRole = ecsTaskExecutionRole,
+                Volumes = new Amazon.CDK.AWS.ECS.Volume[]
+                {
+                    new Amazon.CDK.AWS.ECS.Volume()
+                    {
+                        Name = Constants.EfsId,
+                        EfsVolumeConfiguration = new EfsVolumeConfiguration
+                        {
+                            FileSystemId = fs.FileSystemId,
+                            AuthorizationConfig = new AuthorizationConfig
+                            {
+                                Iam = "ENABLED",
+                                AccessPointId = accessPoint.AccessPointId
+                            },
+                            RootDirectory = "/",
+                            TransitEncryption = "ENABLED"
+                        }
+                    }
+                }
             });
 
-            fargateTaskDefinition.AddContainer("pwnwrk", new ContainerDefinitionOptions
+            var container = taskDef.AddContainer(Constants.ContainerName, new ContainerDefinitionOptions
             {
                 ContainerName = "pwnwrk",
                 Cpu = 512,
                 MemoryLimitMiB = 2048,
                 Image = ContainerImage.FromRegistry("public.ecr.aws/i0m2p7r6/pwnwrk:latest"),
-                Logging = LogDriver.AwsLogs(new AwsLogDriverProps { StreamPrefix = "pwnwrk-log" }),
+                Logging = LogDriver.AwsLogs(new AwsLogDriverProps
+                {
+                    StreamPrefix = "/aws/ecs",
+                    LogRetention = RetentionDays.ONE_WEEK,
+                }),
                 Environment = new Dictionary<string, string>()
                 {
-                    {"PWNCTL_JobQueue__QueueName", "pwnwrk.fifo"},
-                    {"PWNCTL_JobQueue__DLQName", "pwnwrk-dlq.fifo"},
-                    {"PWNCTL_JobQueue__IsSQS", "true"},
-                    {"PWNCTL_JobQueue__VisibilityTimeout", "30"},
+                    {"PWNCTL_JobQueue__QueueName", queue.QueueName},
+                    {"PWNCTL_JobQueue__DLQName", dlq.QueueName},
+                    {"PWNCTL_JobQueue__VisibilityTimeout", Constants.QueueVisibilityTimeoutInSec.ToString()},
+                    {"PWNCTL_Logging__LogGroup", $"/aws/ecs/{Constants.ContainerName}/{Constants.FargateServiceId}"},
                     {"PWNCTL_Db__ConnectionString", connectionString.ValueAsString},
-                    {"PWNCTL_EFS_MOUNT_POINT", "/mnt/efs"}
+                    {"PWNCTL_EFS_MOUNT_POINT", Constants.EfsMountPoint}
                 }
             });
 
-            var volume = new Amazon.CDK.AWS.ECS.Volume
+            var mountPoint = new Amazon.CDK.AWS.ECS.MountPoint
             {
-                Name = "pwnwrk-fs",
-                EfsVolumeConfiguration = new EfsVolumeConfiguration
-                {
-                    FileSystemId = fs.FileSystemId,
-                    AuthorizationConfig = new AuthorizationConfig
-                    {
-                        //Iam = "DISABLED",
-                        AccessPointId = accessPoint.AccessPointId
-                    },
-                    RootDirectory = "/",
-                    TransitEncryption = "ENABLED"
-                }
+                SourceVolume = Constants.EfsId,
+                ContainerPath = Constants.EfsMountPoint,
+                ReadOnly = false
             };
 
-            fargateTaskDefinition.AddVolume(volume);
+            container.AddMountPoints(mountPoint);
 
-            // Instantiate an Amazon ECS Service
-            var fargateService = new FargateService(this, "pwnwrk-svc", new FargateServiceProps {
+            return taskDef;
+        }
+
+        internal void CreateFargateService(Cluster cluster, FargateTaskDefinition taskDef, Amazon.CDK.AWS.EFS.FileSystem fs, Queue queue)
+        {
+            var fargateService = new FargateService(this, Constants.FargateServiceId, new FargateServiceProps
+            {
+                AssignPublicIp = true,
                 Cluster = cluster,
-                TaskDefinition = fargateTaskDefinition,
+                TaskDefinition = taskDef,
                 DesiredCount = 0,
-                CapacityProviderStrategies = new [] { new CapacityProviderStrategy {
+                CapacityProviderStrategies = new[] { new CapacityProviderStrategy {
                     CapacityProvider = "FARGATE_SPOT",
                     Weight = 2
                 }, new CapacityProviderStrategy {
@@ -183,7 +220,7 @@ namespace pwnctl.cdk
                 Period = Duration.Seconds(60),
                 DimensionsMap = new Dictionary<string, string>
                 {
-                    { "QueueName", "pwnwrk.fifo" }
+                    { "QueueName", queue.QueueName }
                 }
             });
 
@@ -193,16 +230,16 @@ namespace pwnctl.cdk
             {
                 Cooldown = Duration.Seconds(300),
                 Metric = queueDepthMetric,
-                ScalingSteps = new[] 
-                { 
-                    new Amazon.CDK.AWS.ApplicationAutoScaling.ScalingInterval 
-                    { 
-                        Upper = 1, 
-                        Change = 1 
-                    }, 
-                    new Amazon.CDK.AWS.ApplicationAutoScaling.ScalingInterval 
-                    { 
-                        Upper = 30, Change = 2 
+                ScalingSteps = new[]
+                {
+                    new Amazon.CDK.AWS.ApplicationAutoScaling.ScalingInterval
+                    {
+                        Upper = 1,
+                        Change = 1
+                    },
+                    new Amazon.CDK.AWS.ApplicationAutoScaling.ScalingInterval
+                    {
+                        Upper = 30, Change = 2
                     } ,
                     new Amazon.CDK.AWS.ApplicationAutoScaling.ScalingInterval
                     {
@@ -211,7 +248,7 @@ namespace pwnctl.cdk
                 }
             });
 
-            scaling.ScaleOnMetric("ScaleInPolicy", new Amazon.CDK.AWS.ApplicationAutoScaling.BasicStepScalingPolicyProps 
+            scaling.ScaleOnMetric("ScaleInPolicy", new Amazon.CDK.AWS.ApplicationAutoScaling.BasicStepScalingPolicyProps
             {
                 Cooldown = Duration.Seconds(300),
                 Metric = queueDepthMetric,
@@ -229,7 +266,7 @@ namespace pwnctl.cdk
                     },
                     new Amazon.CDK.AWS.ApplicationAutoScaling.ScalingInterval
                     {
-                        Lower = 1, 
+                        Lower = 1,
                         Change = 0
                     }
                 }

@@ -22,7 +22,7 @@ namespace pwnwrk.infra.Configuration
 
         public class JobQueueConfig
         {
-            public bool IsSQS { get; set; }
+            public bool UseBash { get; set; }
             public int WorkerCount { get; set; }
             public string QueueName { get; set; }
             public string DLQName { get; set; }

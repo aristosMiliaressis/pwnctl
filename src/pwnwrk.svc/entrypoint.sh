@@ -3,8 +3,7 @@
 # downloading executable in entrypoint to ensure we always get the latest
 curl https://raw.githubusercontent.com/aristosMiliaressis/pwnctl/master/src/pwnctl.cli/install.sh | bash
 
-cp -r /mnt/efs/seed $PWNCTL_INSTALL_PATH
-cp -r /mnt/efs/config.ini $PWNCTL_INSTALL_PATH
+cp /mnt/efs/config.ini $PWNCTL_INSTALL_PATH
 
 # volume mapped entrypoint_hook.sh for injecting resources and 
 # running commands at startup without needing to rebuild the image

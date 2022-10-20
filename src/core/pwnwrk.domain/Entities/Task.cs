@@ -58,6 +58,7 @@ namespace pwnwrk.domain.Entities
             Arguments = JsonSerializer.Serialize(arguments);
         }
 
+        // Interpolate asset arguments into CommandTemplate
         public string Command {
             get
             {

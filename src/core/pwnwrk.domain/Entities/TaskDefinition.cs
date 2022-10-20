@@ -13,6 +13,7 @@ namespace pwnwrk.domain.Entities
 
         public TaskDefinition() {}
 
+        // Extrapolate list of parameter names from CommandTemplate
         public List<string> Parameters
         { 
             get
