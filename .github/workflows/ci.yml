@@ -50,7 +50,7 @@ jobs:
           name: build-tarball
 
       - name: get datetime stamp
-        run: echo "::set-output name=STAMP::$(date +%y%m%d%H%M%S)"
+        run: echo "STAMP=$(date +%y%m%d%H%M%S)" >> $GITHUB_OUTPUT
         id: datetime
 
       - name: Create release
