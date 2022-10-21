@@ -2,7 +2,8 @@ using pwnwrk.infra.Configuration;
 using Serilog;
 using Serilog.Core;
 using Serilog.Events;
-using Serilog.Sinks.AwsCloudWatch;
+using AWS.Logger.SeriLog;
+using AWS.Logger;
 
 namespace pwnwrk.infra.Logging
 {
@@ -17,22 +18,20 @@ namespace pwnwrk.infra.Logging
 
         private static Logger CreateCloudWatchLogger()
         {
+            AWSLoggerConfig configuration = new AWSLoggerConfig(PwnContext.Config.Logging.LogGroup ?? "/aws/ecs/pwnwrk");
+
             return new LoggerConfiguration()
-                    .MinimumLevel.Is(Enum.Parse<LogEventLevel>(PwnContext.Config.Logging.MinLevel ?? "Information"))
-                    .WriteTo.AmazonCloudWatch(
-                        logGroup: PwnContext.Config.Logging.LogGroup ?? "/aws/ecs/pwnctl",
-                        logStreamPrefix: DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff"),
-                        logGroupRetentionPolicy: Enum.Parse<LogGroupRetentionPolicy>(PwnContext.Config.Logging.RetentionPeriod ?? "OneWeek")
-                    ).CreateLogger();
+                .MinimumLevel.Is(Enum.Parse<LogEventLevel>(PwnContext.Config.Logging.MinLevel ?? "Information"))
+                .WriteTo.AWSSeriLog(configuration)
+                .CreateLogger();
         }
 
         private static Logger CreateFileLogger()
         {
             return new LoggerConfiguration()
                     .MinimumLevel.Is(Enum.Parse<LogEventLevel>(PwnContext.Config.Logging.MinLevel ?? "Information"))
-                    .WriteTo.File(
-                        path: Path.Combine(AppConfig.InstallPath, "pwnctl.log"), 
-                        restrictedToMinimumLevel: Enum.Parse<LogEventLevel>(PwnContext.Config.Logging.MinLevel ?? "Information"))
+                    .WriteTo.File(path: Path.Combine(AppConfig.InstallPath, "pwnctl.log"))
+                    .WriteTo.Console()
                     .CreateLogger();        
         }
     }

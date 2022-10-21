@@ -19,7 +19,7 @@ then
 fi
 
 # if the resolver list is older than 6 hours replace it with a new one
-if [ ! -f "/mnt/efs/resolvers_top25.txt" ] || [ $(((`date +%s` - `stat -L --format %Y /mnt/efs/resolvers_top25.txt`))) > 60*60*6 ]
+if [ ! -f "/mnt/efs/resolvers_top25.txt" ] || [ $(((`date +%s` - `stat -L --format %Y /mnt/efs/resolvers_top25.txt`))) -gt $((60*60*6)) ]
 then
     echo "Getting fresh resolvers"
     get-valid-resolvers.sh 2>&1 >/dev/null

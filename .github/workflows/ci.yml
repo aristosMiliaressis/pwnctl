@@ -40,24 +40,6 @@ jobs:
           path: ./build.tar.gz
           retention-days: 1
 
-  build-api:
-    runs-on: ubuntu-latest
-    container:
-      image: mcr.microsoft.com/dotnet/sdk:6.0
-    steps:
-      - name: Checkout subject branch
-        uses: actions/checkout@v2
-
-      - name: Cache Nuget packages
-        uses: actions/cache@v2
-        with:
-          path: ~/.nuget/packages
-          key: nuget-${{ hashFiles('**/packages.lock.json') }}
-          restore-keys: nuget
-
-      - name: build api
-        run: dotnet build src/pwnctl.api/pwnctl.api.csproj
-
   release-cli:
     needs: test-and-build-cli
     runs-on: ubuntu-latest
@@ -89,6 +71,24 @@ jobs:
           asset_name: pwnctl-linux64.tar.gz
           asset_path: ./build.tar.gz
           asset_content_type: application/x-elf
+
+  build-api:
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/dotnet/sdk:6.0
+    steps:
+      - name: Checkout subject branch
+        uses: actions/checkout@v2
+
+      - name: Cache Nuget packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: nuget
+
+      - name: build api
+        run: dotnet build src/pwnctl.api/pwnctl.api.csproj
 
   build-and-push-worker:
     needs: test-and-build-cli

@@ -12,6 +12,7 @@
             "application-autoscaling:RegisterScalableTarget",
             "cloudformation:*",
             "cloudtrail:LookupEvents",
+            "cloudwatch:DeleteAlarms",
             "cloudwatch:DescribeAlarmsForMetric",
             "cloudwatch:GetMetricData",
             "cloudwatch:PutMetricAlarm",

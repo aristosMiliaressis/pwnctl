@@ -15,8 +15,6 @@ namespace pwnctl.cdk
 {
     internal class PwnctlCdkStack : Stack
     {
-
-
         internal PwnctlCdkStack(Construct scope, string id, IStackProps props = null) : base(scope, id, props)
         {
             var connectionString = new CfnParameter(this, "connectionString", new CfnParameterProps
@@ -130,6 +128,7 @@ namespace pwnctl.cdk
             ecsTaskExecutionRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("service-role/AmazonECSTaskExecutionRolePolicy"));
             ecsTaskExecutionRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonElasticFileSystemClientFullAccess"));
             ecsTaskExecutionRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonEC2ContainerRegistryReadOnly"));
+            ecsTaskExecutionRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("CloudWatchFullAccess"));            
             queue.GrantConsumeMessages(ecsTaskExecutionRole);
             queue.GrantSendMessages(ecsTaskExecutionRole);
 
@@ -159,23 +158,30 @@ namespace pwnctl.cdk
                 }
             });
 
+            var logGroup = new LogGroup(this, "PwnwrkLogs", new LogGroupProps
+            {
+                LogGroupName = "/aws/ecs/pwnwrk",
+                RemovalPolicy = RemovalPolicy.DESTROY,
+                Retention = RetentionDays.ONE_WEEK
+            });
+
             var container = taskDef.AddContainer(Constants.ContainerName, new ContainerDefinitionOptions
             {
-                ContainerName = "pwnwrk",
+                ContainerName = Constants.ContainerName,
                 Cpu = 512,
                 MemoryLimitMiB = 2048,
                 Image = ContainerImage.FromRegistry("public.ecr.aws/i0m2p7r6/pwnwrk:latest"),
                 Logging = LogDriver.AwsLogs(new AwsLogDriverProps
                 {
                     StreamPrefix = "/aws/ecs",
-                    LogRetention = RetentionDays.ONE_WEEK,
+                    LogGroup = logGroup
                 }),
                 Environment = new Dictionary<string, string>()
                 {
                     {"PWNCTL_JobQueue__QueueName", queue.QueueName},
                     {"PWNCTL_JobQueue__DLQName", dlq.QueueName},
                     {"PWNCTL_JobQueue__VisibilityTimeout", Constants.QueueVisibilityTimeoutInSec.ToString()},
-                    {"PWNCTL_Logging__LogGroup", $"/aws/ecs/{Constants.ContainerName}/{Constants.FargateServiceId}"},
+                    {"PWNCTL_Logging__LogGroup", logGroup.LogGroupName},
                     {"PWNCTL_Db__ConnectionString", connectionString.ValueAsString},
                     {"PWNCTL_EFS_MOUNT_POINT", Constants.EfsMountPoint}
                 }
