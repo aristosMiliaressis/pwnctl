@@ -1,8 +1,6 @@
 using MediatR;
 using FluentValidation;
 
-// TODO: null handling?
-
 namespace pwnwrk.infra.MediatR
 {
     public class ValidationPipeline<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>

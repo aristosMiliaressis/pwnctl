@@ -1,4 +1,4 @@
-name: ci
+name: pwnwrk-ci
 
 on:
   push:

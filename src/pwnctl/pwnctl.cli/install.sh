@@ -15,7 +15,5 @@ mv pwnctl /usr/local/bin
 mkdir /etc/pwnctl 2>/dev/null
 curl https://raw.githubusercontent.com/aristosMiliaressis/pwnctl/master/src/pwnctl/pwnctl.cli/scripts/config.ini -o /etc/pwnctl/config.ini 
 
-curl https://raw.githubusercontent.com/aristosMiliaressis/pwnctl/master/src/pwnwrk/pwnwrk.svc/scripts/get-psl.sh | bash
-
 echo "All done!"
 echo "Remember to setup your connection string in /etc/pwnctl/config.ini"

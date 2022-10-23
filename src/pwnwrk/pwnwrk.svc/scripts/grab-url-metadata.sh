@@ -7,4 +7,3 @@ echo $url \
     | jq '.ResponseHeasers += {"Title": .Title, "Status": .StatusCode, "FaviconHash": .FaviconHash}' \
     | jq -c '{asset:.Url, tags:.ResponseHeasers}'
  
-# TODO: look into: https://github.com/detectify/page-fetch

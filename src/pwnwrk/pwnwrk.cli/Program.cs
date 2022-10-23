@@ -11,12 +11,6 @@ internal class Program
 {
     static async Task Main(string[] args)
     {
-        if (args.Contains("-h") || args.Contains("--help"))
-        {
-            //PrintHelpPage();
-            return;
-        }
-
         var processor = new AssetProcessor();
 
         string line;

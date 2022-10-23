@@ -43,7 +43,7 @@ namespace pwnctl.cdk
                 PosixUser = new PosixUser { Gid = "0", Uid = "0" }
             });
 
-            CreateLambdaApi(vpc, accessPoint);
+            CreateLambdaApi(vpc, accessPoint, connectionString);
             
             var cluster = new Cluster(this, Constants.EcsClusterName, new ClusterProps {
                 Vpc = vpc
@@ -86,7 +86,7 @@ namespace pwnctl.cdk
             return (queue, dlq);
         }
 
-        public void CreateLambdaApi(Vpc vpc, AccessPoint accessPoint)
+        public void CreateLambdaApi(Vpc vpc, AccessPoint accessPoint, CfnParameter connectionString)
         {
             var pwnctlApiRole = new Role(this, Constants.LambdaRole, new RoleProps
             {
@@ -104,7 +104,17 @@ namespace pwnctl.cdk
                 Handler = "pwnctl.api",
                 Vpc = vpc,
                 Role = pwnctlApiRole,
-                Filesystem = Amazon.CDK.AWS.Lambda.FileSystem.FromEfsAccessPoint(accessPoint, Constants.EfsMountPoint)
+                Filesystem = Amazon.CDK.AWS.Lambda.FileSystem.FromEfsAccessPoint(accessPoint, Constants.EfsMountPoint),
+                Environment = new Dictionary<string, string>()
+                {
+                    {"PWNCTL_JobQueue__QueueName", Constants.QueueName},
+                    {"PWNCTL_JobQueue__DLQName", Constants.DLQName},
+                    {"PWNCTL_JobQueue__VisibilityTimeout", Constants.QueueVisibilityTimeoutInSec.ToString()},
+                    {"PWNCTL_Db__ConnectionString", connectionString.ValueAsString},
+                    {"PWNCTL_Logging__MinLevel", "Debug"},
+                    {"PWNCTL_Logging__LogGroup", $"/aws/lambda/{Constants.LambdaName}"},
+                    {"PWNCTL_EFS_MOUNT_POINT", Constants.EfsMountPoint}
+                }
             });
 
             var fnUrl = function.AddFunctionUrl(new FunctionUrlOptions
@@ -168,6 +178,8 @@ namespace pwnctl.cdk
                 RemovalPolicy = RemovalPolicy.DESTROY,
                 Retention = RetentionDays.ONE_WEEK
             });
+
+            logGroup.GrantWrite(new ServicePrincipal("ecs-tasks.amazonaws.com"));
 
             var container = taskDef.AddContainer(Constants.ContainerName, new ContainerDefinitionOptions
             {
