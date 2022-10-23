@@ -1,0 +1,1501 @@
+{
+ "Parameters": {
+  "connectionString": {
+   "Type": "String",
+   "Description": "The database connection string"
+  },
+  "AssetParameters287aebc978ce4547e656a62ea6fea1808d48e709d3ea2977d8a5f60e44299f47S3Bucket176CBAB0": {
+   "Type": "String",
+   "Description": "S3 bucket for asset \"287aebc978ce4547e656a62ea6fea1808d48e709d3ea2977d8a5f60e44299f47\""
+  },
+  "AssetParameters287aebc978ce4547e656a62ea6fea1808d48e709d3ea2977d8a5f60e44299f47S3VersionKey261DF7FC": {
+   "Type": "String",
+   "Description": "S3 key for asset version \"287aebc978ce4547e656a62ea6fea1808d48e709d3ea2977d8a5f60e44299f47\""
+  },
+  "AssetParameters287aebc978ce4547e656a62ea6fea1808d48e709d3ea2977d8a5f60e44299f47ArtifactHashF87A02B9": {
+   "Type": "String",
+   "Description": "Artifact hash for asset \"287aebc978ce4547e656a62ea6fea1808d48e709d3ea2977d8a5f60e44299f47\""
+  }
+ },
+ "Resources": {
+  "pwnwrkvpc020FF09A": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "PwnctlCdkStack/pwnwrk-vpc"
+     },
+     {
+      "Key": "stack",
+      "Value": "pwnctl"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-vpc/Resource"
+   }
+  },
+  "pwnwrkvpcPublicSubnet1Subnet50A78F6A": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "pwnwrkvpc020FF09A"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/17",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "PwnctlCdkStack/pwnwrk-vpc/PublicSubnet1"
+     },
+     {
+      "Key": "stack",
+      "Value": "pwnctl"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-vpc/PublicSubnet1/Subnet"
+   }
+  },
+  "pwnwrkvpcPublicSubnet1RouteTable4AE88A42": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "pwnwrkvpc020FF09A"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "PwnctlCdkStack/pwnwrk-vpc/PublicSubnet1"
+     },
+     {
+      "Key": "stack",
+      "Value": "pwnctl"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-vpc/PublicSubnet1/RouteTable"
+   }
+  },
+  "pwnwrkvpcPublicSubnet1RouteTableAssociationB680EC6D": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "pwnwrkvpcPublicSubnet1RouteTable4AE88A42"
+    },
+    "SubnetId": {
+     "Ref": "pwnwrkvpcPublicSubnet1Subnet50A78F6A"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-vpc/PublicSubnet1/RouteTableAssociation"
+   }
+  },
+  "pwnwrkvpcPublicSubnet1DefaultRoute98D3DDD5": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "pwnwrkvpcPublicSubnet1RouteTable4AE88A42"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "pwnwrkvpcIGWAC3C03B5"
+    }
+   },
+   "DependsOn": [
+    "pwnwrkvpcVPCGWE7842D46"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-vpc/PublicSubnet1/DefaultRoute"
+   }
+  },
+  "pwnwrkvpcIsolatedSubnet1SubnetC47E5A6C": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "pwnwrkvpc020FF09A"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.128.0/17",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Isolated"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     },
+     {
+      "Key": "Name",
+      "Value": "PwnctlCdkStack/pwnwrk-vpc/IsolatedSubnet1"
+     },
+     {
+      "Key": "stack",
+      "Value": "pwnctl"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-vpc/IsolatedSubnet1/Subnet"
+   }
+  },
+  "pwnwrkvpcIsolatedSubnet1RouteTableA318FADF": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "pwnwrkvpc020FF09A"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "PwnctlCdkStack/pwnwrk-vpc/IsolatedSubnet1"
+     },
+     {
+      "Key": "stack",
+      "Value": "pwnctl"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-vpc/IsolatedSubnet1/RouteTable"
+   }
+  },
+  "pwnwrkvpcIsolatedSubnet1RouteTableAssociation311C0293": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "pwnwrkvpcIsolatedSubnet1RouteTableA318FADF"
+    },
+    "SubnetId": {
+     "Ref": "pwnwrkvpcIsolatedSubnet1SubnetC47E5A6C"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-vpc/IsolatedSubnet1/RouteTableAssociation"
+   }
+  },
+  "pwnwrkvpcIGWAC3C03B5": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "PwnctlCdkStack/pwnwrk-vpc"
+     },
+     {
+      "Key": "stack",
+      "Value": "pwnctl"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-vpc/IGW"
+   }
+  },
+  "pwnwrkvpcVPCGWE7842D46": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "VpcId": {
+     "Ref": "pwnwrkvpc020FF09A"
+    },
+    "InternetGatewayId": {
+     "Ref": "pwnwrkvpcIGWAC3C03B5"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-vpc/VPCGW"
+   }
+  },
+  "pwnwrkdlqfifoA60405CB": {
+   "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "ContentBasedDeduplication": true,
+    "FifoQueue": true,
+    "MaximumMessageSize": 8192,
+    "MessageRetentionPeriod": 1209600,
+    "QueueName": "pwnwrk-dlq.fifo",
+    "ReceiveMessageWaitTimeSeconds": 20,
+    "Tags": [
+     {
+      "Key": "stack",
+      "Value": "pwnctl"
+     }
+    ],
+    "VisibilityTimeout": 30
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-dlq.fifo/Resource"
+   }
+  },
+  "pwnwrkfifo043C4E87": {
+   "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "ContentBasedDeduplication": true,
+    "FifoQueue": true,
+    "MaximumMessageSize": 8192,
+    "MessageRetentionPeriod": 86400,
+    "QueueName": "pwnwrk.fifo",
+    "ReceiveMessageWaitTimeSeconds": 20,
+    "RedrivePolicy": {
+     "deadLetterTargetArn": {
+      "Fn::GetAtt": [
+       "pwnwrkdlqfifoA60405CB",
+       "Arn"
+      ]
+     },
+     "maxReceiveCount": 10
+    },
+    "Tags": [
+     {
+      "Key": "stack",
+      "Value": "pwnctl"
+     }
+    ],
+    "VisibilityTimeout": 30
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "PwnctlCdkStack/pwnwrk.fifo/Resource"
+   }
+  },
+  "pwnwrkfs6B0E83F5": {
+   "Type": "AWS::EFS::FileSystem",
+   "Properties": {
+    "FileSystemTags": [
+     {
+      "Key": "Name",
+      "Value": "PwnctlCdkStack/pwnwrk-fs"
+     },
+     {
+      "Key": "stack",
+      "Value": "pwnctl"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-fs/Resource"
+   }
+  },
+  "pwnwrkfsEfsSecurityGroup5C55F9F7": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "PwnctlCdkStack/pwnwrk-fs/EfsSecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "PwnctlCdkStack/pwnwrk-fs"
+     },
+     {
+      "Key": "stack",
+      "Value": "pwnctl"
+     }
+    ],
+    "VpcId": {
+     "Ref": "pwnwrkvpc020FF09A"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-fs/EfsSecurityGroup/Resource"
+   }
+  },
+  "pwnwrkfsEfsSecurityGroupfromPwnctlCdkStackpwnctlapiSecurityGroupD8320BC12049A9DE741C": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "IpProtocol": "tcp",
+    "Description": "from PwnctlCdkStackpwnctlapiSecurityGroupD8320BC1:2049",
+    "FromPort": 2049,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "pwnwrkfsEfsSecurityGroup5C55F9F7",
+      "GroupId"
+     ]
+    },
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "pwnctlapiSecurityGroupC000D8A4",
+      "GroupId"
+     ]
+    },
+    "ToPort": 2049
+   },
+   "Metadata": {
+    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-fs/EfsSecurityGroup/from PwnctlCdkStackpwnctlapiSecurityGroupD8320BC1:2049"
+   }
+  },
+  "pwnwrkfsEfsSecurityGroupfromPwnctlCdkStackpwnwrksvcSecurityGroupFAD385442049C878424D": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "IpProtocol": "tcp",
+    "Description": "from PwnctlCdkStackpwnwrksvcSecurityGroupFAD38544:2049",
+    "FromPort": 2049,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "pwnwrkfsEfsSecurityGroup5C55F9F7",
+      "GroupId"
+     ]
+    },
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "pwnwrksvcSecurityGroup4BBDA767",
+      "GroupId"
+     ]
+    },
+    "ToPort": 2049
+   },
+   "Metadata": {
+    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-fs/EfsSecurityGroup/from PwnctlCdkStackpwnwrksvcSecurityGroupFAD38544:2049"
+   }
+  },
+  "pwnwrkfsEfsMountTarget1E8F83F52": {
+   "Type": "AWS::EFS::MountTarget",
+   "Properties": {
+    "FileSystemId": {
+     "Ref": "pwnwrkfs6B0E83F5"
+    },
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "pwnwrkfsEfsSecurityGroup5C55F9F7",
+       "GroupId"
+      ]
+     }
+    ],
+    "SubnetId": {
+     "Ref": "pwnwrkvpcIsolatedSubnet1SubnetC47E5A6C"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-fs/EfsMountTarget1"
+   }
+  },
+  "pwnwrkfspwnctllambdaapifsapF9EF4E24": {
+   "Type": "AWS::EFS::AccessPoint",
+   "Properties": {
+    "FileSystemId": {
+     "Ref": "pwnwrkfs6B0E83F5"
+    },
+    "PosixUser": {
+     "Gid": "0",
+     "Uid": "0"
+    },
+    "RootDirectory": {
+     "CreationInfo": {
+      "OwnerGid": "1001",
+      "OwnerUid": "1001",
+      "Permissions": "777"
+     },
+     "Path": "/"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-fs/pwnctl-lambda-api-fsap/Resource"
+   }
+  },
+  "pwnctlapirole0826A6D0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonElasticFileSystemClientFullAccess"
+       ]
+      ]
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "stack",
+      "Value": "pwnctl"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "PwnctlCdkStack/pwnctl-api-role/Resource"
+   }
+  },
+  "pwnctlapiroleDefaultPolicy1D23B5B9": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "elasticfilesystem:ClientMount",
+       "Condition": {
+        "StringEquals": {
+         "elasticfilesystem:AccessPointArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":elasticfilesystem:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":access-point/",
+            {
+             "Ref": "pwnwrkfspwnctllambdaapifsapF9EF4E24"
+            }
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": "elasticfilesystem:ClientWrite",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":elasticfilesystem:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":file-system/",
+          {
+           "Ref": "pwnwrkfs6B0E83F5"
+          }
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "pwnctlapiroleDefaultPolicy1D23B5B9",
+    "Roles": [
+     {
+      "Ref": "pwnctlapirole0826A6D0"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "PwnctlCdkStack/pwnctl-api-role/DefaultPolicy/Resource"
+   }
+  },
+  "pwnctlapiSecurityGroupC000D8A4": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Automatic security group for Lambda Function PwnctlCdkStackpwnctlapiD416E013",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "stack",
+      "Value": "pwnctl"
+     }
+    ],
+    "VpcId": {
+     "Ref": "pwnwrkvpc020FF09A"
+    }
+   },
+   "DependsOn": [
+    "pwnwrkfsEfsMountTarget1E8F83F52"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "PwnctlCdkStack/pwnctl-api/SecurityGroup/Resource"
+   }
+  },
+  "pwnctlapi975A4D96": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Ref": "AssetParameters287aebc978ce4547e656a62ea6fea1808d48e709d3ea2977d8a5f60e44299f47S3Bucket176CBAB0"
+     },
+     "S3Key": {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Fn::Select": [
+          0,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParameters287aebc978ce4547e656a62ea6fea1808d48e709d3ea2977d8a5f60e44299f47S3VersionKey261DF7FC"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "Fn::Select": [
+          1,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParameters287aebc978ce4547e656a62ea6fea1808d48e709d3ea2977d8a5f60e44299f47S3VersionKey261DF7FC"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      ]
+     }
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "pwnctlapirole0826A6D0",
+      "Arn"
+     ]
+    },
+    "FileSystemConfigs": [
+     {
+      "Arn": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":elasticfilesystem:",
+         {
+          "Ref": "AWS::Region"
+         },
+         ":",
+         {
+          "Ref": "AWS::AccountId"
+         },
+         ":access-point/",
+         {
+          "Ref": "pwnwrkfspwnctllambdaapifsapF9EF4E24"
+         }
+        ]
+       ]
+      },
+      "LocalMountPath": "/mnt/efs"
+     }
+    ],
+    "Handler": "pwnctl.api",
+    "Runtime": "dotnet6",
+    "Tags": [
+     {
+      "Key": "stack",
+      "Value": "pwnctl"
+     }
+    ],
+    "VpcConfig": {
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "pwnctlapiSecurityGroupC000D8A4",
+        "GroupId"
+       ]
+      }
+     ],
+     "SubnetIds": [
+      {
+       "Ref": "pwnwrkvpcIsolatedSubnet1SubnetC47E5A6C"
+      }
+     ]
+    }
+   },
+   "DependsOn": [
+    "pwnctlapiroleDefaultPolicy1D23B5B9",
+    "pwnctlapirole0826A6D0",
+    "pwnwrkfsEfsMountTarget1E8F83F52",
+    "pwnwrkfsEfsSecurityGroupfromPwnctlCdkStackpwnctlapiSecurityGroupD8320BC12049A9DE741C"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "PwnctlCdkStack/pwnctl-api/Resource",
+    "aws:asset:path": "asset.287aebc978ce4547e656a62ea6fea1808d48e709d3ea2977d8a5f60e44299f47.0",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "pwnctlapiFunctionUrlC82E55D9": {
+   "Type": "AWS::Lambda::Url",
+   "Properties": {
+    "AuthType": "NONE",
+    "TargetFunctionArn": {
+     "Fn::GetAtt": [
+      "pwnctlapi975A4D96",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "pwnwrkfsEfsMountTarget1E8F83F52"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "PwnctlCdkStack/pwnctl-api/FunctionUrl/Resource"
+   }
+  },
+  "pwnctlapiinvokefunctionurlD1E71F7B": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunctionUrl",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "pwnctlapi975A4D96",
+      "Arn"
+     ]
+    },
+    "Principal": "*",
+    "FunctionUrlAuthType": "NONE"
+   },
+   "DependsOn": [
+    "pwnwrkfsEfsMountTarget1E8F83F52"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "PwnctlCdkStack/pwnctl-api/invoke-function-url"
+   }
+  },
+  "pwnwrkclusterB1ACABA0": {
+   "Type": "AWS::ECS::Cluster",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "stack",
+      "Value": "pwnctl"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-cluster/Resource"
+   }
+  },
+  "pwnwrkrole35F47018": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonElasticFileSystemClientFullAccess"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+       ]
+      ]
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "stack",
+      "Value": "pwnctl"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-role/Resource"
+   }
+  },
+  "pwnwrkroleDefaultPolicyBF2C6556": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "cloudwatch:*",
+        "logs:*"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "sqs:ChangeMessageVisibility",
+        "sqs:DeleteMessage",
+        "sqs:GetQueueAttributes",
+        "sqs:GetQueueUrl",
+        "sqs:ReceiveMessage",
+        "sqs:SendMessage"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "pwnwrkfifo043C4E87",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "PwnwrkLogs49C21403",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "pwnwrkroleDefaultPolicyBF2C6556",
+    "Roles": [
+     {
+      "Ref": "pwnwrkrole35F47018"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-role/DefaultPolicy/Resource"
+   }
+  },
+  "pwnwrkdef3A414DAF": {
+   "Type": "AWS::ECS::TaskDefinition",
+   "Properties": {
+    "ContainerDefinitions": [
+     {
+      "Cpu": 512,
+      "Environment": [
+       {
+        "Name": "PWNCTL_JobQueue__QueueName",
+        "Value": {
+         "Fn::GetAtt": [
+          "pwnwrkfifo043C4E87",
+          "QueueName"
+         ]
+        }
+       },
+       {
+        "Name": "PWNCTL_JobQueue__DLQName",
+        "Value": {
+         "Fn::GetAtt": [
+          "pwnwrkdlqfifoA60405CB",
+          "QueueName"
+         ]
+        }
+       },
+       {
+        "Name": "PWNCTL_JobQueue__VisibilityTimeout",
+        "Value": "30"
+       },
+       {
+        "Name": "PWNCTL_Logging__MinLevel",
+        "Value": "Debug"
+       },
+       {
+        "Name": "PWNCTL_Logging__LogGroup",
+        "Value": {
+         "Ref": "PwnwrkLogs49C21403"
+        }
+       },
+       {
+        "Name": "PWNCTL_Db__ConnectionString",
+        "Value": {
+         "Ref": "connectionString"
+        }
+       },
+       {
+        "Name": "PWNCTL_EFS_MOUNT_POINT",
+        "Value": "/mnt/efs"
+       }
+      ],
+      "Essential": true,
+      "Image": "public.ecr.aws/i0m2p7r6/pwnwrk:latest",
+      "LogConfiguration": {
+       "LogDriver": "awslogs",
+       "Options": {
+        "awslogs-group": {
+         "Ref": "PwnwrkLogs49C21403"
+        },
+        "awslogs-stream-prefix": "/aws/ecs",
+        "awslogs-region": {
+         "Ref": "AWS::Region"
+        }
+       }
+      },
+      "Memory": 2048,
+      "MountPoints": [
+       {
+        "ContainerPath": "/mnt/efs",
+        "ReadOnly": false,
+        "SourceVolume": "pwnwrk-fs"
+       }
+      ],
+      "Name": "pwnwrk"
+     }
+    ],
+    "Cpu": "512",
+    "ExecutionRoleArn": {
+     "Fn::GetAtt": [
+      "pwnwrkrole35F47018",
+      "Arn"
+     ]
+    },
+    "Family": "PwnctlCdkStackpwnwrkdef9FFD5DE1",
+    "Memory": "2048",
+    "NetworkMode": "awsvpc",
+    "RequiresCompatibilities": [
+     "FARGATE"
+    ],
+    "Tags": [
+     {
+      "Key": "stack",
+      "Value": "pwnctl"
+     }
+    ],
+    "TaskRoleArn": {
+     "Fn::GetAtt": [
+      "pwnwrkrole35F47018",
+      "Arn"
+     ]
+    },
+    "Volumes": [
+     {
+      "EFSVolumeConfiguration": {
+       "AuthorizationConfig": {
+        "AccessPointId": {
+         "Ref": "pwnwrkfspwnctllambdaapifsapF9EF4E24"
+        },
+        "IAM": "ENABLED"
+       },
+       "FilesystemId": {
+        "Ref": "pwnwrkfs6B0E83F5"
+       },
+       "RootDirectory": "/",
+       "TransitEncryption": "ENABLED"
+      },
+      "Name": "pwnwrk-fs"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-def/Resource"
+   }
+  },
+  "PwnwrkLogs49C21403": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "/aws/ecs/pwnwrk",
+    "RetentionInDays": 7,
+    "Tags": [
+     {
+      "Key": "stack",
+      "Value": "pwnctl"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "PwnctlCdkStack/PwnwrkLogs/Resource"
+   }
+  },
+  "pwnwrksvcService205F8023": {
+   "Type": "AWS::ECS::Service",
+   "Properties": {
+    "CapacityProviderStrategy": [
+     {
+      "CapacityProvider": "FARGATE_SPOT",
+      "Weight": 2
+     },
+     {
+      "CapacityProvider": "FARGATE",
+      "Weight": 1
+     }
+    ],
+    "Cluster": {
+     "Ref": "pwnwrkclusterB1ACABA0"
+    },
+    "DeploymentConfiguration": {
+     "MaximumPercent": 200,
+     "MinimumHealthyPercent": 50
+    },
+    "DesiredCount": 0,
+    "EnableECSManagedTags": false,
+    "NetworkConfiguration": {
+     "AwsvpcConfiguration": {
+      "AssignPublicIp": "ENABLED",
+      "SecurityGroups": [
+       {
+        "Fn::GetAtt": [
+         "pwnwrksvcSecurityGroup4BBDA767",
+         "GroupId"
+        ]
+       }
+      ],
+      "Subnets": [
+       {
+        "Ref": "pwnwrkvpcPublicSubnet1Subnet50A78F6A"
+       }
+      ]
+     }
+    },
+    "Tags": [
+     {
+      "Key": "stack",
+      "Value": "pwnctl"
+     }
+    ],
+    "TaskDefinition": {
+     "Ref": "pwnwrkdef3A414DAF"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-svc/Service"
+   }
+  },
+  "pwnwrksvcSecurityGroup4BBDA767": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "PwnctlCdkStack/pwnwrk-svc/SecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "stack",
+      "Value": "pwnctl"
+     }
+    ],
+    "VpcId": {
+     "Ref": "pwnwrkvpc020FF09A"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-svc/SecurityGroup/Resource"
+   }
+  },
+  "pwnwrksvcTaskCountTargetCCB13F0E": {
+   "Type": "AWS::ApplicationAutoScaling::ScalableTarget",
+   "Properties": {
+    "MaxCapacity": 5,
+    "MinCapacity": 0,
+    "ResourceId": {
+     "Fn::Join": [
+      "",
+      [
+       "service/",
+       {
+        "Ref": "pwnwrkclusterB1ACABA0"
+       },
+       "/",
+       {
+        "Fn::GetAtt": [
+         "pwnwrksvcService205F8023",
+         "Name"
+        ]
+       }
+      ]
+     ]
+    },
+    "RoleARN": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":iam::",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":role/aws-service-role/ecs.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_ECSService"
+      ]
+     ]
+    },
+    "ScalableDimension": "ecs:service:DesiredCount",
+    "ServiceNamespace": "ecs"
+   },
+   "Metadata": {
+    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-svc/TaskCount/Target/Resource"
+   }
+  },
+  "pwnwrksvcTaskCountTargetScaleOutPolicyLowerPolicyFBC25939": {
+   "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
+   "Properties": {
+    "PolicyName": "PwnctlCdkStackpwnwrksvcTaskCountTargetScaleOutPolicyLowerPolicyC36FB5B2",
+    "PolicyType": "StepScaling",
+    "ScalingTargetId": {
+     "Ref": "pwnwrksvcTaskCountTargetCCB13F0E"
+    },
+    "StepScalingPolicyConfiguration": {
+     "AdjustmentType": "ChangeInCapacity",
+     "Cooldown": 300,
+     "MetricAggregationType": "Average",
+     "StepAdjustments": [
+      {
+       "MetricIntervalLowerBound": -30,
+       "MetricIntervalUpperBound": 0,
+       "ScalingAdjustment": 3
+      },
+      {
+       "MetricIntervalLowerBound": -59,
+       "MetricIntervalUpperBound": -30,
+       "ScalingAdjustment": 2
+      },
+      {
+       "MetricIntervalUpperBound": -59,
+       "ScalingAdjustment": 1
+      }
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-svc/TaskCount/Target/ScaleOutPolicy/LowerPolicy/Resource"
+   }
+  },
+  "pwnwrksvcTaskCountTargetScaleOutPolicyLowerAlarm0846C59F": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "LessThanOrEqualToThreshold",
+    "EvaluationPeriods": 1,
+    "AlarmActions": [
+     {
+      "Ref": "pwnwrksvcTaskCountTargetScaleOutPolicyLowerPolicyFBC25939"
+     }
+    ],
+    "AlarmDescription": "Lower threshold scaling alarm",
+    "Dimensions": [
+     {
+      "Name": "QueueName",
+      "Value": {
+       "Fn::GetAtt": [
+        "pwnwrkfifo043C4E87",
+        "QueueName"
+       ]
+      }
+     }
+    ],
+    "MetricName": "ApproximateNumberOfMessagesVisible",
+    "Namespace": "AWS/SQS",
+    "Period": 60,
+    "Statistic": "Average",
+    "Threshold": 60
+   },
+   "Metadata": {
+    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-svc/TaskCount/Target/ScaleOutPolicy/LowerAlarm/Resource"
+   }
+  },
+  "pwnwrksvcTaskCountTargetScaleInPolicyUpperPolicy701150A1": {
+   "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
+   "Properties": {
+    "PolicyName": "PwnctlCdkStackpwnwrksvcTaskCountTargetScaleInPolicyUpperPolicy89EB271A",
+    "PolicyType": "StepScaling",
+    "ScalingTargetId": {
+     "Ref": "pwnwrksvcTaskCountTargetCCB13F0E"
+    },
+    "StepScalingPolicyConfiguration": {
+     "AdjustmentType": "ChangeInCapacity",
+     "Cooldown": 300,
+     "MetricAggregationType": "Average",
+     "StepAdjustments": [
+      {
+       "MetricIntervalLowerBound": 0,
+       "MetricIntervalUpperBound": 30,
+       "ScalingAdjustment": 1
+      },
+      {
+       "MetricIntervalLowerBound": 30,
+       "ScalingAdjustment": 2
+      }
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-svc/TaskCount/Target/ScaleInPolicy/UpperPolicy/Resource"
+   }
+  },
+  "pwnwrksvcTaskCountTargetScaleInPolicyUpperAlarm3BBE08F9": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 1,
+    "AlarmActions": [
+     {
+      "Ref": "pwnwrksvcTaskCountTargetScaleInPolicyUpperPolicy701150A1"
+     }
+    ],
+    "AlarmDescription": "Upper threshold scaling alarm",
+    "Dimensions": [
+     {
+      "Name": "QueueName",
+      "Value": {
+       "Fn::GetAtt": [
+        "pwnwrkfifo043C4E87",
+        "QueueName"
+       ]
+      }
+     }
+    ],
+    "MetricName": "ApproximateNumberOfMessagesVisible",
+    "Namespace": "AWS/SQS",
+    "Period": 60,
+    "Statistic": "Average",
+    "Threshold": 30
+   },
+   "Metadata": {
+    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-svc/TaskCount/Target/ScaleInPolicy/UpperAlarm/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/31TTW/bMAz9Lb0ryrIC3WnAXHctCmydF2e5MwrjarElT6ISBIb/+yjFdpIdBh/0+ETx45FeyMWnB/nh7gsc/Uxt9/NOWYeyKwnUXuQ7U4CDBgmdWKK3wSkUmfdI7FBpU4ncGk8uKIrOPwK1IaHJmTG7bDVpa3oRs3SoPspu3ap4ty5yUYRNrVUZNgbT2wta2kC4gk2NF/7CcR1WaYiRJ2dROH0AwkuMV8PFM35h9ginIelgZcR9vjdoSJSogtN0enE2tCndf4lXUzn0vhf+j5fdz4Ah1ZhAL3DH5LOusTx5wibe3FrfbTC0AldxkZlSHKmw2qSCr8xeaGhkt7RnAdJZWBYrtXFGvaih2WyB8wWjRjEmPIJfro78cBToGu19mom/n0GcqJdpsGzLx6D2SI/gUaDiTvI6+LgCcZgDfObaIQ7C759wp40eM//LWEOgDborbnhbojvo84qMsFRQx9HGIHmUiLuzFVfwzVbTHEbM69S2LEHaAAhkPb/mneTtncIkgWOCW6YkbMuz96DnFZNNKt649ELVNmyPQOpddlkNLk0ygb7vxZOlN6Q5/03yYS7fvq5y/pOytp2t0UWlPx/u5WK+4Gv+7n57rWeOO9QNyuX5/Av/GlT3jQMAAA=="
+   },
+   "Metadata": {
+    "aws:cdk:path": "PwnctlCdkStack/CDKMetadata/Default"
+   },
+   "Condition": "CDKMetadataAvailable"
+  }
+ },
+ "Outputs": {
+  "PwnctlApiUrl": {
+   "Value": {
+    "Fn::GetAtt": [
+     "pwnctlapiFunctionUrlC82E55D9",
+     "FunctionUrl"
+    ]
+   }
+  }
+ },
+ "Conditions": {
+  "CDKMetadataAvailable": {
+   "Fn::Or": [
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "af-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ca-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-northwest-1"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-3"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "me-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "sa-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-2"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-west-2"
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ }
+}

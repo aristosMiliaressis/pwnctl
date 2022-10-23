@@ -1,7 +1,8 @@
 
 ## PWNCTL
 
-![ci: tag](https://github.com/aristosMiliaressis/pwnctl/actions/workflows/ci.yml/badge.svg)
+![pwnctl-ci: tag](https://github.com/aristosMiliaressis/pwnctl/actions/workflows/pwnctl-ci.yml/badge.svg)
+![pwnwrk-ci: tag](https://github.com/aristosMiliaressis/pwnctl/actions/workflows/pwnwrk-ci.yml/badge.svg)
 
 recursive configuration based engine for external recon.
 

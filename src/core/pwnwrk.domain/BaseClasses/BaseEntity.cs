@@ -1,6 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Text.Json.Serialization;
 
 namespace pwnwrk.domain.BaseClasses
 {
@@ -15,6 +13,7 @@ namespace pwnwrk.domain.BaseClasses
         {
         }
 
+        [JsonIgnore]
         public TPKey Id { get; set; }
     }
 }

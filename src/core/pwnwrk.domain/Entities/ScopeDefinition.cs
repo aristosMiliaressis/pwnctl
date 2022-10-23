@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 using pwnwrk.domain.Entities.Assets;
 using pwnwrk.domain.BaseClasses;
+using System.Text.Json.Serialization;
 
 namespace pwnwrk.domain.Entities
 {
@@ -10,7 +11,9 @@ namespace pwnwrk.domain.Entities
         public ScopeType Type { get; private init; }
         public string Pattern { get; private init; }
 
+        [JsonIgnore]
         public int? ProgramId { get; private init; }
+        [JsonIgnore]
         public Program Program { get; private init; }
 
         public ScopeDefinition() {}

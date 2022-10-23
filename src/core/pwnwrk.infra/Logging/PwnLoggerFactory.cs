@@ -11,14 +11,14 @@ namespace pwnwrk.infra.Logging
     {
         public static Logger Create()
         {
-            return PwnContext.Config.IsTestRun
+            return PwnContext.Config.IsTestRun || PwnContext.Config.Logging.ToLocalFile
                 ? CreateFileLogger()
                 : CreateCloudWatchLogger();
         }
 
         private static Logger CreateCloudWatchLogger()
         {
-            AWSLoggerConfig configuration = new AWSLoggerConfig(PwnContext.Config.Logging.LogGroup ?? "/aws/ecs/pwnwrk");
+            var configuration = new AWSLoggerConfig(PwnContext.Config.Logging.LogGroup ?? "/aws/ecs/pwnwrk");
 
             return new LoggerConfiguration()
                 .MinimumLevel.Is(Enum.Parse<LogEventLevel>(PwnContext.Config.Logging.MinLevel ?? "Information"))

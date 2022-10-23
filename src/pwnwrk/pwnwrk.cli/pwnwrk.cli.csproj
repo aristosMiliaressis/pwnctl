@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <NoWarn>8618</NoWarn>
+    <AssemblyName>pwnwrk</AssemblyName>
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
+    <PublishReadyToRun>true</PublishReadyToRun>
+    <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
+    <!-- 
+      unfortunately single file publish isn't compatible with CSharpScript at the moment 
+      https://github.com/dotnet/roslyn/issues/50719
+    
+      <PublishSingleFile>true</PublishSingleFile>
+      <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract> 
+    -->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Include="Program.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DnsClient" Version="1.5.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="6.0.0" />
+    <PackageReference Include="Serilog" Version="2.12.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\core\pwnwrk.infra\pwnwrk.infra.csproj" />
+    <ProjectReference Include="..\..\core\pwnwrk.domain\pwnwrk.domain.csproj" />
+  </ItemGroup>
+</Project>

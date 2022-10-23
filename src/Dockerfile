@@ -135,27 +135,33 @@ RUN go install github.com/rverton/webanalyze/cmd/webanalyze@latest \
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 
-# building worker service
-COPY ["/core/pwnwrk.infra/pwnwrk.infra.csproj", "/src/pwnwrk.infra/"]
-RUN dotnet restore "/src/pwnwrk.infra/pwnwrk.infra.csproj"
-COPY ["/pwnwrk.svc/pwnwrk.svc.csproj", "/src/pwnwrk.svc/"]
-RUN dotnet restore "/src/pwnwrk.svc/pwnwrk.svc.csproj"
+# building worker service & cli
+COPY ["/core/pwnwrk.domain/pwnwrk.domain.csproj", "/src/core/pwnwrk.domain/"]
+RUN dotnet restore "/src/core/pwnwrk.domain/pwnwrk.domain.csproj"
+COPY ["/core/pwnwrk.infra/pwnwrk.infra.csproj", "/src/core/pwnwrk.infra/"]
+RUN dotnet restore "/src/core/pwnwrk.infra/pwnwrk.infra.csproj"
+COPY ["/pwnwrk/pwnwrk.svc/pwnwrk.svc.csproj", "/src/pwnwrk/pwnwrk.svc/"]
+RUN dotnet restore "/src/pwnwrk/pwnwrk.svc/pwnwrk.svc.csproj"
+COPY ["/pwnwrk/pwnwrk.cli/pwnwrk.cli.csproj", "/src/pwnwrk/pwnwrk.cli/"]
+RUN dotnet restore "/src/pwnwrk/pwnwrk.cli/pwnwrk.cli.csproj"
 
-COPY . src/
+COPY core/ src/core/
+COPY pwnwrk/ src/pwnwrk/
 
-RUN dotnet publish "/src/pwnwrk.svc/pwnwrk.svc.csproj" -c Release -o /app/publish
+RUN dotnet publish "/src/pwnwrk/pwnwrk.svc/pwnwrk.svc.csproj" -c Release -o /publish/svc
+
+RUN dotnet publish "/src/pwnwrk/pwnwrk.cli/pwnwrk.cli.csproj" -c Release -o /publish/cli
 
 FROM base AS release
 
-COPY --from=build /app/publish /opt/pwnwrk
-COPY pwnwrk.svc/wordlists/ /opt/wordlists/
-COPY pwnwrk.svc/scripts/* /opt/scripts/
+COPY --from=build /publish/svc /opt/pwnwrk-svc
+COPY --from=build /publish/cli /opt/pwnwrk-cli
+COPY pwnwrk/pwnwrk.svc/wordlists/ /opt/wordlists/
+COPY pwnwrk/pwnwrk.svc/scripts/* /opt/scripts/
 RUN chmod -R +x /opt/scripts \
-    && mv /opt/scripts/* /usr/local/bin/
+    && mv /opt/scripts/* /usr/local/bin/ \
+    && ln -s /opt/pwnwrk-cli/pwnwrk /usr/local/bin/pwnwrk
 
-ENV PWNCTL_INSTALL_PATH "/etc/pwnctl"
-WORKDIR /etc/pwnctl
-
-COPY pwnwrk.svc/entrypoint.sh /opt/pwnwrk/entrypoint.sh
-RUN chmod +x /opt/pwnwrk/entrypoint.sh
-ENTRYPOINT ["/opt/pwnwrk/entrypoint.sh"]
+COPY pwnwrk/pwnwrk.svc/entrypoint.sh /opt/pwnwrk-svc/entrypoint.sh
+RUN chmod +x /opt/pwnwrk-svc/entrypoint.sh
+ENTRYPOINT ["/opt/pwnwrk-svc/entrypoint.sh"]

@@ -5,6 +5,7 @@
     <LangVersion>preview</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <NoWarn>8618</NoWarn>
+    <DebugType>embedded</DebugType>
   </PropertyGroup>
 
   <ItemGroup>

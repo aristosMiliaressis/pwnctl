@@ -85,6 +85,6 @@ do
     else 
         echo '{{""asset"":""'$assetLine'"", ""tags"":{{""FoundBy"":""{Definition.ShortName}""}}}}'; 
     fi; 
-done | pwnctl process".Replace("\r\n", "").Replace("\n", "");
+done | pwnwrk".Replace("\r\n", "").Replace("\n", "");
     }
 }

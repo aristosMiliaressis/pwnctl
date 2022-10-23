@@ -100,7 +100,7 @@ namespace pwnctl.cdk
             var function = new Function(this, Constants.LambdaName, new FunctionProps
             {
                 Runtime = Runtime.DOTNET_6,
-                Code = Code.FromAsset(Path.Join("src", "pwnctl.api", "bin", "Release", "net6.0")),
+                Code = Code.FromAsset(Path.Join("src", "pwnctl", "pwnctl.api", "bin", "Release", "net6.0")),
                 Handler = "pwnctl.api",
                 Vpc = vpc,
                 Role = pwnctlApiRole,
@@ -128,7 +128,11 @@ namespace pwnctl.cdk
             ecsTaskExecutionRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("service-role/AmazonECSTaskExecutionRolePolicy"));
             ecsTaskExecutionRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonElasticFileSystemClientFullAccess"));
             ecsTaskExecutionRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonEC2ContainerRegistryReadOnly"));
-            ecsTaskExecutionRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("CloudWatchFullAccess"));            
+            ecsTaskExecutionRole.AddToPolicy(new PolicyStatement(new PolicyStatementProps
+            {
+                Resources = new[] { "*" },
+                Actions = new[] { "logs:*", "cloudwatch:*" }
+            })); 
             queue.GrantConsumeMessages(ecsTaskExecutionRole);
             queue.GrantSendMessages(ecsTaskExecutionRole);
 
@@ -181,6 +185,7 @@ namespace pwnctl.cdk
                     {"PWNCTL_JobQueue__QueueName", queue.QueueName},
                     {"PWNCTL_JobQueue__DLQName", dlq.QueueName},
                     {"PWNCTL_JobQueue__VisibilityTimeout", Constants.QueueVisibilityTimeoutInSec.ToString()},
+                    {"PWNCTL_Logging__MinLevel", "Debug"},
                     {"PWNCTL_Logging__LogGroup", logGroup.LogGroupName},
                     {"PWNCTL_Db__ConnectionString", connectionString.ValueAsString},
                     {"PWNCTL_EFS_MOUNT_POINT", Constants.EfsMountPoint}

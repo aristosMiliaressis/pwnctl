@@ -33,7 +33,7 @@ namespace pwnwrk.infra.Configuration
         {
             public string MinLevel { get; set; }
             public string LogGroup { get; set; }
-            public string RetentionPeriod { get; set; }
+            public bool ToLocalFile { get; set; }
         }
     }
 }
