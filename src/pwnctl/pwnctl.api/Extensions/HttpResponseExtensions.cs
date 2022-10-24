@@ -3,12 +3,14 @@ namespace pwnctl.api.Extensions;
 using pwnctl.api.Models;
 using System.Net;
 using System.Text.Json;
+using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Mvc;
 
 public static class HttpResponseExtensions
 {
-    public static async Task Create(this HttpResponse response, HttpStatusCode status, ApiResponse model)
+    public static async Task Create(this HttpResponse response, HttpStatusCode status)
     {
-        var json = JsonSerializer.Serialize(model);
+        var json = JsonSerializer.Serialize(ApiResponse.Create(status));
         response.StatusCode = (int)status;
         await response.WriteAsync(json);
     }

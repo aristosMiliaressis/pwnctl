@@ -910,6 +910,19 @@
                         "Arn"
                       ]
                     },
+                    "environment": {
+                      "variables": {
+                        "PWNCTL_JobQueue__QueueName": "pwnwrk.fifo",
+                        "PWNCTL_JobQueue__DLQName": "pwnwrk-dlq.fifo",
+                        "PWNCTL_JobQueue__VisibilityTimeout": "30",
+                        "PWNCTL_Db__ConnectionString": {
+                          "Ref": "connectionString"
+                        },
+                        "PWNCTL_Logging__MinLevel": "Debug",
+                        "PWNCTL_Logging__LogGroup": "/aws/lambda/pwnctl-api",
+                        "PWNCTL_EFS_MOUNT_POINT": "/mnt/efs"
+                      }
+                    },
                     "fileSystemConfigs": [
                       {
                         "arn": {
@@ -1426,6 +1439,45 @@
                 },
                 "constructInfo": {
                   "fqn": "@aws-cdk/aws-logs.CfnLogGroup",
+                  "version": "1.176.0"
+                }
+              },
+              "Policy": {
+                "id": "Policy",
+                "path": "PwnctlCdkStack/PwnwrkLogs/Policy",
+                "children": {
+                  "ResourcePolicy": {
+                    "id": "ResourcePolicy",
+                    "path": "PwnctlCdkStack/PwnwrkLogs/Policy/ResourcePolicy",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Logs::ResourcePolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "{\"Statement\":[{\"Action\":[\"logs:CreateLogStream\",\"logs:PutLogEvents\"],\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"ecs-tasks.amazonaws.com\"},\"Resource\":\"",
+                              {
+                                "Fn::GetAtt": [
+                                  "PwnwrkLogs49C21403",
+                                  "Arn"
+                                ]
+                              },
+                              "\"}],\"Version\":\"2012-10-17\"}"
+                            ]
+                          ]
+                        },
+                        "policyName": "PwnctlCdkStackPwnwrkLogsPolicy43E1FD09"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-logs.CfnResourcePolicy",
+                      "version": "1.176.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-logs.ResourcePolicy",
                   "version": "1.176.0"
                 }
               }

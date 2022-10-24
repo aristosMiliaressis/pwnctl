@@ -1,8 +1,6 @@
 namespace pwnctl.api.Middleware;
 
-using pwnctl.api.Models;
 using pwnctl.api.Extensions;
-using System.Text.Json;
 using System.Net;
 
 public class ApiKeyMiddleware
@@ -23,7 +21,7 @@ public class ApiKeyMiddleware
         if (!context.Request.Headers.TryGetValue(_apiKeyHeader, out var extractedApiKey)
             || !apiKey.Equals(extractedApiKey))
         {
-            await context.Response.Create(HttpStatusCode.Unauthorized, ApiResponse.Unauthorized);
+            await context.Response.Create(HttpStatusCode.Unauthorized);
 
             return;
         }

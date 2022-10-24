@@ -51,7 +51,7 @@ install-deps:
 bootstrap-aws:
 	cdk bootstrap aws://${accountId}/${region}
 
-deploy-app:
+deploy-app: build-api
 	cdk deploy PwnctlCdkStack -o aws/pwnctl.cdk/cdk.out --parameters connectionString="${connectionString}"
 # --app "dotnet run --project aws/pwnctl.cdk/pwnctl.cdk.csproj" # to get rid of cdk.json
 

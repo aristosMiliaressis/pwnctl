@@ -8,7 +8,7 @@ using System.IO;
 [Route("[controller]")]
 public class FsController : ControllerBase
 {
-    private static readonly string _efsPathPrefix = Environment.GetVariable("PWNCTL_EFS_MOUNT_POINT");
+    private static readonly string _efsPathPrefix = Environment.GetEnvironmentVariable("PWNCTL_EFS_MOUNT_POINT");
     private readonly ILogger<FsController> _logger;
 
     public FsController(ILogger<FsController> logger)

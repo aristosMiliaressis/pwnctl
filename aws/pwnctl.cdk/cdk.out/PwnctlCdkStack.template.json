@@ -652,6 +652,19 @@
       "Arn"
      ]
     },
+    "Environment": {
+     "Variables": {
+      "PWNCTL_JobQueue__QueueName": "pwnwrk.fifo",
+      "PWNCTL_JobQueue__DLQName": "pwnwrk-dlq.fifo",
+      "PWNCTL_JobQueue__VisibilityTimeout": "30",
+      "PWNCTL_Db__ConnectionString": {
+       "Ref": "connectionString"
+      },
+      "PWNCTL_Logging__MinLevel": "Debug",
+      "PWNCTL_Logging__LogGroup": "/aws/lambda/pwnctl-api",
+      "PWNCTL_EFS_MOUNT_POINT": "/mnt/efs"
+     }
+    },
     "FileSystemConfigs": [
      {
       "Arn": {
@@ -1031,6 +1044,30 @@
     "aws:cdk:path": "PwnctlCdkStack/PwnwrkLogs/Resource"
    }
   },
+  "PwnwrkLogsPolicyResourcePolicyBD6246FA": {
+   "Type": "AWS::Logs::ResourcePolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"Statement\":[{\"Action\":[\"logs:CreateLogStream\",\"logs:PutLogEvents\"],\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"ecs-tasks.amazonaws.com\"},\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "PwnwrkLogs49C21403",
+         "Arn"
+        ]
+       },
+       "\"}],\"Version\":\"2012-10-17\"}"
+      ]
+     ]
+    },
+    "PolicyName": "PwnctlCdkStackPwnwrkLogsPolicy43E1FD09"
+   },
+   "Metadata": {
+    "aws:cdk:path": "PwnctlCdkStack/PwnwrkLogs/Policy/ResourcePolicy"
+   }
+  },
   "pwnwrksvcService205F8023": {
    "Type": "AWS::ECS::Service",
    "Properties": {
@@ -1286,7 +1323,7 @@
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/31TTW/bMAz9Lb0ryrIC3WnAXHctCmydF2e5MwrjarElT6ISBIb/+yjFdpIdBh/0+ETx45FeyMWnB/nh7gsc/Uxt9/NOWYeyKwnUXuQ7U4CDBgmdWKK3wSkUmfdI7FBpU4ncGk8uKIrOPwK1IaHJmTG7bDVpa3oRs3SoPspu3ap4ty5yUYRNrVUZNgbT2wta2kC4gk2NF/7CcR1WaYiRJ2dROH0AwkuMV8PFM35h9ginIelgZcR9vjdoSJSogtN0enE2tCndf4lXUzn0vhf+j5fdz4Ah1ZhAL3DH5LOusTx5wibe3FrfbTC0AldxkZlSHKmw2qSCr8xeaGhkt7RnAdJZWBYrtXFGvaih2WyB8wWjRjEmPIJfro78cBToGu19mom/n0GcqJdpsGzLx6D2SI/gUaDiTvI6+LgCcZgDfObaIQ7C759wp40eM//LWEOgDborbnhbojvo84qMsFRQx9HGIHmUiLuzFVfwzVbTHEbM69S2LEHaAAhkPb/mneTtncIkgWOCW6YkbMuz96DnFZNNKt649ELVNmyPQOpddlkNLk0ygb7vxZOlN6Q5/03yYS7fvq5y/pOytp2t0UWlPx/u5WK+4Gv+7n57rWeOO9QNyuX5/Av/GlT3jQMAAA=="
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/31TTW/bMAz9Lb0ryrIC3WnAXHctCmydF2e5MwrjarElT6ISBIb/+yjFdpIdBh/0+ETz61ELufj0ID/cfYGjn6ntft4p61B2JYHai3xnCnDQIKETS/Q2OIUi8x6JHSptKpFb48kFRdH5R6A2JDQ5M2aXrSZtTS9ilg7VR9mtWxXv1kUuirCptSrDxmD694KWNhCuYFPjhb9wXIdVGmLkyVkUTh+A8BLj1XDxjF+YPcJpSDpYGXGf7w0aEiWq4DSdXpwNbUr3X+LVVA6974X/42X3M2BINSbQC9wx+axrLE+esIk3t9Z3GwytwFVcZKYURyqsNqngK7MXGhrZLe15AOksLA8rtXFGvaih2WyB8wWjxmFMeAS/XB354SjQNdr7pIm/n0FU1MskLNvyMag90iN4FKi4k7wOPq5AFHOAz1w7RCH8/gl32ugx87+MNQTaoLvihn9LdAd9XpERlgrqKG0MkscRcXe24gq+2WrSYcLjkl1GcsvwvrUtg7QiEMh6Ds9Ly+s95UkKxApumZKwLc/eQ/QrJpvGfOPSC1XbsD0CqXfZZTW4JHUCfd+LJ0tvSHN+bvJhLt++rnJ+alnbztboohSfD/dyMV/wNX93v73WM8cj0A3K5fn8Cxx3hLquAwAA"
    },
    "Metadata": {
     "aws:cdk:path": "PwnctlCdkStack/CDKMetadata/Default"

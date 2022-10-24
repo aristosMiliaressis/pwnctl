@@ -224,13 +224,12 @@ namespace pwnctl.cdk
                 Cluster = cluster,
                 TaskDefinition = taskDef,
                 DesiredCount = 0,
-                CapacityProviderStrategies = new[] { new CapacityProviderStrategy {
-                    CapacityProvider = "FARGATE_SPOT",
-                    Weight = 2
-                }, new CapacityProviderStrategy {
-                    CapacityProvider = "FARGATE",
-                    Weight = 1
-                } }
+                CapacityProviderStrategies = new[] { 
+                    new CapacityProviderStrategy {
+                        CapacityProvider = "FARGATE",
+                        Weight = 1
+                    } 
+                }
             });
 
             fs.Connections.AllowFrom(fargateService, Amazon.CDK.AWS.EC2.Port.Tcp(2049));
@@ -249,48 +248,52 @@ namespace pwnctl.cdk
 
             var scaling = fargateService.AutoScaleTaskCount(new EnableScalingProps { MinCapacity = 0, MaxCapacity = 5 });
 
-            scaling.ScaleOnMetric("ScaleOutPolicy", new Amazon.CDK.AWS.ApplicationAutoScaling.BasicStepScalingPolicyProps
+            scaling.ScaleOnMetric("ScaleInPolicy", new Amazon.CDK.AWS.ApplicationAutoScaling.BasicStepScalingPolicyProps
             {
                 Cooldown = Duration.Seconds(300),
                 Metric = queueDepthMetric,
+                AdjustmentType = AdjustmentType.EXACT_CAPACITY,
                 ScalingSteps = new[]
                 {
                     new Amazon.CDK.AWS.ApplicationAutoScaling.ScalingInterval
                     {
                         Upper = 1,
+                        Change = 0
+                    },
+                    new Amazon.CDK.AWS.ApplicationAutoScaling.ScalingInterval
+                    {
+                        Upper = 30, 
                         Change = 1
                     },
                     new Amazon.CDK.AWS.ApplicationAutoScaling.ScalingInterval
                     {
-                        Upper = 30, Change = 2
-                    } ,
-                    new Amazon.CDK.AWS.ApplicationAutoScaling.ScalingInterval
-                    {
-                        Upper = 60, Change = 3
+                        Upper = 60, 
+                        Change = 2
                     }
                 }
             });
 
-            scaling.ScaleOnMetric("ScaleInPolicy", new Amazon.CDK.AWS.ApplicationAutoScaling.BasicStepScalingPolicyProps
+            scaling.ScaleOnMetric("ScaleOutPolicy", new Amazon.CDK.AWS.ApplicationAutoScaling.BasicStepScalingPolicyProps
             {
                 Cooldown = Duration.Seconds(300),
                 Metric = queueDepthMetric,
+                AdjustmentType = AdjustmentType.EXACT_CAPACITY,
                 ScalingSteps = new[]
                 {
                     new Amazon.CDK.AWS.ApplicationAutoScaling.ScalingInterval
                     {
                         Lower = 60,
-                        Change = 2
+                        Change = 3
                     },
                     new Amazon.CDK.AWS.ApplicationAutoScaling.ScalingInterval
                     {
                         Lower = 30,
-                        Change = 1
+                        Change = 2
                     },
                     new Amazon.CDK.AWS.ApplicationAutoScaling.ScalingInterval
                     {
                         Lower = 1,
-                        Change = 0
+                        Change = 1
                     }
                 }
             });

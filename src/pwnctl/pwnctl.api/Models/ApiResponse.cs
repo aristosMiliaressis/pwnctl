@@ -1,6 +1,7 @@
 namespace pwnctl.api.Models;
 
 using pwnwrk.infra.MediatR;
+using System.Net;
 
 public class ApiResponse
 {
@@ -18,6 +19,16 @@ public class ApiResponse
         Errors = errors;
     }
 
-    public static ApiResponse InternalServerError => new ApiResponse(ApiError.InternalServerError);
-    public static ApiResponse Unauthorized => new ApiResponse(ApiError.Unauthorized);
+    public static ApiResponse Create(HttpStatusCode status)
+    {
+        return status switch
+        {
+            HttpStatusCode.InternalServerError => InternalServerError,
+            HttpStatusCode.Unauthorized => Unauthorized,
+            _ => throw new NotImplementedException()
+        };
+    }
+
+    private static ApiResponse InternalServerError => new ApiResponse(ApiError.InternalServerError);
+    private static ApiResponse Unauthorized => new ApiResponse(ApiError.Unauthorized);
 }
