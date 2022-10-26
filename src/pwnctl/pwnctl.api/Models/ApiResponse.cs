@@ -8,10 +8,12 @@ public class ApiResponse
     public object Result { get; init; }
     public ApiError[] Errors { get; init; }
 
-    public ApiResponse(MediatorResponse response)
+    public ApiResponse(MediatorResult result)
     {
-        Result = response.Result;
-        Errors = response.ErrorMessages.Select(msg => new ApiError(ApiError.ErrorCode.GenericClientError, msg)).ToArray();
+        Result = result.Value;
+        Errors = result.ErrorMessages
+                    ?.Select(msg => new ApiError(ApiError.ErrorCode.GenericClientError, msg))
+                    ?.ToArray();
     }
 
     public ApiResponse(params ApiError[] errors)

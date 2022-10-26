@@ -11,28 +11,39 @@ namespace pwnwrk.infra.Logging
     {
         public static Logger Create()
         {
-            return PwnContext.Config.IsTestRun || PwnContext.Config.Logging.ToLocalFile
-                ? CreateFileLogger()
-                : CreateCloudWatchLogger();
+            return PwnContext.Config.Logging.Provider.ToLower() switch
+            {
+                "console" => CreateConsoleLogger(),
+                "cloudwatch" => CreateCloudWatchLogger(),
+                "file" => CreateFileLogger(),
+                _ => throw new NotSupportedException()
+            };
         }
 
         private static Logger CreateCloudWatchLogger()
         {
             var configuration = new AWSLoggerConfig(PwnContext.Config.Logging.LogGroup ?? "/aws/ecs/pwnwrk");
 
-            return new LoggerConfiguration()
-                .MinimumLevel.Is(Enum.Parse<LogEventLevel>(PwnContext.Config.Logging.MinLevel ?? "Information"))
-                .WriteTo.AWSSeriLog(configuration)
-                .CreateLogger();
+            return _baseConfig
+                    .WriteTo.AWSSeriLog(configuration)
+                    .CreateLogger();
         }
 
         private static Logger CreateFileLogger()
         {
-            return new LoggerConfiguration()
-                    .MinimumLevel.Is(Enum.Parse<LogEventLevel>(PwnContext.Config.Logging.MinLevel ?? "Information"))
+            return _baseConfig
                     .WriteTo.File(path: Path.Combine(AppConfig.InstallPath, "pwnctl.log"))
-                    .WriteTo.Console()
-                    .CreateLogger();        
+                    .CreateLogger();
         }
+
+        private static Logger CreateConsoleLogger()
+        {
+            return _baseConfig
+                    .WriteTo.Console()
+                    .CreateLogger();
+        }
+
+        private static readonly LoggerConfiguration _baseConfig = new LoggerConfiguration()
+                    .MinimumLevel.Is(Enum.Parse<LogEventLevel>(PwnContext.Config.Logging.MinLevel ?? "Information"));
     }
 }

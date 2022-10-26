@@ -105,15 +105,18 @@ namespace pwnctl.cdk
                 Vpc = vpc,
                 Role = pwnctlApiRole,
                 Filesystem = Amazon.CDK.AWS.Lambda.FileSystem.FromEfsAccessPoint(accessPoint, Constants.EfsMountPoint),
+                LogRetention = RetentionDays.ONE_WEEK,
                 Environment = new Dictionary<string, string>()
                 {
                     {"PWNCTL_JobQueue__QueueName", Constants.QueueName},
                     {"PWNCTL_JobQueue__DLQName", Constants.DLQName},
                     {"PWNCTL_JobQueue__VisibilityTimeout", Constants.QueueVisibilityTimeoutInSec.ToString()},
                     {"PWNCTL_Db__ConnectionString", connectionString.ValueAsString},
+                    {"PWNCTL_Logging__MProvider", "console"},
                     {"PWNCTL_Logging__MinLevel", "Debug"},
                     {"PWNCTL_Logging__LogGroup", $"/aws/lambda/{Constants.LambdaName}"},
-                    {"PWNCTL_EFS_MOUNT_POINT", Constants.EfsMountPoint}
+                    {"PWNCTL_EFS_MOUNT_POINT", Constants.EfsMountPoint},
+                    {"PWNCTL_INSTALL_PATH", Constants.EfsMountPoint}
                 }
             });
 

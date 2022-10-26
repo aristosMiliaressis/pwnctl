@@ -9,7 +9,7 @@ using MediatR;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 
-public class ListTargetsQueryHandler : IRequestHandler<ListTargetsQuery, MediatorResponse<TargetListViewModel>>
+public class ListTargetsQueryHandler : IRequestHandler<ListTargetsQuery, MediatorResult<TargetListViewModel>>
 {
     private readonly PwnctlDbContext _context;
 
@@ -18,10 +18,10 @@ public class ListTargetsQueryHandler : IRequestHandler<ListTargetsQuery, Mediato
         _context = context;
     }
 
-    public async Task<MediatorResponse<TargetListViewModel>> Handle(ListTargetsQuery command, CancellationToken cancellationToken)
+    public async Task<MediatorResult<TargetListViewModel>> Handle(ListTargetsQuery command, CancellationToken cancellationToken)
     {
         var targets = await _context.Programs.ToListAsync(cancellationToken);
 
-        return MediatorResponse<TargetListViewModel>.Success(new TargetListViewModel(targets));
+        return MediatorResult<TargetListViewModel>.Success(new TargetListViewModel(targets));
     }
 }

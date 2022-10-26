@@ -6,14 +6,14 @@ using pwnctl.dto.Targets.Commands;
 
 using MediatR;
 
-public class AddScopeDefCommandHandler : IRequestHandler<AddScopeDefCommand, MediatorResponse>
+public class AddScopeDefCommandHandler : IRequestHandler<AddScopeDefCommand, MediatorResult>
 {
     public AddScopeDefCommandHandler()
     {
 
     }
 
-    public Task<MediatorResponse> Handle(AddScopeDefCommand command, CancellationToken cancellationToken)
+    public Task<MediatorResult> Handle(AddScopeDefCommand command, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }

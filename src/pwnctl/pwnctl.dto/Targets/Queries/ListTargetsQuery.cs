@@ -5,7 +5,7 @@ using pwnwrk.infra.MediatR;
 
 using MediatR;
 
-public class ListTargetsQuery : IRequest<MediatorResponse<TargetListViewModel>>
+public class ListTargetsQuery : IRequest<MediatorResult<TargetListViewModel>>
 {
 
 }

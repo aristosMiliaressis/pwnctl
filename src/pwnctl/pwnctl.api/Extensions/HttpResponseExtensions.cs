@@ -3,8 +3,6 @@ namespace pwnctl.api.Extensions;
 using pwnctl.api.Models;
 using System.Net;
 using System.Text.Json;
-using Microsoft.Extensions.Options;
-using Microsoft.AspNetCore.Mvc;
 
 public static class HttpResponseExtensions
 {

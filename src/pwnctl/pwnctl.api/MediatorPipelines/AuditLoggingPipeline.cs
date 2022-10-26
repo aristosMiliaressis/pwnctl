@@ -1,12 +1,11 @@
 using MediatR;
 using pwnwrk.infra;
 using pwnwrk.infra.MediatR;
-using Microsoft.AspNetCore.Http;
 
 namespace pwnctl.api.MediatorPipelines
 {
     public class AuditLoggingPipeline<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-            where TResponse : MediatorResponse
+            where TResponse : MediatorResult
             where TRequest : IRequest<TResponse>
     {
         private readonly IHttpContextAccessor _httpContextAccessor;

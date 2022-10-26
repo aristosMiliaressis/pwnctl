@@ -868,7 +868,7 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "s3Bucket": {
-                        "Ref": "AssetParameters287aebc978ce4547e656a62ea6fea1808d48e709d3ea2977d8a5f60e44299f47S3Bucket176CBAB0"
+                        "Ref": "AssetParametersab2ea9941a633055ed11b1f73489437ef2f9688ebf898b913d54f5b7d09ba93eS3Bucket2588042D"
                       },
                       "s3Key": {
                         "Fn::Join": [
@@ -881,7 +881,7 @@
                                   "Fn::Split": [
                                     "||",
                                     {
-                                      "Ref": "AssetParameters287aebc978ce4547e656a62ea6fea1808d48e709d3ea2977d8a5f60e44299f47S3VersionKey261DF7FC"
+                                      "Ref": "AssetParametersab2ea9941a633055ed11b1f73489437ef2f9688ebf898b913d54f5b7d09ba93eS3VersionKey9E94294B"
                                     }
                                   ]
                                 }
@@ -894,7 +894,7 @@
                                   "Fn::Split": [
                                     "||",
                                     {
-                                      "Ref": "AssetParameters287aebc978ce4547e656a62ea6fea1808d48e709d3ea2977d8a5f60e44299f47S3VersionKey261DF7FC"
+                                      "Ref": "AssetParametersab2ea9941a633055ed11b1f73489437ef2f9688ebf898b913d54f5b7d09ba93eS3VersionKey9E94294B"
                                     }
                                   ]
                                 }
@@ -918,9 +918,11 @@
                         "PWNCTL_Db__ConnectionString": {
                           "Ref": "connectionString"
                         },
+                        "PWNCTL_Logging__MProvider": "console",
                         "PWNCTL_Logging__MinLevel": "Debug",
                         "PWNCTL_Logging__LogGroup": "/aws/lambda/pwnctl-api",
-                        "PWNCTL_EFS_MOUNT_POINT": "/mnt/efs"
+                        "PWNCTL_EFS_MOUNT_POINT": "/mnt/efs",
+                        "PWNCTL_INSTALL_PATH": "/mnt/efs"
                       }
                     },
                     "fileSystemConfigs": [
@@ -978,6 +980,32 @@
                 },
                 "constructInfo": {
                   "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "version": "1.176.0"
+                }
+              },
+              "LogRetention": {
+                "id": "LogRetention",
+                "path": "PwnctlCdkStack/pwnctl-api/LogRetention",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "PwnctlCdkStack/pwnctl-api/LogRetention/Resource",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnResource",
+                      "version": "1.176.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-logs.LogRetention",
+                  "version": "1.176.0"
+                }
+              },
+              "LogGroup": {
+                "id": "LogGroup",
+                "path": "PwnctlCdkStack/pwnctl-api/LogGroup",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
                   "version": "1.176.0"
                 }
               },
@@ -1043,13 +1071,13 @@
             "id": "AssetParameters",
             "path": "PwnctlCdkStack/AssetParameters",
             "children": {
-              "287aebc978ce4547e656a62ea6fea1808d48e709d3ea2977d8a5f60e44299f47": {
-                "id": "287aebc978ce4547e656a62ea6fea1808d48e709d3ea2977d8a5f60e44299f47",
-                "path": "PwnctlCdkStack/AssetParameters/287aebc978ce4547e656a62ea6fea1808d48e709d3ea2977d8a5f60e44299f47",
+              "ab2ea9941a633055ed11b1f73489437ef2f9688ebf898b913d54f5b7d09ba93e": {
+                "id": "ab2ea9941a633055ed11b1f73489437ef2f9688ebf898b913d54f5b7d09ba93e",
+                "path": "PwnctlCdkStack/AssetParameters/ab2ea9941a633055ed11b1f73489437ef2f9688ebf898b913d54f5b7d09ba93e",
                 "children": {
                   "S3Bucket": {
                     "id": "S3Bucket",
-                    "path": "PwnctlCdkStack/AssetParameters/287aebc978ce4547e656a62ea6fea1808d48e709d3ea2977d8a5f60e44299f47/S3Bucket",
+                    "path": "PwnctlCdkStack/AssetParameters/ab2ea9941a633055ed11b1f73489437ef2f9688ebf898b913d54f5b7d09ba93e/S3Bucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "1.176.0"
@@ -1057,7 +1085,7 @@
                   },
                   "S3VersionKey": {
                     "id": "S3VersionKey",
-                    "path": "PwnctlCdkStack/AssetParameters/287aebc978ce4547e656a62ea6fea1808d48e709d3ea2977d8a5f60e44299f47/S3VersionKey",
+                    "path": "PwnctlCdkStack/AssetParameters/ab2ea9941a633055ed11b1f73489437ef2f9688ebf898b913d54f5b7d09ba93e/S3VersionKey",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "1.176.0"
@@ -1065,7 +1093,7 @@
                   },
                   "ArtifactHash": {
                     "id": "ArtifactHash",
-                    "path": "PwnctlCdkStack/AssetParameters/287aebc978ce4547e656a62ea6fea1808d48e709d3ea2977d8a5f60e44299f47/ArtifactHash",
+                    "path": "PwnctlCdkStack/AssetParameters/ab2ea9941a633055ed11b1f73489437ef2f9688ebf898b913d54f5b7d09ba93e/ArtifactHash",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "1.176.0"
@@ -1074,6 +1102,181 @@
                 },
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.Construct",
+                  "version": "1.176.0"
+                }
+              },
+              "c8dfcc3db7a767ebc6f9417372a8fee940927c659f793315834a6784dab3d686": {
+                "id": "c8dfcc3db7a767ebc6f9417372a8fee940927c659f793315834a6784dab3d686",
+                "path": "PwnctlCdkStack/AssetParameters/c8dfcc3db7a767ebc6f9417372a8fee940927c659f793315834a6784dab3d686",
+                "children": {
+                  "S3Bucket": {
+                    "id": "S3Bucket",
+                    "path": "PwnctlCdkStack/AssetParameters/c8dfcc3db7a767ebc6f9417372a8fee940927c659f793315834a6784dab3d686/S3Bucket",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "1.176.0"
+                    }
+                  },
+                  "S3VersionKey": {
+                    "id": "S3VersionKey",
+                    "path": "PwnctlCdkStack/AssetParameters/c8dfcc3db7a767ebc6f9417372a8fee940927c659f793315834a6784dab3d686/S3VersionKey",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "1.176.0"
+                    }
+                  },
+                  "ArtifactHash": {
+                    "id": "ArtifactHash",
+                    "path": "PwnctlCdkStack/AssetParameters/c8dfcc3db7a767ebc6f9417372a8fee940927c659f793315834a6784dab3d686/ArtifactHash",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "1.176.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Construct",
+                  "version": "1.176.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Construct",
+              "version": "1.176.0"
+            }
+          },
+          "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a": {
+            "id": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a",
+            "path": "PwnctlCdkStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "PwnctlCdkStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "PwnctlCdkStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "version": "1.176.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "PwnctlCdkStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3.BucketBase",
+                      "version": "1.176.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                  "version": "1.176.0"
+                }
+              },
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "PwnctlCdkStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "PwnctlCdkStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ],
+                        "tags": [
+                          {
+                            "key": "stack",
+                            "value": "pwnctl"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "1.176.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "PwnctlCdkStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "PwnctlCdkStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "logs:DeleteRetentionPolicy",
+                                    "logs:PutRetentionPolicy"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+                            "roles": [
+                              {
+                                "Ref": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "1.176.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "1.176.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "1.176.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "PwnctlCdkStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnResource",
                   "version": "1.176.0"
                 }
               }
@@ -1499,10 +1702,6 @@
                   "aws:cdk:cloudformation:props": {
                     "capacityProviderStrategy": [
                       {
-                        "capacityProvider": "FARGATE_SPOT",
-                        "weight": 2
-                      },
-                      {
                         "capacityProvider": "FARGATE",
                         "weight": 1
                       }
@@ -1657,43 +1856,43 @@
                           "version": "1.176.0"
                         }
                       },
-                      "ScaleOutPolicy": {
-                        "id": "ScaleOutPolicy",
-                        "path": "PwnctlCdkStack/pwnwrk-svc/TaskCount/Target/ScaleOutPolicy",
+                      "ScaleInPolicy": {
+                        "id": "ScaleInPolicy",
+                        "path": "PwnctlCdkStack/pwnwrk-svc/TaskCount/Target/ScaleInPolicy",
                         "children": {
                           "LowerPolicy": {
                             "id": "LowerPolicy",
-                            "path": "PwnctlCdkStack/pwnwrk-svc/TaskCount/Target/ScaleOutPolicy/LowerPolicy",
+                            "path": "PwnctlCdkStack/pwnwrk-svc/TaskCount/Target/ScaleInPolicy/LowerPolicy",
                             "children": {
                               "Resource": {
                                 "id": "Resource",
-                                "path": "PwnctlCdkStack/pwnwrk-svc/TaskCount/Target/ScaleOutPolicy/LowerPolicy/Resource",
+                                "path": "PwnctlCdkStack/pwnwrk-svc/TaskCount/Target/ScaleInPolicy/LowerPolicy/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::ApplicationAutoScaling::ScalingPolicy",
                                   "aws:cdk:cloudformation:props": {
-                                    "policyName": "PwnctlCdkStackpwnwrksvcTaskCountTargetScaleOutPolicyLowerPolicyC36FB5B2",
+                                    "policyName": "PwnctlCdkStackpwnwrksvcTaskCountTargetScaleInPolicyLowerPolicy12E93400",
                                     "policyType": "StepScaling",
                                     "scalingTargetId": {
                                       "Ref": "pwnwrksvcTaskCountTargetCCB13F0E"
                                     },
                                     "stepScalingPolicyConfiguration": {
-                                      "adjustmentType": "ChangeInCapacity",
+                                      "adjustmentType": "ExactCapacity",
                                       "cooldown": 300,
                                       "metricAggregationType": "Average",
                                       "stepAdjustments": [
                                         {
                                           "metricIntervalLowerBound": -30,
                                           "metricIntervalUpperBound": 0,
-                                          "scalingAdjustment": 3
+                                          "scalingAdjustment": 2
                                         },
                                         {
                                           "metricIntervalLowerBound": -59,
                                           "metricIntervalUpperBound": -30,
-                                          "scalingAdjustment": 2
+                                          "scalingAdjustment": 1
                                         },
                                         {
                                           "metricIntervalUpperBound": -59,
-                                          "scalingAdjustment": 1
+                                          "scalingAdjustment": 0
                                         }
                                       ]
                                     }
@@ -1712,11 +1911,11 @@
                           },
                           "LowerAlarm": {
                             "id": "LowerAlarm",
-                            "path": "PwnctlCdkStack/pwnwrk-svc/TaskCount/Target/ScaleOutPolicy/LowerAlarm",
+                            "path": "PwnctlCdkStack/pwnwrk-svc/TaskCount/Target/ScaleInPolicy/LowerAlarm",
                             "children": {
                               "Resource": {
                                 "id": "Resource",
-                                "path": "PwnctlCdkStack/pwnwrk-svc/TaskCount/Target/ScaleOutPolicy/LowerAlarm/Resource",
+                                "path": "PwnctlCdkStack/pwnwrk-svc/TaskCount/Target/ScaleInPolicy/LowerAlarm/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
                                   "aws:cdk:cloudformation:props": {
@@ -1724,7 +1923,7 @@
                                     "evaluationPeriods": 1,
                                     "alarmActions": [
                                       {
-                                        "Ref": "pwnwrksvcTaskCountTargetScaleOutPolicyLowerPolicyFBC25939"
+                                        "Ref": "pwnwrksvcTaskCountTargetScaleInPolicyLowerPolicy171CB42A"
                                       }
                                     ],
                                     "alarmDescription": "Lower threshold scaling alarm",
@@ -1763,38 +1962,43 @@
                           "version": "1.176.0"
                         }
                       },
-                      "ScaleInPolicy": {
-                        "id": "ScaleInPolicy",
-                        "path": "PwnctlCdkStack/pwnwrk-svc/TaskCount/Target/ScaleInPolicy",
+                      "ScaleOutPolicy": {
+                        "id": "ScaleOutPolicy",
+                        "path": "PwnctlCdkStack/pwnwrk-svc/TaskCount/Target/ScaleOutPolicy",
                         "children": {
                           "UpperPolicy": {
                             "id": "UpperPolicy",
-                            "path": "PwnctlCdkStack/pwnwrk-svc/TaskCount/Target/ScaleInPolicy/UpperPolicy",
+                            "path": "PwnctlCdkStack/pwnwrk-svc/TaskCount/Target/ScaleOutPolicy/UpperPolicy",
                             "children": {
                               "Resource": {
                                 "id": "Resource",
-                                "path": "PwnctlCdkStack/pwnwrk-svc/TaskCount/Target/ScaleInPolicy/UpperPolicy/Resource",
+                                "path": "PwnctlCdkStack/pwnwrk-svc/TaskCount/Target/ScaleOutPolicy/UpperPolicy/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::ApplicationAutoScaling::ScalingPolicy",
                                   "aws:cdk:cloudformation:props": {
-                                    "policyName": "PwnctlCdkStackpwnwrksvcTaskCountTargetScaleInPolicyUpperPolicy89EB271A",
+                                    "policyName": "PwnctlCdkStackpwnwrksvcTaskCountTargetScaleOutPolicyUpperPolicyFE80C8A4",
                                     "policyType": "StepScaling",
                                     "scalingTargetId": {
                                       "Ref": "pwnwrksvcTaskCountTargetCCB13F0E"
                                     },
                                     "stepScalingPolicyConfiguration": {
-                                      "adjustmentType": "ChangeInCapacity",
+                                      "adjustmentType": "ExactCapacity",
                                       "cooldown": 300,
                                       "metricAggregationType": "Average",
                                       "stepAdjustments": [
                                         {
                                           "metricIntervalLowerBound": 0,
-                                          "metricIntervalUpperBound": 30,
+                                          "metricIntervalUpperBound": 29,
                                           "scalingAdjustment": 1
                                         },
                                         {
-                                          "metricIntervalLowerBound": 30,
+                                          "metricIntervalLowerBound": 29,
+                                          "metricIntervalUpperBound": 59,
                                           "scalingAdjustment": 2
+                                        },
+                                        {
+                                          "metricIntervalLowerBound": 59,
+                                          "scalingAdjustment": 3
                                         }
                                       ]
                                     }
@@ -1813,11 +2017,11 @@
                           },
                           "UpperAlarm": {
                             "id": "UpperAlarm",
-                            "path": "PwnctlCdkStack/pwnwrk-svc/TaskCount/Target/ScaleInPolicy/UpperAlarm",
+                            "path": "PwnctlCdkStack/pwnwrk-svc/TaskCount/Target/ScaleOutPolicy/UpperAlarm",
                             "children": {
                               "Resource": {
                                 "id": "Resource",
-                                "path": "PwnctlCdkStack/pwnwrk-svc/TaskCount/Target/ScaleInPolicy/UpperAlarm/Resource",
+                                "path": "PwnctlCdkStack/pwnwrk-svc/TaskCount/Target/ScaleOutPolicy/UpperAlarm/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
                                   "aws:cdk:cloudformation:props": {
@@ -1825,7 +2029,7 @@
                                     "evaluationPeriods": 1,
                                     "alarmActions": [
                                       {
-                                        "Ref": "pwnwrksvcTaskCountTargetScaleInPolicyUpperPolicy701150A1"
+                                        "Ref": "pwnwrksvcTaskCountTargetScaleOutPolicyUpperPolicyB0D4F645"
                                       }
                                     ],
                                     "alarmDescription": "Upper threshold scaling alarm",
@@ -1844,7 +2048,7 @@
                                     "namespace": "AWS/SQS",
                                     "period": 60,
                                     "statistic": "Average",
-                                    "threshold": 30
+                                    "threshold": 1
                                   }
                                 },
                                 "constructInfo": {

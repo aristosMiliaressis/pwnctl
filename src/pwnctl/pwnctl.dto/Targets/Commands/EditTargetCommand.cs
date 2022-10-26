@@ -5,7 +5,7 @@ using pwnwrk.infra.MediatR;
 
 using MediatR;
 
-public class EditTargetCommand : Program, IRequest<MediatorResponse>
+public class EditTargetCommand : Program, IRequest<MediatorResult>
 {
 
 }

@@ -12,21 +12,21 @@ public class TargetsController : BaseController
     [HttpGet]
     public async Task<ActionResult> GetTargets()
     {
-        var response = await Mediator.Send(new ListTargetsQuery());
+        var result = await Mediator.Send(new ListTargetsQuery());
 
-        return CreateResponse(response);    
+        return CreateResponse(result);    
     }
 
     [HttpPost]
-    public async Task<ActionResult> CreateTarget(CreateTargetCommand target)
+    public async Task<ActionResult> CreateTarget(CreateTargetCommand command)
     {
-        var response = await Mediator.Send(target);
+        var result = await Mediator.Send(command);
         
-        return CreateResponse(response);
+        return CreateResponse(result);
     }
 
     [HttpPatch("{target}")]
-    public Task<ActionResult> EditTarget(string target, EditTargetCommand edit)
+    public Task<ActionResult> EditTarget(string target, EditTargetCommand command)
     {
         throw new NotImplementedException();
     }
@@ -38,13 +38,13 @@ public class TargetsController : BaseController
     }
 
     [HttpPost("{target}/scope")]
-    public Task<ActionResult> AddScopeDef(string target, AddScopeDefCommand scope)
+    public Task<ActionResult> AddScopeDef(string target, AddScopeDefCommand command)
     {
         throw new NotImplementedException();
     }
 
     [HttpPatch("{target}/scope/{scopeId:int}")]
-    public Task<ActionResult> EditScopeDef(string target, int scopeId, EditScopeDefCommand scope)
+    public Task<ActionResult> EditScopeDef(string target, int scopeId, EditScopeDefCommand command)
     {
         throw new NotImplementedException();
     }

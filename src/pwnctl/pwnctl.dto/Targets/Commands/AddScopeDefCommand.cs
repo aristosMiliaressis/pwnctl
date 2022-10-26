@@ -5,7 +5,7 @@ using pwnwrk.infra.MediatR;
 
 using MediatR;
 
-public class AddScopeDefCommand : ScopeDefinition, IRequest<MediatorResponse>
+public class AddScopeDefCommand : ScopeDefinition, IRequest<MediatorResult>
 {
     public string Target { get; set; }
 }

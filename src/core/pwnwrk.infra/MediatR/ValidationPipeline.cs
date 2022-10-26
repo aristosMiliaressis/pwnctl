@@ -4,7 +4,7 @@ using FluentValidation;
 namespace pwnwrk.infra.MediatR
 {
     public class ValidationPipeline<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-            where TResponse : MediatorResponse
+            where TResponse : MediatorResult
             where TRequest : IRequest<TResponse>
     {
         private readonly IEnumerable<IValidator<TRequest>> _validators;
@@ -32,7 +32,7 @@ namespace pwnwrk.infra.MediatR
                 {
                     var errors = _validators.SelectMany(val => val.Validate(request).Errors);
 
-                    return (TResponse)MediatorResponse.ValidationFailure(errors);
+                    return (TResponse)MediatorResult.ValidationFailure(errors);
                 }
             }
 
@@ -42,7 +42,7 @@ namespace pwnwrk.infra.MediatR
             }
             catch (Exception ex) when (ex is ArgumentException || ex is ValidationException)
             {
-                response = (TResponse)MediatorResponse.Error(ex.Message);
+                response = (TResponse)MediatorResult.Error(ex.Message);
             }
 
             return response;

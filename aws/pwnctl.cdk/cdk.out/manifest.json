@@ -22,30 +22,62 @@
           {
             "type": "aws:cdk:asset",
             "data": {
-              "path": "asset.287aebc978ce4547e656a62ea6fea1808d48e709d3ea2977d8a5f60e44299f47.0",
-              "id": "287aebc978ce4547e656a62ea6fea1808d48e709d3ea2977d8a5f60e44299f47",
+              "path": "asset.ab2ea9941a633055ed11b1f73489437ef2f9688ebf898b913d54f5b7d09ba93e.0",
+              "id": "ab2ea9941a633055ed11b1f73489437ef2f9688ebf898b913d54f5b7d09ba93e",
               "packaging": "zip",
-              "sourceHash": "287aebc978ce4547e656a62ea6fea1808d48e709d3ea2977d8a5f60e44299f47",
-              "s3BucketParameter": "AssetParameters287aebc978ce4547e656a62ea6fea1808d48e709d3ea2977d8a5f60e44299f47S3Bucket176CBAB0",
-              "s3KeyParameter": "AssetParameters287aebc978ce4547e656a62ea6fea1808d48e709d3ea2977d8a5f60e44299f47S3VersionKey261DF7FC",
-              "artifactHashParameter": "AssetParameters287aebc978ce4547e656a62ea6fea1808d48e709d3ea2977d8a5f60e44299f47ArtifactHashF87A02B9"
+              "sourceHash": "ab2ea9941a633055ed11b1f73489437ef2f9688ebf898b913d54f5b7d09ba93e",
+              "s3BucketParameter": "AssetParametersab2ea9941a633055ed11b1f73489437ef2f9688ebf898b913d54f5b7d09ba93eS3Bucket2588042D",
+              "s3KeyParameter": "AssetParametersab2ea9941a633055ed11b1f73489437ef2f9688ebf898b913d54f5b7d09ba93eS3VersionKey9E94294B",
+              "artifactHashParameter": "AssetParametersab2ea9941a633055ed11b1f73489437ef2f9688ebf898b913d54f5b7d09ba93eArtifactHash33B35171"
             },
             "trace": [
-              "ConstructNode.addMetadata (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/construct-compat.js:416:62)",
-              "LegacyStackSynthesizer.doAddFileAsset (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:202:29)",
-              "LegacyStackSynthesizer.addFileAsset (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:98:25)",
-              "Stack.addFileAsset (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/stack.js:473:33)",
-              "/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:103:59",
-              "withoutDeprecationWarnings (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:229:16)",
-              "LegacyStackSynthesizer.addFileAsset (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:103:20)",
-              "new Asset (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-s3-assets/lib/asset.js:46:44)",
-              "AssetCode.bind (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-lambda/lib/code.js:277:26)",
-              "new Function (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-lambda/lib/function.js:114:33)",
-              "exports.Kernel._create (/tmp/guebvdw4.of5/lib/program.js:5592:179)",
-              "exports.Kernel.create (/tmp/guebvdw4.of5/lib/program.js:5400:29)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "ConstructNode.addMetadata (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/construct-compat.js:416:62)",
+              "LegacyStackSynthesizer.doAddFileAsset (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:202:29)",
+              "LegacyStackSynthesizer.addFileAsset (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:98:25)",
+              "Stack.addFileAsset (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack.js:473:33)",
+              "/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:103:59",
+              "withoutDeprecationWarnings (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:229:16)",
+              "LegacyStackSynthesizer.addFileAsset (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:103:20)",
+              "new Asset (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-s3-assets/lib/asset.js:46:44)",
+              "AssetCode.bind (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-lambda/lib/code.js:277:26)",
+              "new Function (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-lambda/lib/function.js:114:33)",
+              "exports.Kernel._create (/tmp/wghtlcjn.dj1/lib/program.js:5592:179)",
+              "exports.Kernel.create (/tmp/wghtlcjn.dj1/lib/program.js:5400:29)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
+              "process.processImmediate (node:internal/timers:471:21)"
+            ]
+          },
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.c8dfcc3db7a767ebc6f9417372a8fee940927c659f793315834a6784dab3d686",
+              "id": "c8dfcc3db7a767ebc6f9417372a8fee940927c659f793315834a6784dab3d686",
+              "packaging": "zip",
+              "sourceHash": "c8dfcc3db7a767ebc6f9417372a8fee940927c659f793315834a6784dab3d686",
+              "s3BucketParameter": "AssetParametersc8dfcc3db7a767ebc6f9417372a8fee940927c659f793315834a6784dab3d686S3Bucket821B928E",
+              "s3KeyParameter": "AssetParametersc8dfcc3db7a767ebc6f9417372a8fee940927c659f793315834a6784dab3d686S3VersionKey8D940F9A",
+              "artifactHashParameter": "AssetParametersc8dfcc3db7a767ebc6f9417372a8fee940927c659f793315834a6784dab3d686ArtifactHashB7ECE5F1"
+            },
+            "trace": [
+              "ConstructNode.addMetadata (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/construct-compat.js:416:62)",
+              "LegacyStackSynthesizer.doAddFileAsset (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:202:29)",
+              "LegacyStackSynthesizer.addFileAsset (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:98:25)",
+              "Stack.addFileAsset (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack.js:473:33)",
+              "/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:103:59",
+              "withoutDeprecationWarnings (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:229:16)",
+              "LegacyStackSynthesizer.addFileAsset (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:103:20)",
+              "new Asset (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-s3-assets/lib/asset.js:46:44)",
+              "new LogRetentionFunction (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-logs/lib/log-retention.js:90:23)",
+              "LogRetention.ensureSingletonLogRetentionFunction (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-logs/lib/log-retention.js:76:16)",
+              "new LogRetention (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-logs/lib/log-retention.js:38:31)",
+              "new Function (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-lambda/lib/function.js:231:34)",
+              "exports.Kernel._create (/tmp/wghtlcjn.dj1/lib/program.js:5592:179)",
+              "exports.Kernel.create (/tmp/wghtlcjn.dj1/lib/program.js:5400:29)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           },
@@ -58,22 +90,22 @@
               }
             ],
             "trace": [
-              "ConstructNode.addMetadata (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/construct-compat.js:416:62)",
-              "Object.addStackArtifactToAssembly (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/stack-synthesizers/_shared.js:27:20)",
-              "LegacyStackSynthesizer.emitStackArtifact (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/stack-synthesizers/stack-synthesizer.js:51:19)",
-              "LegacyStackSynthesizer.synthesize (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:150:14)",
-              "/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/private/synthesis.js:155:35",
-              "visit (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/private/synthesis.js:200:9)",
-              "visit (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/private/synthesis.js:197:9)",
-              "synthesizeTree (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/private/synthesis.js:148:5)",
-              "Object.synthesize (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/private/synthesis.js:33:5)",
-              "App.synth (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/stage.js:104:41)",
-              "/tmp/guebvdw4.of5/lib/program.js:5453:144",
-              "exports.Kernel._ensureSync (/tmp/guebvdw4.of5/lib/program.js:5871:28)",
-              "exports.Kernel.invoke (/tmp/guebvdw4.of5/lib/program.js:5453:73)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "ConstructNode.addMetadata (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/construct-compat.js:416:62)",
+              "Object.addStackArtifactToAssembly (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack-synthesizers/_shared.js:27:20)",
+              "LegacyStackSynthesizer.emitStackArtifact (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack-synthesizers/stack-synthesizer.js:51:19)",
+              "LegacyStackSynthesizer.synthesize (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:150:14)",
+              "/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/private/synthesis.js:155:35",
+              "visit (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/private/synthesis.js:200:9)",
+              "visit (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/private/synthesis.js:197:9)",
+              "synthesizeTree (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/private/synthesis.js:148:5)",
+              "Object.synthesize (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/private/synthesis.js:33:5)",
+              "App.synth (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stage.js:104:41)",
+              "/tmp/wghtlcjn.dj1/lib/program.js:5453:144",
+              "exports.Kernel._ensureSync (/tmp/wghtlcjn.dj1/lib/program.js:5871:28)",
+              "exports.Kernel.invoke (/tmp/wghtlcjn.dj1/lib/program.js:5453:73)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           }
@@ -83,11 +115,11 @@
             "type": "aws:cdk:logicalId",
             "data": "connectionString",
             "trace": [
-              "exports.Kernel._create (/tmp/guebvdw4.of5/lib/program.js:5592:179)",
-              "exports.Kernel.create (/tmp/guebvdw4.of5/lib/program.js:5400:29)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "exports.Kernel._create (/tmp/wghtlcjn.dj1/lib/program.js:5592:179)",
+              "exports.Kernel.create (/tmp/wghtlcjn.dj1/lib/program.js:5400:29)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           }
@@ -97,12 +129,12 @@
             "type": "aws:cdk:logicalId",
             "data": "pwnwrkvpc020FF09A",
             "trace": [
-              "new Vpc (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:405:25)",
-              "exports.Kernel._create (/tmp/guebvdw4.of5/lib/program.js:5592:179)",
-              "exports.Kernel.create (/tmp/guebvdw4.of5/lib/program.js:5400:29)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "new Vpc (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:405:25)",
+              "exports.Kernel._create (/tmp/wghtlcjn.dj1/lib/program.js:5592:179)",
+              "exports.Kernel.create (/tmp/wghtlcjn.dj1/lib/program.js:5400:29)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           }
@@ -112,18 +144,18 @@
             "type": "aws:cdk:logicalId",
             "data": "pwnwrkvpcPublicSubnet1Subnet50A78F6A",
             "trace": [
-              "new Subnet (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:783:24)",
-              "new PublicSubnet (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:987:9)",
-              "/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:679:42",
+              "new Subnet (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:783:24)",
+              "new PublicSubnet (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:987:9)",
+              "/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:679:42",
               "Array.forEach (<anonymous>)",
-              "Vpc.createSubnetResources (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:653:32)",
-              "Vpc.createSubnets (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:649:18)",
-              "new Vpc (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:431:14)",
-              "exports.Kernel._create (/tmp/guebvdw4.of5/lib/program.js:5592:179)",
-              "exports.Kernel.create (/tmp/guebvdw4.of5/lib/program.js:5400:29)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "Vpc.createSubnetResources (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:653:32)",
+              "Vpc.createSubnets (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:649:18)",
+              "new Vpc (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:431:14)",
+              "exports.Kernel._create (/tmp/wghtlcjn.dj1/lib/program.js:5592:179)",
+              "exports.Kernel.create (/tmp/wghtlcjn.dj1/lib/program.js:5400:29)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           }
@@ -133,18 +165,18 @@
             "type": "aws:cdk:logicalId",
             "data": "pwnwrkvpcPublicSubnet1RouteTable4AE88A42",
             "trace": [
-              "new Subnet (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:799:23)",
-              "new PublicSubnet (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:987:9)",
-              "/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:679:42",
+              "new Subnet (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:799:23)",
+              "new PublicSubnet (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:987:9)",
+              "/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:679:42",
               "Array.forEach (<anonymous>)",
-              "Vpc.createSubnetResources (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:653:32)",
-              "Vpc.createSubnets (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:649:18)",
-              "new Vpc (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:431:14)",
-              "exports.Kernel._create (/tmp/guebvdw4.of5/lib/program.js:5592:179)",
-              "exports.Kernel.create (/tmp/guebvdw4.of5/lib/program.js:5400:29)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "Vpc.createSubnetResources (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:653:32)",
+              "Vpc.createSubnets (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:649:18)",
+              "new Vpc (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:431:14)",
+              "exports.Kernel._create (/tmp/wghtlcjn.dj1/lib/program.js:5592:179)",
+              "exports.Kernel.create (/tmp/wghtlcjn.dj1/lib/program.js:5400:29)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           }
@@ -154,18 +186,18 @@
             "type": "aws:cdk:logicalId",
             "data": "pwnwrkvpcPublicSubnet1RouteTableAssociationB680EC6D",
             "trace": [
-              "new Subnet (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:804:9)",
-              "new PublicSubnet (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:987:9)",
-              "/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:679:42",
+              "new Subnet (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:804:9)",
+              "new PublicSubnet (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:987:9)",
+              "/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:679:42",
               "Array.forEach (<anonymous>)",
-              "Vpc.createSubnetResources (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:653:32)",
-              "Vpc.createSubnets (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:649:18)",
-              "new Vpc (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:431:14)",
-              "exports.Kernel._create (/tmp/guebvdw4.of5/lib/program.js:5592:179)",
-              "exports.Kernel.create (/tmp/guebvdw4.of5/lib/program.js:5400:29)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "Vpc.createSubnetResources (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:653:32)",
+              "Vpc.createSubnets (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:649:18)",
+              "new Vpc (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:431:14)",
+              "exports.Kernel._create (/tmp/wghtlcjn.dj1/lib/program.js:5592:179)",
+              "exports.Kernel.create (/tmp/wghtlcjn.dj1/lib/program.js:5400:29)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           }
@@ -175,15 +207,15 @@
             "type": "aws:cdk:logicalId",
             "data": "pwnwrkvpcPublicSubnet1DefaultRoute98D3DDD5",
             "trace": [
-              "PublicSubnet.addDefaultInternetRoute (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:840:23)",
-              "/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:443:30",
+              "PublicSubnet.addDefaultInternetRoute (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:840:23)",
+              "/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:443:30",
               "Array.forEach (<anonymous>)",
-              "new Vpc (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:442:32)",
-              "exports.Kernel._create (/tmp/guebvdw4.of5/lib/program.js:5592:179)",
-              "exports.Kernel.create (/tmp/guebvdw4.of5/lib/program.js:5400:29)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "new Vpc (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:442:32)",
+              "exports.Kernel._create (/tmp/wghtlcjn.dj1/lib/program.js:5592:179)",
+              "exports.Kernel.create (/tmp/wghtlcjn.dj1/lib/program.js:5400:29)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           }
@@ -193,18 +225,18 @@
             "type": "aws:cdk:logicalId",
             "data": "pwnwrkvpcIsolatedSubnet1SubnetC47E5A6C",
             "trace": [
-              "new Subnet (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:783:24)",
-              "new PrivateSubnet (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:1034:9)",
-              "/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:691:44",
+              "new Subnet (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:783:24)",
+              "new PrivateSubnet (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:1034:9)",
+              "/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:691:44",
               "Array.forEach (<anonymous>)",
-              "Vpc.createSubnetResources (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:653:32)",
-              "Vpc.createSubnets (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:649:18)",
-              "new Vpc (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:431:14)",
-              "exports.Kernel._create (/tmp/guebvdw4.of5/lib/program.js:5592:179)",
-              "exports.Kernel.create (/tmp/guebvdw4.of5/lib/program.js:5400:29)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "Vpc.createSubnetResources (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:653:32)",
+              "Vpc.createSubnets (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:649:18)",
+              "new Vpc (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:431:14)",
+              "exports.Kernel._create (/tmp/wghtlcjn.dj1/lib/program.js:5592:179)",
+              "exports.Kernel.create (/tmp/wghtlcjn.dj1/lib/program.js:5400:29)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           }
@@ -214,18 +246,18 @@
             "type": "aws:cdk:logicalId",
             "data": "pwnwrkvpcIsolatedSubnet1RouteTableA318FADF",
             "trace": [
-              "new Subnet (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:799:23)",
-              "new PrivateSubnet (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:1034:9)",
-              "/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:691:44",
+              "new Subnet (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:799:23)",
+              "new PrivateSubnet (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:1034:9)",
+              "/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:691:44",
               "Array.forEach (<anonymous>)",
-              "Vpc.createSubnetResources (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:653:32)",
-              "Vpc.createSubnets (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:649:18)",
-              "new Vpc (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:431:14)",
-              "exports.Kernel._create (/tmp/guebvdw4.of5/lib/program.js:5592:179)",
-              "exports.Kernel.create (/tmp/guebvdw4.of5/lib/program.js:5400:29)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "Vpc.createSubnetResources (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:653:32)",
+              "Vpc.createSubnets (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:649:18)",
+              "new Vpc (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:431:14)",
+              "exports.Kernel._create (/tmp/wghtlcjn.dj1/lib/program.js:5592:179)",
+              "exports.Kernel.create (/tmp/wghtlcjn.dj1/lib/program.js:5400:29)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           }
@@ -235,18 +267,18 @@
             "type": "aws:cdk:logicalId",
             "data": "pwnwrkvpcIsolatedSubnet1RouteTableAssociation311C0293",
             "trace": [
-              "new Subnet (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:804:9)",
-              "new PrivateSubnet (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:1034:9)",
-              "/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:691:44",
+              "new Subnet (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:804:9)",
+              "new PrivateSubnet (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:1034:9)",
+              "/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:691:44",
               "Array.forEach (<anonymous>)",
-              "Vpc.createSubnetResources (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:653:32)",
-              "Vpc.createSubnets (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:649:18)",
-              "new Vpc (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:431:14)",
-              "exports.Kernel._create (/tmp/guebvdw4.of5/lib/program.js:5592:179)",
-              "exports.Kernel.create (/tmp/guebvdw4.of5/lib/program.js:5400:29)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "Vpc.createSubnetResources (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:653:32)",
+              "Vpc.createSubnets (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:649:18)",
+              "new Vpc (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:431:14)",
+              "exports.Kernel._create (/tmp/wghtlcjn.dj1/lib/program.js:5592:179)",
+              "exports.Kernel.create (/tmp/wghtlcjn.dj1/lib/program.js:5400:29)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           }
@@ -256,12 +288,12 @@
             "type": "aws:cdk:logicalId",
             "data": "pwnwrkvpcIGWAC3C03B5",
             "trace": [
-              "new Vpc (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:435:25)",
-              "exports.Kernel._create (/tmp/guebvdw4.of5/lib/program.js:5592:179)",
-              "exports.Kernel.create (/tmp/guebvdw4.of5/lib/program.js:5400:29)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "new Vpc (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:435:25)",
+              "exports.Kernel._create (/tmp/wghtlcjn.dj1/lib/program.js:5592:179)",
+              "exports.Kernel.create (/tmp/wghtlcjn.dj1/lib/program.js:5400:29)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           }
@@ -271,12 +303,12 @@
             "type": "aws:cdk:logicalId",
             "data": "pwnwrkvpcVPCGWE7842D46",
             "trace": [
-              "new Vpc (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:438:25)",
-              "exports.Kernel._create (/tmp/guebvdw4.of5/lib/program.js:5592:179)",
-              "exports.Kernel.create (/tmp/guebvdw4.of5/lib/program.js:5400:29)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "new Vpc (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:438:25)",
+              "exports.Kernel._create (/tmp/wghtlcjn.dj1/lib/program.js:5592:179)",
+              "exports.Kernel.create (/tmp/wghtlcjn.dj1/lib/program.js:5400:29)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           }
@@ -286,12 +318,12 @@
             "type": "aws:cdk:logicalId",
             "data": "pwnwrkdlqfifoA60405CB",
             "trace": [
-              "new Queue (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-sqs/lib/queue.js:88:23)",
-              "exports.Kernel._create (/tmp/guebvdw4.of5/lib/program.js:5592:179)",
-              "exports.Kernel.create (/tmp/guebvdw4.of5/lib/program.js:5400:29)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "new Queue (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-sqs/lib/queue.js:88:23)",
+              "exports.Kernel._create (/tmp/wghtlcjn.dj1/lib/program.js:5592:179)",
+              "exports.Kernel.create (/tmp/wghtlcjn.dj1/lib/program.js:5400:29)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           }
@@ -301,12 +333,12 @@
             "type": "aws:cdk:logicalId",
             "data": "pwnwrkfifo043C4E87",
             "trace": [
-              "new Queue (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-sqs/lib/queue.js:88:23)",
-              "exports.Kernel._create (/tmp/guebvdw4.of5/lib/program.js:5592:179)",
-              "exports.Kernel.create (/tmp/guebvdw4.of5/lib/program.js:5400:29)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "new Queue (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-sqs/lib/queue.js:88:23)",
+              "exports.Kernel._create (/tmp/wghtlcjn.dj1/lib/program.js:5592:179)",
+              "exports.Kernel.create (/tmp/wghtlcjn.dj1/lib/program.js:5400:29)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           }
@@ -316,12 +348,12 @@
             "type": "aws:cdk:logicalId",
             "data": "pwnwrkfs6B0E83F5",
             "trace": [
-              "new FileSystem (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-efs/lib/efs-file-system.js:151:28)",
-              "exports.Kernel._create (/tmp/guebvdw4.of5/lib/program.js:5592:179)",
-              "exports.Kernel.create (/tmp/guebvdw4.of5/lib/program.js:5400:29)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "new FileSystem (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-efs/lib/efs-file-system.js:151:28)",
+              "exports.Kernel._create (/tmp/wghtlcjn.dj1/lib/program.js:5592:179)",
+              "exports.Kernel.create (/tmp/wghtlcjn.dj1/lib/program.js:5400:29)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           }
@@ -331,13 +363,13 @@
             "type": "aws:cdk:logicalId",
             "data": "pwnwrkfsEfsSecurityGroup5C55F9F7",
             "trace": [
-              "new SecurityGroup (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/security-group.js:202:30)",
-              "new FileSystem (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-efs/lib/efs-file-system.js:164:55)",
-              "exports.Kernel._create (/tmp/guebvdw4.of5/lib/program.js:5592:179)",
-              "exports.Kernel.create (/tmp/guebvdw4.of5/lib/program.js:5400:29)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "new SecurityGroup (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/security-group.js:202:30)",
+              "new FileSystem (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-efs/lib/efs-file-system.js:164:55)",
+              "exports.Kernel._create (/tmp/wghtlcjn.dj1/lib/program.js:5592:179)",
+              "exports.Kernel.create (/tmp/wghtlcjn.dj1/lib/program.js:5400:29)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           }
@@ -347,21 +379,21 @@
             "type": "aws:cdk:logicalId",
             "data": "pwnwrkfsEfsSecurityGroupfromPwnctlCdkStackpwnctlapiSecurityGroupD8320BC12049A9DE741C",
             "trace": [
-              "SecurityGroup.addIngressRule (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/security-group.js:42:13)",
-              "SecurityGroup.addIngressRule (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/security-group.js:338:19)",
-              "/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/connections.js:131:31",
-              "ReactiveList.forEachAndForever (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/connections.js:289:13)",
-              "/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/connections.js:130:51",
-              "ReactiveList.forEachAndForever (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/connections.js:289:13)",
-              "Connections.allowFrom (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/connections.js:129:30)",
-              "Connections.allowDefaultPortFrom (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/connections.js:212:14)",
-              "Function.configureVpc (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-lambda/lib/function.js:703:53)",
-              "new Function (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-lambda/lib/function.js:195:29)",
-              "exports.Kernel._create (/tmp/guebvdw4.of5/lib/program.js:5592:179)",
-              "exports.Kernel.create (/tmp/guebvdw4.of5/lib/program.js:5400:29)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "SecurityGroup.addIngressRule (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/security-group.js:42:13)",
+              "SecurityGroup.addIngressRule (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/security-group.js:338:19)",
+              "/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/connections.js:131:31",
+              "ReactiveList.forEachAndForever (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/connections.js:289:13)",
+              "/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/connections.js:130:51",
+              "ReactiveList.forEachAndForever (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/connections.js:289:13)",
+              "Connections.allowFrom (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/connections.js:129:30)",
+              "Connections.allowDefaultPortFrom (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/connections.js:212:14)",
+              "Function.configureVpc (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-lambda/lib/function.js:703:53)",
+              "new Function (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-lambda/lib/function.js:195:29)",
+              "exports.Kernel._create (/tmp/wghtlcjn.dj1/lib/program.js:5592:179)",
+              "exports.Kernel.create (/tmp/wghtlcjn.dj1/lib/program.js:5400:29)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           }
@@ -371,19 +403,19 @@
             "type": "aws:cdk:logicalId",
             "data": "pwnwrkfsEfsSecurityGroupfromPwnctlCdkStackpwnwrksvcSecurityGroupFAD385442049C878424D",
             "trace": [
-              "SecurityGroup.addIngressRule (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/security-group.js:42:13)",
-              "SecurityGroup.addIngressRule (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/security-group.js:338:19)",
-              "/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/connections.js:131:31",
-              "ReactiveList.forEachAndForever (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/connections.js:289:13)",
-              "/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/connections.js:130:51",
-              "ReactiveList.forEachAndForever (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/connections.js:289:13)",
-              "Connections.allowFrom (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/connections.js:129:30)",
-              "/tmp/guebvdw4.of5/lib/program.js:5453:144",
-              "exports.Kernel._ensureSync (/tmp/guebvdw4.of5/lib/program.js:5871:28)",
-              "exports.Kernel.invoke (/tmp/guebvdw4.of5/lib/program.js:5453:73)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "SecurityGroup.addIngressRule (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/security-group.js:42:13)",
+              "SecurityGroup.addIngressRule (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/security-group.js:338:19)",
+              "/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/connections.js:131:31",
+              "ReactiveList.forEachAndForever (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/connections.js:289:13)",
+              "/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/connections.js:130:51",
+              "ReactiveList.forEachAndForever (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/connections.js:289:13)",
+              "Connections.allowFrom (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/connections.js:129:30)",
+              "/tmp/wghtlcjn.dj1/lib/program.js:5453:144",
+              "exports.Kernel._ensureSync (/tmp/wghtlcjn.dj1/lib/program.js:5871:28)",
+              "exports.Kernel.invoke (/tmp/wghtlcjn.dj1/lib/program.js:5453:73)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           }
@@ -393,14 +425,14 @@
             "type": "aws:cdk:logicalId",
             "data": "pwnwrkfsEfsMountTarget1E8F83F52",
             "trace": [
-              "/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-efs/lib/efs-file-system.js:176:33",
+              "/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-efs/lib/efs-file-system.js:176:33",
               "Array.forEach (<anonymous>)",
-              "new FileSystem (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-efs/lib/efs-file-system.js:175:27)",
-              "exports.Kernel._create (/tmp/guebvdw4.of5/lib/program.js:5592:179)",
-              "exports.Kernel.create (/tmp/guebvdw4.of5/lib/program.js:5400:29)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "new FileSystem (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-efs/lib/efs-file-system.js:175:27)",
+              "exports.Kernel._create (/tmp/wghtlcjn.dj1/lib/program.js:5592:179)",
+              "exports.Kernel.create (/tmp/wghtlcjn.dj1/lib/program.js:5400:29)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           }
@@ -410,14 +442,14 @@
             "type": "aws:cdk:logicalId",
             "data": "pwnwrkfspwnctllambdaapifsapF9EF4E24",
             "trace": [
-              "new AccessPoint (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-efs/lib/access-point.js:26:26)",
-              "FileSystem.addAccessPoint (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-efs/lib/efs-file-system.js:213:16)",
-              "/tmp/guebvdw4.of5/lib/program.js:5453:144",
-              "exports.Kernel._ensureSync (/tmp/guebvdw4.of5/lib/program.js:5871:28)",
-              "exports.Kernel.invoke (/tmp/guebvdw4.of5/lib/program.js:5453:73)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "new AccessPoint (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-efs/lib/access-point.js:26:26)",
+              "FileSystem.addAccessPoint (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-efs/lib/efs-file-system.js:213:16)",
+              "/tmp/wghtlcjn.dj1/lib/program.js:5453:144",
+              "exports.Kernel._ensureSync (/tmp/wghtlcjn.dj1/lib/program.js:5871:28)",
+              "exports.Kernel.invoke (/tmp/wghtlcjn.dj1/lib/program.js:5453:73)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           }
@@ -427,12 +459,12 @@
             "type": "aws:cdk:logicalId",
             "data": "pwnctlapirole0826A6D0",
             "trace": [
-              "new Role (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-iam/lib/role.js:63:22)",
-              "exports.Kernel._create (/tmp/guebvdw4.of5/lib/program.js:5592:179)",
-              "exports.Kernel.create (/tmp/guebvdw4.of5/lib/program.js:5400:29)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "new Role (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-iam/lib/role.js:63:22)",
+              "exports.Kernel._create (/tmp/wghtlcjn.dj1/lib/program.js:5592:179)",
+              "exports.Kernel.create (/tmp/wghtlcjn.dj1/lib/program.js:5400:29)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           }
@@ -442,16 +474,16 @@
             "type": "aws:cdk:logicalId",
             "data": "pwnctlapiroleDefaultPolicy1D23B5B9",
             "trace": [
-              "new Policy (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-iam/lib/policy.js:57:26)",
-              "Role.addToPrincipalPolicy (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-iam/lib/role.js:247:34)",
-              "/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-lambda/lib/function.js:107:32",
+              "new Policy (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-iam/lib/policy.js:57:26)",
+              "Role.addToPrincipalPolicy (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-iam/lib/role.js:247:34)",
+              "/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-lambda/lib/function.js:107:32",
               "Array.forEach (<anonymous>)",
-              "new Function (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-lambda/lib/function.js:106:33)",
-              "exports.Kernel._create (/tmp/guebvdw4.of5/lib/program.js:5592:179)",
-              "exports.Kernel.create (/tmp/guebvdw4.of5/lib/program.js:5400:29)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "new Function (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-lambda/lib/function.js:106:33)",
+              "exports.Kernel._create (/tmp/wghtlcjn.dj1/lib/program.js:5592:179)",
+              "exports.Kernel.create (/tmp/wghtlcjn.dj1/lib/program.js:5400:29)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           }
@@ -461,14 +493,14 @@
             "type": "aws:cdk:logicalId",
             "data": "pwnctlapiSecurityGroupC000D8A4",
             "trace": [
-              "new SecurityGroup (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/security-group.js:202:30)",
-              "Function.configureVpc (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-lambda/lib/function.js:693:58)",
-              "new Function (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-lambda/lib/function.js:195:29)",
-              "exports.Kernel._create (/tmp/guebvdw4.of5/lib/program.js:5592:179)",
-              "exports.Kernel.create (/tmp/guebvdw4.of5/lib/program.js:5400:29)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "new SecurityGroup (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/security-group.js:202:30)",
+              "Function.configureVpc (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-lambda/lib/function.js:693:58)",
+              "new Function (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-lambda/lib/function.js:195:29)",
+              "exports.Kernel._create (/tmp/wghtlcjn.dj1/lib/program.js:5592:179)",
+              "exports.Kernel.create (/tmp/wghtlcjn.dj1/lib/program.js:5400:29)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           }
@@ -478,12 +510,28 @@
             "type": "aws:cdk:logicalId",
             "data": "pwnctlapi975A4D96",
             "trace": [
-              "new Function (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-lambda/lib/function.js:172:26)",
-              "exports.Kernel._create (/tmp/guebvdw4.of5/lib/program.js:5592:179)",
-              "exports.Kernel.create (/tmp/guebvdw4.of5/lib/program.js:5400:29)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "new Function (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-lambda/lib/function.js:172:26)",
+              "exports.Kernel._create (/tmp/wghtlcjn.dj1/lib/program.js:5592:179)",
+              "exports.Kernel.create (/tmp/wghtlcjn.dj1/lib/program.js:5400:29)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
+              "process.processImmediate (node:internal/timers:471:21)"
+            ]
+          }
+        ],
+        "/PwnctlCdkStack/pwnctl-api/LogRetention/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "pwnctlapiLogRetention4640D215",
+            "trace": [
+              "new LogRetention (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-logs/lib/log-retention.js:42:26)",
+              "new Function (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-lambda/lib/function.js:231:34)",
+              "exports.Kernel._create (/tmp/wghtlcjn.dj1/lib/program.js:5592:179)",
+              "exports.Kernel.create (/tmp/wghtlcjn.dj1/lib/program.js:5400:29)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           }
@@ -493,14 +541,14 @@
             "type": "aws:cdk:logicalId",
             "data": "pwnctlapiFunctionUrlC82E55D9",
             "trace": [
-              "new FunctionUrl (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-lambda/lib/function-url.js:87:26)",
-              "Function.addFunctionUrl (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-lambda/lib/function-base.js:218:16)",
-              "/tmp/guebvdw4.of5/lib/program.js:5453:144",
-              "exports.Kernel._ensureSync (/tmp/guebvdw4.of5/lib/program.js:5871:28)",
-              "exports.Kernel.invoke (/tmp/guebvdw4.of5/lib/program.js:5453:73)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "new FunctionUrl (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-lambda/lib/function-url.js:87:26)",
+              "Function.addFunctionUrl (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-lambda/lib/function-base.js:218:16)",
+              "/tmp/wghtlcjn.dj1/lib/program.js:5453:144",
+              "exports.Kernel._ensureSync (/tmp/wghtlcjn.dj1/lib/program.js:5871:28)",
+              "exports.Kernel.invoke (/tmp/wghtlcjn.dj1/lib/program.js:5453:73)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           }
@@ -510,87 +558,222 @@
             "type": "aws:cdk:logicalId",
             "data": "pwnctlapiinvokefunctionurlD1E71F7B",
             "trace": [
-              "Function.addPermission (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-lambda/lib/function-base.js:84:9)",
-              "new FunctionUrl (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-lambda/lib/function-url.js:102:28)",
-              "Function.addFunctionUrl (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-lambda/lib/function-base.js:218:16)",
-              "/tmp/guebvdw4.of5/lib/program.js:5453:144",
-              "exports.Kernel._ensureSync (/tmp/guebvdw4.of5/lib/program.js:5871:28)",
-              "exports.Kernel.invoke (/tmp/guebvdw4.of5/lib/program.js:5453:73)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "Function.addPermission (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-lambda/lib/function-base.js:84:9)",
+              "new FunctionUrl (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-lambda/lib/function-url.js:102:28)",
+              "Function.addFunctionUrl (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-lambda/lib/function-base.js:218:16)",
+              "/tmp/wghtlcjn.dj1/lib/program.js:5453:144",
+              "exports.Kernel._ensureSync (/tmp/wghtlcjn.dj1/lib/program.js:5871:28)",
+              "exports.Kernel.invoke (/tmp/wghtlcjn.dj1/lib/program.js:5453:73)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           }
         ],
-        "/PwnctlCdkStack/AssetParameters/287aebc978ce4547e656a62ea6fea1808d48e709d3ea2977d8a5f60e44299f47/S3Bucket": [
+        "/PwnctlCdkStack/AssetParameters/ab2ea9941a633055ed11b1f73489437ef2f9688ebf898b913d54f5b7d09ba93e/S3Bucket": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters287aebc978ce4547e656a62ea6fea1808d48e709d3ea2977d8a5f60e44299f47S3Bucket176CBAB0",
+            "data": "AssetParametersab2ea9941a633055ed11b1f73489437ef2f9688ebf898b913d54f5b7d09ba93eS3Bucket2588042D",
             "trace": [
-              "new FileAssetParameters (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/private/asset-parameters.js:12:36)",
-              "LegacyStackSynthesizer.doAddFileAsset (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:189:22)",
-              "LegacyStackSynthesizer.addFileAsset (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:98:25)",
-              "Stack.addFileAsset (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/stack.js:473:33)",
-              "/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:103:59",
-              "withoutDeprecationWarnings (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:229:16)",
-              "LegacyStackSynthesizer.addFileAsset (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:103:20)",
-              "new Asset (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-s3-assets/lib/asset.js:46:44)",
-              "AssetCode.bind (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-lambda/lib/code.js:277:26)",
-              "new Function (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-lambda/lib/function.js:114:33)",
-              "exports.Kernel._create (/tmp/guebvdw4.of5/lib/program.js:5592:179)",
-              "exports.Kernel.create (/tmp/guebvdw4.of5/lib/program.js:5400:29)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "new FileAssetParameters (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/private/asset-parameters.js:12:36)",
+              "LegacyStackSynthesizer.doAddFileAsset (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:189:22)",
+              "LegacyStackSynthesizer.addFileAsset (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:98:25)",
+              "Stack.addFileAsset (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack.js:473:33)",
+              "/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:103:59",
+              "withoutDeprecationWarnings (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:229:16)",
+              "LegacyStackSynthesizer.addFileAsset (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:103:20)",
+              "new Asset (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-s3-assets/lib/asset.js:46:44)",
+              "AssetCode.bind (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-lambda/lib/code.js:277:26)",
+              "new Function (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-lambda/lib/function.js:114:33)",
+              "exports.Kernel._create (/tmp/wghtlcjn.dj1/lib/program.js:5592:179)",
+              "exports.Kernel.create (/tmp/wghtlcjn.dj1/lib/program.js:5400:29)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           }
         ],
-        "/PwnctlCdkStack/AssetParameters/287aebc978ce4547e656a62ea6fea1808d48e709d3ea2977d8a5f60e44299f47/S3VersionKey": [
+        "/PwnctlCdkStack/AssetParameters/ab2ea9941a633055ed11b1f73489437ef2f9688ebf898b913d54f5b7d09ba93e/S3VersionKey": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters287aebc978ce4547e656a62ea6fea1808d48e709d3ea2977d8a5f60e44299f47S3VersionKey261DF7FC",
+            "data": "AssetParametersab2ea9941a633055ed11b1f73489437ef2f9688ebf898b913d54f5b7d09ba93eS3VersionKey9E94294B",
             "trace": [
-              "new FileAssetParameters (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/private/asset-parameters.js:16:35)",
-              "LegacyStackSynthesizer.doAddFileAsset (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:189:22)",
-              "LegacyStackSynthesizer.addFileAsset (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:98:25)",
-              "Stack.addFileAsset (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/stack.js:473:33)",
-              "/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:103:59",
-              "withoutDeprecationWarnings (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:229:16)",
-              "LegacyStackSynthesizer.addFileAsset (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:103:20)",
-              "new Asset (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-s3-assets/lib/asset.js:46:44)",
-              "AssetCode.bind (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-lambda/lib/code.js:277:26)",
-              "new Function (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-lambda/lib/function.js:114:33)",
-              "exports.Kernel._create (/tmp/guebvdw4.of5/lib/program.js:5592:179)",
-              "exports.Kernel.create (/tmp/guebvdw4.of5/lib/program.js:5400:29)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "new FileAssetParameters (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/private/asset-parameters.js:16:35)",
+              "LegacyStackSynthesizer.doAddFileAsset (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:189:22)",
+              "LegacyStackSynthesizer.addFileAsset (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:98:25)",
+              "Stack.addFileAsset (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack.js:473:33)",
+              "/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:103:59",
+              "withoutDeprecationWarnings (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:229:16)",
+              "LegacyStackSynthesizer.addFileAsset (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:103:20)",
+              "new Asset (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-s3-assets/lib/asset.js:46:44)",
+              "AssetCode.bind (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-lambda/lib/code.js:277:26)",
+              "new Function (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-lambda/lib/function.js:114:33)",
+              "exports.Kernel._create (/tmp/wghtlcjn.dj1/lib/program.js:5592:179)",
+              "exports.Kernel.create (/tmp/wghtlcjn.dj1/lib/program.js:5400:29)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           }
         ],
-        "/PwnctlCdkStack/AssetParameters/287aebc978ce4547e656a62ea6fea1808d48e709d3ea2977d8a5f60e44299f47/ArtifactHash": [
+        "/PwnctlCdkStack/AssetParameters/ab2ea9941a633055ed11b1f73489437ef2f9688ebf898b913d54f5b7d09ba93e/ArtifactHash": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters287aebc978ce4547e656a62ea6fea1808d48e709d3ea2977d8a5f60e44299f47ArtifactHashF87A02B9",
+            "data": "AssetParametersab2ea9941a633055ed11b1f73489437ef2f9688ebf898b913d54f5b7d09ba93eArtifactHash33B35171",
             "trace": [
-              "new FileAssetParameters (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/private/asset-parameters.js:20:38)",
-              "LegacyStackSynthesizer.doAddFileAsset (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:189:22)",
-              "LegacyStackSynthesizer.addFileAsset (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:98:25)",
-              "Stack.addFileAsset (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/stack.js:473:33)",
-              "/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:103:59",
-              "withoutDeprecationWarnings (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:229:16)",
-              "LegacyStackSynthesizer.addFileAsset (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:103:20)",
-              "new Asset (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-s3-assets/lib/asset.js:46:44)",
-              "AssetCode.bind (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-lambda/lib/code.js:277:26)",
-              "new Function (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-lambda/lib/function.js:114:33)",
-              "exports.Kernel._create (/tmp/guebvdw4.of5/lib/program.js:5592:179)",
-              "exports.Kernel.create (/tmp/guebvdw4.of5/lib/program.js:5400:29)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "new FileAssetParameters (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/private/asset-parameters.js:20:38)",
+              "LegacyStackSynthesizer.doAddFileAsset (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:189:22)",
+              "LegacyStackSynthesizer.addFileAsset (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:98:25)",
+              "Stack.addFileAsset (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack.js:473:33)",
+              "/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:103:59",
+              "withoutDeprecationWarnings (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:229:16)",
+              "LegacyStackSynthesizer.addFileAsset (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:103:20)",
+              "new Asset (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-s3-assets/lib/asset.js:46:44)",
+              "AssetCode.bind (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-lambda/lib/code.js:277:26)",
+              "new Function (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-lambda/lib/function.js:114:33)",
+              "exports.Kernel._create (/tmp/wghtlcjn.dj1/lib/program.js:5592:179)",
+              "exports.Kernel.create (/tmp/wghtlcjn.dj1/lib/program.js:5400:29)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
+              "process.processImmediate (node:internal/timers:471:21)"
+            ]
+          }
+        ],
+        "/PwnctlCdkStack/AssetParameters/c8dfcc3db7a767ebc6f9417372a8fee940927c659f793315834a6784dab3d686/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersc8dfcc3db7a767ebc6f9417372a8fee940927c659f793315834a6784dab3d686S3Bucket821B928E",
+            "trace": [
+              "new FileAssetParameters (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/private/asset-parameters.js:12:36)",
+              "LegacyStackSynthesizer.doAddFileAsset (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:189:22)",
+              "LegacyStackSynthesizer.addFileAsset (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:98:25)",
+              "Stack.addFileAsset (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack.js:473:33)",
+              "/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:103:59",
+              "withoutDeprecationWarnings (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:229:16)",
+              "LegacyStackSynthesizer.addFileAsset (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:103:20)",
+              "new Asset (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-s3-assets/lib/asset.js:46:44)",
+              "new LogRetentionFunction (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-logs/lib/log-retention.js:90:23)",
+              "LogRetention.ensureSingletonLogRetentionFunction (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-logs/lib/log-retention.js:76:16)",
+              "new LogRetention (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-logs/lib/log-retention.js:38:31)",
+              "new Function (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-lambda/lib/function.js:231:34)",
+              "exports.Kernel._create (/tmp/wghtlcjn.dj1/lib/program.js:5592:179)",
+              "exports.Kernel.create (/tmp/wghtlcjn.dj1/lib/program.js:5400:29)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
+              "process.processImmediate (node:internal/timers:471:21)"
+            ]
+          }
+        ],
+        "/PwnctlCdkStack/AssetParameters/c8dfcc3db7a767ebc6f9417372a8fee940927c659f793315834a6784dab3d686/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersc8dfcc3db7a767ebc6f9417372a8fee940927c659f793315834a6784dab3d686S3VersionKey8D940F9A",
+            "trace": [
+              "new FileAssetParameters (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/private/asset-parameters.js:16:35)",
+              "LegacyStackSynthesizer.doAddFileAsset (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:189:22)",
+              "LegacyStackSynthesizer.addFileAsset (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:98:25)",
+              "Stack.addFileAsset (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack.js:473:33)",
+              "/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:103:59",
+              "withoutDeprecationWarnings (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:229:16)",
+              "LegacyStackSynthesizer.addFileAsset (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:103:20)",
+              "new Asset (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-s3-assets/lib/asset.js:46:44)",
+              "new LogRetentionFunction (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-logs/lib/log-retention.js:90:23)",
+              "LogRetention.ensureSingletonLogRetentionFunction (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-logs/lib/log-retention.js:76:16)",
+              "new LogRetention (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-logs/lib/log-retention.js:38:31)",
+              "new Function (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-lambda/lib/function.js:231:34)",
+              "exports.Kernel._create (/tmp/wghtlcjn.dj1/lib/program.js:5592:179)",
+              "exports.Kernel.create (/tmp/wghtlcjn.dj1/lib/program.js:5400:29)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
+              "process.processImmediate (node:internal/timers:471:21)"
+            ]
+          }
+        ],
+        "/PwnctlCdkStack/AssetParameters/c8dfcc3db7a767ebc6f9417372a8fee940927c659f793315834a6784dab3d686/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersc8dfcc3db7a767ebc6f9417372a8fee940927c659f793315834a6784dab3d686ArtifactHashB7ECE5F1",
+            "trace": [
+              "new FileAssetParameters (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/private/asset-parameters.js:20:38)",
+              "LegacyStackSynthesizer.doAddFileAsset (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:189:22)",
+              "LegacyStackSynthesizer.addFileAsset (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:98:25)",
+              "Stack.addFileAsset (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack.js:473:33)",
+              "/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:103:59",
+              "withoutDeprecationWarnings (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:229:16)",
+              "LegacyStackSynthesizer.addFileAsset (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stack-synthesizers/legacy.js:103:20)",
+              "new Asset (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-s3-assets/lib/asset.js:46:44)",
+              "new LogRetentionFunction (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-logs/lib/log-retention.js:90:23)",
+              "LogRetention.ensureSingletonLogRetentionFunction (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-logs/lib/log-retention.js:76:16)",
+              "new LogRetention (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-logs/lib/log-retention.js:38:31)",
+              "new Function (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-lambda/lib/function.js:231:34)",
+              "exports.Kernel._create (/tmp/wghtlcjn.dj1/lib/program.js:5592:179)",
+              "exports.Kernel.create (/tmp/wghtlcjn.dj1/lib/program.js:5400:29)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
+              "process.processImmediate (node:internal/timers:471:21)"
+            ]
+          }
+        ],
+        "/PwnctlCdkStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB",
+            "trace": [
+              "new Role (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-iam/lib/role.js:63:22)",
+              "new LogRetentionFunction (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-logs/lib/log-retention.js:94:36)",
+              "LogRetention.ensureSingletonLogRetentionFunction (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-logs/lib/log-retention.js:76:16)",
+              "new LogRetention (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-logs/lib/log-retention.js:38:31)",
+              "new Function (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-lambda/lib/function.js:231:34)",
+              "exports.Kernel._create (/tmp/wghtlcjn.dj1/lib/program.js:5592:179)",
+              "exports.Kernel.create (/tmp/wghtlcjn.dj1/lib/program.js:5400:29)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
+              "process.processImmediate (node:internal/timers:471:21)"
+            ]
+          }
+        ],
+        "/PwnctlCdkStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+            "trace": [
+              "new Policy (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-iam/lib/policy.js:57:26)",
+              "Role.addToPrincipalPolicy (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-iam/lib/role.js:247:34)",
+              "new LogRetentionFunction (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-logs/lib/log-retention.js:99:14)",
+              "LogRetention.ensureSingletonLogRetentionFunction (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-logs/lib/log-retention.js:76:16)",
+              "new LogRetention (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-logs/lib/log-retention.js:38:31)",
+              "new Function (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-lambda/lib/function.js:231:34)",
+              "exports.Kernel._create (/tmp/wghtlcjn.dj1/lib/program.js:5592:179)",
+              "exports.Kernel.create (/tmp/wghtlcjn.dj1/lib/program.js:5400:29)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
+              "process.processImmediate (node:internal/timers:471:21)"
+            ]
+          }
+        ],
+        "/PwnctlCdkStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+            "trace": [
+              "new LogRetentionFunction (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-logs/lib/log-retention.js:107:26)",
+              "LogRetention.ensureSingletonLogRetentionFunction (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-logs/lib/log-retention.js:76:16)",
+              "new LogRetention (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-logs/lib/log-retention.js:38:31)",
+              "new Function (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-lambda/lib/function.js:231:34)",
+              "exports.Kernel._create (/tmp/wghtlcjn.dj1/lib/program.js:5592:179)",
+              "exports.Kernel.create (/tmp/wghtlcjn.dj1/lib/program.js:5400:29)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           }
@@ -600,11 +783,11 @@
             "type": "aws:cdk:logicalId",
             "data": "PwnctlApiUrl",
             "trace": [
-              "exports.Kernel._create (/tmp/guebvdw4.of5/lib/program.js:5592:179)",
-              "exports.Kernel.create (/tmp/guebvdw4.of5/lib/program.js:5400:29)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "exports.Kernel._create (/tmp/wghtlcjn.dj1/lib/program.js:5592:179)",
+              "exports.Kernel.create (/tmp/wghtlcjn.dj1/lib/program.js:5400:29)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           }
@@ -614,12 +797,12 @@
             "type": "aws:cdk:logicalId",
             "data": "pwnwrkclusterB1ACABA0",
             "trace": [
-              "new Cluster (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ecs/lib/cluster.js:86:25)",
-              "exports.Kernel._create (/tmp/guebvdw4.of5/lib/program.js:5592:179)",
-              "exports.Kernel.create (/tmp/guebvdw4.of5/lib/program.js:5400:29)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "new Cluster (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ecs/lib/cluster.js:86:25)",
+              "exports.Kernel._create (/tmp/wghtlcjn.dj1/lib/program.js:5592:179)",
+              "exports.Kernel.create (/tmp/wghtlcjn.dj1/lib/program.js:5400:29)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           }
@@ -629,12 +812,12 @@
             "type": "aws:cdk:logicalId",
             "data": "pwnwrkrole35F47018",
             "trace": [
-              "new Role (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-iam/lib/role.js:63:22)",
-              "exports.Kernel._create (/tmp/guebvdw4.of5/lib/program.js:5592:179)",
-              "exports.Kernel.create (/tmp/guebvdw4.of5/lib/program.js:5400:29)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "new Role (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-iam/lib/role.js:63:22)",
+              "exports.Kernel._create (/tmp/wghtlcjn.dj1/lib/program.js:5592:179)",
+              "exports.Kernel.create (/tmp/wghtlcjn.dj1/lib/program.js:5400:29)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           }
@@ -644,15 +827,15 @@
             "type": "aws:cdk:logicalId",
             "data": "pwnwrkroleDefaultPolicyBF2C6556",
             "trace": [
-              "new Policy (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-iam/lib/policy.js:57:26)",
-              "Role.addToPrincipalPolicy (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-iam/lib/role.js:247:34)",
-              "Role.addToPolicy (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-iam/lib/role.js:267:21)",
-              "/tmp/guebvdw4.of5/lib/program.js:5453:144",
-              "exports.Kernel._ensureSync (/tmp/guebvdw4.of5/lib/program.js:5871:28)",
-              "exports.Kernel.invoke (/tmp/guebvdw4.of5/lib/program.js:5453:73)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "new Policy (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-iam/lib/policy.js:57:26)",
+              "Role.addToPrincipalPolicy (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-iam/lib/role.js:247:34)",
+              "Role.addToPolicy (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-iam/lib/role.js:267:21)",
+              "/tmp/wghtlcjn.dj1/lib/program.js:5453:144",
+              "exports.Kernel._ensureSync (/tmp/wghtlcjn.dj1/lib/program.js:5871:28)",
+              "exports.Kernel.invoke (/tmp/wghtlcjn.dj1/lib/program.js:5453:73)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           }
@@ -662,13 +845,13 @@
             "type": "aws:cdk:logicalId",
             "data": "pwnwrkdef3A414DAF",
             "trace": [
-              "new TaskDefinition (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ecs/lib/base/task-definition.js:111:25)",
-              "new FargateTaskDefinition (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ecs/lib/fargate/fargate-task-definition.js:20:9)",
-              "exports.Kernel._create (/tmp/guebvdw4.of5/lib/program.js:5592:179)",
-              "exports.Kernel.create (/tmp/guebvdw4.of5/lib/program.js:5400:29)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "new TaskDefinition (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ecs/lib/base/task-definition.js:111:25)",
+              "new FargateTaskDefinition (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ecs/lib/fargate/fargate-task-definition.js:20:9)",
+              "exports.Kernel._create (/tmp/wghtlcjn.dj1/lib/program.js:5592:179)",
+              "exports.Kernel.create (/tmp/wghtlcjn.dj1/lib/program.js:5400:29)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           }
@@ -678,12 +861,12 @@
             "type": "aws:cdk:logicalId",
             "data": "PwnwrkLogs49C21403",
             "trace": [
-              "new LogGroup (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-logs/lib/log-group.js:261:26)",
-              "exports.Kernel._create (/tmp/guebvdw4.of5/lib/program.js:5592:179)",
-              "exports.Kernel.create (/tmp/guebvdw4.of5/lib/program.js:5400:29)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "new LogGroup (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-logs/lib/log-group.js:261:26)",
+              "exports.Kernel._create (/tmp/wghtlcjn.dj1/lib/program.js:5592:179)",
+              "exports.Kernel.create (/tmp/wghtlcjn.dj1/lib/program.js:5400:29)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           }
@@ -693,17 +876,17 @@
             "type": "aws:cdk:logicalId",
             "data": "PwnwrkLogsPolicyResourcePolicyBD6246FA",
             "trace": [
-              "new ResourcePolicy (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-logs/lib/policy.js:42:9)",
-              "LogGroup.addToResourcePolicy (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-logs/lib/log-group.js:117:27)",
-              "Grant.addToPrincipalOrResource (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-iam/lib/grant.js:75:49)",
-              "LogGroup.grant (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-logs/lib/log-group.js:90:26)",
-              "LogGroup.grantWrite (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-logs/lib/log-group.js:84:21)",
-              "/tmp/guebvdw4.of5/lib/program.js:5453:144",
-              "exports.Kernel._ensureSync (/tmp/guebvdw4.of5/lib/program.js:5871:28)",
-              "exports.Kernel.invoke (/tmp/guebvdw4.of5/lib/program.js:5453:73)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "new ResourcePolicy (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-logs/lib/policy.js:42:9)",
+              "LogGroup.addToResourcePolicy (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-logs/lib/log-group.js:117:27)",
+              "Grant.addToPrincipalOrResource (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-iam/lib/grant.js:75:49)",
+              "LogGroup.grant (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-logs/lib/log-group.js:90:26)",
+              "LogGroup.grantWrite (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-logs/lib/log-group.js:84:21)",
+              "/tmp/wghtlcjn.dj1/lib/program.js:5453:144",
+              "exports.Kernel._ensureSync (/tmp/wghtlcjn.dj1/lib/program.js:5871:28)",
+              "exports.Kernel.invoke (/tmp/wghtlcjn.dj1/lib/program.js:5453:73)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           }
@@ -713,13 +896,13 @@
             "type": "aws:cdk:logicalId",
             "data": "pwnwrksvcService205F8023",
             "trace": [
-              "new BaseService (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ecs/lib/base/base-service.js:134:25)",
-              "new FargateService (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ecs/lib/fargate/fargate-service.js:41:9)",
-              "exports.Kernel._create (/tmp/guebvdw4.of5/lib/program.js:5592:179)",
-              "exports.Kernel.create (/tmp/guebvdw4.of5/lib/program.js:5400:29)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "new BaseService (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ecs/lib/base/base-service.js:134:25)",
+              "new FargateService (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ecs/lib/fargate/fargate-service.js:41:9)",
+              "exports.Kernel._create (/tmp/wghtlcjn.dj1/lib/program.js:5592:179)",
+              "exports.Kernel.create (/tmp/wghtlcjn.dj1/lib/program.js:5400:29)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           }
@@ -729,14 +912,14 @@
             "type": "aws:cdk:logicalId",
             "data": "pwnwrksvcSecurityGroup4BBDA767",
             "trace": [
-              "new SecurityGroup (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ec2/lib/security-group.js:202:30)",
-              "FargateService.configureAwsVpcNetworkingWithSecurityGroups (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ecs/lib/base/base-service.js:587:31)",
-              "new FargateService (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ecs/lib/fargate/fargate-service.js:59:14)",
-              "exports.Kernel._create (/tmp/guebvdw4.of5/lib/program.js:5592:179)",
-              "exports.Kernel.create (/tmp/guebvdw4.of5/lib/program.js:5400:29)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "new SecurityGroup (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ec2/lib/security-group.js:202:30)",
+              "FargateService.configureAwsVpcNetworkingWithSecurityGroups (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ecs/lib/base/base-service.js:587:31)",
+              "new FargateService (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ecs/lib/fargate/fargate-service.js:59:14)",
+              "exports.Kernel._create (/tmp/wghtlcjn.dj1/lib/program.js:5592:179)",
+              "exports.Kernel.create (/tmp/wghtlcjn.dj1/lib/program.js:5400:29)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           }
@@ -746,96 +929,96 @@
             "type": "aws:cdk:logicalId",
             "data": "pwnwrksvcTaskCountTargetCCB13F0E",
             "trace": [
-              "new ScalableTarget (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-applicationautoscaling/lib/scalable-target.js:46:26)",
-              "new BaseScalableAttribute (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-applicationautoscaling/lib/base-scalable-attribute.js:38:23)",
-              "new ScalableTaskCount (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ecs/lib/base/scalable-task-count.js:16:9)",
-              "FargateService.autoScaleTaskCount (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ecs/lib/base/base-service.js:423:41)",
-              "/tmp/guebvdw4.of5/lib/program.js:5453:144",
-              "exports.Kernel._ensureSync (/tmp/guebvdw4.of5/lib/program.js:5871:28)",
-              "exports.Kernel.invoke (/tmp/guebvdw4.of5/lib/program.js:5453:73)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "new ScalableTarget (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-applicationautoscaling/lib/scalable-target.js:46:26)",
+              "new BaseScalableAttribute (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-applicationautoscaling/lib/base-scalable-attribute.js:38:23)",
+              "new ScalableTaskCount (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ecs/lib/base/scalable-task-count.js:16:9)",
+              "FargateService.autoScaleTaskCount (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ecs/lib/base/base-service.js:423:41)",
+              "/tmp/wghtlcjn.dj1/lib/program.js:5453:144",
+              "exports.Kernel._ensureSync (/tmp/wghtlcjn.dj1/lib/program.js:5871:28)",
+              "exports.Kernel.invoke (/tmp/wghtlcjn.dj1/lib/program.js:5453:73)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           }
         ],
-        "/PwnctlCdkStack/pwnwrk-svc/TaskCount/Target/ScaleOutPolicy/LowerPolicy/Resource": [
+        "/PwnctlCdkStack/pwnwrk-svc/TaskCount/Target/ScaleInPolicy/LowerPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "pwnwrksvcTaskCountTargetScaleOutPolicyLowerPolicyFBC25939",
+            "data": "pwnwrksvcTaskCountTargetScaleInPolicyLowerPolicy171CB42A",
             "trace": [
-              "new StepScalingAction (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-applicationautoscaling/lib/step-scaling-action.js:37:26)",
-              "new StepScalingPolicy (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-applicationautoscaling/lib/step-scaling-policy.js:44:32)",
-              "ScalableTarget.scaleOnMetric (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-applicationautoscaling/lib/scalable-target.js:114:16)",
-              "ScalableTaskCount.doScaleOnMetric (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-applicationautoscaling/lib/base-scalable-attribute.js:75:21)",
-              "ScalableTaskCount.scaleOnMetric (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ecs/lib/base/scalable-task-count.js:37:22)",
-              "/tmp/guebvdw4.of5/lib/program.js:5453:144",
-              "exports.Kernel._ensureSync (/tmp/guebvdw4.of5/lib/program.js:5871:28)",
-              "exports.Kernel.invoke (/tmp/guebvdw4.of5/lib/program.js:5453:73)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "new StepScalingAction (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-applicationautoscaling/lib/step-scaling-action.js:37:26)",
+              "new StepScalingPolicy (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-applicationautoscaling/lib/step-scaling-policy.js:44:32)",
+              "ScalableTarget.scaleOnMetric (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-applicationautoscaling/lib/scalable-target.js:114:16)",
+              "ScalableTaskCount.doScaleOnMetric (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-applicationautoscaling/lib/base-scalable-attribute.js:75:21)",
+              "ScalableTaskCount.scaleOnMetric (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ecs/lib/base/scalable-task-count.js:37:22)",
+              "/tmp/wghtlcjn.dj1/lib/program.js:5453:144",
+              "exports.Kernel._ensureSync (/tmp/wghtlcjn.dj1/lib/program.js:5871:28)",
+              "exports.Kernel.invoke (/tmp/wghtlcjn.dj1/lib/program.js:5453:73)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           }
         ],
-        "/PwnctlCdkStack/pwnwrk-svc/TaskCount/Target/ScaleOutPolicy/LowerAlarm/Resource": [
+        "/PwnctlCdkStack/pwnwrk-svc/TaskCount/Target/ScaleInPolicy/LowerAlarm/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "pwnwrksvcTaskCountTargetScaleOutPolicyLowerAlarm0846C59F",
+            "data": "pwnwrksvcTaskCountTargetScaleInPolicyLowerAlarmBC36BC31",
             "trace": [
-              "new Alarm (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-cloudwatch/lib/alarm.js:111:23)",
-              "new StepScalingPolicy (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-applicationautoscaling/lib/step-scaling-policy.js:58:31)",
-              "ScalableTarget.scaleOnMetric (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-applicationautoscaling/lib/scalable-target.js:114:16)",
-              "ScalableTaskCount.doScaleOnMetric (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-applicationautoscaling/lib/base-scalable-attribute.js:75:21)",
-              "ScalableTaskCount.scaleOnMetric (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ecs/lib/base/scalable-task-count.js:37:22)",
-              "/tmp/guebvdw4.of5/lib/program.js:5453:144",
-              "exports.Kernel._ensureSync (/tmp/guebvdw4.of5/lib/program.js:5871:28)",
-              "exports.Kernel.invoke (/tmp/guebvdw4.of5/lib/program.js:5453:73)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "new Alarm (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-cloudwatch/lib/alarm.js:111:23)",
+              "new StepScalingPolicy (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-applicationautoscaling/lib/step-scaling-policy.js:58:31)",
+              "ScalableTarget.scaleOnMetric (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-applicationautoscaling/lib/scalable-target.js:114:16)",
+              "ScalableTaskCount.doScaleOnMetric (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-applicationautoscaling/lib/base-scalable-attribute.js:75:21)",
+              "ScalableTaskCount.scaleOnMetric (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ecs/lib/base/scalable-task-count.js:37:22)",
+              "/tmp/wghtlcjn.dj1/lib/program.js:5453:144",
+              "exports.Kernel._ensureSync (/tmp/wghtlcjn.dj1/lib/program.js:5871:28)",
+              "exports.Kernel.invoke (/tmp/wghtlcjn.dj1/lib/program.js:5453:73)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           }
         ],
-        "/PwnctlCdkStack/pwnwrk-svc/TaskCount/Target/ScaleInPolicy/UpperPolicy/Resource": [
+        "/PwnctlCdkStack/pwnwrk-svc/TaskCount/Target/ScaleOutPolicy/UpperPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "pwnwrksvcTaskCountTargetScaleInPolicyUpperPolicy701150A1",
+            "data": "pwnwrksvcTaskCountTargetScaleOutPolicyUpperPolicyB0D4F645",
             "trace": [
-              "new StepScalingAction (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-applicationautoscaling/lib/step-scaling-action.js:37:26)",
-              "new StepScalingPolicy (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-applicationautoscaling/lib/step-scaling-policy.js:71:32)",
-              "ScalableTarget.scaleOnMetric (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-applicationautoscaling/lib/scalable-target.js:114:16)",
-              "ScalableTaskCount.doScaleOnMetric (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-applicationautoscaling/lib/base-scalable-attribute.js:75:21)",
-              "ScalableTaskCount.scaleOnMetric (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ecs/lib/base/scalable-task-count.js:37:22)",
-              "/tmp/guebvdw4.of5/lib/program.js:5453:144",
-              "exports.Kernel._ensureSync (/tmp/guebvdw4.of5/lib/program.js:5871:28)",
-              "exports.Kernel.invoke (/tmp/guebvdw4.of5/lib/program.js:5453:73)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "new StepScalingAction (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-applicationautoscaling/lib/step-scaling-action.js:37:26)",
+              "new StepScalingPolicy (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-applicationautoscaling/lib/step-scaling-policy.js:71:32)",
+              "ScalableTarget.scaleOnMetric (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-applicationautoscaling/lib/scalable-target.js:114:16)",
+              "ScalableTaskCount.doScaleOnMetric (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-applicationautoscaling/lib/base-scalable-attribute.js:75:21)",
+              "ScalableTaskCount.scaleOnMetric (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ecs/lib/base/scalable-task-count.js:37:22)",
+              "/tmp/wghtlcjn.dj1/lib/program.js:5453:144",
+              "exports.Kernel._ensureSync (/tmp/wghtlcjn.dj1/lib/program.js:5871:28)",
+              "exports.Kernel.invoke (/tmp/wghtlcjn.dj1/lib/program.js:5453:73)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           }
         ],
-        "/PwnctlCdkStack/pwnwrk-svc/TaskCount/Target/ScaleInPolicy/UpperAlarm/Resource": [
+        "/PwnctlCdkStack/pwnwrk-svc/TaskCount/Target/ScaleOutPolicy/UpperAlarm/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "pwnwrksvcTaskCountTargetScaleInPolicyUpperAlarm3BBE08F9",
+            "data": "pwnwrksvcTaskCountTargetScaleOutPolicyUpperAlarmEF208281",
             "trace": [
-              "new Alarm (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-cloudwatch/lib/alarm.js:111:23)",
-              "new StepScalingPolicy (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-applicationautoscaling/lib/step-scaling-policy.js:85:31)",
-              "ScalableTarget.scaleOnMetric (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-applicationautoscaling/lib/scalable-target.js:114:16)",
-              "ScalableTaskCount.doScaleOnMetric (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-applicationautoscaling/lib/base-scalable-attribute.js:75:21)",
-              "ScalableTaskCount.scaleOnMetric (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/aws-ecs/lib/base/scalable-task-count.js:37:22)",
-              "/tmp/guebvdw4.of5/lib/program.js:5453:144",
-              "exports.Kernel._ensureSync (/tmp/guebvdw4.of5/lib/program.js:5871:28)",
-              "exports.Kernel.invoke (/tmp/guebvdw4.of5/lib/program.js:5453:73)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "new Alarm (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-cloudwatch/lib/alarm.js:111:23)",
+              "new StepScalingPolicy (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-applicationautoscaling/lib/step-scaling-policy.js:85:31)",
+              "ScalableTarget.scaleOnMetric (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-applicationautoscaling/lib/scalable-target.js:114:16)",
+              "ScalableTaskCount.doScaleOnMetric (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-applicationautoscaling/lib/base-scalable-attribute.js:75:21)",
+              "ScalableTaskCount.scaleOnMetric (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/aws-ecs/lib/base/scalable-task-count.js:37:22)",
+              "/tmp/wghtlcjn.dj1/lib/program.js:5453:144",
+              "exports.Kernel._ensureSync (/tmp/wghtlcjn.dj1/lib/program.js:5871:28)",
+              "exports.Kernel.invoke (/tmp/wghtlcjn.dj1/lib/program.js:5453:73)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           }
@@ -845,19 +1028,19 @@
             "type": "aws:cdk:logicalId",
             "data": "CDKMetadata",
             "trace": [
-              "new MetadataResource (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/private/metadata-resource.js:22:30)",
-              "/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/private/synthesis.js:139:9",
-              "visit (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/private/synthesis.js:200:9)",
-              "visit (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/private/synthesis.js:197:9)",
-              "injectMetadataResources (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/private/synthesis.js:128:5)",
-              "Object.synthesize (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/private/synthesis.js:17:5)",
-              "App.synth (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/stage.js:104:41)",
-              "/tmp/guebvdw4.of5/lib/program.js:5453:144",
-              "exports.Kernel._ensureSync (/tmp/guebvdw4.of5/lib/program.js:5871:28)",
-              "exports.Kernel.invoke (/tmp/guebvdw4.of5/lib/program.js:5453:73)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "new MetadataResource (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/private/metadata-resource.js:22:30)",
+              "/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/private/synthesis.js:139:9",
+              "visit (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/private/synthesis.js:200:9)",
+              "visit (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/private/synthesis.js:197:9)",
+              "injectMetadataResources (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/private/synthesis.js:128:5)",
+              "Object.synthesize (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/private/synthesis.js:17:5)",
+              "App.synth (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stage.js:104:41)",
+              "/tmp/wghtlcjn.dj1/lib/program.js:5453:144",
+              "exports.Kernel._ensureSync (/tmp/wghtlcjn.dj1/lib/program.js:5871:28)",
+              "exports.Kernel.invoke (/tmp/wghtlcjn.dj1/lib/program.js:5453:73)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           }
@@ -867,19 +1050,19 @@
             "type": "aws:cdk:logicalId",
             "data": "CDKMetadataAvailable",
             "trace": [
-              "new MetadataResource (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/private/metadata-resource.js:30:35)",
-              "/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/private/synthesis.js:139:9",
-              "visit (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/private/synthesis.js:200:9)",
-              "visit (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/private/synthesis.js:197:9)",
-              "injectMetadataResources (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/private/synthesis.js:128:5)",
-              "Object.synthesize (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/private/synthesis.js:17:5)",
-              "App.synth (/tmp/jsii-kernel-RSPBbN/node_modules/@aws-cdk/core/lib/stage.js:104:41)",
-              "/tmp/guebvdw4.of5/lib/program.js:5453:144",
-              "exports.Kernel._ensureSync (/tmp/guebvdw4.of5/lib/program.js:5871:28)",
-              "exports.Kernel.invoke (/tmp/guebvdw4.of5/lib/program.js:5453:73)",
-              "exports.KernelHost.processRequest (/tmp/guebvdw4.of5/lib/program.js:6618:36)",
-              "exports.KernelHost.run (/tmp/guebvdw4.of5/lib/program.js:6592:48)",
-              "Immediate._onImmediate (/tmp/guebvdw4.of5/lib/program.js:6593:46)",
+              "new MetadataResource (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/private/metadata-resource.js:30:35)",
+              "/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/private/synthesis.js:139:9",
+              "visit (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/private/synthesis.js:200:9)",
+              "visit (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/private/synthesis.js:197:9)",
+              "injectMetadataResources (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/private/synthesis.js:128:5)",
+              "Object.synthesize (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/private/synthesis.js:17:5)",
+              "App.synth (/tmp/jsii-kernel-QoDw35/node_modules/@aws-cdk/core/lib/stage.js:104:41)",
+              "/tmp/wghtlcjn.dj1/lib/program.js:5453:144",
+              "exports.Kernel._ensureSync (/tmp/wghtlcjn.dj1/lib/program.js:5871:28)",
+              "exports.Kernel.invoke (/tmp/wghtlcjn.dj1/lib/program.js:5453:73)",
+              "exports.KernelHost.processRequest (/tmp/wghtlcjn.dj1/lib/program.js:6618:36)",
+              "exports.KernelHost.run (/tmp/wghtlcjn.dj1/lib/program.js:6592:48)",
+              "Immediate._onImmediate (/tmp/wghtlcjn.dj1/lib/program.js:6593:46)",
               "process.processImmediate (node:internal/timers:471:21)"
             ]
           }

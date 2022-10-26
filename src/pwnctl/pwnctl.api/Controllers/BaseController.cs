@@ -10,23 +10,15 @@ public abstract class BaseController : ControllerBase
     private IMediator _mediator;
     protected IMediator Mediator => _mediator ??= HttpContext.RequestServices.GetService<IMediator>();
 
-    protected ActionResult CreateResponse(MediatorResponse response)
+    protected ActionResult CreateResponse(MediatorResult result)
     {
-        var apiResponse = new ApiResponse(response);
+        var response = new ApiResponse(result);
 
-        if (response.IsSuccess)
-            return Ok(apiResponse);
+        if (result.IsSuccess)
+            return Ok(response);
 
-        return CreateErrorResponse(apiResponse);
-    }
+        int status = response.Errors.MaxBy(err => err.Code).ToStatusCode();
 
-    private ActionResult CreateErrorResponse(ApiResponse response)
-    {
-        switch (response.Errors.Max(err => err.Code))
-        {
-            case ApiError.ErrorCode.InternalServerError:
-            default:
-                return StatusCode(StatusCodes.Status500InternalServerError, response);
-        }
+        return StatusCode(status, response);
     }
 }
