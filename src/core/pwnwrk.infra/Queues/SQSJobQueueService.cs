@@ -1,6 +1,6 @@
 ﻿using pwnwrk.domain.Interfaces;
 using pwnwrk.infra.Configuration;
-using pwnwrk.infra.Logging;
+using pwnwrk.infra.Aws;
 using Amazon.SQS;
 using Amazon.SQS.Model;
 using System.Text.Json;
@@ -23,7 +23,7 @@ namespace pwnwrk.infra.Queues
 
                 if (!_queueUrls.TryGetValue(queueName, out string queueUrl))
                 {
-                    var queueUrlResponse = _sqsClient.GetQueueUrlAsync(PwnContext.Config.JobQueue.QueueName).Result;
+                    var queueUrlResponse = _sqsClient.GetQueueUrlAsync(AwsConstants.QueueName).Result;
                     queueUrl = queueUrlResponse.QueueUrl;
                     _queueUrls[queueName] = queueUrl;
                 }
@@ -49,7 +49,7 @@ namespace pwnwrk.infra.Queues
             var request = new SendMessageRequest
             {
                 MessageGroupId = Guid.NewGuid().ToString(),
-                QueueUrl = this[PwnContext.Config.JobQueue.QueueName],
+                QueueUrl = this[AwsConstants.QueueName],
                 MessageBody = JsonSerializer.Serialize(task)
             };
 
@@ -60,7 +60,7 @@ namespace pwnwrk.infra.Queues
         {
             var receiveRequest = new ReceiveMessageRequest
             {
-                QueueUrl = this[PwnContext.Config.JobQueue.QueueName],
+                QueueUrl = this[AwsConstants.QueueName],
                 MaxNumberOfMessages = 10
             };
 
@@ -79,7 +79,7 @@ namespace pwnwrk.infra.Queues
         {
             // TODO: delete batching?
 
-            var response = await _sqsClient.DeleteMessageAsync(this[PwnContext.Config.JobQueue.QueueName], message.ReceiptHandle, ct);
+            var response = await _sqsClient.DeleteMessageAsync(this[AwsConstants.QueueName], message.ReceiptHandle, ct);
             if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
                 PwnContext.Logger.Debug("DeleteMessage: " + JsonSerializer.Serialize(response));
         }
@@ -90,12 +90,12 @@ namespace pwnwrk.infra.Queues
 
             var request = new ChangeMessageVisibilityBatchRequest
             {
-                QueueUrl = this[PwnContext.Config.JobQueue.QueueName],
+                QueueUrl = this[AwsConstants.QueueName],
                 Entries = messages.Select(msg => new ChangeMessageVisibilityBatchRequestEntry 
                 {
                     Id = msg.MessageId,
                     ReceiptHandle = msg.ReceiptHandle,
-                    VisibilityTimeout = PwnContext.Config.JobQueue.VisibilityTimeout*2*60
+                    VisibilityTimeout = AwsConstants.QueueVisibilityTimeoutInSec *2*60
                 }).ToList()
             };
 

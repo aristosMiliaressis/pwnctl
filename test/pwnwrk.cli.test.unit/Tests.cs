@@ -18,7 +18,7 @@ public class Tests
     public Tests()
     {
         Environment.SetEnvironmentVariable("PWNCTL_IsTestRun", "true");
-        Environment.SetEnvironmentVariable("PWNCTL_INSTALL_PATH", ".");
+        Environment.SetEnvironmentVariable("PWNCTL_InstallPath", ".");
 
         // reset the database for every test method
         DatabaseInitializer.InitializeAsync().Wait();
@@ -26,7 +26,6 @@ public class Tests
         var psi = new ProcessStartInfo();
         psi.FileName = "/bin/bash";
         psi.Arguments = " -c scripts/get_public_suffixes.sh";
-        psi.EnvironmentVariables["PWNCTL_INSTALL_PATH"] = ".";
         psi.CreateNoWindow = true;
 
         using (var process = Process.Start(psi))

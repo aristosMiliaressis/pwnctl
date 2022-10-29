@@ -1,4 +1,5 @@
 using pwnwrk.infra;
+using pwnwrk.infra.Aws;
 using pwnwrk.infra.Configuration;
 using pwnwrk.infra.Queues;
 using pwnwrk.infra.Logging;
@@ -42,7 +43,7 @@ namespace pwnwrk.svc
 
                     _unprocessedMessages = new(messages);
 
-                    var timer = new System.Timers.Timer(1000 * 60 * (PwnContext.Config.JobQueue.VisibilityTimeout - 1));
+                    var timer = new System.Timers.Timer(1000 * 60 * (AwsConstants.QueueVisibilityTimeoutInSec - 1));
                     timer.Elapsed += async (sender, e) => await ChallengeMessageVisibility();
                     timer.AutoReset = false;
                     timer.Start();

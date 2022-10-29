@@ -169,21 +169,13 @@ prints a summary about queued tasks and found assets
 
 ## Setup
 
-1. manually provision a public facing PostgreSQL instance
-2. create an iam user with the policy provided in `aws/pwnctl.cdk/pwnctl-cdk-role.json`
-3. put all configuration/seed/script files in a `deployment/` folder in the root of the repo.
-4. run `setup.sh`
-
-`setup.sh` will do the following.
-- make sure you have the `aws` and `aws cdk` cli installed & install them if not
-- install the pwnctl cli locally
-- bootstrap your configured aws environment for use with cdk.
-- provision all aws resources trough cdk & deploy the app
-- upload all files in `deployment/` to the EFS
+1. create an iam user with the policy provided in `src/pwnwrk/pwnwrk.infra.cdk/pwnctl-cdk-policy.json`
+2. put all configuration/seed/script files in the `deployment/` folder
+3. install `task`
+> sudo sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin
+4. run `task simple-setup`
 
 **To Do**
-- [ ] setup secret manager for the db connection string & api key(or use iam auth instead of api key)
-- [ ] cli install from source mode
 - [ ] private ecr registry (+ cdk integration with github action in `ci.yml`)
 - [ ] terraform 
-- [ ] add discord server & db to terraform
+- [ ] add discord server to terraform

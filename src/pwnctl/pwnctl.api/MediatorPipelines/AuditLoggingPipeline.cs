@@ -19,7 +19,7 @@ namespace pwnctl.api.MediatorPipelines
         {
             var ip = _httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
 
-            PwnContext.Logger.Information("${ip} requested {TRequest.GetType().Name}");
+            PwnContext.Logger.Information($"{ip} requested {typeof(TRequest).Name}");
 
             return await next();
 

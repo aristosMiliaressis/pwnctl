@@ -6,12 +6,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\pwnwrk.infra\pwnwrk.infra.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Amazon.CDK" Version="1.176.0" />
     <PackageReference Include="Amazon.CDK.AWS.CloudWatch" Version="1.176.0" />
     <PackageReference Include="Amazon.CDK.AWS.EC2" Version="1.176.0" />
     <PackageReference Include="Amazon.CDK.AWS.ECS" Version="1.176.0" />
     <PackageReference Include="Amazon.CDK.AWS.EFS" Version="1.176.0" />
     <PackageReference Include="Amazon.CDK.AWS.Lambda" Version="1.176.0" />
+    <PackageReference Include="Amazon.CDK.AWS.RDS" Version="1.176.0" />
     <PackageReference Include="Amazon.CDK.AWS.SQS" Version="1.176.0" />
   </ItemGroup>
 </Project>

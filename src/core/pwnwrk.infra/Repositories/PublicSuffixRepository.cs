@@ -7,7 +7,7 @@ namespace pwnwrk.infra.Repositories
     public class PublicSuffixRepository : IPublicSuffixRepository
     {
         private string _publicSuffixDataFile = PwnContext.Config.IsTestRun
-                            ? $"{AppConfig.InstallPath}/dns/public_suffix_list.dat"
+                            ? $"./dns/public_suffix_list.dat"
                             : "/opt/wordlists/dns/public_suffix_list.dat";
         private List<PublicSuffix> _publicSuffixes;
         private static PublicSuffixRepository _singleton;

@@ -1,5 +1,7 @@
 using Amazon.CDK;
 
+using pwnwrk.infra.Aws;
+
 namespace pwnctl.cdk
 {
     internal static class Program
@@ -8,9 +10,9 @@ namespace pwnctl.cdk
         {
             var app = new App(new AppProps());
 
-            var pwnctlStack = new PwnctlCdkStack(app, "PwnctlCdkStack", new StackProps());
+            var pwnctlStack = new PwnctlCdkStack(app, AwsConstants.StackName, new StackProps());
 
-            Tags.Of(pwnctlStack).Add("stack", "pwnctl");
+            Tags.Of(pwnctlStack).Add("stack", AwsConstants.StackName);
 
             app.Synth();
         }

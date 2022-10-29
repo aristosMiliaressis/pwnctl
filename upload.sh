@@ -1,7 +1,7 @@
 #!/bin/bash
 
-apiKey='CHANGEME!!' # TODO: get from ssm
-functionName=$(aws lambda list-functions | jq -r '.Functions[] | select( .FunctionName  | startswith("PwnctlCdkStack-pwnctlapi")) | .FunctionName')
+apiKey=$(aws secretsmanager get-secret-value --secret-id pwnctl-Api-ApiKey | jq -r .SecretString)
+functionName=$(aws lambda list-functions | jq -r '.Functions[] | select( .FunctionName  | startswith("pwnctl-pwnctlapi")) | .FunctionName')
 functionUrl=$(aws lambda get-function-url-config --function-name $functionName | jq -r .FunctionUrl)
 
 uploadDirectory() {
@@ -21,5 +21,4 @@ uploadDirectory() {
      done
 }
 
-baseDir=`dirname "$0"`
-uploadDirectory $baseDir/deployment
+uploadDirectory ./deployment

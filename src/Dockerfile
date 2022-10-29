@@ -69,17 +69,18 @@ RUN mkdir /opt/wordlists \
 RUN apt-get install -y nmap whois ldnsutils
 
 RUN go install github.com/tomnomnom/unfurl@latest
+RUN go install github.com/projectdiscovery/tlsx/cmd/tlsx@latest
+RUN go install github.com/projectdiscovery/dnsx/cmd/dnsx@latest
+RUN go install github.com/projectdiscovery/httpx/cmd/httpx@latest
 RUN go install github.com/projectdiscovery/shuffledns/cmd/shuffledns@latest
-RUN go install github.com/glebarez/cero@latest
+RUN go install github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
+RUN go install github.com/projectdiscovery/notify/cmd/notify@latest
 RUN go install github.com/lc/gau/v2/cmd/gau@latest
 RUN go install github.com/hakluke/hakrawler@latest
 RUN go install github.com/tomnomnom/anew@latest
 RUN go install github.com/d3mondev/puredns/v2@latest
-RUN go install github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
 RUN go install github.com/aristosMiliaressis/urgo@latest
-RUN go install github.com/projectdiscovery/dnsx/cmd/dnsx@latest
-RUN go install github.com/projectdiscovery/notify/cmd/notify@latest
-RUN go install github.com/projectdiscovery/httpx/cmd/httpx@latest
+
 RUN go install github.com/tomnomnom/waybackurls@latest
 RUN go install github.com/ffuf/ffuf@latest
 RUN pip install useragent-picker-cli && uagen

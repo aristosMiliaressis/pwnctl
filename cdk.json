@@ -1,5 +1,5 @@
 {
-  "app": "dotnet run --project aws/pwnctl.cdk/pwnctl.cdk.csproj",
+  "app": "dotnet run --project src/core/pwnwrk.infra.cdk/pwnwrk.infra.cdk.csproj",
   "watch": {
     "include": [
       "**"

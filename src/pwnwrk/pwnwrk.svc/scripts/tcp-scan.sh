@@ -4,6 +4,7 @@ ip=$1
 temp=`mktemp`;
 
 rustscan -r 1-65535 -a $ip -- -sSV --script-args http.useragent="$(uagen)" -oG $temp >/dev/null;
+# naabu -silent -p 0-65535 -host $ip -nmap "nmap -sSVC --script-args http.useragent='$(uagen)' -oG $temp" >/dev/null
 
 cat $temp \
 	| sed 's/Ports: /\n/g' \

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cp /mnt/efs/config.ini $PWNCTL_INSTALL_PATH
+cp /mnt/efs/config.ini $PWNCTL_InstallPath
 
 # volume mapped entrypoint_hook.sh for injecting resources and 
 # running commands at startup without needing to rebuild the image

@@ -11,7 +11,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddAWSLambdaHosting(LambdaEventSource.HttpApi);
 
-builder.Services.AddMediatR(typeof(PwnctlDtoAssemblyMarker));
+builder.Services.AddMediatR(typeof(PwnctlDtoAssemblyMarker), typeof(Program));
 
 builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(AuditLoggingPipeline<,>));
 
@@ -19,13 +19,15 @@ builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipeli
 
 builder.Services.AddValidatorsFromAssemblyContaining<PwnctlDtoAssemblyMarker>();
 
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
 var app = builder.Build();
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
 
-app.UseMiddleware<ApiKeyMiddleware>();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
+app.UseMiddleware<ApiKeyMiddleware>();
 
 app.MapControllers();
 

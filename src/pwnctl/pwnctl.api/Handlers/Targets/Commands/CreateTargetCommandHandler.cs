@@ -1,6 +1,6 @@
 namespace pwnctl.api.Handlers.Targets.Commands;
 
-using pwnwrk.domain.Entities;
+using Microsoft.EntityFrameworkCore;
 using pwnwrk.infra.MediatR;
 using pwnwrk.infra.Persistence;
 using pwnctl.dto.Targets.Commands;
@@ -18,7 +18,7 @@ public class CreateTargetCommandHandler : IRequestHandler<CreateTargetCommand, M
 
     public async Task<MediatorResult> Handle(CreateTargetCommand command, CancellationToken cancellationToken)
     {
-        var existingProgram = _context.Programs.FirstOrDefault(p => p.Name == command.Name);
+        var existingProgram = await _context.Programs.FirstOrDefaultAsync(p => p.Name == command.Name);
         if (existingProgram != null)
             return MediatorResult.Error("Target %s already exists.", command.Name);
 

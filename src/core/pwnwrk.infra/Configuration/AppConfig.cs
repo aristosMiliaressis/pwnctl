@@ -1,39 +1,54 @@
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Ini;
-using System.Text.Json;
+using pwnwrk.infra.Aws;
 
 namespace pwnwrk.infra.Configuration
 {
     public class AppConfig
     {
-        public static string InstallPath = string.IsNullOrWhiteSpace(EnvironmentVariables.PWNCTL_INSTALL_PATH)
-                                        ? "/etc/pwnctl/"
-                                        : EnvironmentVariables.PWNCTL_INSTALL_PATH;
-
+        public string InstallPath { get; set; }
         public bool IsTestRun { get; set; }
-        public DbConfig Db { get; set; } = new DbConfig();
-        public JobQueueConfig JobQueue { get; set; } = new JobQueueConfig();
-        public LogConfig Logging { get; set; } = new LogConfig();
+        public DbSettings Db { get; set; } = new DbSettings();
+        public JobQueueSettings JobQueue { get; set; } = new JobQueueSettings();
+        public LogSettings Logging { get; set; } = new LogSettings();
+        public AwsSettings Aws { get; set; } = new AwsSettings();
+        public ApiSettings Api { get; set; } = new ApiSettings();
 
-        public class DbConfig
+        public class AwsSettings
         {
-            public string ConnectionString { get; set; }
+            public string Profile { get; set; } = "default";
         }
 
-        public class JobQueueConfig
+        public class ApiSettings
+        {
+            public string ApiKey { get; set; }
+        }
+
+        public class DbSettings
+        {
+            public DbCredentials Credentials { get; set; } = new DbCredentials();
+            public string Endpoint { get; set; }
+            public string ConnectionString => $"Host={Endpoint};"
+                                           + $"Database={AwsConstants.DatabaseName};"
+                                           + $"Username={Credentials.Username};"
+                                           + $"Password={Credentials.Password}";
+            public class DbCredentials
+            {
+                public string Username { get; set; }
+                public string Password { get; set; }
+            }
+        }
+
+        public class JobQueueSettings
         {
             public bool UseBash { get; set; }
             public int WorkerCount { get; set; }
-            public string QueueName { get; set; }
-            public string DLQName { get; set; }
-            public int VisibilityTimeout { get; set; }
         }
 
-        public class LogConfig
+        public class LogSettings
         {
             public string MinLevel { get; set; }
             public string LogGroup { get; set; }
-            public string Provider { get; set; }
+            public string FilePath { get; set; }
+            public string Provider { get; set; } = "console";
         }
     }
 }

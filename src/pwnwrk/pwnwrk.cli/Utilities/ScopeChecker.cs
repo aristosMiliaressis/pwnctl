@@ -18,6 +18,7 @@ namespace pwnwrk.cli.Utilities
             _scopeDefinitions = context.ScopeDefinitions
                                 .Include(d => d.Program)
                                     .ThenInclude(p => p.Policy)
+                                .AsNoTracking()
                                 .ToList();
         }
 

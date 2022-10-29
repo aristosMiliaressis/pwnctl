@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 using pwnwrk.infra.Persistence;
 
@@ -10,28 +11,28 @@ namespace pwnctl.cli.ModeHandlers
     {
         public string ModeName => "summary";
         
-        public Task Handle(string[] args)
+        public async Task Handle(string[] args)
         {
             PwnctlDbContext context = new();
-            int netRangeCount = context.NetRanges.Count();
-            int hostCount = context.Hosts.Count();
-            int domainCount = context.Domains.Count();
-            int recordCount = context.DNSRecords.Count();
-            int serviceCount = context.Services.Count();
-            int endpointCount = context.Endpoints.Count();
-            int paramCount = context.Parameters.Count();
-            int emailCount = context.Emails.Count();
-            int tagCount = context.Tags.Count();
-            int inScopeRangesCount = context.NetRanges.Where(a => a.InScope).Count();
-            int insCopeHostCount = context.Hosts.Count();
-            int inScopeDomainCount = context.Domains.Where(a => a.InScope).Count();
-            int inScopeRecordCount = context.DNSRecords.Where(a => a.InScope).Count();
-            int inScopeServiceCount = context.Services.Where(a => a.InScope).Count();
-            int inScopeEndpointCount = context.Endpoints.Where(a => a.InScope).Count();
-            int inScopeParamCount = context.Parameters.Where(a => a.InScope).Count();
-            int inScopeEmailCount = context.Emails.Where(a => a.InScope).Count();
-            var firstTask = context.Tasks.OrderBy(t => t.QueuedAt).FirstOrDefault();
-            var lastTask = context.Tasks.OrderBy(t => t.QueuedAt).LastOrDefault();
+            int netRangeCount = await context.NetRanges.CountAsync();
+            int hostCount = await context.Hosts.CountAsync();
+            int domainCount = await context.Domains.CountAsync();
+            int recordCount = await context.DNSRecords.CountAsync();
+            int serviceCount = await context.Services.CountAsync();
+            int endpointCount = await context.Endpoints.CountAsync();
+            int paramCount = await context.Parameters.CountAsync();
+            int emailCount = await context.Emails.CountAsync();
+            int tagCount = await context.Tags.CountAsync();
+            int inScopeRangesCount = await context.NetRanges.Where(a => a.InScope).CountAsync();
+            int insCopeHostCount = await context.Hosts.CountAsync();
+            int inScopeDomainCount = await context.Domains.Where(a => a.InScope).CountAsync();
+            int inScopeRecordCount = await context.DNSRecords.Where(a => a.InScope).CountAsync();
+            int inScopeServiceCount = await context.Services.Where(a => a.InScope).CountAsync();
+            int inScopeEndpointCount = await context.Endpoints.Where(a => a.InScope).CountAsync();
+            int inScopeParamCount = await context.Parameters.Where(a => a.InScope).CountAsync();
+            int inScopeEmailCount = await context.Emails.Where(a => a.InScope).CountAsync();
+            var firstTask = await context.Tasks.OrderBy(t => t.QueuedAt).FirstOrDefaultAsync();
+            var lastTask = await context.Tasks.OrderBy(t => t.QueuedAt).FirstOrDefaultAsync();
 
             Console.WriteLine($"NetRanges: {netRangeCount}, InScope: {inScopeRangesCount}");
             Console.WriteLine($"Hosts: {hostCount}, InScope: {insCopeHostCount}");
@@ -48,8 +49,6 @@ namespace pwnctl.cli.ModeHandlers
                 Console.WriteLine("First Queued Task: " + firstTask.QueuedAt);
                 Console.WriteLine("Last Queued Task: " + lastTask.QueuedAt);
             }
-
-            return Task.CompletedTask;
         }
 
         public void PrintHelpSection()

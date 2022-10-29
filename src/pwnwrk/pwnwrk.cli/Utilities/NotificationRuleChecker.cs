@@ -15,7 +15,7 @@ namespace pwnwrk.cli.Utilities
         public NotificationRuleChecker()
         {
             PwnctlDbContext context = new();
-            _notificationRules = context.NotificationRules.ToList();
+            _notificationRules = context.NotificationRules.AsNoTracking().ToList();
         }
 
         public NotificationRule Check(BaseAsset asset)

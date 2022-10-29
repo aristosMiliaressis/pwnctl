@@ -20,7 +20,7 @@ public class ListTargetsQueryHandler : IRequestHandler<ListTargetsQuery, Mediato
 
     public async Task<MediatorResult<TargetListViewModel>> Handle(ListTargetsQuery command, CancellationToken cancellationToken)
     {
-        var targets = await _context.Programs.ToListAsync(cancellationToken);
+        var targets = await _context.Programs.AsNoTracking().ToListAsync(cancellationToken);
 
         return MediatorResult<TargetListViewModel>.Success(new TargetListViewModel(targets));
     }

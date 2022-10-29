@@ -70,7 +70,7 @@ namespace pwnwrk.infra.Persistence
 
                 if (PwnContext.Config.IsTestRun)
                 {
-                    optionsBuilder.UseSqlite(PwnContext.Config.Db.ConnectionString, x => x.MigrationsHistoryTable("__EFMigrationHistory"));
+                    optionsBuilder.UseSqlite("Data Source=./pwnctl.db", x => x.MigrationsHistoryTable("__EFMigrationHistory"));
                     return;
                 }
 

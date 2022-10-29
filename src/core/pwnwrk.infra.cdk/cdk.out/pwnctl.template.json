@@ -1,34 +1,4 @@
 {
- "Parameters": {
-  "connectionString": {
-   "Type": "String",
-   "Description": "The database connection string"
-  },
-  "AssetParametersab2ea9941a633055ed11b1f73489437ef2f9688ebf898b913d54f5b7d09ba93eS3Bucket2588042D": {
-   "Type": "String",
-   "Description": "S3 bucket for asset \"ab2ea9941a633055ed11b1f73489437ef2f9688ebf898b913d54f5b7d09ba93e\""
-  },
-  "AssetParametersab2ea9941a633055ed11b1f73489437ef2f9688ebf898b913d54f5b7d09ba93eS3VersionKey9E94294B": {
-   "Type": "String",
-   "Description": "S3 key for asset version \"ab2ea9941a633055ed11b1f73489437ef2f9688ebf898b913d54f5b7d09ba93e\""
-  },
-  "AssetParametersab2ea9941a633055ed11b1f73489437ef2f9688ebf898b913d54f5b7d09ba93eArtifactHash33B35171": {
-   "Type": "String",
-   "Description": "Artifact hash for asset \"ab2ea9941a633055ed11b1f73489437ef2f9688ebf898b913d54f5b7d09ba93e\""
-  },
-  "AssetParametersc8dfcc3db7a767ebc6f9417372a8fee940927c659f793315834a6784dab3d686S3Bucket821B928E": {
-   "Type": "String",
-   "Description": "S3 bucket for asset \"c8dfcc3db7a767ebc6f9417372a8fee940927c659f793315834a6784dab3d686\""
-  },
-  "AssetParametersc8dfcc3db7a767ebc6f9417372a8fee940927c659f793315834a6784dab3d686S3VersionKey8D940F9A": {
-   "Type": "String",
-   "Description": "S3 key for asset version \"c8dfcc3db7a767ebc6f9417372a8fee940927c659f793315834a6784dab3d686\""
-  },
-  "AssetParametersc8dfcc3db7a767ebc6f9417372a8fee940927c659f793315834a6784dab3d686ArtifactHashB7ECE5F1": {
-   "Type": "String",
-   "Description": "Artifact hash for asset \"c8dfcc3db7a767ebc6f9417372a8fee940927c659f793315834a6784dab3d686\""
-  }
- },
  "Resources": {
   "pwnwrkvpc020FF09A": {
    "Type": "AWS::EC2::VPC",
@@ -40,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "PwnctlCdkStack/pwnwrk-vpc"
+      "Value": "pwnctl/pwnwrk-vpc"
      },
      {
       "Key": "stack",
@@ -49,10 +19,10 @@
     ]
    },
    "Metadata": {
-    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-vpc/Resource"
+    "aws:cdk:path": "pwnctl/pwnwrk-vpc/Resource"
    }
   },
-  "pwnwrkvpcPublicSubnet1Subnet50A78F6A": {
+  "pwnwrkvpcpublicsubnet1Subnet1Subnet19236D3C": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
     "VpcId": {
@@ -66,12 +36,12 @@
       }
      ]
     },
-    "CidrBlock": "10.0.0.0/17",
+    "CidrBlock": "10.0.0.0/24",
     "MapPublicIpOnLaunch": true,
     "Tags": [
      {
       "Key": "aws-cdk:subnet-name",
-      "Value": "Public"
+      "Value": "public-subnet-1"
      },
      {
       "Key": "aws-cdk:subnet-type",
@@ -79,7 +49,7 @@
      },
      {
       "Key": "Name",
-      "Value": "PwnctlCdkStack/pwnwrk-vpc/PublicSubnet1"
+      "Value": "pwnctl/pwnwrk-vpc/public-subnet-1Subnet1"
      },
      {
       "Key": "stack",
@@ -88,10 +58,10 @@
     ]
    },
    "Metadata": {
-    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-vpc/PublicSubnet1/Subnet"
+    "aws:cdk:path": "pwnctl/pwnwrk-vpc/public-subnet-1Subnet1/Subnet"
    }
   },
-  "pwnwrkvpcPublicSubnet1RouteTable4AE88A42": {
+  "pwnwrkvpcpublicsubnet1Subnet1RouteTable63B10848": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
     "VpcId": {
@@ -100,7 +70,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "PwnctlCdkStack/pwnwrk-vpc/PublicSubnet1"
+      "Value": "pwnctl/pwnwrk-vpc/public-subnet-1Subnet1"
      },
      {
       "Key": "stack",
@@ -109,28 +79,28 @@
     ]
    },
    "Metadata": {
-    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-vpc/PublicSubnet1/RouteTable"
+    "aws:cdk:path": "pwnctl/pwnwrk-vpc/public-subnet-1Subnet1/RouteTable"
    }
   },
-  "pwnwrkvpcPublicSubnet1RouteTableAssociationB680EC6D": {
+  "pwnwrkvpcpublicsubnet1Subnet1RouteTableAssociation4CBC77F6": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
    "Properties": {
     "RouteTableId": {
-     "Ref": "pwnwrkvpcPublicSubnet1RouteTable4AE88A42"
+     "Ref": "pwnwrkvpcpublicsubnet1Subnet1RouteTable63B10848"
     },
     "SubnetId": {
-     "Ref": "pwnwrkvpcPublicSubnet1Subnet50A78F6A"
+     "Ref": "pwnwrkvpcpublicsubnet1Subnet1Subnet19236D3C"
     }
    },
    "Metadata": {
-    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-vpc/PublicSubnet1/RouteTableAssociation"
+    "aws:cdk:path": "pwnctl/pwnwrk-vpc/public-subnet-1Subnet1/RouteTableAssociation"
    }
   },
-  "pwnwrkvpcPublicSubnet1DefaultRoute98D3DDD5": {
+  "pwnwrkvpcpublicsubnet1Subnet1DefaultRoute8B99B5AA": {
    "Type": "AWS::EC2::Route",
    "Properties": {
     "RouteTableId": {
-     "Ref": "pwnwrkvpcPublicSubnet1RouteTable4AE88A42"
+     "Ref": "pwnwrkvpcpublicsubnet1Subnet1RouteTable63B10848"
     },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
@@ -141,10 +111,102 @@
     "pwnwrkvpcVPCGWE7842D46"
    ],
    "Metadata": {
-    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-vpc/PublicSubnet1/DefaultRoute"
+    "aws:cdk:path": "pwnctl/pwnwrk-vpc/public-subnet-1Subnet1/DefaultRoute"
    }
   },
-  "pwnwrkvpcIsolatedSubnet1SubnetC47E5A6C": {
+  "pwnwrkvpcpublicsubnet1Subnet2Subnet55EF5A82": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "pwnwrkvpc020FF09A"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.1.0/24",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "public-subnet-1"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "pwnctl/pwnwrk-vpc/public-subnet-1Subnet2"
+     },
+     {
+      "Key": "stack",
+      "Value": "pwnctl"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "pwnctl/pwnwrk-vpc/public-subnet-1Subnet2/Subnet"
+   }
+  },
+  "pwnwrkvpcpublicsubnet1Subnet2RouteTableD5AC0B66": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "pwnwrkvpc020FF09A"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "pwnctl/pwnwrk-vpc/public-subnet-1Subnet2"
+     },
+     {
+      "Key": "stack",
+      "Value": "pwnctl"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "pwnctl/pwnwrk-vpc/public-subnet-1Subnet2/RouteTable"
+   }
+  },
+  "pwnwrkvpcpublicsubnet1Subnet2RouteTableAssociationAC04BAF4": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "pwnwrkvpcpublicsubnet1Subnet2RouteTableD5AC0B66"
+    },
+    "SubnetId": {
+     "Ref": "pwnwrkvpcpublicsubnet1Subnet2Subnet55EF5A82"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "pwnctl/pwnwrk-vpc/public-subnet-1Subnet2/RouteTableAssociation"
+   }
+  },
+  "pwnwrkvpcpublicsubnet1Subnet2DefaultRoute19973B81": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "pwnwrkvpcpublicsubnet1Subnet2RouteTableD5AC0B66"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "pwnwrkvpcIGWAC3C03B5"
+    }
+   },
+   "DependsOn": [
+    "pwnwrkvpcVPCGWE7842D46"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "pwnctl/pwnwrk-vpc/public-subnet-1Subnet2/DefaultRoute"
+   }
+  },
+  "pwnwrkvpcprivatesubnet2Subnet1SubnetA8ACA595": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
     "VpcId": {
@@ -158,12 +220,12 @@
       }
      ]
     },
-    "CidrBlock": "10.0.128.0/17",
+    "CidrBlock": "10.0.2.0/24",
     "MapPublicIpOnLaunch": false,
     "Tags": [
      {
       "Key": "aws-cdk:subnet-name",
-      "Value": "Isolated"
+      "Value": "private-subnet-2"
      },
      {
       "Key": "aws-cdk:subnet-type",
@@ -171,7 +233,7 @@
      },
      {
       "Key": "Name",
-      "Value": "PwnctlCdkStack/pwnwrk-vpc/IsolatedSubnet1"
+      "Value": "pwnctl/pwnwrk-vpc/private-subnet-2Subnet1"
      },
      {
       "Key": "stack",
@@ -180,10 +242,10 @@
     ]
    },
    "Metadata": {
-    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-vpc/IsolatedSubnet1/Subnet"
+    "aws:cdk:path": "pwnctl/pwnwrk-vpc/private-subnet-2Subnet1/Subnet"
    }
   },
-  "pwnwrkvpcIsolatedSubnet1RouteTableA318FADF": {
+  "pwnwrkvpcprivatesubnet2Subnet1RouteTable85CEAF7B": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
     "VpcId": {
@@ -192,7 +254,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "PwnctlCdkStack/pwnwrk-vpc/IsolatedSubnet1"
+      "Value": "pwnctl/pwnwrk-vpc/private-subnet-2Subnet1"
      },
      {
       "Key": "stack",
@@ -201,21 +263,95 @@
     ]
    },
    "Metadata": {
-    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-vpc/IsolatedSubnet1/RouteTable"
+    "aws:cdk:path": "pwnctl/pwnwrk-vpc/private-subnet-2Subnet1/RouteTable"
    }
   },
-  "pwnwrkvpcIsolatedSubnet1RouteTableAssociation311C0293": {
+  "pwnwrkvpcprivatesubnet2Subnet1RouteTableAssociation20106C31": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
    "Properties": {
     "RouteTableId": {
-     "Ref": "pwnwrkvpcIsolatedSubnet1RouteTableA318FADF"
+     "Ref": "pwnwrkvpcprivatesubnet2Subnet1RouteTable85CEAF7B"
     },
     "SubnetId": {
-     "Ref": "pwnwrkvpcIsolatedSubnet1SubnetC47E5A6C"
+     "Ref": "pwnwrkvpcprivatesubnet2Subnet1SubnetA8ACA595"
     }
    },
    "Metadata": {
-    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-vpc/IsolatedSubnet1/RouteTableAssociation"
+    "aws:cdk:path": "pwnctl/pwnwrk-vpc/private-subnet-2Subnet1/RouteTableAssociation"
+   }
+  },
+  "pwnwrkvpcprivatesubnet2Subnet2Subnet206413D1": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "pwnwrkvpc020FF09A"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.3.0/24",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "private-subnet-2"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     },
+     {
+      "Key": "Name",
+      "Value": "pwnctl/pwnwrk-vpc/private-subnet-2Subnet2"
+     },
+     {
+      "Key": "stack",
+      "Value": "pwnctl"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "pwnctl/pwnwrk-vpc/private-subnet-2Subnet2/Subnet"
+   }
+  },
+  "pwnwrkvpcprivatesubnet2Subnet2RouteTable935C29DA": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "pwnwrkvpc020FF09A"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "pwnctl/pwnwrk-vpc/private-subnet-2Subnet2"
+     },
+     {
+      "Key": "stack",
+      "Value": "pwnctl"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "pwnctl/pwnwrk-vpc/private-subnet-2Subnet2/RouteTable"
+   }
+  },
+  "pwnwrkvpcprivatesubnet2Subnet2RouteTableAssociation91D61AFE": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "pwnwrkvpcprivatesubnet2Subnet2RouteTable935C29DA"
+    },
+    "SubnetId": {
+     "Ref": "pwnwrkvpcprivatesubnet2Subnet2Subnet206413D1"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "pwnctl/pwnwrk-vpc/private-subnet-2Subnet2/RouteTableAssociation"
    }
   },
   "pwnwrkvpcIGWAC3C03B5": {
@@ -224,7 +360,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "PwnctlCdkStack/pwnwrk-vpc"
+      "Value": "pwnctl/pwnwrk-vpc"
      },
      {
       "Key": "stack",
@@ -233,7 +369,7 @@
     ]
    },
    "Metadata": {
-    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-vpc/IGW"
+    "aws:cdk:path": "pwnctl/pwnwrk-vpc/IGW"
    }
   },
   "pwnwrkvpcVPCGWE7842D46": {
@@ -247,7 +383,199 @@
     }
    },
    "Metadata": {
-    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-vpc/VPCGW"
+    "aws:cdk:path": "pwnctl/pwnwrk-vpc/VPCGW"
+   }
+  },
+  "pwnctlaurorapostgresqlinstancesg15729121": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "pwnctl-aurora-postgresql-instance-sg",
+    "GroupName": "pwnctl-aurora-postgresql-instance-sg",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Open to the world",
+      "IpProtocol": "-1"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "stack",
+      "Value": "pwnctl"
+     }
+    ],
+    "VpcId": {
+     "Ref": "pwnwrkvpc020FF09A"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "pwnctl/pwnctl-aurora-postgresql-instance-sg/Resource"
+   }
+  },
+  "pwnctlaurorapostgresqlinstancecreds11CBFF7B": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "GenerateSecretString": {
+     "ExcludePunctuation": true,
+     "GenerateStringKey": "password",
+     "IncludeSpace": false,
+     "SecretStringTemplate": "{\"username\":\"pwnadmin\"}"
+    },
+    "Name": "pwnctl-Db-Credentials",
+    "Tags": [
+     {
+      "Key": "stack",
+      "Value": "pwnctl"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "pwnctl/pwnctl-aurora-postgresql-instance-creds/Resource"
+   }
+  },
+  "pwnctlaurorapostgresqlinstancecredsAttachment1FC472CC": {
+   "Type": "AWS::SecretsManager::SecretTargetAttachment",
+   "Properties": {
+    "SecretId": {
+     "Ref": "pwnctlaurorapostgresqlinstancecreds11CBFF7B"
+    },
+    "TargetId": {
+     "Ref": "pwnctlauroraclusterC5F8F192"
+    },
+    "TargetType": "AWS::RDS::DBCluster"
+   },
+   "Metadata": {
+    "aws:cdk:path": "pwnctl/pwnctl-aurora-postgresql-instance-creds/Attachment/Resource"
+   }
+  },
+  "pwnctlaurorasubnetg": {
+   "Type": "AWS::RDS::DBSubnetGroup",
+   "Properties": {
+    "DBSubnetGroupDescription": "Aurora RDS Subnet Group for database pwnctl-aurora-postgresql-instance",
+    "SubnetIds": [
+     {
+      "Ref": "pwnwrkvpcpublicsubnet1Subnet1Subnet19236D3C"
+     },
+     {
+      "Ref": "pwnwrkvpcpublicsubnet1Subnet2Subnet55EF5A82"
+     },
+     {
+      "Ref": "pwnwrkvpcprivatesubnet2Subnet1SubnetA8ACA595"
+     },
+     {
+      "Ref": "pwnwrkvpcprivatesubnet2Subnet2Subnet206413D1"
+     }
+    ],
+    "DBSubnetGroupName": "pwnctl-aurora-subnet-g",
+    "Tags": [
+     {
+      "Key": "stack",
+      "Value": "pwnctl"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "pwnctl/pwnctl-aurora-subnet-g/Default"
+   }
+  },
+  "pwnctlauroraclusterC5F8F192": {
+   "Type": "AWS::RDS::DBCluster",
+   "Properties": {
+    "Engine": "aurora-postgresql",
+    "CopyTagsToSnapshot": true,
+    "DatabaseName": "pwnctl",
+    "DBClusterIdentifier": "pwnctl-aurora-cluster",
+    "DBClusterParameterGroupName": "default.aurora-postgresql13",
+    "DBSubnetGroupName": {
+     "Ref": "pwnctlaurorasubnetg"
+    },
+    "EngineVersion": "13.6",
+    "MasterUsername": {
+     "Fn::Join": [
+      "",
+      [
+       "{{resolve:secretsmanager:",
+       {
+        "Ref": "pwnctlaurorapostgresqlinstancecreds11CBFF7B"
+       },
+       ":SecretString:username::}}"
+      ]
+     ]
+    },
+    "MasterUserPassword": {
+     "Fn::Join": [
+      "",
+      [
+       "{{resolve:secretsmanager:",
+       {
+        "Ref": "pwnctlaurorapostgresqlinstancecreds11CBFF7B"
+       },
+       ":SecretString:password::}}"
+      ]
+     ]
+    },
+    "Port": 5432,
+    "Tags": [
+     {
+      "Key": "stack",
+      "Value": "pwnctl"
+     }
+    ],
+    "VpcSecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "pwnctlaurorapostgresqlinstancesg15729121",
+       "GroupId"
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "pwnctl/pwnctl-aurora-cluster/Resource"
+   }
+  },
+  "pwnctlauroraclusterInstance1C026056A": {
+   "Type": "AWS::RDS::DBInstance",
+   "Properties": {
+    "DBClusterIdentifier": {
+     "Ref": "pwnctlauroraclusterC5F8F192"
+    },
+    "DBInstanceClass": "db.t3.medium",
+    "DBInstanceIdentifier": "pwnctl-aurora-postgresql-instance-1",
+    "DBSubnetGroupName": {
+     "Ref": "pwnctlaurorasubnetg"
+    },
+    "Engine": "aurora-postgresql",
+    "EngineVersion": "13.6",
+    "PubliclyAccessible": true,
+    "Tags": [
+     {
+      "Key": "stack",
+      "Value": "pwnctl"
+     }
+    ]
+   },
+   "DependsOn": [
+    "pwnwrkvpcpublicsubnet1Subnet1DefaultRoute8B99B5AA",
+    "pwnwrkvpcpublicsubnet1Subnet2DefaultRoute19973B81"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "pwnctl/pwnctl-aurora-cluster/Instance1"
    }
   },
   "pwnwrkdlqfifoA60405CB": {
@@ -270,7 +598,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete",
    "Metadata": {
-    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-dlq.fifo/Resource"
+    "aws:cdk:path": "pwnctl/pwnwrk-dlq.fifo/Resource"
    }
   },
   "pwnwrkfifo043C4E87": {
@@ -302,7 +630,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete",
    "Metadata": {
-    "aws:cdk:path": "PwnctlCdkStack/pwnwrk.fifo/Resource"
+    "aws:cdk:path": "pwnctl/pwnwrk.fifo/Resource"
    }
   },
   "pwnwrkfs6B0E83F5": {
@@ -311,7 +639,7 @@
     "FileSystemTags": [
      {
       "Key": "Name",
-      "Value": "PwnctlCdkStack/pwnwrk-fs"
+      "Value": "pwnctl/pwnwrk-fs"
      },
      {
       "Key": "stack",
@@ -322,13 +650,13 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete",
    "Metadata": {
-    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-fs/Resource"
+    "aws:cdk:path": "pwnctl/pwnwrk-fs/Resource"
    }
   },
   "pwnwrkfsEfsSecurityGroup5C55F9F7": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "PwnctlCdkStack/pwnwrk-fs/EfsSecurityGroup",
+    "GroupDescription": "pwnctl/pwnwrk-fs/EfsSecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -339,7 +667,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "PwnctlCdkStack/pwnwrk-fs"
+      "Value": "pwnctl/pwnwrk-fs"
      },
      {
       "Key": "stack",
@@ -351,14 +679,14 @@
     }
    },
    "Metadata": {
-    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-fs/EfsSecurityGroup/Resource"
+    "aws:cdk:path": "pwnctl/pwnwrk-fs/EfsSecurityGroup/Resource"
    }
   },
-  "pwnwrkfsEfsSecurityGroupfromPwnctlCdkStackpwnctlapiSecurityGroupD8320BC12049A9DE741C": {
+  "pwnwrkfsEfsSecurityGroupfrompwnctlpwnctlapiSecurityGroupC5E73E832049BE99C526": {
    "Type": "AWS::EC2::SecurityGroupIngress",
    "Properties": {
     "IpProtocol": "tcp",
-    "Description": "from PwnctlCdkStackpwnctlapiSecurityGroupD8320BC1:2049",
+    "Description": "from pwnctlpwnctlapiSecurityGroupC5E73E83:2049",
     "FromPort": 2049,
     "GroupId": {
      "Fn::GetAtt": [
@@ -375,14 +703,14 @@
     "ToPort": 2049
    },
    "Metadata": {
-    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-fs/EfsSecurityGroup/from PwnctlCdkStackpwnctlapiSecurityGroupD8320BC1:2049"
+    "aws:cdk:path": "pwnctl/pwnwrk-fs/EfsSecurityGroup/from pwnctlpwnctlapiSecurityGroupC5E73E83:2049"
    }
   },
-  "pwnwrkfsEfsSecurityGroupfromPwnctlCdkStackpwnwrksvcSecurityGroupFAD385442049C878424D": {
+  "pwnwrkfsEfsSecurityGroupfrompwnctlpwnwrksvcSecurityGroupE5704B222049A40EAC9F": {
    "Type": "AWS::EC2::SecurityGroupIngress",
    "Properties": {
     "IpProtocol": "tcp",
-    "Description": "from PwnctlCdkStackpwnwrksvcSecurityGroupFAD38544:2049",
+    "Description": "from pwnctlpwnwrksvcSecurityGroupE5704B22:2049",
     "FromPort": 2049,
     "GroupId": {
      "Fn::GetAtt": [
@@ -399,7 +727,7 @@
     "ToPort": 2049
    },
    "Metadata": {
-    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-fs/EfsSecurityGroup/from PwnctlCdkStackpwnwrksvcSecurityGroupFAD38544:2049"
+    "aws:cdk:path": "pwnctl/pwnwrk-fs/EfsSecurityGroup/from pwnctlpwnwrksvcSecurityGroupE5704B22:2049"
    }
   },
   "pwnwrkfsEfsMountTarget1E8F83F52": {
@@ -417,11 +745,33 @@
      }
     ],
     "SubnetId": {
-     "Ref": "pwnwrkvpcIsolatedSubnet1SubnetC47E5A6C"
+     "Ref": "pwnwrkvpcprivatesubnet2Subnet1SubnetA8ACA595"
     }
    },
    "Metadata": {
-    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-fs/EfsMountTarget1"
+    "aws:cdk:path": "pwnctl/pwnwrk-fs/EfsMountTarget1"
+   }
+  },
+  "pwnwrkfsEfsMountTarget2656CB1BA": {
+   "Type": "AWS::EFS::MountTarget",
+   "Properties": {
+    "FileSystemId": {
+     "Ref": "pwnwrkfs6B0E83F5"
+    },
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "pwnwrkfsEfsSecurityGroup5C55F9F7",
+       "GroupId"
+      ]
+     }
+    ],
+    "SubnetId": {
+     "Ref": "pwnwrkvpcprivatesubnet2Subnet2Subnet206413D1"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "pwnctl/pwnwrk-fs/EfsMountTarget2"
    }
   },
   "pwnwrkfspwnctllambdaapifsapF9EF4E24": {
@@ -444,7 +794,28 @@
     }
    },
    "Metadata": {
-    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-fs/pwnctl-lambda-api-fsap/Resource"
+    "aws:cdk:path": "pwnctl/pwnwrk-fs/pwnctl-lambda-api-fsap/Resource"
+   }
+  },
+  "pwnctlApiApiKeyC0ABFCF1": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "GenerateSecretString": {
+     "ExcludePunctuation": true,
+     "IncludeSpace": false
+    },
+    "Name": "pwnctl-Api-ApiKey",
+    "Tags": [
+     {
+      "Key": "stack",
+      "Value": "pwnctl"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "pwnctl/pwnctl-Api-ApiKey/Resource"
    }
   },
   "pwnctlapirole0826A6D0": {
@@ -508,7 +879,7 @@
     ]
    },
    "Metadata": {
-    "aws:cdk:path": "PwnctlCdkStack/pwnctl-api-role/Resource"
+    "aws:cdk:path": "pwnctl/pwnctl-api-role/Resource"
    }
   },
   "pwnctlapiroleDefaultPolicy1D23B5B9": {
@@ -516,6 +887,21 @@
    "Properties": {
     "PolicyDocument": {
      "Statement": [
+      {
+       "Action": [
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:GetSecretValue"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Ref": "pwnctlApiApiKeyC0ABFCF1"
+        },
+        {
+         "Ref": "pwnctlaurorapostgresqlinstancecreds11CBFF7B"
+        }
+       ]
+      },
       {
        "Action": "elasticfilesystem:ClientMount",
        "Condition": {
@@ -586,13 +972,13 @@
     ]
    },
    "Metadata": {
-    "aws:cdk:path": "PwnctlCdkStack/pwnctl-api-role/DefaultPolicy/Resource"
+    "aws:cdk:path": "pwnctl/pwnctl-api-role/DefaultPolicy/Resource"
    }
   },
   "pwnctlapiSecurityGroupC000D8A4": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "Automatic security group for Lambda Function PwnctlCdkStackpwnctlapiD416E013",
+    "GroupDescription": "Automatic security group for Lambda Function pwnctlpwnctlapi6E03EBCA",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -611,10 +997,11 @@
     }
    },
    "DependsOn": [
-    "pwnwrkfsEfsMountTarget1E8F83F52"
+    "pwnwrkfsEfsMountTarget1E8F83F52",
+    "pwnwrkfsEfsMountTarget2656CB1BA"
    ],
    "Metadata": {
-    "aws:cdk:path": "PwnctlCdkStack/pwnctl-api/SecurityGroup/Resource"
+    "aws:cdk:path": "pwnctl/pwnctl-api/SecurityGroup/Resource"
    }
   },
   "pwnctlapi975A4D96": {
@@ -622,7 +1009,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "AssetParametersab2ea9941a633055ed11b1f73489437ef2f9688ebf898b913d54f5b7d09ba93eS3Bucket2588042D"
+      "Ref": "AssetParametersdc1aeb362121c45552f4e6d968d3fb2d422412261df4f87562962996ff906b6cS3Bucket73F16698"
      },
      "S3Key": {
       "Fn::Join": [
@@ -635,7 +1022,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "AssetParametersab2ea9941a633055ed11b1f73489437ef2f9688ebf898b913d54f5b7d09ba93eS3VersionKey9E94294B"
+             "Ref": "AssetParametersdc1aeb362121c45552f4e6d968d3fb2d422412261df4f87562962996ff906b6cS3VersionKey0544B6C6"
             }
            ]
           }
@@ -648,7 +1035,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "AssetParametersab2ea9941a633055ed11b1f73489437ef2f9688ebf898b913d54f5b7d09ba93eS3VersionKey9E94294B"
+             "Ref": "AssetParametersdc1aeb362121c45552f4e6d968d3fb2d422412261df4f87562962996ff906b6cS3VersionKey0544B6C6"
             }
            ]
           }
@@ -666,17 +1053,20 @@
     },
     "Environment": {
      "Variables": {
+      "PWNCTL_Db__Endpoint": {
+       "Fn::GetAtt": [
+        "pwnctlauroraclusterInstance1C026056A",
+        "Endpoint.Address"
+       ]
+      },
       "PWNCTL_JobQueue__QueueName": "pwnwrk.fifo",
       "PWNCTL_JobQueue__DLQName": "pwnwrk-dlq.fifo",
       "PWNCTL_JobQueue__VisibilityTimeout": "30",
-      "PWNCTL_Db__ConnectionString": {
-       "Ref": "connectionString"
-      },
-      "PWNCTL_Logging__MProvider": "console",
+      "PWNCTL_Logging__Provider": "console",
       "PWNCTL_Logging__MinLevel": "Debug",
       "PWNCTL_Logging__LogGroup": "/aws/lambda/pwnctl-api",
       "PWNCTL_EFS_MOUNT_POINT": "/mnt/efs",
-      "PWNCTL_INSTALL_PATH": "/mnt/efs"
+      "PWNCTL_InstallPath": "/mnt/efs"
      }
     },
     "FileSystemConfigs": [
@@ -715,6 +1105,7 @@
       "Value": "pwnctl"
      }
     ],
+    "Timeout": 30,
     "VpcConfig": {
      "SecurityGroupIds": [
       {
@@ -726,7 +1117,10 @@
      ],
      "SubnetIds": [
       {
-       "Ref": "pwnwrkvpcIsolatedSubnet1SubnetC47E5A6C"
+       "Ref": "pwnwrkvpcprivatesubnet2Subnet1SubnetA8ACA595"
+      },
+      {
+       "Ref": "pwnwrkvpcprivatesubnet2Subnet2Subnet206413D1"
       }
      ]
     }
@@ -735,11 +1129,12 @@
     "pwnctlapiroleDefaultPolicy1D23B5B9",
     "pwnctlapirole0826A6D0",
     "pwnwrkfsEfsMountTarget1E8F83F52",
-    "pwnwrkfsEfsSecurityGroupfromPwnctlCdkStackpwnctlapiSecurityGroupD8320BC12049A9DE741C"
+    "pwnwrkfsEfsMountTarget2656CB1BA",
+    "pwnwrkfsEfsSecurityGroupfrompwnctlpwnctlapiSecurityGroupC5E73E832049BE99C526"
    ],
    "Metadata": {
-    "aws:cdk:path": "PwnctlCdkStack/pwnctl-api/Resource",
-    "aws:asset:path": "asset.ab2ea9941a633055ed11b1f73489437ef2f9688ebf898b913d54f5b7d09ba93e.0",
+    "aws:cdk:path": "pwnctl/pwnctl-api/Resource",
+    "aws:asset:path": "asset.dc1aeb362121c45552f4e6d968d3fb2d422412261df4f87562962996ff906b6c.0",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
@@ -767,10 +1162,11 @@
     "RetentionInDays": 7
    },
    "DependsOn": [
-    "pwnwrkfsEfsMountTarget1E8F83F52"
+    "pwnwrkfsEfsMountTarget1E8F83F52",
+    "pwnwrkfsEfsMountTarget2656CB1BA"
    ],
    "Metadata": {
-    "aws:cdk:path": "PwnctlCdkStack/pwnctl-api/LogRetention/Resource"
+    "aws:cdk:path": "pwnctl/pwnctl-api/LogRetention/Resource"
    }
   },
   "pwnctlapiFunctionUrlC82E55D9": {
@@ -785,10 +1181,11 @@
     }
    },
    "DependsOn": [
-    "pwnwrkfsEfsMountTarget1E8F83F52"
+    "pwnwrkfsEfsMountTarget1E8F83F52",
+    "pwnwrkfsEfsMountTarget2656CB1BA"
    ],
    "Metadata": {
-    "aws:cdk:path": "PwnctlCdkStack/pwnctl-api/FunctionUrl/Resource"
+    "aws:cdk:path": "pwnctl/pwnctl-api/FunctionUrl/Resource"
    }
   },
   "pwnctlapiinvokefunctionurlD1E71F7B": {
@@ -805,10 +1202,11 @@
     "FunctionUrlAuthType": "NONE"
    },
    "DependsOn": [
-    "pwnwrkfsEfsMountTarget1E8F83F52"
+    "pwnwrkfsEfsMountTarget1E8F83F52",
+    "pwnwrkfsEfsMountTarget2656CB1BA"
    ],
    "Metadata": {
-    "aws:cdk:path": "PwnctlCdkStack/pwnctl-api/invoke-function-url"
+    "aws:cdk:path": "pwnctl/pwnctl-api/invoke-function-url"
    }
   },
   "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB": {
@@ -848,7 +1246,7 @@
     ]
    },
    "Metadata": {
-    "aws:cdk:path": "PwnctlCdkStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource"
+    "aws:cdk:path": "pwnctl/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource"
    }
   },
   "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB": {
@@ -875,7 +1273,7 @@
     ]
    },
    "Metadata": {
-    "aws:cdk:path": "PwnctlCdkStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource"
+    "aws:cdk:path": "pwnctl/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource"
    }
   },
   "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A": {
@@ -939,24 +1337,10 @@
     "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
    ],
    "Metadata": {
-    "aws:cdk:path": "PwnctlCdkStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource",
+    "aws:cdk:path": "pwnctl/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource",
     "aws:asset:path": "asset.c8dfcc3db7a767ebc6f9417372a8fee940927c659f793315834a6784dab3d686",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
-   }
-  },
-  "pwnwrkclusterB1ACABA0": {
-   "Type": "AWS::ECS::Cluster",
-   "Properties": {
-    "Tags": [
-     {
-      "Key": "stack",
-      "Value": "pwnctl"
-     }
-    ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-cluster/Resource"
    }
   },
   "pwnwrkrole35F47018": {
@@ -1020,7 +1404,7 @@
     ]
    },
    "Metadata": {
-    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-role/Resource"
+    "aws:cdk:path": "pwnctl/pwnwrk-role/Resource"
    }
   },
   "pwnwrkroleDefaultPolicyBF2C6556": {
@@ -1055,13 +1439,23 @@
       },
       {
        "Action": [
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:GetSecretValue"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "pwnctlaurorapostgresqlinstancecreds11CBFF7B"
+       }
+      },
+      {
+       "Action": [
         "logs:CreateLogStream",
         "logs:PutLogEvents"
        ],
        "Effect": "Allow",
        "Resource": {
         "Fn::GetAtt": [
-         "PwnwrkLogs49C21403",
+         "pwnwrklogs90232915",
          "Arn"
         ]
        }
@@ -1077,7 +1471,7 @@
     ]
    },
    "Metadata": {
-    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-role/DefaultPolicy/Resource"
+    "aws:cdk:path": "pwnctl/pwnwrk-role/DefaultPolicy/Resource"
    }
   },
   "pwnwrkdef3A414DAF": {
@@ -1087,6 +1481,15 @@
      {
       "Cpu": 512,
       "Environment": [
+       {
+        "Name": "PWNCTL_Db__Endpoint",
+        "Value": {
+         "Fn::GetAtt": [
+          "pwnctlauroraclusterInstance1C026056A",
+          "Endpoint.Address"
+         ]
+        }
+       },
        {
         "Name": "PWNCTL_JobQueue__QueueName",
         "Value": {
@@ -1110,19 +1513,17 @@
         "Value": "30"
        },
        {
+        "Name": "PWNCTL_Logging__Provider",
+        "Value": "cloudwatch"
+       },
+       {
         "Name": "PWNCTL_Logging__MinLevel",
         "Value": "Debug"
        },
        {
         "Name": "PWNCTL_Logging__LogGroup",
         "Value": {
-         "Ref": "PwnwrkLogs49C21403"
-        }
-       },
-       {
-        "Name": "PWNCTL_Db__ConnectionString",
-        "Value": {
-         "Ref": "connectionString"
+         "Ref": "pwnwrklogs90232915"
         }
        },
        {
@@ -1136,7 +1537,7 @@
        "LogDriver": "awslogs",
        "Options": {
         "awslogs-group": {
-         "Ref": "PwnwrkLogs49C21403"
+         "Ref": "pwnwrklogs90232915"
         },
         "awslogs-stream-prefix": "/aws/ecs",
         "awslogs-region": {
@@ -1162,7 +1563,7 @@
       "Arn"
      ]
     },
-    "Family": "PwnctlCdkStackpwnwrkdef9FFD5DE1",
+    "Family": "pwnctlpwnwrkdef8518D6FA",
     "Memory": "2048",
     "NetworkMode": "awsvpc",
     "RequiresCompatibilities": [
@@ -1200,10 +1601,10 @@
     ]
    },
    "Metadata": {
-    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-def/Resource"
+    "aws:cdk:path": "pwnctl/pwnwrk-def/Resource"
    }
   },
-  "PwnwrkLogs49C21403": {
+  "pwnwrklogs90232915": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
     "LogGroupName": "/aws/ecs/pwnwrk",
@@ -1218,10 +1619,10 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete",
    "Metadata": {
-    "aws:cdk:path": "PwnctlCdkStack/PwnwrkLogs/Resource"
+    "aws:cdk:path": "pwnctl/pwnwrk-logs/Resource"
    }
   },
-  "PwnwrkLogsPolicyResourcePolicyBD6246FA": {
+  "pwnwrklogsPolicyResourcePolicyC0EE2640": {
    "Type": "AWS::Logs::ResourcePolicy",
    "Properties": {
     "PolicyDocument": {
@@ -1231,7 +1632,7 @@
        "{\"Statement\":[{\"Action\":[\"logs:CreateLogStream\",\"logs:PutLogEvents\"],\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"ecs-tasks.amazonaws.com\"},\"Resource\":\"",
        {
         "Fn::GetAtt": [
-         "PwnwrkLogs49C21403",
+         "pwnwrklogs90232915",
          "Arn"
         ]
        },
@@ -1239,10 +1640,24 @@
       ]
      ]
     },
-    "PolicyName": "PwnctlCdkStackPwnwrkLogsPolicy43E1FD09"
+    "PolicyName": "pwnctlpwnwrklogsPolicy4C8FE4CE"
    },
    "Metadata": {
-    "aws:cdk:path": "PwnctlCdkStack/PwnwrkLogs/Policy/ResourcePolicy"
+    "aws:cdk:path": "pwnctl/pwnwrk-logs/Policy/ResourcePolicy"
+   }
+  },
+  "pwnwrkclusterB1ACABA0": {
+   "Type": "AWS::ECS::Cluster",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "stack",
+      "Value": "pwnctl"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "pwnctl/pwnwrk-cluster/Resource"
    }
   },
   "pwnwrksvcService205F8023": {
@@ -1276,7 +1691,10 @@
       ],
       "Subnets": [
        {
-        "Ref": "pwnwrkvpcPublicSubnet1Subnet50A78F6A"
+        "Ref": "pwnwrkvpcpublicsubnet1Subnet1Subnet19236D3C"
+       },
+       {
+        "Ref": "pwnwrkvpcpublicsubnet1Subnet2Subnet55EF5A82"
        }
       ]
      }
@@ -1292,13 +1710,13 @@
     }
    },
    "Metadata": {
-    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-svc/Service"
+    "aws:cdk:path": "pwnctl/pwnwrk-svc/Service"
    }
   },
   "pwnwrksvcSecurityGroup4BBDA767": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "PwnctlCdkStack/pwnwrk-svc/SecurityGroup",
+    "GroupDescription": "pwnctl/pwnwrk-svc/SecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -1317,7 +1735,7 @@
     }
    },
    "Metadata": {
-    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-svc/SecurityGroup/Resource"
+    "aws:cdk:path": "pwnctl/pwnwrk-svc/SecurityGroup/Resource"
    }
   },
   "pwnwrksvcTaskCountTargetCCB13F0E": {
@@ -1363,13 +1781,13 @@
     "ServiceNamespace": "ecs"
    },
    "Metadata": {
-    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-svc/TaskCount/Target/Resource"
+    "aws:cdk:path": "pwnctl/pwnwrk-svc/TaskCount/Target/Resource"
    }
   },
   "pwnwrksvcTaskCountTargetScaleInPolicyLowerPolicy171CB42A": {
    "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
    "Properties": {
-    "PolicyName": "PwnctlCdkStackpwnwrksvcTaskCountTargetScaleInPolicyLowerPolicy12E93400",
+    "PolicyName": "pwnctlpwnwrksvcTaskCountTargetScaleInPolicyLowerPolicy75BCADED",
     "PolicyType": "StepScaling",
     "ScalingTargetId": {
      "Ref": "pwnwrksvcTaskCountTargetCCB13F0E"
@@ -1397,7 +1815,7 @@
     }
    },
    "Metadata": {
-    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-svc/TaskCount/Target/ScaleInPolicy/LowerPolicy/Resource"
+    "aws:cdk:path": "pwnctl/pwnwrk-svc/TaskCount/Target/ScaleInPolicy/LowerPolicy/Resource"
    }
   },
   "pwnwrksvcTaskCountTargetScaleInPolicyLowerAlarmBC36BC31": {
@@ -1429,13 +1847,13 @@
     "Threshold": 60
    },
    "Metadata": {
-    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-svc/TaskCount/Target/ScaleInPolicy/LowerAlarm/Resource"
+    "aws:cdk:path": "pwnctl/pwnwrk-svc/TaskCount/Target/ScaleInPolicy/LowerAlarm/Resource"
    }
   },
   "pwnwrksvcTaskCountTargetScaleOutPolicyUpperPolicyB0D4F645": {
    "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
    "Properties": {
-    "PolicyName": "PwnctlCdkStackpwnwrksvcTaskCountTargetScaleOutPolicyUpperPolicyFE80C8A4",
+    "PolicyName": "pwnctlpwnwrksvcTaskCountTargetScaleOutPolicyUpperPolicyE1E0FE12",
     "PolicyType": "StepScaling",
     "ScalingTargetId": {
      "Ref": "pwnwrksvcTaskCountTargetCCB13F0E"
@@ -1463,7 +1881,7 @@
     }
    },
    "Metadata": {
-    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-svc/TaskCount/Target/ScaleOutPolicy/UpperPolicy/Resource"
+    "aws:cdk:path": "pwnctl/pwnwrk-svc/TaskCount/Target/ScaleOutPolicy/UpperPolicy/Resource"
    }
   },
   "pwnwrksvcTaskCountTargetScaleOutPolicyUpperAlarmEF208281": {
@@ -1495,18 +1913,44 @@
     "Threshold": 1
    },
    "Metadata": {
-    "aws:cdk:path": "PwnctlCdkStack/pwnwrk-svc/TaskCount/Target/ScaleOutPolicy/UpperAlarm/Resource"
+    "aws:cdk:path": "pwnctl/pwnwrk-svc/TaskCount/Target/ScaleOutPolicy/UpperAlarm/Resource"
    }
   },
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/31Ty27bMBD8ltxpum6A9FSgitIEAdpUlVzfaXqtsKZIlVzaMAT9e5eULNk9FDpwdrja53DFV58e+Ie7L+LkF3J3WHbSOuBdhUIeWL43hXCiAQTHSvA2OAks8x6QHGpl6ugyXeTWeHRBYmR/BGxDQkTvFCprehazdCA/8m7Tyni3KXJWhK1WsgpbA8l/RqUNCGux1TDzM0d1WKlEjDw5s8Kpo0CYY7waKp7wC7EncR6TjlaG1Od7AwZZBTI4hecXZ0Ob0v2XeDW1A+975v943v0MEFKNCfQM9kQ+Kw3V2SM08ebW+m6DwbVwNRWZSUmRCqtMKvjK7JkSDe9KOwwgnYWlYaU2BtQzLZrtTlC+YORlGBO+gF9OR348CnCN8j7txN8vRNyo52mxZPPHIA+Aj8ID07amVr7ZuiQRmBSSjGkmE76IYC7vlqGZSAqU6+CjmKIsRvhMUxBxpf7wBHtl1KWHfxlrUCgD7oob/63AHZUcRDLCSgodRRKD5HHYJL62pUqSXkRA68mDFExan1zTOmKQW6ZCaKvBe2zvismmmd+49ExqG3YngfKdd5kWLu09gb7v2ZPFN8AlvT3+sORvX9c5vbusbRcbcHEvn4/3fLVc0TV9d7+9UgtHXagGeDmcfwGRn+M8uwMAAA=="
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/31U247aMBD9ln03pnSl7VOlhtCukLbblFDeBzNkvSR26gsIRfn3jp0b7EOVB585nsz1JAu++PLEPz18g4udicNp3ghtkDe5A3FiG7TaG4EssRYdcYVUBUuParxItbLOeOECm4GBCh2aYPzyrvaRJp+DdFKrloUsDYrPvNnVItztspRlfl9Kkfu9wug/oY32DrewL3HiJ46K0kJCiDw6s8zIMzicYqwVFUT4mdgLXPukvZU46vOtQuVYjsIb6a7PRvs6pvsvsVaFQWtbZlEYdLYCBQUamly0e/+AumMLpkB3k290+HjTMnOwFCd2MCZfLW+JFTjYg8W09Laf92p5Z6xpL6AEUoF/Kdpvjz4OMYKW4ZHIH7LE/ErvVOHm3vqpvepLY4kQ1GqmZVf2jdkyCRVvNrrbUDwzTduMc+5Qy0qo9gegfF6JYVsjHsAfUwa+PzI0lbQ2isY+ziDoz/IoQ7L50osTuiVNgJW6oFZedLEh5akYkoxxbiMeJDuVd8/QTESYCbUMQWD2tMKjVHIo+COjlQOp0Nxy0wIG2IfL0Zyl6FTcw1xAGVQc4qZh2PR11DVVEgUN3mlLHvS9kRRG17iOEOSeyR3Weefdt3fDJOPM71xaJkrtDxdw4o03SQkm7j2Ctm3ZSrtXdHP6OfCnOX/9vk3px5DU9WyHJuzl6/mRL+YLuqbn4d1KOTPUhayQb7rzH9DGgStcBAAA"
    },
    "Metadata": {
-    "aws:cdk:path": "PwnctlCdkStack/CDKMetadata/Default"
+    "aws:cdk:path": "pwnctl/CDKMetadata/Default"
    },
    "Condition": "CDKMetadataAvailable"
+  }
+ },
+ "Parameters": {
+  "AssetParametersdc1aeb362121c45552f4e6d968d3fb2d422412261df4f87562962996ff906b6cS3Bucket73F16698": {
+   "Type": "String",
+   "Description": "S3 bucket for asset \"dc1aeb362121c45552f4e6d968d3fb2d422412261df4f87562962996ff906b6c\""
+  },
+  "AssetParametersdc1aeb362121c45552f4e6d968d3fb2d422412261df4f87562962996ff906b6cS3VersionKey0544B6C6": {
+   "Type": "String",
+   "Description": "S3 key for asset version \"dc1aeb362121c45552f4e6d968d3fb2d422412261df4f87562962996ff906b6c\""
+  },
+  "AssetParametersdc1aeb362121c45552f4e6d968d3fb2d422412261df4f87562962996ff906b6cArtifactHashEE4DC489": {
+   "Type": "String",
+   "Description": "Artifact hash for asset \"dc1aeb362121c45552f4e6d968d3fb2d422412261df4f87562962996ff906b6c\""
+  },
+  "AssetParametersc8dfcc3db7a767ebc6f9417372a8fee940927c659f793315834a6784dab3d686S3Bucket821B928E": {
+   "Type": "String",
+   "Description": "S3 bucket for asset \"c8dfcc3db7a767ebc6f9417372a8fee940927c659f793315834a6784dab3d686\""
+  },
+  "AssetParametersc8dfcc3db7a767ebc6f9417372a8fee940927c659f793315834a6784dab3d686S3VersionKey8D940F9A": {
+   "Type": "String",
+   "Description": "S3 key for asset version \"c8dfcc3db7a767ebc6f9417372a8fee940927c659f793315834a6784dab3d686\""
+  },
+  "AssetParametersc8dfcc3db7a767ebc6f9417372a8fee940927c659f793315834a6784dab3d686ArtifactHashB7ECE5F1": {
+   "Type": "String",
+   "Description": "Artifact hash for asset \"c8dfcc3db7a767ebc6f9417372a8fee940927c659f793315834a6784dab3d686\""
   }
  },
  "Outputs": {

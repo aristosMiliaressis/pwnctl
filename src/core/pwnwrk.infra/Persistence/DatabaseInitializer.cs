@@ -30,7 +30,7 @@ namespace pwnwrk.infra.Persistence
 
             if (!instance.TaskDefinitions.Any())
             {
-                var taskText = File.ReadAllText($"{AppConfig.InstallPath}/seed/task-definitions.yml");
+                var taskText = File.ReadAllText($"{PwnContext.Config.InstallPath}/seed/task-definitions.yml");
 
                 var taskDefinitions = deserializer.Deserialize<List<TaskDefinition>>(taskText);
 
@@ -43,7 +43,7 @@ namespace pwnwrk.infra.Persistence
                 Matcher matcher = new();
                 matcher.AddInclude("target-*.yml");
 
-                foreach (string file in matcher.GetResultsInFullPath($"{AppConfig.InstallPath}/seed/"))
+                foreach (string file in matcher.GetResultsInFullPath($"{PwnContext.Config.InstallPath}/seed/"))
                 {
                     var programText = File.ReadAllText(file);
                     var program = deserializer.Deserialize<Program>(programText);
@@ -57,7 +57,7 @@ namespace pwnwrk.infra.Persistence
 
             if (!instance.NotificationRules.Any())
             {
-                var taskText = File.ReadAllText($"{AppConfig.InstallPath}/seed/notification-rules.yml");
+                var taskText = File.ReadAllText($"{PwnContext.Config.InstallPath}/seed/notification-rules.yml");
                 var notificationSettings = deserializer.Deserialize<NotificationSettings>(taskText);
 
                 instance.NotificationProviderSettings.AddRange(notificationSettings.Providers);

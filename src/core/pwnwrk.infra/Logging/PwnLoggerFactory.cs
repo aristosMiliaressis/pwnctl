@@ -32,7 +32,7 @@ namespace pwnwrk.infra.Logging
         private static Logger CreateFileLogger()
         {
             return _baseConfig
-                    .WriteTo.File(path: Path.Combine(AppConfig.InstallPath, "pwnctl.log"))
+                    .WriteTo.File(path: Path.Combine(PwnContext.Config.Logging.FilePath, "pwnctl.log"))
                     .CreateLogger();
         }
 

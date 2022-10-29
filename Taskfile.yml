@@ -1,0 +1,83 @@
+version: '3'
+
+tasks:
+  simple-setup: 
+    deps: [install-deps, build-svc-image, push-svc-image, bootstrap-aws, deploy-app, install-cli-src, deploy-files]
+
+  install-deps:
+    cmds:
+      - |
+        sudo apt-get install -y git curl wget jq docker nodejs
+        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o awscliv2.zip
+        unzip awscliv2.zip
+        rm awscliv2.zip
+        ./aws/install --update
+        rm -rf ./aws
+        curl -fsSL https://deb.nodesource.com/setup_18.x | bash - 
+        npm install -g aws-cdk
+        curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin -Channel 6.0 -Runtime aspnetcore -InstallDir /usr/share/dotnet --architecture x64
+        ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet
+
+  test:
+    cmds:
+      - dotnet test
+  
+  build-api:
+    cmds:
+      - dotnet build src/pwnctl/pwnctl.api/pwnctl.api.csproj -c Release
+  
+  build-pwnctl-cli:
+    cmds:
+      - dotnet publish src/pwnctl/pwnctl.cli/pwnctl.cli.csproj -c Release
+  
+  build-pwnwrk-cli:
+    cmds:
+      - dotnet publish src/pwnwrk/pwnwrk.cli/pwnwrk.cli.csproj -c Release
+
+  build-svc:
+    cmds:
+      - dotnet publish src/pwnwrk/pwnwrk.svc/pwnwrk.svc.csproj -c Release
+
+  build-svc-image:
+    cmds:
+      - docker build src/ -t ${ecrRepo}/pwnwrk:latest
+
+  push-svc-image:
+    cmds:
+      - aws ecr-public get-login-password --region ${region} | docker login --username AWS --password-stdin ${ecrRepo}
+      - docker push ${ecrRepo}/pwnwrk:latest
+
+  build-all: 
+    deps: [build-pwnctl-cli, build-api, build-svc-image]
+    
+  install-cli-src:
+    deps: [build-pwnctl-cli]
+    cmds:
+      - |
+        chmod +x src/pwnctl/pwnctl.cli/bin/Release/net6.0/linux-x64/publish/pwnctl
+        sudo mv src/pwnctl/pwnctl.cli/bin/Release/net6.0/linux-x64/publish/pwnctl /usr/local/bin
+        sudo mv src/pwnctl/pwnctl.cli/bin/Release/net6.0/linux-x64/publish/config.ini /etc/pwnctl/
+        dbEndpoint=$(aws rds describe-db-instances | jq -r '.DBInstances[] | select( .DBInstanceIdentifier == "pwnctl-aurora-postgresql-instance-1" ) | .Endpoint.Address')
+        sudo printf "\n\n[Db]\nEndpoint = $dbEndpoint" >> /etc/pwnctl/config.ini
+  
+  bootstrap-aws:
+    cmds:
+      - cdk bootstrap aws://${accountId}/${region}
+
+  deploy-app:
+    deps: [clean-cdk, build-api]
+    cmds:
+      - cdk deploy -o src/core/pwnwrk.infra.cdk/cdk.out
+
+  deploy-files:
+    cmds:
+      - ./upload.sh
+
+  clean-cdk:
+    cmds:
+      - rm -rf src/core/pwnwrk.infra.cdk/cdk.out
+
+  destroy:
+    cmds:
+      - cdk destroy -o src/core/pwnwrk.infra.cdk/cdk.out
+

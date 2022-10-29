@@ -86,17 +86,17 @@ namespace pwnwrk.infra.Repositories
 
         public List<Host> ListHosts()
         {
-            return _context.Hosts.Include(a => a.Tags).ToList();
+            return _context.Hosts.Include(a => a.Tags).AsNoTracking().ToList();
         }
 
         public List<Domain> ListDomains()
         {
-            return _context.Domains.Include(a => a.Tags).ToList();
+            return _context.Domains.Include(a => a.Tags).AsNoTracking().ToList();
         }
 
         public List<DNSRecord> ListDNSRecords()
         {
-            return _context.DNSRecords.Include(a => a.Tags).ToList();
+            return _context.DNSRecords.Include(a => a.Tags).AsNoTracking().ToList();
         }
 
         public List<Endpoint> ListEndpoints()
@@ -107,12 +107,13 @@ namespace pwnwrk.infra.Repositories
                                 .ThenInclude(s => s.Host)
                             .Include(e => e.Service)
                                 .ThenInclude(s => s.Domain)
+                            .AsNoTracking()
                             .ToList();
         }
 
         public List<NetRange> ListNetRanges()
         {
-            return _context.NetRanges.Include(a => a.Tags).ToList();
+            return _context.NetRanges.Include(a => a.Tags).AsNoTracking().ToList();
         }
 
         public List<Service> ListServices()
@@ -121,6 +122,7 @@ namespace pwnwrk.infra.Repositories
                             .Include(a => a.Tags)
                             .Include(e => e.Host)
                             .Include(e => e.Domain)
+                            .AsNoTracking()
                             .ToList();
         }
 
@@ -129,6 +131,7 @@ namespace pwnwrk.infra.Repositories
             return _context.Emails
                             .Include(a => a.Tags)
                             .Include(e => e.Domain)
+                            .AsNoTracking()
                             .ToList();
         }
     }

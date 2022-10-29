@@ -1,21 +1,17 @@
 namespace pwnctl.api.Controllers;
 
 using Microsoft.AspNetCore.Mvc;
+using pwnctl.dto.Process.Commands;
 
 [ApiController]
 [Route("[controller]")]
-public class ProcessController : ControllerBase
+public class ProcessController : BaseController
 {
-    private readonly ILogger<ProcessController> _logger;
-
-    public ProcessController(ILogger<ProcessController> logger)
+    [HttpPost]
+    public async Task<ActionResult> ProcessAssets(ProcessAssetsCommand command)
     {
-        _logger = logger;
-    }
+        var result = await Mediator.Send(command);
 
-    // [HttpPost]
-    // public async Task<ActionResult> ProcessAssets()
-    // {
-    //     throw new NotImplementedException();
-    // }
+        return CreateResponse(result);
+    }
 }
