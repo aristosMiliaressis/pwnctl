@@ -58,10 +58,9 @@ namespace pwnwrk.infra.Persistence
             if (!instance.NotificationRules.Any())
             {
                 var taskText = File.ReadAllText($"{PwnContext.Config.InstallPath}/seed/notification-rules.yml");
-                var notificationSettings = deserializer.Deserialize<NotificationSettings>(taskText);
+                var notificationRules = deserializer.Deserialize<List<NotificationRule>>(taskText);
 
-                instance.NotificationProviderSettings.AddRange(notificationSettings.Providers);
-                instance.NotificationRules.AddRange(notificationSettings.Rules);
+                instance.NotificationRules.AddRange(notificationRules);
                 await instance.SaveChangesAsync();
             }
 

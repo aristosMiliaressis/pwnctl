@@ -394,46 +394,6 @@ namespace pwnwrk.infra.Persistence.Migrations
                     b.ToTable("VirtualHosts");
                 });
 
-            modelBuilder.Entity("pwnwrk.domain.Entities.NotificationChannel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Filter")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.Property<int>("ProviderId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProviderId");
-
-                    b.ToTable("NotificationChannels");
-                });
-
-            modelBuilder.Entity("pwnwrk.domain.Entities.NotificationProviderSettings", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("NotificationProviderSettings");
-                });
-
             modelBuilder.Entity("pwnwrk.domain.Entities.NotificationRule", b =>
                 {
                     b.Property<int>("Id")
@@ -834,16 +794,6 @@ namespace pwnwrk.infra.Persistence.Migrations
                     b.Navigation("Service");
                 });
 
-            modelBuilder.Entity("pwnwrk.domain.Entities.NotificationChannel", b =>
-                {
-                    b.HasOne("pwnwrk.domain.Entities.NotificationProviderSettings", "Provider")
-                        .WithMany("Channels")
-                        .HasForeignKey("ProviderId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.Navigation("Provider");
-                });
-
             modelBuilder.Entity("pwnwrk.domain.Entities.Program", b =>
                 {
                     b.HasOne("pwnwrk.domain.Entities.OperationalPolicy", "Policy")
@@ -1074,11 +1024,6 @@ namespace pwnwrk.infra.Persistence.Migrations
                     b.Navigation("Tags");
 
                     b.Navigation("Tasks");
-                });
-
-            modelBuilder.Entity("pwnwrk.domain.Entities.NotificationProviderSettings", b =>
-                {
-                    b.Navigation("Channels");
                 });
 
             modelBuilder.Entity("pwnwrk.domain.Entities.Program", b =>

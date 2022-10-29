@@ -5,15 +5,22 @@ functionName=$(aws lambda list-functions | jq -r '.Functions[] | select( .Functi
 functionUrl=$(aws lambda get-function-url-config --function-name $functionName | jq -r .FunctionUrl)
 
 uploadDirectory() {
-     dir=$1
-     for file in $dir/*; 
+     srcDir=$1
+     dstDir=""
+     if [ $# -gt 1 ]; 
+     then 
+          dstDir=$2; 
+          echo "Creating $dstDir"
+          curl -XPUT ${functionUrl}fs/create?path=$dstDir \
+                    -H "X-Api-Key: $apiKey"
+     fi
+
+     for file in $srcDir/*; 
      do 
-          if [ -d $file ];
+          if [ -f $file ];
           then
-               uploadDirectory $file
-          else
                echo "Uploading $file"
-               curl -XPUT ${functionUrl}fs/upload?path=/${file#"$dir"} \
+               curl -XPUT ${functionUrl}fs/upload?path=$dstDir${file#"$srcDir"} \
                     -H "X-Api-Key: $apiKey" \
                     -H 'Content-Type: text/plain' \
                     --data-binary @$file
@@ -22,3 +29,4 @@ uploadDirectory() {
 }
 
 uploadDirectory ./deployment
+uploadDirectory ./src/core/pwnwrk.infra/Persistence/seed /seed

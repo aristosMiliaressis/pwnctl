@@ -9,7 +9,7 @@ namespace pwnwrk.infra.Configuration
         
         public static AppConfig Create()
         {
-            var installPath = Environment.GetEnvironmentVariable("PWNCTL_InstallPath");
+            var installPath = EnvironmentVariables.InstallPath ?? "/etc/pwnctl";
 
             IConfiguration cfg = new ConfigurationBuilder()
                                         .SetBasePath(Path.GetFullPath(installPath))

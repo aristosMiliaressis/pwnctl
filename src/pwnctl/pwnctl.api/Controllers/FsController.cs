@@ -3,12 +3,12 @@ namespace pwnctl.api.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using System.IO;
+using pwnwrk.infra.Configuration;
 
 [ApiController]
 [Route("[controller]")]
 public class FsController : ControllerBase
 {
-    private static readonly string _efsPathPrefix = Environment.GetEnvironmentVariable("PWNCTL_EFS_MOUNT_POINT");
     private readonly ILogger<FsController> _logger;
 
     public FsController(ILogger<FsController> logger)
@@ -27,7 +27,7 @@ public class FsController : ControllerBase
         var directoryListing = Directory.GetDirectories(filePath).ToList();
         directoryListing.AddRange(Directory.GetFiles(filePath));
 
-        return Ok(directoryListing.Select(f => f.Replace(_efsPathPrefix, "")));
+        return Ok(directoryListing.Select(f => f.Replace(EnvironmentVariables.EfsMountPoint, "")));
     }
 
     [HttpGet("download")]
@@ -102,7 +102,7 @@ public class FsController : ControllerBase
         return Ok();
     }
 
-    private string FullPath(string path) => _efsPathPrefix + (path.StartsWith("/") ? "" : "/") + path;
+    private string FullPath(string path) => EnvironmentVariables.EfsMountPoint + (path.StartsWith("/") ? "" : "/") + path;
 
     private string GetFileContentType(string filePath)
     {

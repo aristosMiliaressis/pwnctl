@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using pwnwrk.domain.BaseClasses;
+using pwnwrk.domain.Entities;
 using System.Reflection;
 using System.Linq.Expressions;
 
@@ -7,6 +8,15 @@ namespace pwnwrk.infra.Persistence.Extensions
 {
     public static class DbContextExtensions
     {
+        public static List<ScopeDefinition> ListScopeDefinitions(this PwnctlDbContext context)
+        {
+            return context.ScopeDefinitions
+                        .Include(d => d.Program)
+                            .ThenInclude(p => p.Policy)
+                        .AsNoTracking()
+                        .ToList();
+        }
+
         public static BaseEntity FirstFromLambda(this DbContext context, LambdaExpression lambda)
         {
             var type = lambda.Parameters.First().Type;

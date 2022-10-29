@@ -1,0 +1,13 @@
+
+- ShortName: default_creds
+  Subject: Service
+  Filter: Service["vuln-default-creds"] == "true"
+  Topic: misconfigs
+- ShortName: cors_misconfig
+  Subject: Endpoint
+  Filter: Endpoint["cors-misconfig"] == "true"
+  Topic: misconfigs
+- ShortName: shortname_misconfig
+  Subject: Endpoint
+  Filter: Endpoint["shortname-misconfig"] == "true"
+  Topic: misconfigs

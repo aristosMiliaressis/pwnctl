@@ -50,25 +50,4 @@ namespace pwnwrk.infra.Persistence.EntityConfiguration
             builder.HasKey(p => p.Id);
         }
     }
-
-    public class NotificationProviderSettingsConfig : IEntityTypeConfiguration<NotificationProviderSettings>
-    {
-        public void Configure(EntityTypeBuilder<NotificationProviderSettings> builder)
-        {
-            builder.HasKey(p => p.Id);
-            builder.HasMany(p => p.Channels)
-              .WithOne(d => d.Provider)
-              .HasForeignKey(d => d.ProviderId)
-              .IsRequired(false)
-              .OnDelete(DeleteBehavior.Cascade);
-        }
-    }
-
-    public class NotificationChannelConfig : IEntityTypeConfiguration<NotificationChannel>
-    {
-        public void Configure(EntityTypeBuilder<NotificationChannel> builder)
-        {
-            builder.HasKey(p => p.Id);
-        }
-    }
 }

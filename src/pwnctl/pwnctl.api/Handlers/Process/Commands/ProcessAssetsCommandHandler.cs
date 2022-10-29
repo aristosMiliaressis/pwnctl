@@ -3,7 +3,7 @@ namespace pwnctl.api.Handlers.Process.Commands;
 using Microsoft.EntityFrameworkCore;
 using pwnwrk.infra.MediatR;
 using pwnwrk.infra.Persistence;
-//using pwnwrk.cli.Utilities;
+using pwnwrk.infra.Utilities;
 using pwnctl.dto.Process.Commands;
 
 using MediatR;
@@ -17,10 +17,15 @@ public class ProcessAssetsCommandHandler : IRequestHandler<ProcessAssetsCommand,
         _context = context;
     }
 
-    public Task<MediatorResult> Handle(ProcessAssetsCommand command, CancellationToken cancellationToken)
+    public async Task<MediatorResult> Handle(ProcessAssetsCommand command, CancellationToken cancellationToken)
     {
-        //var processor = new AssetProcessor();
+        var processor = new AssetProcessor();
 
-        throw new NotImplementedException();
+        foreach (var asset in command.Assets)
+        {
+            await processor.TryProccessAsync(asset);
+        }
+
+        return MediatorResult.Success();
     }
 }

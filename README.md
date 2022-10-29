@@ -116,25 +116,21 @@ tags are a way to store arbitary metadata relating to an asset, they can be used
 
 **`notification-rules.yml`**
 ```YAML
+- ShortName: default_creds
+  Subject: Service
+  Filter: Service["vuln-default-creds"] == "true"
+  Topic: misconfigs
 
-Providers:
-  - Name: DiscordNotificationProvider
-    Channels:
-      - Name: misconfigs
+- ShortName: cors_misconfig
+  Subject: Endpoint
+  Filter: Endpoint["cors-misconfig"] == "true"
+  Topic: misconfigs
+  
+- ShortName: shortname_misconfig
+  Subject: Endpoint
+  Filter: Endpoint["shortname-misconfig"] == "true"
+  Topic: misconfigs
 
-Rules:
-  - ShortName: default_creds
-    Subject: Service
-    Filter: Service["vuln-default-creds"] == "true"
-    Topic: misconfigs
-  - ShortName: cors_misconfig
-    Subject: Endpoint
-    Filter: Endpoint["cors-misconfig"] == "true"
-    Topic: misconfigs
-  - ShortName: shortname_misconfig
-    Subject: Endpoint
-    Filter: Endpoint["shortname-misconfig"] == "true"
-    Topic: misconfigs
 ```
 
 ## `$ pwnctl query`

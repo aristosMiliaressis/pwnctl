@@ -1,10 +1,10 @@
 namespace pwnwrk.test.unit;
 
-using pwnwrk.cli;
-using pwnwrk.cli.Utilities;
+using pwnwrk.infra.Utilities;
 using pwnwrk.infra.Persistence;
+using pwnwrk.infra.Persistence.Extensions;
 using pwnwrk.infra.Repositories;
-using pwnwrk.infra;
+using pwnwrk.domain.Utilities;
 using pwnwrk.domain.Entities.Assets;
 using pwnwrk.domain.Entities;
 using pwnwrk.domain.BaseClasses;
@@ -141,43 +141,48 @@ public class Tests
     [Fact]
     public async System.Threading.Tasks.Task ScopeChecker_Tests()
     {
+        PwnctlDbContext context = new();
+
+        var scopeDefinitions = context.ListScopeDefinitions();
+
+        var scopeChecker = new ScopeChecker(scopeDefinitions);
+
         // net range
-        Assert.True(ScopeChecker.Singleton.IsInScope(new NetRange("172.16.17.0", 24)));
-        Assert.False(ScopeChecker.Singleton.IsInScope(new NetRange("172.16.16.0", 24)));
+        Assert.True(scopeChecker.IsInScope(new NetRange("172.16.17.0", 24)));
+        Assert.False(scopeChecker.IsInScope(new NetRange("172.16.16.0", 24)));
 
         // host in netrange
-        Assert.True(ScopeChecker.Singleton.IsInScope(new Host("172.16.17.4")));
-        Assert.False(ScopeChecker.Singleton.IsInScope(new Host("172.16.16.5")));
+        Assert.True(scopeChecker.IsInScope(new Host("172.16.17.4")));
+        Assert.False(scopeChecker.IsInScope(new Host("172.16.16.5")));
 
         // endpoint in net range
-        Assert.True(ScopeChecker.Singleton.IsInScope(new Endpoint("https", new Service(new Host("172.16.17.15"), 443), "/api/token")));
-        Assert.False(ScopeChecker.Singleton.IsInScope(new Endpoint("https", new Service(new Host("172.16.16.15"), 443), "/api/token")));
+        Assert.True(scopeChecker.IsInScope(new Endpoint("https", new Service(new Host("172.16.17.15"), 443), "/api/token")));
+        Assert.False(scopeChecker.IsInScope(new Endpoint("https", new Service(new Host("172.16.16.15"), 443), "/api/token")));
 
         // domain
-        Assert.True(ScopeChecker.Singleton.IsInScope(new Domain("tesla.com")));
-        Assert.True(ScopeChecker.Singleton.IsInScope(new Keyword(new Domain("tesla.com"), "tesla")));
-        Assert.False(ScopeChecker.Singleton.IsInScope(new Keyword(new Domain("tttesla.com"), "tttesla")));
-        Assert.False(ScopeChecker.Singleton.IsInScope(new Domain("tttesla.com")));
-        Assert.False(ScopeChecker.Singleton.IsInScope(new Domain("tesla.com.net")));
-        //Assert.False(ScopeChecker.Singleton.IsInScope(new Domain("tesla.com.test")));
-        Assert.False(ScopeChecker.Singleton.IsInScope(new Domain("tesla2.com")));
+        Assert.True(scopeChecker.IsInScope(new Domain("tesla.com")));
+        Assert.True(scopeChecker.IsInScope(new Keyword(new Domain("tesla.com"), "tesla")));
+        Assert.False(scopeChecker.IsInScope(new Keyword(new Domain("tttesla.com"), "tttesla")));
+        Assert.False(scopeChecker.IsInScope(new Domain("tttesla.com")));
+        Assert.False(scopeChecker.IsInScope(new Domain("tesla.com.net")));
+        //Assert.False(scopeChecker.IsInScope(new Domain("tesla.com.test")));
+        Assert.False(scopeChecker.IsInScope(new Domain("tesla2.com")));
 
         // Emails
-        Assert.True(ScopeChecker.Singleton.IsInScope(new Email(new Domain("tesla.com"), "no-reply@tesla.com")));
-        Assert.False(ScopeChecker.Singleton.IsInScope(new Email(new Domain("tesla2.com"), "no-reply@tesla2.com")));
+        Assert.True(scopeChecker.IsInScope(new Email(new Domain("tesla.com"), "no-reply@tesla.com")));
+        Assert.False(scopeChecker.IsInScope(new Email(new Domain("tesla2.com"), "no-reply@tesla2.com")));
 
         //subdomain
-        Assert.True(ScopeChecker.Singleton.IsInScope(new Domain("xyz.tesla.com")));
-        Assert.False(ScopeChecker.Singleton.IsInScope(new Domain("xyz.tesla2.com")));
+        Assert.True(scopeChecker.IsInScope(new Domain("xyz.tesla.com")));
+        Assert.False(scopeChecker.IsInScope(new Domain("xyz.tesla2.com")));
 
         // DNS records
-        Assert.True(ScopeChecker.Singleton.IsInScope(new DNSRecord(DNSRecord.RecordType.A, "xyz.tesla.com", "1.3.3.7")));
-        Assert.True(ScopeChecker.Singleton.IsInScope(new DNSRecord(DNSRecord.RecordType.A, "example.com", "172.16.17.15")));
-        Assert.False(ScopeChecker.Singleton.IsInScope(new DNSRecord(DNSRecord.RecordType.A, "example.com", "172.16.16.15")));
+        Assert.True(scopeChecker.IsInScope(new DNSRecord(DNSRecord.RecordType.A, "xyz.tesla.com", "1.3.3.7")));
+        Assert.True(scopeChecker.IsInScope(new DNSRecord(DNSRecord.RecordType.A, "example.com", "172.16.17.15")));
+        Assert.False(scopeChecker.IsInScope(new DNSRecord(DNSRecord.RecordType.A, "example.com", "172.16.16.15")));
 
         // test for inscope host from domain relationship
         AssetProcessor processor = new();
-        PwnctlDbContext context = new();
         await processor.ProcessAsync("xyz.tesla.com IN A 1.3.3.7");
         var host = context.Hosts.First(h => h.IP == "1.3.3.7");
         Assert.True(host.InScope);
@@ -296,6 +301,10 @@ public class Tests
         AssetProcessor processor = new();
         PwnctlDbContext context = new();
 
+        var scopeDefinitions = context.ListScopeDefinitions();
+
+        var scopeChecker = new ScopeChecker(scopeDefinitions);
+
         var res = await processor.TryProccessAsync("tesla.com");
         Assert.True(res);
 
@@ -319,7 +328,7 @@ public class Tests
         Assert.NotNull(host.AARecords.First());
         Assert.True(host.AARecords.First().InScope);
         Assert.True(host.AARecords.First().Domain.InScope);
-        var program = ScopeChecker.Singleton.GetApplicableProgram(host);
+        var program = scopeChecker.GetApplicableProgram(host);
         Assert.NotNull(program);
 
         res = await processor.TryProccessAsync("85.25.105.204:65530");

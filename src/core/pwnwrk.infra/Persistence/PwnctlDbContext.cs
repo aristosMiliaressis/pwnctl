@@ -44,8 +44,6 @@ namespace pwnwrk.infra.Persistence
         public DbSet<Tag> Tags { get; set; }
         public DbSet<Keyword> Keywords { get; set; }
         public DbSet<NotificationRule> NotificationRules { get; set; }
-        public DbSet<NotificationProviderSettings> NotificationProviderSettings { get; set; }
-        public DbSet<NotificationChannel> NotificationChannels { get; set; }
         
         public override int SaveChanges()
         {

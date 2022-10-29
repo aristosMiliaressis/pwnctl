@@ -2,7 +2,7 @@ version: '3'
 
 tasks:
   simple-setup: 
-    deps: [install-deps, build-svc-image, push-svc-image, bootstrap-aws, deploy-app, install-cli-src, deploy-files]
+    deps: [install-deps, build-svc-image, push-svc-image, bootstrap-aws, deploy-app, install-cli-src, upload-files]
 
   install-deps:
     cmds:
@@ -64,12 +64,19 @@ tasks:
     cmds:
       - cdk bootstrap aws://${accountId}/${region}
 
+  deploy-api:
+    deps: [build-api]
+    cmds:
+      - |
+        lambdaRole=$(aws iam list-roles | jq -r '.Roles[] | select( .RoleName | startswith("pwnctl-pwnctlapirole")) | .RoleName')
+        dotnet lambda deploy-function -pl src/pwnctl/pwnctl.api/ -fn pwnctl-api -frole $lambdaRole
+
   deploy-app:
     deps: [clean-cdk, build-api]
     cmds:
       - cdk deploy -o src/core/pwnwrk.infra.cdk/cdk.out
 
-  deploy-files:
+  upload-files:
     cmds:
       - ./upload.sh
 
