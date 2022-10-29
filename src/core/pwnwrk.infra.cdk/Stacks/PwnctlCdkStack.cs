@@ -186,6 +186,16 @@ namespace pwnctl.cdk
             apiKeySecret.GrantRead(pwnctlApiRole);
             dbCredSecret.GrantRead(pwnctlApiRole);
 
+            var secMgrEp = new InterfaceVpcEndpoint(this, "pwnctl-lambda-sec-mgr-ep", new InterfaceVpcEndpointProps
+            {
+                Vpc = vpc,
+                Service = InterfaceVpcEndpointAwsService.SECRETS_MANAGER,
+                Subnets = new SubnetSelection
+                {
+                    Subnets = vpc.IsolatedSubnets
+                }
+            });
+
             var function = new Function(this, AwsConstants.LambdaName, new FunctionProps
             {
                 Runtime = Runtime.DOTNET_6,

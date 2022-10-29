@@ -64,13 +64,6 @@ tasks:
     cmds:
       - cdk bootstrap aws://${accountId}/${region}
 
-  deploy-api:
-    deps: [build-api]
-    cmds:
-      - |
-        lambdaRole=$(aws iam list-roles | jq -r '.Roles[] | select( .RoleName | startswith("pwnctl-pwnctlapirole")) | .RoleName')
-        dotnet lambda deploy-function -pl src/pwnctl/pwnctl.api/ -fn pwnctl-api -frole $lambdaRole
-
   deploy-app:
     deps: [clean-cdk, build-api]
     cmds:

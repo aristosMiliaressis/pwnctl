@@ -149,15 +149,6 @@ exports all assets in JSONL(ine) format at the specified directory
 
 prints a summary about queued tasks and found assets
 
-## `$ pwnctl monitor`
-
-**To Do**
-- [ ] add a `MonitorInterval` & `OnlyExplicitMonitoring` fields on `TaskDefinitions`
-- [ ] add `Monitor` flag on asset base class (t explicitly specify assets for monitoring)
-- [ ] setup some cloud native scheduled task to spin up minimal containers with `pwnctl` only
-- [ ] implement `pwnctl` `monitor` mode to find all tasks past the monitor interval & re-run them
-- [ ] add `found-by-monitoring` tag to all newly found assets to allow easy integration with `NotificationRules`
-
 ## `$ pwnctl import -s/--source <source>`
 
 **To Do**

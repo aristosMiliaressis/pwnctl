@@ -1,7 +1,5 @@
 using Microsoft.Extensions.Configuration;
 
-using pwnwrk.infra.Aws;
-
 namespace pwnwrk.infra.Configuration
 {
     public static class PwnConfigFactory
