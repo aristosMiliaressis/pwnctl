@@ -22,16 +22,6 @@ public class Tests
 
         // reset the database for every test method
         DatabaseInitializer.InitializeAsync().Wait();
-
-        var psi = new ProcessStartInfo();
-        psi.FileName = "/bin/bash";
-        psi.Arguments = " -c scripts/get_public_suffixes.sh";
-        psi.CreateNoWindow = true;
-
-        using (var process = Process.Start(psi))
-        {
-            process?.WaitForExit();
-        }
     }
 
     [Fact]

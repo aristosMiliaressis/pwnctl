@@ -1,26 +1,16 @@
-
-Providers:
-  - Name: DiscordNotificationProvider
-    Channels:
-      - Name: crits
-        Filter: Rule.Severity == "critical"
-      - Name: misconfigs
-        Filter: Rule.Topic == "misconfigs"
-
-Rules:
-  - ShortName: default_creds
-    Subject: Service
-    Filter: Service["vuln-default-creds"] == "true"
-    Topic: misconfigs
-    Severity: high
-  - ShortName: spf_dmarc
-  - ShortName: iis_shortnames
-  - ShortName: zone_transfer
-  - ShortName: zone_walking
-  - ShortName: cname_takeover
-  - ShortName: cors_misconfig
-  - ShortName: info_disclosure
-    Filter: "[\"/git\", \"/phpinfo.php\", \"/Trace.axd\"]"
-    Topic: info_disclosure
-    Severity: medium
+- ShortName: default_creds
+  Subject: Service
+  Filter: Service["vuln-default-creds"] == "true"
+  Topic: misconfigs
+  Severity: high
+- ShortName: spf_dmarc
+- ShortName: iis_shortnames
+- ShortName: zone_transfer
+- ShortName: zone_walking
+- ShortName: cname_takeover
+- ShortName: cors_misconfig
+- ShortName: info_disclosure
+  Filter: "[\"/git\", \"/phpinfo.php\", \"/Trace.axd\"]"
+  Topic: info_disclosure
+  Severity: medium
 
