@@ -8,7 +8,7 @@ recursive configuration based engine for external recon.
 
 ### Architecture
 
-`pwnctl` cli utility writes assets to postgreSQL, sends discord notifications according to configured rules and puts tasks into sqs, `pwnwrk` service runs in container and polls sqs for tasks, executes them & pipes the output back into `pwnctl` to recursivly crawl the configured scope, the workers are running in a fargate ECS cluster with autoscalling based on the sqs queue depth.
+the target scope is seeded or created trough the `pwnctl` cli/api, the scope is recursivly scanned by pushing jobs to the SQS queue that trigger serverless ECS instances to spin up and consume those jobs, collecting assets into an Aurora postgreSQL database, sending discord notifications according to `NotificationRules` and queueing further jobs according to `TaskDefinitions`, all infrastructure is provisioned as code trough CDK.
 
 ![arch-phase0](img/arch-phase1.png)
 
@@ -173,5 +173,4 @@ prints a summary about queued tasks and found assets
 
 **To Do**
 - [ ] private ecr registry (+ cdk integration with github action in `ci.yml`)
-- [ ] terraform 
-- [ ] add discord server to terraform
+- [ ] terraform discord server
