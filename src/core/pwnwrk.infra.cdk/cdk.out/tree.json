@@ -1231,6 +1231,18 @@
                             ":iam::aws:policy/AmazonElasticFileSystemClientFullAccess"
                           ]
                         ]
+                      },
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":iam::aws:policy/SecretsManagerReadWrite"
+                          ]
+                        ]
                       }
                     ],
                     "tags": [
@@ -1360,6 +1372,130 @@
               "version": "1.176.0"
             }
           },
+          "pwnctl-lambda-sec-mgr-ep": {
+            "id": "pwnctl-lambda-sec-mgr-ep",
+            "path": "pwnctl/pwnctl-lambda-sec-mgr-ep",
+            "children": {
+              "SecurityGroup": {
+                "id": "SecurityGroup",
+                "path": "pwnctl/pwnctl-lambda-sec-mgr-ep/SecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "pwnctl/pwnctl-lambda-sec-mgr-ep/SecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "pwnctl/pwnctl-lambda-sec-mgr-ep/SecurityGroup",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "securityGroupIngress": [
+                          {
+                            "cidrIp": {
+                              "Fn::GetAtt": [
+                                "pwnwrkvpc020FF09A",
+                                "CidrBlock"
+                              ]
+                            },
+                            "ipProtocol": "tcp",
+                            "fromPort": 443,
+                            "toPort": 443,
+                            "description": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "from ",
+                                  {
+                                    "Fn::GetAtt": [
+                                      "pwnwrkvpc020FF09A",
+                                      "CidrBlock"
+                                    ]
+                                  },
+                                  ":443"
+                                ]
+                              ]
+                            }
+                          }
+                        ],
+                        "tags": [
+                          {
+                            "key": "stack",
+                            "value": "pwnctl"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "pwnwrkvpc020FF09A"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                      "version": "1.176.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                  "version": "1.176.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "pwnctl/pwnctl-lambda-sec-mgr-ep/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::VPCEndpoint",
+                  "aws:cdk:cloudformation:props": {
+                    "serviceName": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "com.amazonaws.",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          ".secretsmanager"
+                        ]
+                      ]
+                    },
+                    "vpcId": {
+                      "Ref": "pwnwrkvpc020FF09A"
+                    },
+                    "privateDnsEnabled": true,
+                    "securityGroupIds": [
+                      {
+                        "Fn::GetAtt": [
+                          "pwnctllambdasecmgrepSecurityGroupF7FF9524",
+                          "GroupId"
+                        ]
+                      }
+                    ],
+                    "subnetIds": [
+                      {
+                        "Ref": "pwnwrkvpcprivatesubnet2Subnet1SubnetA8ACA595"
+                      },
+                      {
+                        "Ref": "pwnwrkvpcprivatesubnet2Subnet2Subnet206413D1"
+                      }
+                    ],
+                    "vpcEndpointType": "Interface"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.CfnVPCEndpoint",
+                  "version": "1.176.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ec2.InterfaceVpcEndpoint",
+              "version": "1.176.0"
+            }
+          },
           "pwnctl-api": {
             "id": "pwnctl-api",
             "path": "pwnctl/pwnctl-api",
@@ -1438,7 +1574,7 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "s3Bucket": {
-                        "Ref": "AssetParameterse1a8e86be1b335d78a233658a031b4aa4a67415504abdcc4a5b47329cb110eaaS3BucketCAA640DB"
+                        "Ref": "AssetParameters07f1e1aa651eb9b36519e2a418d0a356b1514809b640071926c833020097c4d3S3BucketAFBBBC77"
                       },
                       "s3Key": {
                         "Fn::Join": [
@@ -1451,7 +1587,7 @@
                                   "Fn::Split": [
                                     "||",
                                     {
-                                      "Ref": "AssetParameterse1a8e86be1b335d78a233658a031b4aa4a67415504abdcc4a5b47329cb110eaaS3VersionKeyCC0619A2"
+                                      "Ref": "AssetParameters07f1e1aa651eb9b36519e2a418d0a356b1514809b640071926c833020097c4d3S3VersionKey609D56F3"
                                     }
                                   ]
                                 }
@@ -1464,7 +1600,7 @@
                                   "Fn::Split": [
                                     "||",
                                     {
-                                      "Ref": "AssetParameterse1a8e86be1b335d78a233658a031b4aa4a67415504abdcc4a5b47329cb110eaaS3VersionKeyCC0619A2"
+                                      "Ref": "AssetParameters07f1e1aa651eb9b36519e2a418d0a356b1514809b640071926c833020097c4d3S3VersionKey609D56F3"
                                     }
                                   ]
                                 }
@@ -1648,13 +1784,13 @@
             "id": "AssetParameters",
             "path": "pwnctl/AssetParameters",
             "children": {
-              "e1a8e86be1b335d78a233658a031b4aa4a67415504abdcc4a5b47329cb110eaa": {
-                "id": "e1a8e86be1b335d78a233658a031b4aa4a67415504abdcc4a5b47329cb110eaa",
-                "path": "pwnctl/AssetParameters/e1a8e86be1b335d78a233658a031b4aa4a67415504abdcc4a5b47329cb110eaa",
+              "07f1e1aa651eb9b36519e2a418d0a356b1514809b640071926c833020097c4d3": {
+                "id": "07f1e1aa651eb9b36519e2a418d0a356b1514809b640071926c833020097c4d3",
+                "path": "pwnctl/AssetParameters/07f1e1aa651eb9b36519e2a418d0a356b1514809b640071926c833020097c4d3",
                 "children": {
                   "S3Bucket": {
                     "id": "S3Bucket",
-                    "path": "pwnctl/AssetParameters/e1a8e86be1b335d78a233658a031b4aa4a67415504abdcc4a5b47329cb110eaa/S3Bucket",
+                    "path": "pwnctl/AssetParameters/07f1e1aa651eb9b36519e2a418d0a356b1514809b640071926c833020097c4d3/S3Bucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "1.176.0"
@@ -1662,7 +1798,7 @@
                   },
                   "S3VersionKey": {
                     "id": "S3VersionKey",
-                    "path": "pwnctl/AssetParameters/e1a8e86be1b335d78a233658a031b4aa4a67415504abdcc4a5b47329cb110eaa/S3VersionKey",
+                    "path": "pwnctl/AssetParameters/07f1e1aa651eb9b36519e2a418d0a356b1514809b640071926c833020097c4d3/S3VersionKey",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "1.176.0"
@@ -1670,7 +1806,7 @@
                   },
                   "ArtifactHash": {
                     "id": "ArtifactHash",
-                    "path": "pwnctl/AssetParameters/e1a8e86be1b335d78a233658a031b4aa4a67415504abdcc4a5b47329cb110eaa/ArtifactHash",
+                    "path": "pwnctl/AssetParameters/07f1e1aa651eb9b36519e2a418d0a356b1514809b640071926c833020097c4d3/ArtifactHash",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "1.176.0"

@@ -10,9 +10,9 @@ then
     /mnt/efs/entrypoint_hook.sh
 fi
 
-if ! test -f "/opt/wordlists/dns/public_suffix_list.dat"; 
+if ! test -f "/mnt/efs/public_suffix_list.dat"; 
 then
-    get-psl.sh
+    get-psl.sh /mnt/efs
 fi
 
 # if the resolver list is older than 6 hours replace it with a new one

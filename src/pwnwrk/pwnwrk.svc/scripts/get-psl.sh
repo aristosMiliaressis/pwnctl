@@ -1,9 +1,12 @@
-﻿#!/bin/bash
+#!/bin/bash
 
-mkdir "/opt/wordlists/dns/" 2>/dev/null
+path=$1
+temp=`mktemp`
 
-wget https://publicsuffix.org/list/public_suffix_list.dat -P "/opt/wordlists/dns/"
+rm $path/public_suffix_list.dat 2>/dev/null
 
-cat "/opt/wordlists/dns/public_suffix_list.dat" | grep -v "//" | sed '/^[[:space:]]*$/d' > tmp.dat
-cat tmp.dat > "/opt/wordlists/dns/public_suffix_list.dat"
-rm tmp.dat
+wget -q https://publicsuffix.org/list/public_suffix_list.dat -P $path
+
+cat "$path/public_suffix_list.dat" | grep -v "//" | sed '/^[[:space:]]*$/d' > $temp
+cat $temp > "$path/public_suffix_list.dat"
+rm $temp

@@ -71,6 +71,8 @@ tasks:
 
   upload-files:
     cmds:
+      - ./src/pwnwrk/pwnwrk.svc/scripts/get-psl.sh deployment/
+      - cp ./src/pwnwrk/pwnwrk.svc/entrypoint_hook.sh deployment/
       - ./upload.sh
 
   clean-cdk:
