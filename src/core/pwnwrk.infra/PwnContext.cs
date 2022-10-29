@@ -13,7 +13,7 @@ namespace pwnwrk.infra
         {
             PwnContext.Config = PwnConfigFactory.Create();
             PwnContext.Logger = PwnLoggerFactory.Create();
-            PwnwrkDomainShim.PublicSuffixRepository = PublicSuffixRepository.Singleton;
+            PwnwrkDomainShim.PublicSuffixRepository = new PublicSuffixRepository();
             DatabaseInitializer.InitializeAsync().Wait();
         }
 
