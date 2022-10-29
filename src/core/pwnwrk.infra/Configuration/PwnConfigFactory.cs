@@ -9,8 +9,10 @@ namespace pwnwrk.infra.Configuration
         
         public static AppConfig Create()
         {
+            var installPath = Environment.GetEnvironmentVariable("PWNCTL_InstallPath");
+
             IConfiguration cfg = new ConfigurationBuilder()
-                                        .SetBasePath(Path.GetFullPath("/etc/pwnctl"))
+                                        .SetBasePath(Path.GetFullPath(installPath))
                                         .AddIniFile("config.ini", optional: true, reloadOnChange: true)
                                         .AddSecretsManager(configurator: options => 
                                         {
@@ -20,9 +22,7 @@ namespace pwnwrk.infra.Configuration
                                         .AddEnvironmentVariables(prefix: "PWNCTL_")
                                         .Build();
 
-            var config = cfg.Get<AppConfig>();
-
-            return config;
+            return cfg.Get<AppConfig>();
         }
     }
 }
