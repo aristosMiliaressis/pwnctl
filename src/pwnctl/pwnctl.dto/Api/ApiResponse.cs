@@ -1,12 +1,22 @@
-namespace pwnctl.api.Models;
+namespace pwnctl.dto.Api;
 
 using pwnwrk.infra.MediatR;
 using System.Net;
+
+public class ApiResponse<TResult> : ApiResponse
+{
+    public new TResult Result { get; init; }
+}
 
 public class ApiResponse
 {
     public object Result { get; init; }
     public ApiError[] Errors { get; init; }
+
+    public ApiResponse(object result)
+    {
+        Result = result;
+    }
 
     public ApiResponse(MediatorResult result)
     {

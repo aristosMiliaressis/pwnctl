@@ -19,22 +19,19 @@ namespace pwnwrk.infra.Configuration
 
         public class ApiSettings
         {
+            public string BaseUrl { get; set; }
             public string ApiKey { get; set; }
         }
 
         public class DbSettings
         {
-            public DbCredentials Credentials { get; set; } = new DbCredentials();
-            public string Endpoint { get; set; }
-            public string ConnectionString => $"Host={Endpoint};"
+            public string Username { get; set; }
+            public string Password { get; set; }
+            public string Host { get; set; }
+            public string ConnectionString => $"Host={Host};"
                                            + $"Database={AwsConstants.DatabaseName};"
-                                           + $"Username={Credentials.Username};"
-                                           + $"Password={Credentials.Password}";
-            public class DbCredentials
-            {
-                public string Username { get; set; }
-                public string Password { get; set; }
-            }
+                                           + $"Username={Username};"
+                                           + $"Password={Password}";
         }
 
         public class JobQueueSettings

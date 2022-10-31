@@ -4,14 +4,11 @@ using pwnwrk.infra.Utilities;
 using pwnwrk.infra.Persistence;
 using pwnwrk.infra.Persistence.Extensions;
 using pwnwrk.infra.Repositories;
-using pwnwrk.domain.Utilities;
 using pwnwrk.domain.Entities.Assets;
 using pwnwrk.domain.Entities;
 using pwnwrk.domain.BaseClasses;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics;
 using System.Text.Json;
-using pwnwrk.infra.Configuration;
 
 public class Tests
 {
@@ -19,6 +16,7 @@ public class Tests
     {
         Environment.SetEnvironmentVariable("PWNCTL_IsTestRun", "true");
         Environment.SetEnvironmentVariable("PWNCTL_InstallPath", ".");
+        Environment.SetEnvironmentVariable("PWNCTL_EFS_MOUNT_POINT", ".");
 
         // reset the database for every test method
         DatabaseInitializer.InitializeAsync().Wait();

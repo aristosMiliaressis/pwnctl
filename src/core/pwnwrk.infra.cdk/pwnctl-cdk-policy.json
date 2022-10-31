@@ -50,6 +50,7 @@
             "secretsmanager:ListSecrets",
             "secretsmanager:PutSecretValue",
             "secretsmanager:TagResource",
+            "secretsmanager:UpdateSecret",
             "sqs:*",
             "ssm:*",
             "sts:GetServiceBearerToken"

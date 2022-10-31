@@ -9,12 +9,7 @@ using MediatR;
 
 public class CreateTargetCommandHandler : IRequestHandler<CreateTargetCommand, MediatorResult>
 {
-    private readonly PwnctlDbContext _context;
-
-    public CreateTargetCommandHandler(PwnctlDbContext context)
-    {
-        _context = context;
-    }
+    private readonly PwnctlDbContext _context = new PwnctlDbContext();
 
     public async Task<MediatorResult> Handle(CreateTargetCommand command, CancellationToken cancellationToken)
     {

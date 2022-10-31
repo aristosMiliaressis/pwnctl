@@ -28,10 +28,10 @@ namespace pwnwrk.infra.Persistence
                 .WithNamingConvention(PascalCaseNamingConvention.Instance)
                 .Build();
 
-            if (!instance.TaskDefinitions.Any())
+            string taskFile = $"{PwnContext.Config.InstallPath}/seed/task-definitions.yml";
+            if (!instance.TaskDefinitions.Any() && File.Exists(taskFile))
             {
-                var taskText = File.ReadAllText($"{PwnContext.Config.InstallPath}/seed/task-definitions.yml");
-
+                var taskText = File.ReadAllText(taskFile);
                 var taskDefinitions = deserializer.Deserialize<List<TaskDefinition>>(taskText);
 
                 instance.TaskDefinitions.AddRange(taskDefinitions);
@@ -55,9 +55,10 @@ namespace pwnwrk.infra.Persistence
                 }
             }
 
-            if (!instance.NotificationRules.Any())
+            string notificationFile = $"{PwnContext.Config.InstallPath}/seed/notification-rules.yml";
+            if (!instance.NotificationRules.Any() && File.Exists(notificationFile))
             {
-                var taskText = File.ReadAllText($"{PwnContext.Config.InstallPath}/seed/notification-rules.yml");
+                var taskText = File.ReadAllText(notificationFile);
                 var notificationRules = deserializer.Deserialize<List<NotificationRule>>(taskText);
 
                 instance.NotificationRules.AddRange(notificationRules);

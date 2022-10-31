@@ -53,12 +53,9 @@ tasks:
   install-cli-src:
     deps: [build-pwnctl-cli]
     cmds:
-      - |
-        chmod +x src/pwnctl/pwnctl.cli/bin/Release/net6.0/linux-x64/publish/pwnctl
-        sudo mv src/pwnctl/pwnctl.cli/bin/Release/net6.0/linux-x64/publish/pwnctl /usr/local/bin
-        sudo mv src/pwnctl/pwnctl.cli/bin/Release/net6.0/linux-x64/publish/config.ini /etc/pwnctl/
-        dbEndpoint=$(aws rds describe-db-instances | jq -r '.DBInstances[] | select( .DBInstanceIdentifier == "pwnctl-aurora-postgresql-instance-1" ) | .Endpoint.Address')
-        sudo printf "\n\n[Db]\nEndpoint = $dbEndpoint" >> /etc/pwnctl/config.ini
+      - chmod +x src/pwnctl/pwnctl.cli/bin/Release/net6.0/linux-x64/publish/pwnctl
+      - sudo mv src/pwnctl/pwnctl.cli/bin/Release/net6.0/linux-x64/publish/pwnctl /usr/local/bin
+      - sudo mv src/pwnctl/pwnctl.cli/bin/Release/net6.0/linux-x64/publish/config.ini /etc/pwnctl/
   
   bootstrap-aws:
     cmds:

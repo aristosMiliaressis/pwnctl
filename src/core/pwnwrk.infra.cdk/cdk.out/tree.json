@@ -34,10 +34,6 @@
                       {
                         "key": "Name",
                         "value": "pwnctl/pwnwrk-vpc"
-                      },
-                      {
-                        "key": "stack",
-                        "value": "pwnctl"
                       }
                     ]
                   }
@@ -82,10 +78,6 @@
                           {
                             "key": "Name",
                             "value": "pwnctl/pwnwrk-vpc/public-subnet-1Subnet1"
-                          },
-                          {
-                            "key": "stack",
-                            "value": "pwnctl"
                           }
                         ]
                       }
@@ -116,10 +108,6 @@
                           {
                             "key": "Name",
                             "value": "pwnctl/pwnwrk-vpc/public-subnet-1Subnet1"
-                          },
-                          {
-                            "key": "stack",
-                            "value": "pwnctl"
                           }
                         ]
                       }
@@ -209,10 +197,6 @@
                           {
                             "key": "Name",
                             "value": "pwnctl/pwnwrk-vpc/public-subnet-1Subnet2"
-                          },
-                          {
-                            "key": "stack",
-                            "value": "pwnctl"
                           }
                         ]
                       }
@@ -243,10 +227,6 @@
                           {
                             "key": "Name",
                             "value": "pwnctl/pwnwrk-vpc/public-subnet-1Subnet2"
-                          },
-                          {
-                            "key": "stack",
-                            "value": "pwnctl"
                           }
                         ]
                       }
@@ -301,13 +281,13 @@
                   "version": "1.176.0"
                 }
               },
-              "private-subnet-2Subnet1": {
-                "id": "private-subnet-2Subnet1",
-                "path": "pwnctl/pwnwrk-vpc/private-subnet-2Subnet1",
+              "private-subnet-1Subnet1": {
+                "id": "private-subnet-1Subnet1",
+                "path": "pwnctl/pwnwrk-vpc/private-subnet-1Subnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "pwnctl/pwnwrk-vpc/private-subnet-2Subnet1/Subnet",
+                    "path": "pwnctl/pwnwrk-vpc/private-subnet-1Subnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -327,7 +307,7 @@
                         "tags": [
                           {
                             "key": "aws-cdk:subnet-name",
-                            "value": "private-subnet-2"
+                            "value": "private-subnet-1"
                           },
                           {
                             "key": "aws-cdk:subnet-type",
@@ -335,11 +315,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "pwnctl/pwnwrk-vpc/private-subnet-2Subnet1"
-                          },
-                          {
-                            "key": "stack",
-                            "value": "pwnctl"
+                            "value": "pwnctl/pwnwrk-vpc/private-subnet-1Subnet1"
                           }
                         ]
                       }
@@ -351,7 +327,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "pwnctl/pwnwrk-vpc/private-subnet-2Subnet1/Acl",
+                    "path": "pwnctl/pwnwrk-vpc/private-subnet-1Subnet1/Acl",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.Resource",
                       "version": "1.176.0"
@@ -359,7 +335,7 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "pwnctl/pwnwrk-vpc/private-subnet-2Subnet1/RouteTable",
+                    "path": "pwnctl/pwnwrk-vpc/private-subnet-1Subnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
@@ -369,11 +345,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "pwnctl/pwnwrk-vpc/private-subnet-2Subnet1"
-                          },
-                          {
-                            "key": "stack",
-                            "value": "pwnctl"
+                            "value": "pwnctl/pwnwrk-vpc/private-subnet-1Subnet1"
                           }
                         ]
                       }
@@ -385,15 +357,15 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "pwnctl/pwnwrk-vpc/private-subnet-2Subnet1/RouteTableAssociation",
+                    "path": "pwnctl/pwnwrk-vpc/private-subnet-1Subnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
                         "routeTableId": {
-                          "Ref": "pwnwrkvpcprivatesubnet2Subnet1RouteTable85CEAF7B"
+                          "Ref": "pwnwrkvpcprivatesubnet1Subnet1RouteTable00E4BEB2"
                         },
                         "subnetId": {
-                          "Ref": "pwnwrkvpcprivatesubnet2Subnet1SubnetA8ACA595"
+                          "Ref": "pwnwrkvpcprivatesubnet1Subnet1Subnet65856627"
                         }
                       }
                     },
@@ -408,13 +380,13 @@
                   "version": "1.176.0"
                 }
               },
-              "private-subnet-2Subnet2": {
-                "id": "private-subnet-2Subnet2",
-                "path": "pwnctl/pwnwrk-vpc/private-subnet-2Subnet2",
+              "private-subnet-1Subnet2": {
+                "id": "private-subnet-1Subnet2",
+                "path": "pwnctl/pwnwrk-vpc/private-subnet-1Subnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "pwnctl/pwnwrk-vpc/private-subnet-2Subnet2/Subnet",
+                    "path": "pwnctl/pwnwrk-vpc/private-subnet-1Subnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -434,7 +406,7 @@
                         "tags": [
                           {
                             "key": "aws-cdk:subnet-name",
-                            "value": "private-subnet-2"
+                            "value": "private-subnet-1"
                           },
                           {
                             "key": "aws-cdk:subnet-type",
@@ -442,11 +414,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "pwnctl/pwnwrk-vpc/private-subnet-2Subnet2"
-                          },
-                          {
-                            "key": "stack",
-                            "value": "pwnctl"
+                            "value": "pwnctl/pwnwrk-vpc/private-subnet-1Subnet2"
                           }
                         ]
                       }
@@ -458,7 +426,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "pwnctl/pwnwrk-vpc/private-subnet-2Subnet2/Acl",
+                    "path": "pwnctl/pwnwrk-vpc/private-subnet-1Subnet2/Acl",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.Resource",
                       "version": "1.176.0"
@@ -466,7 +434,7 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "pwnctl/pwnwrk-vpc/private-subnet-2Subnet2/RouteTable",
+                    "path": "pwnctl/pwnwrk-vpc/private-subnet-1Subnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
@@ -476,11 +444,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "pwnctl/pwnwrk-vpc/private-subnet-2Subnet2"
-                          },
-                          {
-                            "key": "stack",
-                            "value": "pwnctl"
+                            "value": "pwnctl/pwnwrk-vpc/private-subnet-1Subnet2"
                           }
                         ]
                       }
@@ -492,15 +456,15 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "pwnctl/pwnwrk-vpc/private-subnet-2Subnet2/RouteTableAssociation",
+                    "path": "pwnctl/pwnwrk-vpc/private-subnet-1Subnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
                         "routeTableId": {
-                          "Ref": "pwnwrkvpcprivatesubnet2Subnet2RouteTable935C29DA"
+                          "Ref": "pwnwrkvpcprivatesubnet1Subnet2RouteTable80BA4825"
                         },
                         "subnetId": {
-                          "Ref": "pwnwrkvpcprivatesubnet2Subnet2Subnet206413D1"
+                          "Ref": "pwnwrkvpcprivatesubnet1Subnet2Subnet7A5C3FFE"
                         }
                       }
                     },
@@ -525,10 +489,6 @@
                       {
                         "key": "Name",
                         "value": "pwnctl/pwnwrk-vpc"
-                      },
-                      {
-                        "key": "stack",
-                        "value": "pwnctl"
                       }
                     ]
                   }
@@ -563,54 +523,6 @@
               "version": "1.176.0"
             }
           },
-          "pwnctl-aurora-postgresql-instance-sg": {
-            "id": "pwnctl-aurora-postgresql-instance-sg",
-            "path": "pwnctl/pwnctl-aurora-postgresql-instance-sg",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "pwnctl/pwnctl-aurora-postgresql-instance-sg/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
-                  "aws:cdk:cloudformation:props": {
-                    "groupDescription": "pwnctl-aurora-postgresql-instance-sg",
-                    "groupName": "pwnctl-aurora-postgresql-instance-sg",
-                    "securityGroupEgress": [
-                      {
-                        "cidrIp": "0.0.0.0/0",
-                        "description": "Allow all outbound traffic by default",
-                        "ipProtocol": "-1"
-                      }
-                    ],
-                    "securityGroupIngress": [
-                      {
-                        "cidrIp": "0.0.0.0/0",
-                        "ipProtocol": "-1",
-                        "description": "Open to the world"
-                      }
-                    ],
-                    "tags": [
-                      {
-                        "key": "stack",
-                        "value": "pwnctl"
-                      }
-                    ],
-                    "vpcId": {
-                      "Ref": "pwnwrkvpc020FF09A"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
-                  "version": "1.176.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
-              "version": "1.176.0"
-            }
-          },
           "pwnctl-aurora-postgresql-instance-creds": {
             "id": "pwnctl-aurora-postgresql-instance-creds",
             "path": "pwnctl/pwnctl-aurora-postgresql-instance-creds",
@@ -627,13 +539,7 @@
                       "includeSpace": false,
                       "secretStringTemplate": "{\"username\":\"pwnadmin\"}"
                     },
-                    "name": "pwnctl-Db-Credentials",
-                    "tags": [
-                      {
-                        "key": "stack",
-                        "value": "pwnctl"
-                      }
-                    ]
+                    "name": "pwnctl-Db"
                   }
                 },
                 "constructInfo": {
@@ -677,55 +583,115 @@
               "version": "1.176.0"
             }
           },
-          "pwnctl-aurora-subnet-g": {
-            "id": "pwnctl-aurora-subnet-g",
-            "path": "pwnctl/pwnctl-aurora-subnet-g",
-            "children": {
-              "Default": {
-                "id": "Default",
-                "path": "pwnctl/pwnctl-aurora-subnet-g/Default",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::RDS::DBSubnetGroup",
-                  "aws:cdk:cloudformation:props": {
-                    "dbSubnetGroupDescription": "Aurora RDS Subnet Group for database pwnctl-aurora-postgresql-instance",
-                    "subnetIds": [
-                      {
-                        "Ref": "pwnwrkvpcpublicsubnet1Subnet1Subnet19236D3C"
-                      },
-                      {
-                        "Ref": "pwnwrkvpcpublicsubnet1Subnet2Subnet55EF5A82"
-                      },
-                      {
-                        "Ref": "pwnwrkvpcprivatesubnet2Subnet1SubnetA8ACA595"
-                      },
-                      {
-                        "Ref": "pwnwrkvpcprivatesubnet2Subnet2Subnet206413D1"
-                      }
-                    ],
-                    "dbSubnetGroupName": "pwnctl-aurora-subnet-g",
-                    "tags": [
-                      {
-                        "key": "stack",
-                        "value": "pwnctl"
-                      }
-                    ]
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-rds.CfnDBSubnetGroup",
-                  "version": "1.176.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-rds.SubnetGroup",
-              "version": "1.176.0"
-            }
-          },
           "pwnctl-aurora-cluster": {
             "id": "pwnctl-aurora-cluster",
             "path": "pwnctl/pwnctl-aurora-cluster",
             "children": {
+              "Subnets": {
+                "id": "Subnets",
+                "path": "pwnctl/pwnctl-aurora-cluster/Subnets",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "pwnctl/pwnctl-aurora-cluster/Subnets/Default",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::RDS::DBSubnetGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "dbSubnetGroupDescription": "Subnets for pwnctl-aurora-cluster database",
+                        "subnetIds": [
+                          {
+                            "Ref": "pwnwrkvpcprivatesubnet1Subnet1Subnet65856627"
+                          },
+                          {
+                            "Ref": "pwnwrkvpcprivatesubnet1Subnet2Subnet7A5C3FFE"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-rds.CfnDBSubnetGroup",
+                      "version": "1.176.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-rds.SubnetGroup",
+                  "version": "1.176.0"
+                }
+              },
+              "SecurityGroup": {
+                "id": "SecurityGroup",
+                "path": "pwnctl/pwnctl-aurora-cluster/SecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "pwnctl/pwnctl-aurora-cluster/SecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "RDS security group",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "pwnwrkvpc020FF09A"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                      "version": "1.176.0"
+                    }
+                  },
+                  "from pwnctlpwnctlapiSecurityGroupC5E73E83:{IndirectPort}": {
+                    "id": "from pwnctlpwnctlapiSecurityGroupC5E73E83:{IndirectPort}",
+                    "path": "pwnctl/pwnctl-aurora-cluster/SecurityGroup/from pwnctlpwnctlapiSecurityGroupC5E73E83:{IndirectPort}",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
+                      "aws:cdk:cloudformation:props": {
+                        "ipProtocol": "tcp",
+                        "description": "from pwnctlpwnctlapiSecurityGroupC5E73E83:{IndirectPort}",
+                        "fromPort": {
+                          "Fn::GetAtt": [
+                            "pwnctlauroraclusterC5F8F192",
+                            "Endpoint.Port"
+                          ]
+                        },
+                        "groupId": {
+                          "Fn::GetAtt": [
+                            "pwnctlauroraclusterSecurityGroup464EEE66",
+                            "GroupId"
+                          ]
+                        },
+                        "sourceSecurityGroupId": {
+                          "Fn::GetAtt": [
+                            "pwnctlapiSecurityGroupC000D8A4",
+                            "GroupId"
+                          ]
+                        },
+                        "toPort": {
+                          "Fn::GetAtt": [
+                            "pwnctlauroraclusterC5F8F192",
+                            "Endpoint.Port"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroupIngress",
+                      "version": "1.176.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                  "version": "1.176.0"
+                }
+              },
               "AuroraPostgreSqlDatabaseClusterEngineDefaultParameterGroup": {
                 "id": "AuroraPostgreSqlDatabaseClusterEngineDefaultParameterGroup",
                 "path": "pwnctl/pwnctl-aurora-cluster/AuroraPostgreSqlDatabaseClusterEngineDefaultParameterGroup",
@@ -746,7 +712,7 @@
                     "dbClusterIdentifier": "pwnctl-aurora-cluster",
                     "dbClusterParameterGroupName": "default.aurora-postgresql13",
                     "dbSubnetGroupName": {
-                      "Ref": "pwnctlaurorasubnetg"
+                      "Ref": "pwnctlauroraclusterSubnetsC038B321"
                     },
                     "engineVersion": "13.6",
                     "masterUsername": {
@@ -774,16 +740,10 @@
                       ]
                     },
                     "port": 5432,
-                    "tags": [
-                      {
-                        "key": "stack",
-                        "value": "pwnctl"
-                      }
-                    ],
                     "vpcSecurityGroupIds": [
                       {
                         "Fn::GetAtt": [
-                          "pwnctlaurorapostgresqlinstancesg15729121",
+                          "pwnctlauroraclusterSecurityGroup464EEE66",
                           "GroupId"
                         ]
                       }
@@ -807,17 +767,11 @@
                     "dbInstanceClass": "db.t3.medium",
                     "dbInstanceIdentifier": "pwnctl-aurora-postgresql-instance-1",
                     "dbSubnetGroupName": {
-                      "Ref": "pwnctlaurorasubnetg"
+                      "Ref": "pwnctlauroraclusterSubnetsC038B321"
                     },
                     "engine": "aurora-postgresql",
                     "engineVersion": "13.6",
-                    "publiclyAccessible": true,
-                    "tags": [
-                      {
-                        "key": "stack",
-                        "value": "pwnctl"
-                      }
-                    ]
+                    "publiclyAccessible": false
                   }
                 },
                 "constructInfo": {
@@ -847,12 +801,6 @@
                     "messageRetentionPeriod": 1209600,
                     "queueName": "pwnwrk-dlq.fifo",
                     "receiveMessageWaitTimeSeconds": 20,
-                    "tags": [
-                      {
-                        "key": "stack",
-                        "value": "pwnctl"
-                      }
-                    ],
                     "visibilityTimeout": 30
                   }
                 },
@@ -892,12 +840,6 @@
                       },
                       "maxReceiveCount": 10
                     },
-                    "tags": [
-                      {
-                        "key": "stack",
-                        "value": "pwnctl"
-                      }
-                    ],
                     "visibilityTimeout": 30
                   }
                 },
@@ -926,10 +868,6 @@
                       {
                         "key": "Name",
                         "value": "pwnctl/pwnwrk-fs"
-                      },
-                      {
-                        "key": "stack",
-                        "value": "pwnctl"
                       }
                     ]
                   }
@@ -961,10 +899,6 @@
                           {
                             "key": "Name",
                             "value": "pwnctl/pwnwrk-fs"
-                          },
-                          {
-                            "key": "stack",
-                            "value": "pwnctl"
                           }
                         ],
                         "vpcId": {
@@ -1059,7 +993,7 @@
                       }
                     ],
                     "subnetId": {
-                      "Ref": "pwnwrkvpcprivatesubnet2Subnet1SubnetA8ACA595"
+                      "Ref": "pwnwrkvpcprivatesubnet1Subnet1Subnet65856627"
                     }
                   }
                 },
@@ -1086,7 +1020,7 @@
                       }
                     ],
                     "subnetId": {
-                      "Ref": "pwnwrkvpcprivatesubnet2Subnet2Subnet206413D1"
+                      "Ref": "pwnwrkvpcprivatesubnet1Subnet2Subnet7A5C3FFE"
                     }
                   }
                 },
@@ -1153,13 +1087,7 @@
                       "excludePunctuation": true,
                       "includeSpace": false
                     },
-                    "name": "pwnctl-Api-ApiKey",
-                    "tags": [
-                      {
-                        "key": "stack",
-                        "value": "pwnctl"
-                      }
-                    ]
+                    "name": "pwnctl-Api-ApiKey"
                   }
                 },
                 "constructInfo": {
@@ -1243,12 +1171,18 @@
                             ":iam::aws:policy/SecretsManagerReadWrite"
                           ]
                         ]
-                      }
-                    ],
-                    "tags": [
+                      },
                       {
-                        "key": "stack",
-                        "value": "pwnctl"
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":iam::aws:policy/AmazonRDSFullAccess"
+                          ]
+                        ]
                       }
                     ]
                   }
@@ -1422,12 +1356,6 @@
                             }
                           }
                         ],
-                        "tags": [
-                          {
-                            "key": "stack",
-                            "value": "pwnctl"
-                          }
-                        ],
                         "vpcId": {
                           "Ref": "pwnwrkvpc020FF09A"
                         }
@@ -1476,10 +1404,10 @@
                     ],
                     "subnetIds": [
                       {
-                        "Ref": "pwnwrkvpcprivatesubnet2Subnet1SubnetA8ACA595"
+                        "Ref": "pwnwrkvpcprivatesubnet1Subnet1Subnet65856627"
                       },
                       {
-                        "Ref": "pwnwrkvpcprivatesubnet2Subnet2Subnet206413D1"
+                        "Ref": "pwnwrkvpcprivatesubnet1Subnet2Subnet7A5C3FFE"
                       }
                     ],
                     "vpcEndpointType": "Interface"
@@ -1544,12 +1472,6 @@
                             "ipProtocol": "-1"
                           }
                         ],
-                        "tags": [
-                          {
-                            "key": "stack",
-                            "value": "pwnctl"
-                          }
-                        ],
                         "vpcId": {
                           "Ref": "pwnwrkvpc020FF09A"
                         }
@@ -1574,7 +1496,7 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "s3Bucket": {
-                        "Ref": "AssetParameters07f1e1aa651eb9b36519e2a418d0a356b1514809b640071926c833020097c4d3S3BucketAFBBBC77"
+                        "Ref": "AssetParametersbd29189d74c94e61b5e3d4e45e8c0c799c9ac316eca4bf59d3eb182392e24338S3BucketA45780CA"
                       },
                       "s3Key": {
                         "Fn::Join": [
@@ -1587,7 +1509,7 @@
                                   "Fn::Split": [
                                     "||",
                                     {
-                                      "Ref": "AssetParameters07f1e1aa651eb9b36519e2a418d0a356b1514809b640071926c833020097c4d3S3VersionKey609D56F3"
+                                      "Ref": "AssetParametersbd29189d74c94e61b5e3d4e45e8c0c799c9ac316eca4bf59d3eb182392e24338S3VersionKeyF81B5405"
                                     }
                                   ]
                                 }
@@ -1600,7 +1522,7 @@
                                   "Fn::Split": [
                                     "||",
                                     {
-                                      "Ref": "AssetParameters07f1e1aa651eb9b36519e2a418d0a356b1514809b640071926c833020097c4d3S3VersionKey609D56F3"
+                                      "Ref": "AssetParametersbd29189d74c94e61b5e3d4e45e8c0c799c9ac316eca4bf59d3eb182392e24338S3VersionKeyF81B5405"
                                     }
                                   ]
                                 }
@@ -1618,12 +1540,6 @@
                     },
                     "environment": {
                       "variables": {
-                        "PWNCTL_Db__Endpoint": {
-                          "Fn::GetAtt": [
-                            "pwnctlauroraclusterInstance1C026056A",
-                            "Endpoint.Address"
-                          ]
-                        },
                         "PWNCTL_JobQueue__QueueName": "pwnwrk.fifo",
                         "PWNCTL_JobQueue__DLQName": "pwnwrk-dlq.fifo",
                         "PWNCTL_JobQueue__VisibilityTimeout": "30",
@@ -1663,21 +1579,16 @@
                       }
                     ],
                     "handler": "pwnctl.api",
+                    "memorySize": 512,
                     "runtime": "dotnet6",
-                    "tags": [
-                      {
-                        "key": "stack",
-                        "value": "pwnctl"
-                      }
-                    ],
-                    "timeout": 30,
+                    "timeout": 900,
                     "vpcConfig": {
                       "subnetIds": [
                         {
-                          "Ref": "pwnwrkvpcprivatesubnet2Subnet1SubnetA8ACA595"
+                          "Ref": "pwnwrkvpcprivatesubnet1Subnet1Subnet65856627"
                         },
                         {
-                          "Ref": "pwnwrkvpcprivatesubnet2Subnet2Subnet206413D1"
+                          "Ref": "pwnwrkvpcprivatesubnet1Subnet2Subnet7A5C3FFE"
                         }
                       ],
                       "securityGroupIds": [
@@ -1784,13 +1695,13 @@
             "id": "AssetParameters",
             "path": "pwnctl/AssetParameters",
             "children": {
-              "07f1e1aa651eb9b36519e2a418d0a356b1514809b640071926c833020097c4d3": {
-                "id": "07f1e1aa651eb9b36519e2a418d0a356b1514809b640071926c833020097c4d3",
-                "path": "pwnctl/AssetParameters/07f1e1aa651eb9b36519e2a418d0a356b1514809b640071926c833020097c4d3",
+              "bd29189d74c94e61b5e3d4e45e8c0c799c9ac316eca4bf59d3eb182392e24338": {
+                "id": "bd29189d74c94e61b5e3d4e45e8c0c799c9ac316eca4bf59d3eb182392e24338",
+                "path": "pwnctl/AssetParameters/bd29189d74c94e61b5e3d4e45e8c0c799c9ac316eca4bf59d3eb182392e24338",
                 "children": {
                   "S3Bucket": {
                     "id": "S3Bucket",
-                    "path": "pwnctl/AssetParameters/07f1e1aa651eb9b36519e2a418d0a356b1514809b640071926c833020097c4d3/S3Bucket",
+                    "path": "pwnctl/AssetParameters/bd29189d74c94e61b5e3d4e45e8c0c799c9ac316eca4bf59d3eb182392e24338/S3Bucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "1.176.0"
@@ -1798,7 +1709,7 @@
                   },
                   "S3VersionKey": {
                     "id": "S3VersionKey",
-                    "path": "pwnctl/AssetParameters/07f1e1aa651eb9b36519e2a418d0a356b1514809b640071926c833020097c4d3/S3VersionKey",
+                    "path": "pwnctl/AssetParameters/bd29189d74c94e61b5e3d4e45e8c0c799c9ac316eca4bf59d3eb182392e24338/S3VersionKey",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "1.176.0"
@@ -1806,7 +1717,7 @@
                   },
                   "ArtifactHash": {
                     "id": "ArtifactHash",
-                    "path": "pwnctl/AssetParameters/07f1e1aa651eb9b36519e2a418d0a356b1514809b640071926c833020097c4d3/ArtifactHash",
+                    "path": "pwnctl/AssetParameters/bd29189d74c94e61b5e3d4e45e8c0c799c9ac316eca4bf59d3eb182392e24338/ArtifactHash",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "1.176.0"
@@ -1922,12 +1833,6 @@
                                 ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
                               ]
                             ]
-                          }
-                        ],
-                        "tags": [
-                          {
-                            "key": "stack",
-                            "value": "pwnctl"
                           }
                         ]
                       }
@@ -2066,12 +1971,6 @@
                           ]
                         ]
                       }
-                    ],
-                    "tags": [
-                      {
-                        "key": "stack",
-                        "value": "pwnctl"
-                      }
                     ]
                   }
                 },
@@ -2206,15 +2105,6 @@
                         },
                         "environment": [
                           {
-                            "name": "PWNCTL_Db__Endpoint",
-                            "value": {
-                              "Fn::GetAtt": [
-                                "pwnctlauroraclusterInstance1C026056A",
-                                "Endpoint.Address"
-                              ]
-                            }
-                          },
-                          {
                             "name": "PWNCTL_JobQueue__QueueName",
                             "value": {
                               "Fn::GetAtt": [
@@ -2269,12 +2159,6 @@
                     "networkMode": "awsvpc",
                     "requiresCompatibilities": [
                       "FARGATE"
-                    ],
-                    "tags": [
-                      {
-                        "key": "stack",
-                        "value": "pwnctl"
-                      }
                     ],
                     "taskRoleArn": {
                       "Fn::GetAtt": [
@@ -2332,13 +2216,7 @@
                   "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
                   "aws:cdk:cloudformation:props": {
                     "logGroupName": "/aws/ecs/pwnwrk",
-                    "retentionInDays": 7,
-                    "tags": [
-                      {
-                        "key": "stack",
-                        "value": "pwnctl"
-                      }
-                    ]
+                    "retentionInDays": 7
                   }
                 },
                 "constructInfo": {
@@ -2400,14 +2278,7 @@
                 "path": "pwnctl/pwnwrk-cluster/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ECS::Cluster",
-                  "aws:cdk:cloudformation:props": {
-                    "tags": [
-                      {
-                        "key": "stack",
-                        "value": "pwnctl"
-                      }
-                    ]
-                  }
+                  "aws:cdk:cloudformation:props": {}
                 },
                 "constructInfo": {
                   "fqn": "@aws-cdk/aws-ecs.CfnCluster",
@@ -2466,12 +2337,6 @@
                         ]
                       }
                     },
-                    "tags": [
-                      {
-                        "key": "stack",
-                        "value": "pwnctl"
-                      }
-                    ],
                     "taskDefinition": {
                       "Ref": "pwnwrkdef3A414DAF"
                     }
@@ -2498,12 +2363,6 @@
                             "cidrIp": "0.0.0.0/0",
                             "description": "Allow all outbound traffic by default",
                             "ipProtocol": "-1"
-                          }
-                        ],
-                        "tags": [
-                          {
-                            "key": "stack",
-                            "value": "pwnctl"
                           }
                         ],
                         "vpcId": {

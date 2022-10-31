@@ -2,7 +2,7 @@ namespace pwnctl.api.Controllers;
 
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using pwnctl.api.Models;
+using pwnctl.dto.Api;
 using pwnwrk.infra.MediatR;
 
 public abstract class BaseController : ControllerBase

@@ -1,7 +1,7 @@
 using pwnwrk.domain.BaseClasses;
 using pwnwrk.domain.Entities;
 
-namespace pwnwrk.domain.Utilities
+namespace pwnwrk.infra.Utilities
 {
     public class ScopeChecker
     {

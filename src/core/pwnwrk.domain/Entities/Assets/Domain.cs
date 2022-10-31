@@ -1,6 +1,6 @@
 ﻿using pwnwrk.domain.Attributes;
 using pwnwrk.domain.BaseClasses;
-using pwnwrk.domain.Models;
+using pwnwrk.domain.DTO;
 using pwnwrk.domain.ValueObjects;
 using System.Text.RegularExpressions;
 using System.Text.Json;

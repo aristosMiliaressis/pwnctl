@@ -5,7 +5,10 @@ using pwnwrk.infra.MediatR;
 
 using MediatR;
 
-public class EditTargetCommand : Program, IRequest<MediatorResult>
+public class EditTargetCommand : Program, IApiRequest<object>, IRequest<MediatorResult>
 {
+    public static string Route => "/targets/{target}";
+    public static HttpMethod Method => HttpMethod.Patch;
+
 
 }

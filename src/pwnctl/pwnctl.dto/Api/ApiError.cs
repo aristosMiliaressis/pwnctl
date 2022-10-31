@@ -1,4 +1,4 @@
-namespace pwnctl.api.Models;
+namespace pwnctl.dto.Api;
 
 public class ApiError
 {

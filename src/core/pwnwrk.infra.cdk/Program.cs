@@ -12,8 +12,6 @@ namespace pwnctl.cdk
 
             var pwnctlStack = new PwnctlCdkStack(app, AwsConstants.StackName, new StackProps());
 
-            Tags.Of(pwnctlStack).Add("stack", AwsConstants.StackName);
-
             app.Synth();
         }
     }

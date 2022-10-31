@@ -1,4 +1,4 @@
-namespace pwnwrk.domain.Models
+namespace pwnwrk.domain.DTO
 {
     public class AssetDTO
     {

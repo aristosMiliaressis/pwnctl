@@ -3,6 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
+    <EnablePreviewFeatures>True</EnablePreviewFeatures>
     <NoWarn>8618</NoWarn>
     <AssemblyName>pwnctl</AssemblyName>
     <SelfContained>true</SelfContained>
@@ -35,5 +36,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\core\pwnwrk.infra\pwnwrk.infra.csproj" />
     <ProjectReference Include="..\..\core\pwnwrk.domain\pwnwrk.domain.csproj" />
+    <ProjectReference Include="..\pwnctl.dto\pwnctl.dto.csproj" />
   </ItemGroup>
 </Project>

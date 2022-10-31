@@ -10,13 +10,6 @@ using MediatR;
 
 public class ProcessAssetsCommandHandler : IRequestHandler<ProcessAssetsCommand, MediatorResult>
 {
-    private readonly PwnctlDbContext _context;
-
-    public ProcessAssetsCommandHandler(PwnctlDbContext context)
-    {
-        _context = context;
-    }
-
     public async Task<MediatorResult> Handle(ProcessAssetsCommand command, CancellationToken cancellationToken)
     {
         var processor = new AssetProcessor();

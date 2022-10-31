@@ -1,6 +1,6 @@
 namespace pwnctl.api.Extensions;
 
-using pwnctl.api.Models;
+using pwnctl.dto.Api;
 using System.Net;
 using System.Text.Json;
 

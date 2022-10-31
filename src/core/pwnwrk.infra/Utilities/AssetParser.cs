@@ -1,6 +1,6 @@
 using pwnwrk.domain.BaseClasses;
 using pwnwrk.domain.Entities;
-using pwnwrk.domain.Models;
+using pwnwrk.domain.DTO;
 using pwnwrk.domain.Exceptions;
 using System.Collections.Generic;
 using System.Text.Json;
@@ -8,7 +8,7 @@ using System.Reflection;
 using System;
 using System.Linq;
 
-namespace pwnwrk.domain.Utilities
+namespace pwnwrk.infra.Utilities
 {
     public static class AssetParser
     {

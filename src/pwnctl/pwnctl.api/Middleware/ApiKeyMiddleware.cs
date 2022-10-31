@@ -1,6 +1,7 @@
 namespace pwnctl.api.Middleware;
 
 using pwnctl.api.Extensions;
+using pwnwrk.infra;
 using System.Net;
 
 public class ApiKeyMiddleware
@@ -15,11 +16,8 @@ public class ApiKeyMiddleware
     
     public async Task InvokeAsync(HttpContext context)
     {
-        var appSettings = context.RequestServices.GetRequiredService<IConfiguration>();
-        var apiKey = appSettings.GetValue<string>(_apiKeyHeader);
-
         if (!context.Request.Headers.TryGetValue(_apiKeyHeader, out var extractedApiKey)
-            || !apiKey.Equals(extractedApiKey))
+         || !PwnContext.Config.Api.ApiKey.Equals(extractedApiKey))
         {
             await context.Response.Create(HttpStatusCode.Unauthorized);
 

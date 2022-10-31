@@ -5,7 +5,8 @@ using pwnwrk.infra.MediatR;
 
 using MediatR;
 
-public class ListTargetsQuery : IRequest<MediatorResult<TargetListViewModel>>
+public class ListTargetsQuery : IApiRequest<TargetListViewModel>, IRequest<MediatorResult<TargetListViewModel>>
 {
-
+    public static string Route => "/targets";
+    public static HttpMethod Method => HttpMethod.Get;
 }

@@ -156,7 +156,7 @@ prints a summary about queued tasks and found assets
 
 ## Setup
 
-1. create an iam user with the policy provided in `src/pwnwrk/pwnwrk.infra.cdk/pwnctl-cdk-policy.json`
+1. create an iam user with the policy provided in `src/core/pwnwrk.infra.cdk/pwnctl-cdk-policy.json`
 2. put all configuration/seed/script files in the `deployment/` folder
 3. install `task`
 > sudo sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin

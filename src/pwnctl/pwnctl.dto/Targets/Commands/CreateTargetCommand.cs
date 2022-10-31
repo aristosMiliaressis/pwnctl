@@ -5,7 +5,8 @@ using pwnwrk.infra.MediatR;
 
 using MediatR;
 
-public class CreateTargetCommand : Program, IRequest<MediatorResult>
+public class CreateTargetCommand : Program, IApiRequest<object>, IRequest<MediatorResult>
 {
-
+    public static string Route => "/targets";
+    public static HttpMethod Method => HttpMethod.Post;
 }

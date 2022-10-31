@@ -1,7 +1,6 @@
 ﻿using pwnwrk.domain.Exceptions;
-using pwnwrk.domain.Utilities;
+using pwnwrk.infra.Utilities;
 using pwnwrk.infra.Repositories;
-using pwnwrk.infra;
 using pwnwrk.infra.Extensions;
 using pwnwrk.infra.Persistence;
 using pwnwrk.infra.Persistence.Extensions;

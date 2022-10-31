@@ -1,14 +1,10 @@
-using pwnwrk.domain.Utilities;
 using pwnwrk.domain.Entities;
 using pwnwrk.domain.BaseClasses;
 using pwnwrk.infra.Persistence;
 using pwnwrk.infra.Persistence.Extensions;
 using pwnwrk.infra.Queues;
-using pwnwrk.infra;
 using pwnwrk.domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace pwnwrk.infra.Utilities
 {

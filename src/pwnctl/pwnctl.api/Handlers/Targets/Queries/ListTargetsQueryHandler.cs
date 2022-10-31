@@ -11,16 +11,13 @@ using Microsoft.EntityFrameworkCore;
 
 public class ListTargetsQueryHandler : IRequestHandler<ListTargetsQuery, MediatorResult<TargetListViewModel>>
 {
-    private readonly PwnctlDbContext _context;
-
-    public ListTargetsQueryHandler(PwnctlDbContext context)
-    {
-        _context = context;
-    }
+    private readonly PwnctlDbContext _context = new PwnctlDbContext();
 
     public async Task<MediatorResult<TargetListViewModel>> Handle(ListTargetsQuery command, CancellationToken cancellationToken)
     {
+        Console.WriteLine("ListTargetsQueryHandler");
         var targets = await _context.Programs.AsNoTracking().ToListAsync(cancellationToken);
+        Console.WriteLine("MediatorResult");
 
         return MediatorResult<TargetListViewModel>.Success(new TargetListViewModel(targets));
     }

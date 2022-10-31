@@ -42,7 +42,7 @@ namespace pwnctl.cdk
                     },
                     new SubnetConfiguration
                     {
-                        Name = "private-subnet-2",
+                        Name = "private-subnet-1",
                         SubnetType = SubnetType.PRIVATE_ISOLATED,
                         CidrMask = 24
                     }
@@ -51,17 +51,9 @@ namespace pwnctl.cdk
             #endregion
 
             #region Aurora RDS
-            var securityGroup = new SecurityGroup(this, AwsConstants.AuroraSecurityGroup, new SecurityGroupProps
-            {
-                SecurityGroupName = AwsConstants.AuroraSecurityGroup,
-                Vpc = vpc,
-                Description = AwsConstants.AuroraSecurityGroup,
-                AllowAllOutbound = true,
-            });
-
             var dbCredSecret = new SecretsManager.Secret(this, $"{AwsConstants.AuroraInstance}-creds", new SecretProps
             {
-                SecretName = $"{AwsConstants.StackName}-Db-Credentials",
+                SecretName = $"{AwsConstants.StackName}-Db",
                 GenerateSecretString = new SecretStringGenerator
                 {
                     SecretStringTemplate = JsonSerializer.Serialize(new { username = AwsConstants.AuroraInstanceUsername }),
@@ -76,20 +68,6 @@ namespace pwnctl.cdk
                 Version = AuroraPostgresEngineVersion.VER_13_6
             });
 
-            var subnets = vpc.PublicSubnets.Concat(vpc.IsolatedSubnets).ToArray();
-
-            var subnetGroup = new SubnetGroup(this, AwsConstants.AuroraSubnetGroup, new SubnetGroupProps
-            {
-                SubnetGroupName = AwsConstants.AuroraSubnetGroup,
-                Description = $"Aurora RDS Subnet Group for database {AwsConstants.AuroraInstance}",
-                Vpc = vpc,
-                RemovalPolicy = RemovalPolicy.DESTROY,
-                VpcSubnets = new SubnetSelection
-                {
-                    Subnets = subnets.ToArray()
-                }
-            });
-
             var dbCluster = new DatabaseCluster(this, AwsConstants.AuroraCluster, new DatabaseClusterProps
             {
                 ClusterIdentifier = AwsConstants.AuroraCluster,
@@ -100,24 +78,16 @@ namespace pwnctl.cdk
                     InstanceType = InstanceType.Of(InstanceClass.BURSTABLE3, InstanceSize.MEDIUM),
                     VpcSubnets = new SubnetSelection
                     {
-                        Subnets = subnets.ToArray()
+                        SubnetType = SubnetType.PRIVATE_ISOLATED
                     },
                     Vpc = vpc,
-                    PubliclyAccessible = true,
-                    SecurityGroups = new ISecurityGroup[] { securityGroup },
                 },
                 RemovalPolicy = RemovalPolicy.DESTROY,
                 Instances = 1,
                 InstanceIdentifierBase = $"{AwsConstants.AuroraInstance}-",
                 CloudwatchLogsRetention = RetentionDays.ONE_WEEK,
                 DefaultDatabaseName = AwsConstants.DatabaseName,
-                SubnetGroup = subnetGroup,
             });
-
-            string endpointHost = dbCluster.InstanceEndpoints.First().Hostname;
-
-            dbCluster.Connections.AllowFromAnyIpv4(Port.AllTraffic(), "Open to the world");
-
             #endregion
 
             #region SQS
@@ -159,8 +129,8 @@ namespace pwnctl.cdk
             var accessPoint = fs.AddAccessPoint(AwsConstants.EfsApId, new AccessPointOptions
             {
                 CreateAcl = new Acl { OwnerGid = "1001", OwnerUid = "1001", Permissions = "777" },
-                Path = "/",
-                PosixUser = new PosixUser { Gid = "0", Uid = "0" }
+                PosixUser = new PosixUser { Gid = "0", Uid = "0" },
+                Path = "/"
             });
             #endregion
 
@@ -184,10 +154,11 @@ namespace pwnctl.cdk
             pwnctlApiRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("service-role/AWSLambdaVPCAccessExecutionRole"));
             pwnctlApiRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonElasticFileSystemClientFullAccess"));
             pwnctlApiRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("SecretsManagerReadWrite"));
+            pwnctlApiRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonRDSFullAccess"));
             apiKeySecret.GrantRead(pwnctlApiRole);
             dbCredSecret.GrantRead(pwnctlApiRole);
 
-            var secMgrEp = new InterfaceVpcEndpoint(this, "pwnctl-lambda-sec-mgr-ep", new InterfaceVpcEndpointProps
+            var secMgrEp = new InterfaceVpcEndpoint(this, AwsConstants.VpcSecMgrEndpoint, new InterfaceVpcEndpointProps
             {
                 Vpc = vpc,
                 Service = InterfaceVpcEndpointAwsService.SECRETS_MANAGER,
@@ -200,7 +171,8 @@ namespace pwnctl.cdk
             var function = new Function(this, AwsConstants.LambdaName, new FunctionProps
             {
                 Runtime = Runtime.DOTNET_6,
-                Timeout = Duration.Seconds(30),
+                MemorySize = 512,
+                Timeout = Duration.Seconds(60),
                 Code = Code.FromAsset(Path.Join("src", "pwnctl", "pwnctl.api", "bin", "Release", "net6.0")),
                 Handler = "pwnctl.api",
                 Vpc = vpc,
@@ -209,7 +181,6 @@ namespace pwnctl.cdk
                 LogRetention = RetentionDays.ONE_WEEK,
                 Environment = new Dictionary<string, string>()
                 {
-                    {"PWNCTL_Db__Endpoint", endpointHost},
                     {"PWNCTL_JobQueue__QueueName", AwsConstants.QueueName},
                     {"PWNCTL_JobQueue__DLQName", AwsConstants.DLQName},
                     {"PWNCTL_JobQueue__VisibilityTimeout", AwsConstants.QueueVisibilityTimeoutInSec.ToString()},
@@ -220,6 +191,7 @@ namespace pwnctl.cdk
                     {"PWNCTL_InstallPath", AwsConstants.EfsMountPoint}
                 }
             });
+            dbCluster.Connections.AllowDefaultPortFrom(function);
 
             var fnUrl = function.AddFunctionUrl(new FunctionUrlOptions
             {
@@ -276,9 +248,9 @@ namespace pwnctl.cdk
                 }
             });
 
-            var logGroup = new LogGroup(this, "pwnwrk-logs", new LogGroupProps
+            var logGroup = new LogGroup(this, AwsConstants.EcsLogGroupId, new LogGroupProps
             {
-                LogGroupName = "/aws/ecs/pwnwrk",
+                LogGroupName = AwsConstants.EcsLogGroupName,
                 RemovalPolicy = RemovalPolicy.DESTROY,
                 Retention = RetentionDays.ONE_WEEK
             });
@@ -298,7 +270,6 @@ namespace pwnctl.cdk
                 }),
                 Environment = new Dictionary<string, string>()
                 {
-                    {"PWNCTL_Db__Endpoint", endpointHost},
                     {"PWNCTL_JobQueue__QueueName", queue.QueueName},
                     {"PWNCTL_JobQueue__DLQName", dlq.QueueName},
                     {"PWNCTL_JobQueue__VisibilityTimeout", AwsConstants.QueueVisibilityTimeoutInSec.ToString()},
