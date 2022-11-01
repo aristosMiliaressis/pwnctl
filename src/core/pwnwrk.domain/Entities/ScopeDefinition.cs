@@ -7,9 +7,9 @@ namespace pwnwrk.domain.Entities
 {
     public class ScopeDefinition : BaseEntity<int>
     {
-        public string Name { get; private init; }
-        public ScopeType Type { get; private init; }
-        public string Pattern { get; private init; }
+        public string Name { get; init; }
+        public ScopeType Type { get; init; }
+        public string Pattern { get; init; }
 
         [JsonIgnore]
         public int? ProgramId { get; private init; }

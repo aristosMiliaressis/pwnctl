@@ -5,7 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
-using pwnctl.dto.Api;
+using pwnctl.dto.Mediator;
 using pwnctl.dto;
 using pwnwrk.infra;
 
@@ -20,55 +20,54 @@ public class PwnctlApiClient
         _httpClient.DefaultRequestHeaders.Add("X-Api-Key", PwnContext.Config.Api.ApiKey);
     }
 
-    public async Task<TResult> Send<TResult>(IApiRequest<TResult> request, params string[] routeArgs)
+    public async Task<TResult> Send<TResult>(IMediatedRequest<TResult> request)
     {
-        var apiResponse = await _send(request, routeArgs);
+        var apiResponse = await _send(request);
 
-        return (TResult) apiResponse.Result;
+        return (TResult)apiResponse.Result;
     }
 
-    public async Task<ApiResponse<TResult>> TrySend<TResult>(IApiRequest<TResult> request, params string[] routeArgs)
+    public async Task Send(IMediatedRequest request)
+    {
+        var apiResponse = await _send(request);
+
+        return;
+    }
+
+    public async Task<MediatedResponse<TResult>> TrySend<TResult>(IMediatedRequest<TResult> request)
     {
         try
         {
-            return (ApiResponse<TResult>) await _send(request, routeArgs);
+            return (MediatedResponse<TResult>)await _send(request);
         }
         catch
         {
-            //  TODO: handle this properly
-            return (ApiResponse<TResult>) ApiResponse.Create(System.Net.HttpStatusCode.InternalServerError);
-        }        
+            return (MediatedResponse<TResult>)MediatedResponse.Create(System.Net.HttpStatusCode.InternalServerError);
+        }
     }
 
-    private async Task<ApiResponse> _send<TResult>(IApiRequest<TResult> request, params string[] routeArgs)
+    public async Task<MediatedResponse> TrySend(IMediatedRequest request)
+    {
+        try
+        {
+            return await _send(request);
+        }
+        catch
+        {
+            return MediatedResponse.Create(System.Net.HttpStatusCode.InternalServerError);
+        }
+    }
+
+    private async Task<MediatedResponse> _send(IBaseMediatedRequest request)
     {
         var content = JsonContent.Create(request);
-
-        var route = _interpolateRouteArgs(request.ReflectedConcreteRoute, routeArgs);
+        
+        var route = request.GetInterpolatedRoute();
 
         var response = await _httpClient.PostAsync(route, content);
         
         response.EnsureSuccessStatusCode();
 
-        return await response.Content.ReadFromJsonAsync<ApiResponse>();;
-    }
-
-    private string _interpolateRouteArgs(string routeTemplate, params string[] routeArgs)
-    {
-        if (routeTemplate.Count(s => s == '{') != routeArgs.Length)
-            throw new Exception("Route argument count mismatch");
-
-        int idx = 0;
-        routeTemplate.Split("{")
-            .Skip(1)
-            .ToList()
-            .ForEach(arg =>
-            {
-                arg = arg.Split("}")[0];
-                routeTemplate = routeTemplate.Replace("{" + arg + "}", routeArgs[idx]);
-                idx++;
-            });
-
-        return routeTemplate;
+        return await response.Content.ReadFromJsonAsync<MediatedResponse>();;
     }
 }

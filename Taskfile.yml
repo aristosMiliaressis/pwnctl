@@ -4,20 +4,6 @@ tasks:
   simple-setup: 
     deps: [install-deps, build-svc-image, push-svc-image, bootstrap-aws, deploy-app, install-cli-src, upload-files]
 
-  install-deps:
-    cmds:
-      - |
-        sudo apt-get install -y git curl wget jq docker nodejs
-        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o awscliv2.zip
-        unzip awscliv2.zip
-        rm awscliv2.zip
-        ./aws/install --update
-        rm -rf ./aws
-        curl -fsSL https://deb.nodesource.com/setup_18.x | bash - 
-        npm install -g aws-cdk
-        curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin -Channel 6.0 -Runtime aspnetcore -InstallDir /usr/share/dotnet --architecture x64
-        ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet
-
   test:
     cmds:
       - dotnet test
@@ -80,3 +66,16 @@ tasks:
     cmds:
       - cdk destroy -o src/core/pwnwrk.infra.cdk/cdk.out
 
+  install-deps:
+    cmds:
+      - |
+        sudo apt-get install -y git curl wget jq docker nodejs
+        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o awscliv2.zip
+        unzip awscliv2.zip
+        rm awscliv2.zip
+        ./aws/install --update
+        rm -rf ./aws
+        curl -fsSL https://deb.nodesource.com/setup_18.x | bash - 
+        npm install -g aws-cdk
+        curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin -Channel 6.0 -Runtime aspnetcore -InstallDir /usr/share/dotnet --architecture x64
+        ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet

@@ -14,7 +14,10 @@ namespace pwnwrk.infra
             PwnContext.Config = PwnConfigFactory.Create();
             PwnContext.Logger = PwnLoggerFactory.Create();
             PwnwrkDomainShim.PublicSuffixRepository = new PublicSuffixRepository();
-            DatabaseInitializer.InitializeAsync().Wait();
+            if (PwnContext.Config.Aws.InVpc)
+            {
+                DatabaseInitializer.InitializeAsync().Wait();
+            }
         }
 
         public static AppConfig Config { get; set; }

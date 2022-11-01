@@ -1,24 +1,22 @@
-namespace pwnctl.api.Controllers;
-
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using pwnctl.dto.Api;
-using pwnwrk.infra.MediatR;
+using pwnctl.dto.Mediator;
 
-public abstract class BaseController : ControllerBase
+namespace pwnctl.api.Controllers
 {
-    private IMediator _mediator;
-    protected IMediator Mediator => _mediator ??= HttpContext.RequestServices.GetService<IMediator>();
-
-    protected ActionResult CreateResponse(MediatorResult result)
+    public abstract class BaseController : ControllerBase
     {
-        var response = new ApiResponse(result);
+        private IMediator _mediator;
+        protected IMediator Mediator => _mediator ??= HttpContext.RequestServices.GetService<IMediator>();
 
-        if (result.IsSuccess)
-            return Ok(response);
+        protected ActionResult CreateResponse(MediatedResponse result)
+        {
+            if (result.IsSuccess)
+                return Ok(result);
 
-        int status = response.Errors.MaxBy(err => err.Code).ToStatusCode();
+            int status = result.Errors.MaxBy(err => err.Type).ToStatusCode();
 
-        return StatusCode(status, response);
+            return StatusCode(status, result);
+        }
     }
 }

@@ -1,4 +1,5 @@
 using pwnwrk.infra.Aws;
+using pwnwrk.infra.Logging;
 
 namespace pwnwrk.infra.Configuration
 {
@@ -15,6 +16,7 @@ namespace pwnwrk.infra.Configuration
         public class AwsSettings
         {
             public string Profile { get; set; } = "default";
+            public bool InVpc { get; set; }
         }
 
         public class ApiSettings
@@ -45,7 +47,7 @@ namespace pwnwrk.infra.Configuration
             public string MinLevel { get; set; }
             public string LogGroup { get; set; }
             public string FilePath { get; set; }
-            public string Provider { get; set; } = "console";
+            public LogProfile Provider { get; set; } = LogProfile.Console;
         }
     }
 }

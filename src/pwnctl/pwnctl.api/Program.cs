@@ -1,6 +1,5 @@
-using pwnwrk.infra.MediatR;
 using pwnctl.api.Middleware;
-using pwnctl.api.MediatorPipelines;
+using pwnctl.api.MediatR.Pipelines;
 using pwnctl.dto;
 using MediatR;
 using FluentValidation;

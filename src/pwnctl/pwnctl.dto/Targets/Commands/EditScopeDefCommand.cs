@@ -3,9 +3,9 @@ namespace pwnctl.dto.Targets.Commands;
 using MediatR;
 
 using pwnwrk.domain.Entities;
-using pwnwrk.infra.MediatR;
+using pwnctl.dto.Mediator;
 
-public class EditScopeDefCommand : ScopeDefinition, IApiRequest<object>, IRequest<MediatorResult>
+public class EditScopeDefCommand : ScopeDefinition, IMediatedRequest
 {
     public static string Route => "/targets/{target}/scope/{scope}";
     public static HttpMethod Method => HttpMethod.Patch;

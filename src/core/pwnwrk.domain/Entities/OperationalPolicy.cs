@@ -8,11 +8,11 @@ namespace pwnwrk.domain.Entities
 {
     public class OperationalPolicy : BaseEntity<int>
     {
-        public string Name { get; private init; }
-		public string Blacklist { get; private init; }
-		public string Whitelist { get; private init; }
-		public int? MaxAggressiveness { get; private init; }
-		public bool AllowActive { get; private init; }
+        public string Name { get; init; }
+		public string Blacklist { get; init; }
+		public string Whitelist { get; init; }
+		public int? MaxAggressiveness { get; init; }
+		public bool AllowActive { get; init; }
 
         public OperationalPolicy() {}
     }

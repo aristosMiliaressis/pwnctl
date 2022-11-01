@@ -1,8 +1,7 @@
 #!/bin/bash
 
-apiKey=$(aws secretsmanager get-secret-value --secret-id pwnctl-Api-ApiKey | jq -r .SecretString)
-functionName=$(aws lambda list-functions | jq -r '.Functions[] | select( .FunctionName  | startswith("pwnctl-pwnctlapi")) | .FunctionName')
-functionUrl=$(aws lambda get-function-url-config --function-name $functionName | jq -r .FunctionUrl)
+apiKey=$(aws secretsmanager get-secret-value --secret-id /aws/secret/pwnctl/Api/ApiKey | jq -r .SecretString)
+functionUrl=$(aws ssm get-parameter --name /pwnctl/Api/BaseUrl | jq -r .Parameter.Value)
 
 uploadDirectory() {
      srcDir=$1

@@ -18,5 +18,6 @@
     <PackageReference Include="Amazon.CDK.AWS.Lambda" Version="1.176.0" />
     <PackageReference Include="Amazon.CDK.AWS.RDS" Version="1.176.0" />
     <PackageReference Include="Amazon.CDK.AWS.SQS" Version="1.176.0" />
+    <PackageReference Include="Amazon.CDK.AWS.SSM" Version="1.176.0" />
   </ItemGroup>
 </Project>

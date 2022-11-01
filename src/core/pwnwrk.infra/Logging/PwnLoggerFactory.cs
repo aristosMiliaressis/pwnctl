@@ -11,11 +11,11 @@ namespace pwnwrk.infra.Logging
     {
         public static Logger Create()
         {
-            return PwnContext.Config.Logging.Provider.ToLower() switch
+            return PwnContext.Config.Logging.Provider switch
             {
-                "console" => CreateConsoleLogger(),
-                "cloudwatch" => CreateCloudWatchLogger(),
-                "file" => CreateFileLogger(),
+                LogProfile.Console => CreateConsoleLogger(),
+                LogProfile.CloudWatch => CreateCloudWatchLogger(),
+                LogProfile.File => CreateFileLogger(),
                 _ => throw new NotSupportedException()
             };
         }
@@ -45,5 +45,12 @@ namespace pwnwrk.infra.Logging
 
         private static readonly LoggerConfiguration _baseConfig = new LoggerConfiguration()
                     .MinimumLevel.Is(Enum.Parse<LogEventLevel>(PwnContext.Config.Logging.MinLevel ?? "Information"));
+    }
+
+    public enum LogProfile
+    {
+        Console,
+        CloudWatch,
+        File
     }
 }
