@@ -60,7 +60,7 @@ public class PwnctlApiClient
 
     private async Task<MediatedResponse> _send(IBaseMediatedRequest request)
     {
-        var content = JsonContent.Create(request);
+        var content = JsonContent.Create(request, request.GetType());
         
         var route = request.GetInterpolatedRoute();
 

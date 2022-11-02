@@ -5,7 +5,6 @@ public static class MediatedRequestExtensions
     public static string GetInterpolatedRoute(this IBaseMediatedRequest request)
     {
         string route = MediatedRequestTypeHelper.GetRoute(request.GetType());
-        int idx = 0;
 
         route.Split("{")
             .Skip(1)
@@ -16,7 +15,6 @@ public static class MediatedRequestExtensions
                 var routeParam = request.GetType().GetProperty(arg).GetValue(request).ToString();
 
                 route = route.Replace("{" + arg + "}", routeParam);
-                idx++;
             });
 
         return route;
