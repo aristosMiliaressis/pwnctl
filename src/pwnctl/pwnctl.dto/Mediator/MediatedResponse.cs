@@ -14,23 +14,21 @@ public class MediatedResponse
 
     public MediatedResponse() {}
 
-    protected MediatedResponse(IEnumerable<MediatorError> errors)
+    protected MediatedResponse(params MediatorError[] errors)
     {
         Errors = errors.ToList();
     }
 
     public static MediatedResponse Error(string template, params string[] args)
     {
-        return new MediatedResponse(new List<MediatorError>
-        { 
-            new MediatorError(MediatorError.ErrorType.GenericClientError, string.Format(template, args))
-        });
+        return new MediatedResponse(MediatorError.GenericClientError(string.Format(template, args)));
     }
 
     public static MediatedResponse ValidationFailure(IEnumerable<ValidationFailure> validationFailures)
     {
         return new MediatedResponse(validationFailures
-                                    .Select(fail => new MediatorError(MediatorError.ErrorType.ValidationError, fail.ErrorMessage)));
+                                    .Select(fail => new MediatorError(MediatorError.ErrorType.ValidationError, fail.ErrorMessage))
+                                    .ToArray());
     }
 
     public static MediatedResponse Success()
@@ -42,8 +40,8 @@ public class MediatedResponse
     {
         return status switch
         {
-            // HttpStatusCode.InternalServerError => InternalServerError,
-            // HttpStatusCode.Unauthorized => Unauthorized,
+            HttpStatusCode.InternalServerError => new MediatedResponse(MediatorError.InternalServerError),
+            HttpStatusCode.Unauthorized => new MediatedResponse(MediatorError.Unauthorized),
             _ => throw new NotImplementedException()
         };
     }
