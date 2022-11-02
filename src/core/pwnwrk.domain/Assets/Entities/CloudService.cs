@@ -7,7 +7,7 @@ using System.Text.Json;
 
 namespace pwnwrk.domain.Assets.Entities
 {
-    public class CloudService : BaseAsset
+    public sealed class CloudService : BaseAsset
     {
         [UniquenessAttribute]
         public string Hostname { get; set; }

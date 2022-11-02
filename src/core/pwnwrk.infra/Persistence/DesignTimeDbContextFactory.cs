@@ -4,7 +4,7 @@ using pwnwrk.infra.Configuration;
 
 namespace pwnwrk.infra.Persistence
 {
-    public class PwnctlDbContextFactory : IDesignTimeDbContextFactory<PwnctlDbContext>
+    public sealed class PwnctlDbContextFactory : IDesignTimeDbContextFactory<PwnctlDbContext>
     {
         public PwnctlDbContext CreateDbContext(string[] args)
         {

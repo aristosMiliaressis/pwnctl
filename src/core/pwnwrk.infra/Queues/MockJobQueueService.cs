@@ -3,7 +3,7 @@ using pwnwrk.domain.Tasks.Entities;
 
 namespace pwnwrk.infra.Queues
 {
-    public class MockJobQueueService : IJobQueueService
+    public sealed class MockJobQueueService : IJobQueueService
     {
         /// <summary>
         /// pushes a job to the pending queue.

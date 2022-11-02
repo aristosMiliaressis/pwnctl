@@ -2,7 +2,7 @@ using pwnwrk.domain.Assets.Entities;
 
 namespace pwnwrk.infra.Repositories
 {
-    public class CloudServiceRepository
+    public sealed class CloudServiceRepository
     {
         private static CloudServiceRepository _singleton;
         

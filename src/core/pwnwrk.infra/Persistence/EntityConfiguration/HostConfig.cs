@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace pwnwrk.infra.Persistence.EntityConfiguration
 {
-    public class HostConfig : IEntityTypeConfiguration<Host>
+    public sealed class HostConfig : IEntityTypeConfiguration<Host>
     {
         public void Configure(EntityTypeBuilder<Host> builder)
         {

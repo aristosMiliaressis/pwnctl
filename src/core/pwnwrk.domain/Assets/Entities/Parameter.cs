@@ -5,7 +5,7 @@ using pwnwrk.domain.Targets.Entities;
 
 namespace pwnwrk.domain.Assets.Entities
 {
-    public class Parameter : BaseAsset
+    public sealed class Parameter : BaseAsset
     {
         public Endpoint Endpoint { get; private init; }
         public string EndpointId { get; private init; }

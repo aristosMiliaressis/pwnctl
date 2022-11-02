@@ -1,6 +1,6 @@
 namespace pwnctl.dto;
 
-public class PwnctlDtoAssemblyMarker
+public sealed class PwnctlDtoAssemblyMarker
 {
 
 }

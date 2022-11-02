@@ -8,7 +8,7 @@ using pwnwrk.domain.Assets.BaseClasses;
 
 namespace pwnctl.cli.ModeHandlers
 {
-    public class ListModeHandler : IModeHandler
+    public sealed class ListModeHandler : IModeHandler
     {
         public string ModeName => "list";
         
@@ -77,9 +77,9 @@ namespace pwnctl.cli.ModeHandlers
         public void PrintHelpSection()
         {
             Console.WriteLine($"\t{ModeName}");
-            Console.WriteLine($"\t\tlists asset of the specified class in jsonline format.");
+            Console.WriteLine($"\t\tlists asset of the specified sealed class in jsonline format.");
             Console.WriteLine($"\t\tArguments:");
-            Console.WriteLine($"\t\t\t--class\tthe asset class (hosts/endpoints/domains/services/dnsrecords/netranges/emails).");
+            Console.WriteLine($"\t\t\t--class\tthe asset sealed class (hosts/endpoints/domains/services/dnsrecords/netranges/emails).");
         }
     }
 }

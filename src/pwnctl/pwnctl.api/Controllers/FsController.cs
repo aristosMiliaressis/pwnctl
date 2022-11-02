@@ -7,7 +7,7 @@ using pwnwrk.infra.Configuration;
 
 [ApiController]
 [Route("[controller]")]
-public class FsController : ControllerBase
+public sealed class FsController : ControllerBase
 {
     private readonly ILogger<FsController> _logger;
 

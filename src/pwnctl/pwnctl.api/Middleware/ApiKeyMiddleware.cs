@@ -4,7 +4,7 @@ using pwnctl.api.Extensions;
 using pwnwrk.infra;
 using System.Net;
 
-public class ApiKeyMiddleware
+public sealed class ApiKeyMiddleware
 {
     private readonly RequestDelegate _next;
     private const string _apiKeyHeader = "X-Api-Key";

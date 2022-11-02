@@ -4,7 +4,7 @@ using pwnwrk.domain.Common.BaseClasses;
 
 namespace pwnwrk.domain.Notifications.Entities
 {
-    public class NotificationRule : BaseEntity<int>
+    public sealed class NotificationRule : BaseEntity<int>
     {
         public string ShortName { get; private init; }
         public string Subject { get; private init; }

@@ -4,7 +4,7 @@ using pwnwrk.domain.Targets.Entities;
 
 namespace pwnwrk.domain.Assets.Entities
 {
-    public class VirtualHost : BaseAsset
+    public sealed class VirtualHost : BaseAsset
     {
         public string Name { get; private init; }
         public Service Service { get; private init; }

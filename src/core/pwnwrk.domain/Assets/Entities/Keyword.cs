@@ -4,7 +4,7 @@ using pwnwrk.domain.Assets.BaseClasses;
 
 namespace pwnwrk.domain.Assets.Entities
 {
-    public class Keyword : BaseAsset
+    public sealed class Keyword : BaseAsset
     {
         [UniquenessAttribute]
         public string Word { get; private init; }

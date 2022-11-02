@@ -4,7 +4,7 @@ using pwnwrk.domain.Tasks.Entities;
 
 namespace pwnwrk.infra.Persistence.EntityConfiguration
 {
-    public class TaskConfig : IEntityTypeConfiguration<TaskRecord>
+    public sealed class TaskConfig : IEntityTypeConfiguration<TaskRecord>
     {
         public void Configure(EntityTypeBuilder<TaskRecord> builder)
         {
@@ -48,7 +48,7 @@ namespace pwnwrk.infra.Persistence.EntityConfiguration
         }
     }
 
-    public class TaskDefinitionConfig : IEntityTypeConfiguration<TaskDefinition>
+    public sealed class TaskDefinitionConfig : IEntityTypeConfiguration<TaskDefinition>
     {
         public void Configure(EntityTypeBuilder<TaskDefinition> builder)
         {

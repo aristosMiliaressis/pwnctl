@@ -8,7 +8,7 @@ using MediatR;
 
 namespace pwnctl.api.MediatR.Handlers.Process.Commands
 {
-    public class ProcessAssetsCommandHandler : IRequestHandler<ProcessAssetsCommand, MediatedResponse>
+    public sealed class ProcessAssetsCommandHandler : IRequestHandler<ProcessAssetsCommand, MediatedResponse>
     {
         public async Task<MediatedResponse> Handle(ProcessAssetsCommand command, CancellationToken cancellationToken)
         {

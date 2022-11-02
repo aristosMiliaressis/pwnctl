@@ -10,7 +10,7 @@ using System.Text.Json;
 
 namespace pwnwrk.domain.Assets.Entities
 {
-    public class Domain : BaseAsset
+    public sealed class Domain : BaseAsset
     {
         [UniquenessAttribute]
         public string Name { get; private init; }

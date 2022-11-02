@@ -6,7 +6,7 @@ using pwnctl.api.Extensions;
 namespace pwnctl.api.Attributes
 {
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public class HttpEndpointAttribute<TRequest> : HttpMethodAttribute
+    public sealed class HttpEndpointAttribute<TRequest> : HttpMethodAttribute
         where TRequest : IBaseMediatedRequest
     {
         public HttpEndpointAttribute()

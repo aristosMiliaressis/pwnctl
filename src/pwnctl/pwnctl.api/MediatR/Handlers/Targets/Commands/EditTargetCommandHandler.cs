@@ -6,7 +6,7 @@ using MediatR;
 
 namespace pwnctl.api.MediatR.Handlers.Targets.Commands
 {
-    public class EditTargetCommandHandler : IRequestHandler<EditTargetCommand, MediatedResponse>
+    public sealed class EditTargetCommandHandler : IRequestHandler<EditTargetCommand, MediatedResponse>
     {
         public EditTargetCommandHandler()
         {

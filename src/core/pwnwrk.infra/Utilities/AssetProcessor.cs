@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace pwnwrk.infra.Utilities
 {
-    public class AssetProcessor
+    public sealed class AssetProcessor
     {
         private readonly AssetRepository _repository = new();
         private readonly JobAssignmentService _jobService = new();

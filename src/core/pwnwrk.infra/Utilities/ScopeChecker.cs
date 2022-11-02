@@ -3,7 +3,7 @@ using pwnwrk.domain.Targets.Entities;
 
 namespace pwnwrk.infra.Utilities
 {
-    public class ScopeChecker
+    public sealed class ScopeChecker
     {
         private readonly List<ScopeDefinition> _scopeDefinitions;
 

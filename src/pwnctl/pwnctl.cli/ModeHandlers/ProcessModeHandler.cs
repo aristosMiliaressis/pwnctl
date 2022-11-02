@@ -6,7 +6,7 @@ using pwnctl.dto.Process.Commands;
 
 namespace pwnctl.cli.ModeHandlers
 {
-    public class ProcessModeHandler : IModeHandler
+    public sealed class ProcessModeHandler : IModeHandler
     {
         public string ModeName => "process";
 

@@ -5,7 +5,7 @@ using pwnwrk.domain.Assets.Entities;
 
 namespace pwnwrk.domain.Tasks.Entities
 {
-    public class TaskRecord : BaseEntity<int>
+    public sealed class TaskRecord : BaseEntity<int>
     {
         public int DefinitionId { get; private init; }
         public TaskDefinition Definition { get; private init; }

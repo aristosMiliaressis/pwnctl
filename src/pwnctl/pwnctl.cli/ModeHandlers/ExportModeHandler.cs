@@ -9,7 +9,7 @@ using pwnwrk.domain.Assets.BaseClasses;
 
 namespace pwnctl.cli.ModeHandlers
 {
-    public class ExportModeHandler : IModeHandler
+    public sealed class ExportModeHandler : IModeHandler
     {
         public string ModeName => "export";
         

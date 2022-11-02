@@ -7,7 +7,7 @@ using pwnwrk.domain.Tasks.Entities;
 
 namespace pwnwrk.infra.Queues
 {
-    public class SQSJobQueueService : IJobQueueService
+    public sealed class SQSJobQueueService : IJobQueueService
     {
         private readonly AmazonSQSClient _sqsClient = new();
 
@@ -103,7 +103,7 @@ namespace pwnwrk.infra.Queues
         }
     }
 
-    public class TaskAssigned
+    public sealed class TaskAssigned
     {
         [JsonPropertyName("taskId")]
         public int TaskId { get; init; }

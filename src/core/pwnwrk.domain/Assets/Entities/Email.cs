@@ -8,7 +8,7 @@ using System.Text.Json;
 
 namespace pwnwrk.domain.Assets.Entities
 {
-    public class Email : BaseAsset
+    public sealed class Email : BaseAsset
     {
         [UniquenessAttribute]
         public string Address { get; private init; }

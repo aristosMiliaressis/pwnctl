@@ -47,7 +47,7 @@ public class MediatedResponse
     }
 }
 
-public class MediatedResponse<TResult> : MediatedResponse
+public sealed class MediatedResponse<TResult> : MediatedResponse
 {
     public new TResult Result 
     { 

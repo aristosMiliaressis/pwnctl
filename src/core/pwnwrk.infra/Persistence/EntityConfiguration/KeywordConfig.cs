@@ -5,7 +5,7 @@ using pwnwrk.infra.Persistence.IdGenerators;
 
 namespace pwnwrk.infra.Persistence.EntityConfiguration
 {
-    public class KeywordConfig : IEntityTypeConfiguration<Keyword>
+    public sealed class KeywordConfig : IEntityTypeConfiguration<Keyword>
     {
         public void Configure(EntityTypeBuilder<Keyword> builder)
         {

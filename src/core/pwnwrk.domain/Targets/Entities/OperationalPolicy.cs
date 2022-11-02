@@ -6,7 +6,7 @@ using pwnwrk.domain.Common.BaseClasses;
 
 namespace pwnwrk.domain.Targets.Entities
 {
-    public class OperationalPolicy : BaseEntity<int>
+    public sealed class OperationalPolicy : BaseEntity<int>
     {
         public string Name { get; init; }
 		public string Blacklist { get; init; }

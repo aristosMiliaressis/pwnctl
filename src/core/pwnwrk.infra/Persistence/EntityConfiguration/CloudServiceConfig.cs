@@ -5,7 +5,7 @@ using pwnwrk.infra.Persistence.IdGenerators;
 
 namespace pwnwrk.infra.Persistence.EntityConfiguration
 {
-    public class CloudServiceConfig : IEntityTypeConfiguration<CloudService>
+    public sealed class CloudServiceConfig : IEntityTypeConfiguration<CloudService>
     {
         public void Configure(EntityTypeBuilder<CloudService> builder)
         {

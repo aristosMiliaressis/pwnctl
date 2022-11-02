@@ -4,7 +4,7 @@ using pwnwrk.domain.Common.Entities;
 
 namespace pwnwrk.infra.Persistence.EntityConfiguration
 {
-    public class TagConfig : IEntityTypeConfiguration<Tag>
+    public sealed class TagConfig : IEntityTypeConfiguration<Tag>
     {
         public void Configure(EntityTypeBuilder<Tag> builder)
         {

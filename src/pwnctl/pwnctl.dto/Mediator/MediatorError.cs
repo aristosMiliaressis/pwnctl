@@ -1,6 +1,6 @@
 namespace pwnctl.dto.Mediator;
 
-public class MediatorError
+public sealed class MediatorError
 {
     public string Message { get; set; }
     public ErrorType Type { get; set; }

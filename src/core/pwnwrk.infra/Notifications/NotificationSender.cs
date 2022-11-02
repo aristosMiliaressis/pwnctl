@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace pwnwrk.infra.Notifications
 {
-    public class NotificationSender
+    public sealed class NotificationSender
     {
         public void Send(BaseAsset asset, NotificationRule rule)
         {

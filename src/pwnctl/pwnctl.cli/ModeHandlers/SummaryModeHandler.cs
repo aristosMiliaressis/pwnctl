@@ -7,7 +7,7 @@ using pwnwrk.infra.Persistence;
 
 namespace pwnctl.cli.ModeHandlers
 {
-    public class SummaryModeHandler : IModeHandler
+    public sealed class SummaryModeHandler : IModeHandler
     {
         public string ModeName => "summary";
         

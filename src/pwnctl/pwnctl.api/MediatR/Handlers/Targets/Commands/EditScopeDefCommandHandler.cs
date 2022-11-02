@@ -5,7 +5,7 @@ using MediatR;
 
 namespace pwnctl.api.MediatR.Handlers.Targets.Commands
 {
-    public class EditScopeDefCommandHandler : IRequestHandler<EditScopeDefCommand, MediatedResponse>
+    public sealed class EditScopeDefCommandHandler : IRequestHandler<EditScopeDefCommand, MediatedResponse>
     {
         public EditScopeDefCommandHandler()
         {

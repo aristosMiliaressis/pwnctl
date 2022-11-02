@@ -9,7 +9,7 @@ using System.Text.Json;
 
 namespace pwnwrk.domain.Assets.Entities
 {
-    public class NetRange : BaseAsset
+    public sealed class NetRange : BaseAsset
     {
         [UniquenessAttribute]
         public string FirstAddress { get; private init; }

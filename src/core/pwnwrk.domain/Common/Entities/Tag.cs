@@ -4,7 +4,7 @@ using pwnwrk.domain.Common.BaseClasses;
 
 namespace pwnwrk.domain.Common.Entities
 {
-    public class Tag : BaseEntity<int>
+    public sealed class Tag : BaseEntity<int>
     {
         public string Name { get; private init; }
         public string Value { get; private init; }

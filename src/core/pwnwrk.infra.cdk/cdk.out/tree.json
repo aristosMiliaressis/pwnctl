@@ -1,0 +1,2865 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Construct",
+          "version": "1.176.0"
+        }
+      },
+      "PwnctlStack": {
+        "id": "PwnctlStack",
+        "path": "PwnctlStack",
+        "children": {
+          "PwnwrkVpc": {
+            "id": "PwnwrkVpc",
+            "path": "PwnctlStack/PwnwrkVpc",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "PwnctlStack/PwnwrkVpc/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
+                  "aws:cdk:cloudformation:props": {
+                    "cidrBlock": "10.0.0.0/16",
+                    "enableDnsHostnames": true,
+                    "enableDnsSupport": true,
+                    "instanceTenancy": "default",
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "PwnctlStack/PwnwrkVpc"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.CfnVPC",
+                  "version": "1.176.0"
+                }
+              },
+              "PublicSubnet1Subnet1": {
+                "id": "PublicSubnet1Subnet1",
+                "path": "PwnctlStack/PwnwrkVpc/PublicSubnet1Subnet1",
+                "children": {
+                  "Subnet": {
+                    "id": "Subnet",
+                    "path": "PwnctlStack/PwnwrkVpc/PublicSubnet1Subnet1/Subnet",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "PwnwrkVpcEA5D7932"
+                        },
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            0,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
+                        "cidrBlock": "10.0.0.0/24",
+                        "mapPublicIpOnLaunch": true,
+                        "tags": [
+                          {
+                            "key": "aws-cdk:subnet-name",
+                            "value": "PublicSubnet1"
+                          },
+                          {
+                            "key": "aws-cdk:subnet-type",
+                            "value": "Public"
+                          },
+                          {
+                            "key": "Name",
+                            "value": "PwnctlStack/PwnwrkVpc/PublicSubnet1Subnet1"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "version": "1.176.0"
+                    }
+                  },
+                  "Acl": {
+                    "id": "Acl",
+                    "path": "PwnctlStack/PwnwrkVpc/PublicSubnet1Subnet1/Acl",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "1.176.0"
+                    }
+                  },
+                  "RouteTable": {
+                    "id": "RouteTable",
+                    "path": "PwnctlStack/PwnwrkVpc/PublicSubnet1Subnet1/RouteTable",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "PwnwrkVpcEA5D7932"
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "PwnctlStack/PwnwrkVpc/PublicSubnet1Subnet1"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "version": "1.176.0"
+                    }
+                  },
+                  "RouteTableAssociation": {
+                    "id": "RouteTableAssociation",
+                    "path": "PwnctlStack/PwnwrkVpc/PublicSubnet1Subnet1/RouteTableAssociation",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "PwnwrkVpcPublicSubnet1Subnet1RouteTable9A96482C"
+                        },
+                        "subnetId": {
+                          "Ref": "PwnwrkVpcPublicSubnet1Subnet1SubnetE695BBDB"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "version": "1.176.0"
+                    }
+                  },
+                  "DefaultRoute": {
+                    "id": "DefaultRoute",
+                    "path": "PwnctlStack/PwnwrkVpc/PublicSubnet1Subnet1/DefaultRoute",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "PwnwrkVpcPublicSubnet1Subnet1RouteTable9A96482C"
+                        },
+                        "destinationCidrBlock": "0.0.0.0/0",
+                        "gatewayId": {
+                          "Ref": "PwnwrkVpcIGW67C300FC"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "version": "1.176.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.PublicSubnet",
+                  "version": "1.176.0"
+                }
+              },
+              "PublicSubnet1Subnet2": {
+                "id": "PublicSubnet1Subnet2",
+                "path": "PwnctlStack/PwnwrkVpc/PublicSubnet1Subnet2",
+                "children": {
+                  "Subnet": {
+                    "id": "Subnet",
+                    "path": "PwnctlStack/PwnwrkVpc/PublicSubnet1Subnet2/Subnet",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "PwnwrkVpcEA5D7932"
+                        },
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            1,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
+                        "cidrBlock": "10.0.1.0/24",
+                        "mapPublicIpOnLaunch": true,
+                        "tags": [
+                          {
+                            "key": "aws-cdk:subnet-name",
+                            "value": "PublicSubnet1"
+                          },
+                          {
+                            "key": "aws-cdk:subnet-type",
+                            "value": "Public"
+                          },
+                          {
+                            "key": "Name",
+                            "value": "PwnctlStack/PwnwrkVpc/PublicSubnet1Subnet2"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "version": "1.176.0"
+                    }
+                  },
+                  "Acl": {
+                    "id": "Acl",
+                    "path": "PwnctlStack/PwnwrkVpc/PublicSubnet1Subnet2/Acl",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "1.176.0"
+                    }
+                  },
+                  "RouteTable": {
+                    "id": "RouteTable",
+                    "path": "PwnctlStack/PwnwrkVpc/PublicSubnet1Subnet2/RouteTable",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "PwnwrkVpcEA5D7932"
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "PwnctlStack/PwnwrkVpc/PublicSubnet1Subnet2"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "version": "1.176.0"
+                    }
+                  },
+                  "RouteTableAssociation": {
+                    "id": "RouteTableAssociation",
+                    "path": "PwnctlStack/PwnwrkVpc/PublicSubnet1Subnet2/RouteTableAssociation",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "PwnwrkVpcPublicSubnet1Subnet2RouteTable7648C85F"
+                        },
+                        "subnetId": {
+                          "Ref": "PwnwrkVpcPublicSubnet1Subnet2Subnet42578822"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "version": "1.176.0"
+                    }
+                  },
+                  "DefaultRoute": {
+                    "id": "DefaultRoute",
+                    "path": "PwnctlStack/PwnwrkVpc/PublicSubnet1Subnet2/DefaultRoute",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "PwnwrkVpcPublicSubnet1Subnet2RouteTable7648C85F"
+                        },
+                        "destinationCidrBlock": "0.0.0.0/0",
+                        "gatewayId": {
+                          "Ref": "PwnwrkVpcIGW67C300FC"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "version": "1.176.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.PublicSubnet",
+                  "version": "1.176.0"
+                }
+              },
+              "PrivateSubnet1Subnet1": {
+                "id": "PrivateSubnet1Subnet1",
+                "path": "PwnctlStack/PwnwrkVpc/PrivateSubnet1Subnet1",
+                "children": {
+                  "Subnet": {
+                    "id": "Subnet",
+                    "path": "PwnctlStack/PwnwrkVpc/PrivateSubnet1Subnet1/Subnet",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "PwnwrkVpcEA5D7932"
+                        },
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            0,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
+                        "cidrBlock": "10.0.2.0/24",
+                        "mapPublicIpOnLaunch": false,
+                        "tags": [
+                          {
+                            "key": "aws-cdk:subnet-name",
+                            "value": "PrivateSubnet1"
+                          },
+                          {
+                            "key": "aws-cdk:subnet-type",
+                            "value": "Isolated"
+                          },
+                          {
+                            "key": "Name",
+                            "value": "PwnctlStack/PwnwrkVpc/PrivateSubnet1Subnet1"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "version": "1.176.0"
+                    }
+                  },
+                  "Acl": {
+                    "id": "Acl",
+                    "path": "PwnctlStack/PwnwrkVpc/PrivateSubnet1Subnet1/Acl",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "1.176.0"
+                    }
+                  },
+                  "RouteTable": {
+                    "id": "RouteTable",
+                    "path": "PwnctlStack/PwnwrkVpc/PrivateSubnet1Subnet1/RouteTable",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "PwnwrkVpcEA5D7932"
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "PwnctlStack/PwnwrkVpc/PrivateSubnet1Subnet1"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "version": "1.176.0"
+                    }
+                  },
+                  "RouteTableAssociation": {
+                    "id": "RouteTableAssociation",
+                    "path": "PwnctlStack/PwnwrkVpc/PrivateSubnet1Subnet1/RouteTableAssociation",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "PwnwrkVpcPrivateSubnet1Subnet1RouteTable3D8CFB57"
+                        },
+                        "subnetId": {
+                          "Ref": "PwnwrkVpcPrivateSubnet1Subnet1Subnet3EE433F9"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "version": "1.176.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.PrivateSubnet",
+                  "version": "1.176.0"
+                }
+              },
+              "PrivateSubnet1Subnet2": {
+                "id": "PrivateSubnet1Subnet2",
+                "path": "PwnctlStack/PwnwrkVpc/PrivateSubnet1Subnet2",
+                "children": {
+                  "Subnet": {
+                    "id": "Subnet",
+                    "path": "PwnctlStack/PwnwrkVpc/PrivateSubnet1Subnet2/Subnet",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "PwnwrkVpcEA5D7932"
+                        },
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            1,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
+                        "cidrBlock": "10.0.3.0/24",
+                        "mapPublicIpOnLaunch": false,
+                        "tags": [
+                          {
+                            "key": "aws-cdk:subnet-name",
+                            "value": "PrivateSubnet1"
+                          },
+                          {
+                            "key": "aws-cdk:subnet-type",
+                            "value": "Isolated"
+                          },
+                          {
+                            "key": "Name",
+                            "value": "PwnctlStack/PwnwrkVpc/PrivateSubnet1Subnet2"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "version": "1.176.0"
+                    }
+                  },
+                  "Acl": {
+                    "id": "Acl",
+                    "path": "PwnctlStack/PwnwrkVpc/PrivateSubnet1Subnet2/Acl",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "1.176.0"
+                    }
+                  },
+                  "RouteTable": {
+                    "id": "RouteTable",
+                    "path": "PwnctlStack/PwnwrkVpc/PrivateSubnet1Subnet2/RouteTable",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "PwnwrkVpcEA5D7932"
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "PwnctlStack/PwnwrkVpc/PrivateSubnet1Subnet2"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "version": "1.176.0"
+                    }
+                  },
+                  "RouteTableAssociation": {
+                    "id": "RouteTableAssociation",
+                    "path": "PwnctlStack/PwnwrkVpc/PrivateSubnet1Subnet2/RouteTableAssociation",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "PwnwrkVpcPrivateSubnet1Subnet2RouteTable92CF94E6"
+                        },
+                        "subnetId": {
+                          "Ref": "PwnwrkVpcPrivateSubnet1Subnet2Subnet1F43F2E2"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "version": "1.176.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.PrivateSubnet",
+                  "version": "1.176.0"
+                }
+              },
+              "IGW": {
+                "id": "IGW",
+                "path": "PwnctlStack/PwnwrkVpc/IGW",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::InternetGateway",
+                  "aws:cdk:cloudformation:props": {
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "PwnctlStack/PwnwrkVpc"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.CfnInternetGateway",
+                  "version": "1.176.0"
+                }
+              },
+              "VPCGW": {
+                "id": "VPCGW",
+                "path": "PwnctlStack/PwnwrkVpc/VPCGW",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
+                  "aws:cdk:cloudformation:props": {
+                    "vpcId": {
+                      "Ref": "PwnwrkVpcEA5D7932"
+                    },
+                    "internetGatewayId": {
+                      "Ref": "PwnwrkVpcIGW67C300FC"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.CfnVPCGatewayAttachment",
+                  "version": "1.176.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ec2.Vpc",
+              "version": "1.176.0"
+            }
+          },
+          "PwnctlAuroraPostgreSqlInstanceCreds": {
+            "id": "PwnctlAuroraPostgreSqlInstanceCreds",
+            "path": "PwnctlStack/PwnctlAuroraPostgreSqlInstanceCreds",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "PwnctlStack/PwnctlAuroraPostgreSqlInstanceCreds/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
+                  "aws:cdk:cloudformation:props": {
+                    "generateSecretString": {
+                      "excludePunctuation": true,
+                      "generateStringKey": "password",
+                      "includeSpace": false,
+                      "secretStringTemplate": "{\"username\":\"pwnadmin\"}"
+                    },
+                    "name": "/aws/secret/pwnctl/Db"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-secretsmanager.CfnSecret",
+                  "version": "1.176.0"
+                }
+              },
+              "Attachment": {
+                "id": "Attachment",
+                "path": "PwnctlStack/PwnctlAuroraPostgreSqlInstanceCreds/Attachment",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "PwnctlStack/PwnctlAuroraPostgreSqlInstanceCreds/Attachment/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SecretsManager::SecretTargetAttachment",
+                      "aws:cdk:cloudformation:props": {
+                        "secretId": {
+                          "Ref": "PwnctlAuroraPostgreSqlInstanceCredsDEF288A5"
+                        },
+                        "targetId": {
+                          "Ref": "PwnctlAuroraClusterD2431BAE"
+                        },
+                        "targetType": "AWS::RDS::DBCluster"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-secretsmanager.CfnSecretTargetAttachment",
+                      "version": "1.176.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-secretsmanager.SecretTargetAttachment",
+                  "version": "1.176.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-secretsmanager.Secret",
+              "version": "1.176.0"
+            }
+          },
+          "PwnctlAuroraCluster": {
+            "id": "PwnctlAuroraCluster",
+            "path": "PwnctlStack/PwnctlAuroraCluster",
+            "children": {
+              "Subnets": {
+                "id": "Subnets",
+                "path": "PwnctlStack/PwnctlAuroraCluster/Subnets",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "PwnctlStack/PwnctlAuroraCluster/Subnets/Default",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::RDS::DBSubnetGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "dbSubnetGroupDescription": "Subnets for PwnctlAuroraCluster database",
+                        "subnetIds": [
+                          {
+                            "Ref": "PwnwrkVpcPrivateSubnet1Subnet1Subnet3EE433F9"
+                          },
+                          {
+                            "Ref": "PwnwrkVpcPrivateSubnet1Subnet2Subnet1F43F2E2"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-rds.CfnDBSubnetGroup",
+                      "version": "1.176.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-rds.SubnetGroup",
+                  "version": "1.176.0"
+                }
+              },
+              "SecurityGroup": {
+                "id": "SecurityGroup",
+                "path": "PwnctlStack/PwnctlAuroraCluster/SecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "PwnctlStack/PwnctlAuroraCluster/SecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "RDS security group",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "PwnwrkVpcEA5D7932"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                      "version": "1.176.0"
+                    }
+                  },
+                  "from PwnctlStackPwnctlApiSecurityGroup4CD6FE49:{IndirectPort}": {
+                    "id": "from PwnctlStackPwnctlApiSecurityGroup4CD6FE49:{IndirectPort}",
+                    "path": "PwnctlStack/PwnctlAuroraCluster/SecurityGroup/from PwnctlStackPwnctlApiSecurityGroup4CD6FE49:{IndirectPort}",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
+                      "aws:cdk:cloudformation:props": {
+                        "ipProtocol": "tcp",
+                        "description": "from PwnctlStackPwnctlApiSecurityGroup4CD6FE49:{IndirectPort}",
+                        "fromPort": {
+                          "Fn::GetAtt": [
+                            "PwnctlAuroraClusterD2431BAE",
+                            "Endpoint.Port"
+                          ]
+                        },
+                        "groupId": {
+                          "Fn::GetAtt": [
+                            "PwnctlAuroraClusterSecurityGroup77BB75EE",
+                            "GroupId"
+                          ]
+                        },
+                        "sourceSecurityGroupId": {
+                          "Fn::GetAtt": [
+                            "PwnctlApiSecurityGroupE5FA2DDE",
+                            "GroupId"
+                          ]
+                        },
+                        "toPort": {
+                          "Fn::GetAtt": [
+                            "PwnctlAuroraClusterD2431BAE",
+                            "Endpoint.Port"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroupIngress",
+                      "version": "1.176.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                  "version": "1.176.0"
+                }
+              },
+              "AuroraPostgreSqlDatabaseClusterEngineDefaultParameterGroup": {
+                "id": "AuroraPostgreSqlDatabaseClusterEngineDefaultParameterGroup",
+                "path": "PwnctlStack/PwnctlAuroraCluster/AuroraPostgreSqlDatabaseClusterEngineDefaultParameterGroup",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "1.176.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "PwnctlStack/PwnctlAuroraCluster/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::RDS::DBCluster",
+                  "aws:cdk:cloudformation:props": {
+                    "engine": "aurora-postgresql",
+                    "copyTagsToSnapshot": true,
+                    "databaseName": "pwnctl",
+                    "dbClusterIdentifier": "pwnctlauroracluster",
+                    "dbClusterParameterGroupName": "default.aurora-postgresql13",
+                    "dbSubnetGroupName": {
+                      "Ref": "PwnctlAuroraClusterSubnetsD3040239"
+                    },
+                    "engineVersion": "13.6",
+                    "masterUsername": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "{{resolve:secretsmanager:",
+                          {
+                            "Ref": "PwnctlAuroraPostgreSqlInstanceCredsDEF288A5"
+                          },
+                          ":SecretString:username::}}"
+                        ]
+                      ]
+                    },
+                    "masterUserPassword": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "{{resolve:secretsmanager:",
+                          {
+                            "Ref": "PwnctlAuroraPostgreSqlInstanceCredsDEF288A5"
+                          },
+                          ":SecretString:password::}}"
+                        ]
+                      ]
+                    },
+                    "port": 5432,
+                    "vpcSecurityGroupIds": [
+                      {
+                        "Fn::GetAtt": [
+                          "PwnctlAuroraClusterSecurityGroup77BB75EE",
+                          "GroupId"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-rds.CfnDBCluster",
+                  "version": "1.176.0"
+                }
+              },
+              "Instance1": {
+                "id": "Instance1",
+                "path": "PwnctlStack/PwnctlAuroraCluster/Instance1",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::RDS::DBInstance",
+                  "aws:cdk:cloudformation:props": {
+                    "dbClusterIdentifier": {
+                      "Ref": "PwnctlAuroraClusterD2431BAE"
+                    },
+                    "dbInstanceClass": "db.t3.medium",
+                    "dbInstanceIdentifier": "PwnctlAuroraPostgreSqlInstance1",
+                    "dbSubnetGroupName": {
+                      "Ref": "PwnctlAuroraClusterSubnetsD3040239"
+                    },
+                    "engine": "aurora-postgresql",
+                    "engineVersion": "13.6",
+                    "publiclyAccessible": false
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-rds.CfnDBInstance",
+                  "version": "1.176.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-rds.DatabaseCluster",
+              "version": "1.176.0"
+            }
+          },
+          "pwnwrk-dlq.fifo": {
+            "id": "pwnwrk-dlq.fifo",
+            "path": "PwnctlStack/pwnwrk-dlq.fifo",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "PwnctlStack/pwnwrk-dlq.fifo/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
+                  "aws:cdk:cloudformation:props": {
+                    "contentBasedDeduplication": true,
+                    "fifoQueue": true,
+                    "maximumMessageSize": 8192,
+                    "messageRetentionPeriod": 1209600,
+                    "queueName": "pwnwrk-dlq.fifo",
+                    "receiveMessageWaitTimeSeconds": 20,
+                    "visibilityTimeout": 30
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sqs.CfnQueue",
+                  "version": "1.176.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-sqs.Queue",
+              "version": "1.176.0"
+            }
+          },
+          "pwnwrk.fifo": {
+            "id": "pwnwrk.fifo",
+            "path": "PwnctlStack/pwnwrk.fifo",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "PwnctlStack/pwnwrk.fifo/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
+                  "aws:cdk:cloudformation:props": {
+                    "contentBasedDeduplication": true,
+                    "fifoQueue": true,
+                    "maximumMessageSize": 8192,
+                    "messageRetentionPeriod": 86400,
+                    "queueName": "pwnwrk.fifo",
+                    "receiveMessageWaitTimeSeconds": 20,
+                    "redrivePolicy": {
+                      "deadLetterTargetArn": {
+                        "Fn::GetAtt": [
+                          "pwnwrkdlqfifoA60405CB",
+                          "Arn"
+                        ]
+                      },
+                      "maxReceiveCount": 10
+                    },
+                    "visibilityTimeout": 30
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sqs.CfnQueue",
+                  "version": "1.176.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-sqs.Queue",
+              "version": "1.176.0"
+            }
+          },
+          "PwnwrkFs": {
+            "id": "PwnwrkFs",
+            "path": "PwnctlStack/PwnwrkFs",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "PwnctlStack/PwnwrkFs/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EFS::FileSystem",
+                  "aws:cdk:cloudformation:props": {
+                    "fileSystemTags": [
+                      {
+                        "key": "Name",
+                        "value": "PwnctlStack/PwnwrkFs"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-efs.CfnFileSystem",
+                  "version": "1.176.0"
+                }
+              },
+              "EfsSecurityGroup": {
+                "id": "EfsSecurityGroup",
+                "path": "PwnctlStack/PwnwrkFs/EfsSecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "PwnctlStack/PwnwrkFs/EfsSecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "PwnctlStack/PwnwrkFs/EfsSecurityGroup",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "PwnctlStack/PwnwrkFs"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "PwnwrkVpcEA5D7932"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                      "version": "1.176.0"
+                    }
+                  },
+                  "from PwnctlStackPwnctlApiSecurityGroup4CD6FE49:2049": {
+                    "id": "from PwnctlStackPwnctlApiSecurityGroup4CD6FE49:2049",
+                    "path": "PwnctlStack/PwnwrkFs/EfsSecurityGroup/from PwnctlStackPwnctlApiSecurityGroup4CD6FE49:2049",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
+                      "aws:cdk:cloudformation:props": {
+                        "ipProtocol": "tcp",
+                        "description": "from PwnctlStackPwnctlApiSecurityGroup4CD6FE49:2049",
+                        "fromPort": 2049,
+                        "groupId": {
+                          "Fn::GetAtt": [
+                            "PwnwrkFsEfsSecurityGroup9706A235",
+                            "GroupId"
+                          ]
+                        },
+                        "sourceSecurityGroupId": {
+                          "Fn::GetAtt": [
+                            "PwnctlApiSecurityGroupE5FA2DDE",
+                            "GroupId"
+                          ]
+                        },
+                        "toPort": 2049
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroupIngress",
+                      "version": "1.176.0"
+                    }
+                  },
+                  "from PwnctlStackPwnwrkSvcSecurityGroup36899230:2049": {
+                    "id": "from PwnctlStackPwnwrkSvcSecurityGroup36899230:2049",
+                    "path": "PwnctlStack/PwnwrkFs/EfsSecurityGroup/from PwnctlStackPwnwrkSvcSecurityGroup36899230:2049",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
+                      "aws:cdk:cloudformation:props": {
+                        "ipProtocol": "tcp",
+                        "description": "from PwnctlStackPwnwrkSvcSecurityGroup36899230:2049",
+                        "fromPort": 2049,
+                        "groupId": {
+                          "Fn::GetAtt": [
+                            "PwnwrkFsEfsSecurityGroup9706A235",
+                            "GroupId"
+                          ]
+                        },
+                        "sourceSecurityGroupId": {
+                          "Fn::GetAtt": [
+                            "PwnwrkSvcSecurityGroup5C9E8490",
+                            "GroupId"
+                          ]
+                        },
+                        "toPort": 2049
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroupIngress",
+                      "version": "1.176.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                  "version": "1.176.0"
+                }
+              },
+              "EfsMountTarget1": {
+                "id": "EfsMountTarget1",
+                "path": "PwnctlStack/PwnwrkFs/EfsMountTarget1",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EFS::MountTarget",
+                  "aws:cdk:cloudformation:props": {
+                    "fileSystemId": {
+                      "Ref": "PwnwrkFs38CFD1B2"
+                    },
+                    "securityGroups": [
+                      {
+                        "Fn::GetAtt": [
+                          "PwnwrkFsEfsSecurityGroup9706A235",
+                          "GroupId"
+                        ]
+                      }
+                    ],
+                    "subnetId": {
+                      "Ref": "PwnwrkVpcPrivateSubnet1Subnet1Subnet3EE433F9"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-efs.CfnMountTarget",
+                  "version": "1.176.0"
+                }
+              },
+              "EfsMountTarget2": {
+                "id": "EfsMountTarget2",
+                "path": "PwnctlStack/PwnwrkFs/EfsMountTarget2",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EFS::MountTarget",
+                  "aws:cdk:cloudformation:props": {
+                    "fileSystemId": {
+                      "Ref": "PwnwrkFs38CFD1B2"
+                    },
+                    "securityGroups": [
+                      {
+                        "Fn::GetAtt": [
+                          "PwnwrkFsEfsSecurityGroup9706A235",
+                          "GroupId"
+                        ]
+                      }
+                    ],
+                    "subnetId": {
+                      "Ref": "PwnwrkVpcPrivateSubnet1Subnet2Subnet1F43F2E2"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-efs.CfnMountTarget",
+                  "version": "1.176.0"
+                }
+              },
+              "PwnctlApiFsap": {
+                "id": "PwnctlApiFsap",
+                "path": "PwnctlStack/PwnwrkFs/PwnctlApiFsap",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "PwnctlStack/PwnwrkFs/PwnctlApiFsap/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EFS::AccessPoint",
+                      "aws:cdk:cloudformation:props": {
+                        "fileSystemId": {
+                          "Ref": "PwnwrkFs38CFD1B2"
+                        },
+                        "posixUser": {
+                          "uid": "0",
+                          "gid": "0"
+                        },
+                        "rootDirectory": {
+                          "creationInfo": {
+                            "ownerGid": "1001",
+                            "ownerUid": "1001",
+                            "permissions": "777"
+                          },
+                          "path": "/"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-efs.CfnAccessPoint",
+                      "version": "1.176.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-efs.AccessPoint",
+                  "version": "1.176.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-efs.FileSystem",
+              "version": "1.176.0"
+            }
+          },
+          "PwnctlApiKeySecret": {
+            "id": "PwnctlApiKeySecret",
+            "path": "PwnctlStack/PwnctlApiKeySecret",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "PwnctlStack/PwnctlApiKeySecret/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
+                  "aws:cdk:cloudformation:props": {
+                    "generateSecretString": {
+                      "excludePunctuation": true,
+                      "includeSpace": false
+                    },
+                    "name": "/aws/secret/pwnctl/Api/ApiKey"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-secretsmanager.CfnSecret",
+                  "version": "1.176.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-secretsmanager.Secret",
+              "version": "1.176.0"
+            }
+          },
+          "PwnctlApiRole": {
+            "id": "PwnctlApiRole",
+            "path": "PwnctlStack/PwnctlApiRole",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "PwnctlStack/PwnctlApiRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "lambda.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "managedPolicyArns": [
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                          ]
+                        ]
+                      },
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+                          ]
+                        ]
+                      },
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":iam::aws:policy/AmazonElasticFileSystemClientFullAccess"
+                          ]
+                        ]
+                      },
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":iam::aws:policy/SecretsManagerReadWrite"
+                          ]
+                        ]
+                      },
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":iam::aws:policy/AmazonRDSFullAccess"
+                          ]
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnRole",
+                  "version": "1.176.0"
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "PwnctlStack/PwnctlApiRole/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "PwnctlStack/PwnctlApiRole/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "secretsmanager:DescribeSecret",
+                                "secretsmanager:GetSecretValue"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": [
+                                {
+                                  "Ref": "PwnctlApiKeySecretE3511A9C"
+                                },
+                                {
+                                  "Ref": "PwnctlAuroraPostgreSqlInstanceCredsDEF288A5"
+                                }
+                              ]
+                            },
+                            {
+                              "Action": "elasticfilesystem:ClientMount",
+                              "Condition": {
+                                "StringEquals": {
+                                  "elasticfilesystem:AccessPointArn": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":elasticfilesystem:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":access-point/",
+                                        {
+                                          "Ref": "PwnwrkFsPwnctlApiFsapA45B1F35"
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                }
+                              },
+                              "Effect": "Allow",
+                              "Resource": "*"
+                            },
+                            {
+                              "Action": "elasticfilesystem:ClientWrite",
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":elasticfilesystem:",
+                                    {
+                                      "Ref": "AWS::Region"
+                                    },
+                                    ":",
+                                    {
+                                      "Ref": "AWS::AccountId"
+                                    },
+                                    ":file-system/",
+                                    {
+                                      "Ref": "PwnwrkFs38CFD1B2"
+                                    }
+                                  ]
+                                ]
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "PwnctlApiRoleDefaultPolicy09D24CEA",
+                        "roles": [
+                          {
+                            "Ref": "PwnctlApiRole0647AFDD"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                      "version": "1.176.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Policy",
+                  "version": "1.176.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.Role",
+              "version": "1.176.0"
+            }
+          },
+          "PwnctlLambdaSecMgrEp": {
+            "id": "PwnctlLambdaSecMgrEp",
+            "path": "PwnctlStack/PwnctlLambdaSecMgrEp",
+            "children": {
+              "SecurityGroup": {
+                "id": "SecurityGroup",
+                "path": "PwnctlStack/PwnctlLambdaSecMgrEp/SecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "PwnctlStack/PwnctlLambdaSecMgrEp/SecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "PwnctlStack/PwnctlLambdaSecMgrEp/SecurityGroup",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "securityGroupIngress": [
+                          {
+                            "cidrIp": {
+                              "Fn::GetAtt": [
+                                "PwnwrkVpcEA5D7932",
+                                "CidrBlock"
+                              ]
+                            },
+                            "ipProtocol": "tcp",
+                            "fromPort": 443,
+                            "toPort": 443,
+                            "description": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "from ",
+                                  {
+                                    "Fn::GetAtt": [
+                                      "PwnwrkVpcEA5D7932",
+                                      "CidrBlock"
+                                    ]
+                                  },
+                                  ":443"
+                                ]
+                              ]
+                            }
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "PwnwrkVpcEA5D7932"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                      "version": "1.176.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                  "version": "1.176.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "PwnctlStack/PwnctlLambdaSecMgrEp/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::VPCEndpoint",
+                  "aws:cdk:cloudformation:props": {
+                    "serviceName": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "com.amazonaws.",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          ".secretsmanager"
+                        ]
+                      ]
+                    },
+                    "vpcId": {
+                      "Ref": "PwnwrkVpcEA5D7932"
+                    },
+                    "privateDnsEnabled": true,
+                    "securityGroupIds": [
+                      {
+                        "Fn::GetAtt": [
+                          "PwnctlLambdaSecMgrEpSecurityGroup7381FD02",
+                          "GroupId"
+                        ]
+                      }
+                    ],
+                    "subnetIds": [
+                      {
+                        "Ref": "PwnwrkVpcPrivateSubnet1Subnet1Subnet3EE433F9"
+                      },
+                      {
+                        "Ref": "PwnwrkVpcPrivateSubnet1Subnet2Subnet1F43F2E2"
+                      }
+                    ],
+                    "vpcEndpointType": "Interface"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.CfnVPCEndpoint",
+                  "version": "1.176.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ec2.InterfaceVpcEndpoint",
+              "version": "1.176.0"
+            }
+          },
+          "PwnctlLambdaSQSEp": {
+            "id": "PwnctlLambdaSQSEp",
+            "path": "PwnctlStack/PwnctlLambdaSQSEp",
+            "children": {
+              "SecurityGroup": {
+                "id": "SecurityGroup",
+                "path": "PwnctlStack/PwnctlLambdaSQSEp/SecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "PwnctlStack/PwnctlLambdaSQSEp/SecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "PwnctlStack/PwnctlLambdaSQSEp/SecurityGroup",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "securityGroupIngress": [
+                          {
+                            "cidrIp": {
+                              "Fn::GetAtt": [
+                                "PwnwrkVpcEA5D7932",
+                                "CidrBlock"
+                              ]
+                            },
+                            "ipProtocol": "tcp",
+                            "fromPort": 443,
+                            "toPort": 443,
+                            "description": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "from ",
+                                  {
+                                    "Fn::GetAtt": [
+                                      "PwnwrkVpcEA5D7932",
+                                      "CidrBlock"
+                                    ]
+                                  },
+                                  ":443"
+                                ]
+                              ]
+                            }
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "PwnwrkVpcEA5D7932"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                      "version": "1.176.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                  "version": "1.176.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "PwnctlStack/PwnctlLambdaSQSEp/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::VPCEndpoint",
+                  "aws:cdk:cloudformation:props": {
+                    "serviceName": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "com.amazonaws.",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          ".sqs"
+                        ]
+                      ]
+                    },
+                    "vpcId": {
+                      "Ref": "PwnwrkVpcEA5D7932"
+                    },
+                    "privateDnsEnabled": true,
+                    "securityGroupIds": [
+                      {
+                        "Fn::GetAtt": [
+                          "PwnctlLambdaSQSEpSecurityGroupB5E10ABD",
+                          "GroupId"
+                        ]
+                      }
+                    ],
+                    "subnetIds": [
+                      {
+                        "Ref": "PwnwrkVpcPrivateSubnet1Subnet1Subnet3EE433F9"
+                      },
+                      {
+                        "Ref": "PwnwrkVpcPrivateSubnet1Subnet2Subnet1F43F2E2"
+                      }
+                    ],
+                    "vpcEndpointType": "Interface"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.CfnVPCEndpoint",
+                  "version": "1.176.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ec2.InterfaceVpcEndpoint",
+              "version": "1.176.0"
+            }
+          },
+          "PwnctlApi": {
+            "id": "PwnctlApi",
+            "path": "PwnctlStack/PwnctlApi",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "PwnctlStack/PwnctlApi/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "PwnctlStack/PwnctlApi/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "version": "1.176.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "PwnctlStack/PwnctlApi/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3.BucketBase",
+                      "version": "1.176.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                  "version": "1.176.0"
+                }
+              },
+              "SecurityGroup": {
+                "id": "SecurityGroup",
+                "path": "PwnctlStack/PwnctlApi/SecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "PwnctlStack/PwnctlApi/SecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "Automatic security group for Lambda Function PwnctlStackPwnctlApiE4A5B887",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "PwnwrkVpcEA5D7932"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                      "version": "1.176.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                  "version": "1.176.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "PwnctlStack/PwnctlApi/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": {
+                        "Ref": "AssetParameterse537316f354aa4a467bcae173b6fc45ad9ec69a2d2167c8242d560b03d5e3b4cS3BucketBE768AFE"
+                      },
+                      "s3Key": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            {
+                              "Fn::Select": [
+                                0,
+                                {
+                                  "Fn::Split": [
+                                    "||",
+                                    {
+                                      "Ref": "AssetParameterse537316f354aa4a467bcae173b6fc45ad9ec69a2d2167c8242d560b03d5e3b4cS3VersionKey4C031797"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "Fn::Select": [
+                                1,
+                                {
+                                  "Fn::Split": [
+                                    "||",
+                                    {
+                                      "Ref": "AssetParameterse537316f354aa4a467bcae173b6fc45ad9ec69a2d2167c8242d560b03d5e3b4cS3VersionKey4C031797"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "PwnctlApiRole0647AFDD",
+                        "Arn"
+                      ]
+                    },
+                    "environment": {
+                      "variables": {
+                        "PWNCTL_Aws__InVpc": "true",
+                        "PWNCTL_JobQueue__QueueName": "pwnwrk.fifo",
+                        "PWNCTL_JobQueue__DLQName": "pwnwrk-dlq.fifo",
+                        "PWNCTL_JobQueue__VisibilityTimeout": "30",
+                        "PWNCTL_Logging__Provider": "Console",
+                        "PWNCTL_Logging__MinLevel": "Debug",
+                        "PWNCTL_Logging__LogGroup": "/aws/lambda/PwnctlApi",
+                        "PWNCTL_InstallPath": "/mnt/efs"
+                      }
+                    },
+                    "fileSystemConfigs": [
+                      {
+                        "arn": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              ":elasticfilesystem:",
+                              {
+                                "Ref": "AWS::Region"
+                              },
+                              ":",
+                              {
+                                "Ref": "AWS::AccountId"
+                              },
+                              ":access-point/",
+                              {
+                                "Ref": "PwnwrkFsPwnctlApiFsapA45B1F35"
+                              }
+                            ]
+                          ]
+                        },
+                        "localMountPath": "/mnt/efs"
+                      }
+                    ],
+                    "handler": "pwnctl.api",
+                    "memorySize": 512,
+                    "runtime": "dotnet6",
+                    "timeout": 90,
+                    "vpcConfig": {
+                      "subnetIds": [
+                        {
+                          "Ref": "PwnwrkVpcPrivateSubnet1Subnet1Subnet3EE433F9"
+                        },
+                        {
+                          "Ref": "PwnwrkVpcPrivateSubnet1Subnet2Subnet1F43F2E2"
+                        }
+                      ],
+                      "securityGroupIds": [
+                        {
+                          "Fn::GetAtt": [
+                            "PwnctlApiSecurityGroupE5FA2DDE",
+                            "GroupId"
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "version": "1.176.0"
+                }
+              },
+              "LogRetention": {
+                "id": "LogRetention",
+                "path": "PwnctlStack/PwnctlApi/LogRetention",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "PwnctlStack/PwnctlApi/LogRetention/Resource",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnResource",
+                      "version": "1.176.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-logs.LogRetention",
+                  "version": "1.176.0"
+                }
+              },
+              "LogGroup": {
+                "id": "LogGroup",
+                "path": "PwnctlStack/PwnctlApi/LogGroup",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "1.176.0"
+                }
+              },
+              "FunctionUrl": {
+                "id": "FunctionUrl",
+                "path": "PwnctlStack/PwnctlApi/FunctionUrl",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "PwnctlStack/PwnctlApi/FunctionUrl/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::Url",
+                      "aws:cdk:cloudformation:props": {
+                        "authType": "NONE",
+                        "targetFunctionArn": {
+                          "Fn::GetAtt": [
+                            "PwnctlApiB48EE417",
+                            "Arn"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-lambda.CfnUrl",
+                      "version": "1.176.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.FunctionUrl",
+                  "version": "1.176.0"
+                }
+              },
+              "invoke-function-url": {
+                "id": "invoke-function-url",
+                "path": "PwnctlStack/PwnctlApi/invoke-function-url",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunctionUrl",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "PwnctlApiB48EE417",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "*",
+                    "functionUrlAuthType": "NONE"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                  "version": "1.176.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-lambda.Function",
+              "version": "1.176.0"
+            }
+          },
+          "AssetParameters": {
+            "id": "AssetParameters",
+            "path": "PwnctlStack/AssetParameters",
+            "children": {
+              "e537316f354aa4a467bcae173b6fc45ad9ec69a2d2167c8242d560b03d5e3b4c": {
+                "id": "e537316f354aa4a467bcae173b6fc45ad9ec69a2d2167c8242d560b03d5e3b4c",
+                "path": "PwnctlStack/AssetParameters/e537316f354aa4a467bcae173b6fc45ad9ec69a2d2167c8242d560b03d5e3b4c",
+                "children": {
+                  "S3Bucket": {
+                    "id": "S3Bucket",
+                    "path": "PwnctlStack/AssetParameters/e537316f354aa4a467bcae173b6fc45ad9ec69a2d2167c8242d560b03d5e3b4c/S3Bucket",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "1.176.0"
+                    }
+                  },
+                  "S3VersionKey": {
+                    "id": "S3VersionKey",
+                    "path": "PwnctlStack/AssetParameters/e537316f354aa4a467bcae173b6fc45ad9ec69a2d2167c8242d560b03d5e3b4c/S3VersionKey",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "1.176.0"
+                    }
+                  },
+                  "ArtifactHash": {
+                    "id": "ArtifactHash",
+                    "path": "PwnctlStack/AssetParameters/e537316f354aa4a467bcae173b6fc45ad9ec69a2d2167c8242d560b03d5e3b4c/ArtifactHash",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "1.176.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Construct",
+                  "version": "1.176.0"
+                }
+              },
+              "c8dfcc3db7a767ebc6f9417372a8fee940927c659f793315834a6784dab3d686": {
+                "id": "c8dfcc3db7a767ebc6f9417372a8fee940927c659f793315834a6784dab3d686",
+                "path": "PwnctlStack/AssetParameters/c8dfcc3db7a767ebc6f9417372a8fee940927c659f793315834a6784dab3d686",
+                "children": {
+                  "S3Bucket": {
+                    "id": "S3Bucket",
+                    "path": "PwnctlStack/AssetParameters/c8dfcc3db7a767ebc6f9417372a8fee940927c659f793315834a6784dab3d686/S3Bucket",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "1.176.0"
+                    }
+                  },
+                  "S3VersionKey": {
+                    "id": "S3VersionKey",
+                    "path": "PwnctlStack/AssetParameters/c8dfcc3db7a767ebc6f9417372a8fee940927c659f793315834a6784dab3d686/S3VersionKey",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "1.176.0"
+                    }
+                  },
+                  "ArtifactHash": {
+                    "id": "ArtifactHash",
+                    "path": "PwnctlStack/AssetParameters/c8dfcc3db7a767ebc6f9417372a8fee940927c659f793315834a6784dab3d686/ArtifactHash",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "1.176.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Construct",
+                  "version": "1.176.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Construct",
+              "version": "1.176.0"
+            }
+          },
+          "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a": {
+            "id": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a",
+            "path": "PwnctlStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "PwnctlStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "PwnctlStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "version": "1.176.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "PwnctlStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-s3.BucketBase",
+                      "version": "1.176.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                  "version": "1.176.0"
+                }
+              },
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "PwnctlStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "PwnctlStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "1.176.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "PwnctlStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "PwnctlStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "logs:DeleteRetentionPolicy",
+                                    "logs:PutRetentionPolicy"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+                            "roles": [
+                              {
+                                "Ref": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "1.176.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "1.176.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "1.176.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "PwnctlStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnResource",
+                  "version": "1.176.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Construct",
+              "version": "1.176.0"
+            }
+          },
+          "PwnctlApiUrlParam": {
+            "id": "PwnctlApiUrlParam",
+            "path": "PwnctlStack/PwnctlApiUrlParam",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "PwnctlStack/PwnctlApiUrlParam/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SSM::Parameter",
+                  "aws:cdk:cloudformation:props": {
+                    "type": "String",
+                    "value": {
+                      "Fn::GetAtt": [
+                        "PwnctlApiFunctionUrl4D6F2F30",
+                        "FunctionUrl"
+                      ]
+                    },
+                    "description": "the base url of PwnctlApi",
+                    "name": "/pwnctl/Api/BaseUrl"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ssm.CfnParameter",
+                  "version": "1.176.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ssm.StringParameter",
+              "version": "1.176.0"
+            }
+          },
+          "PwnwrkRole": {
+            "id": "PwnwrkRole",
+            "path": "PwnctlStack/PwnwrkRole",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "PwnctlStack/PwnwrkRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "ecs-tasks.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "managedPolicyArns": [
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+                          ]
+                        ]
+                      },
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":iam::aws:policy/AmazonElasticFileSystemClientFullAccess"
+                          ]
+                        ]
+                      },
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+                          ]
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnRole",
+                  "version": "1.176.0"
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "PwnctlStack/PwnwrkRole/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "PwnctlStack/PwnwrkRole/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "cloudwatch:*",
+                                "logs:*"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": "*"
+                            },
+                            {
+                              "Action": [
+                                "sqs:ChangeMessageVisibility",
+                                "sqs:DeleteMessage",
+                                "sqs:GetQueueAttributes",
+                                "sqs:GetQueueUrl",
+                                "sqs:ReceiveMessage",
+                                "sqs:SendMessage"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "pwnwrkfifo043C4E87",
+                                  "Arn"
+                                ]
+                              }
+                            },
+                            {
+                              "Action": [
+                                "secretsmanager:DescribeSecret",
+                                "secretsmanager:GetSecretValue"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Ref": "PwnctlAuroraPostgreSqlInstanceCredsDEF288A5"
+                              }
+                            },
+                            {
+                              "Action": [
+                                "logs:CreateLogStream",
+                                "logs:PutLogEvents"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "PwnwrkLogs49C21403",
+                                  "Arn"
+                                ]
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "PwnwrkRoleDefaultPolicyD6466EDD",
+                        "roles": [
+                          {
+                            "Ref": "PwnwrkRoleE2D9DEE5"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                      "version": "1.176.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Policy",
+                  "version": "1.176.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.Role",
+              "version": "1.176.0"
+            }
+          },
+          "PwnwrkDef": {
+            "id": "PwnwrkDef",
+            "path": "PwnctlStack/PwnwrkDef",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "PwnctlStack/PwnwrkDef/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ECS::TaskDefinition",
+                  "aws:cdk:cloudformation:props": {
+                    "containerDefinitions": [
+                      {
+                        "cpu": 512,
+                        "essential": true,
+                        "image": "public.ecr.aws/i0m2p7r6/pwnwrk:latest",
+                        "memory": 2048,
+                        "mountPoints": [
+                          {
+                            "containerPath": "/mnt/efs",
+                            "readOnly": false,
+                            "sourceVolume": "PwnwrkFs"
+                          }
+                        ],
+                        "name": "pwnwrk",
+                        "logConfiguration": {
+                          "logDriver": "awslogs",
+                          "options": {
+                            "awslogs-group": {
+                              "Ref": "PwnwrkLogs49C21403"
+                            },
+                            "awslogs-stream-prefix": "/aws/ecs",
+                            "awslogs-region": {
+                              "Ref": "AWS::Region"
+                            }
+                          }
+                        },
+                        "environment": [
+                          {
+                            "name": "PWNCTL_Aws__InVpc",
+                            "value": "true"
+                          },
+                          {
+                            "name": "PWNCTL_JobQueue__QueueName",
+                            "value": {
+                              "Fn::GetAtt": [
+                                "pwnwrkfifo043C4E87",
+                                "QueueName"
+                              ]
+                            }
+                          },
+                          {
+                            "name": "PWNCTL_JobQueue__DLQName",
+                            "value": {
+                              "Fn::GetAtt": [
+                                "pwnwrkdlqfifoA60405CB",
+                                "QueueName"
+                              ]
+                            }
+                          },
+                          {
+                            "name": "PWNCTL_JobQueue__VisibilityTimeout",
+                            "value": "30"
+                          },
+                          {
+                            "name": "PWNCTL_Logging__Provider",
+                            "value": "CloudWatch"
+                          },
+                          {
+                            "name": "PWNCTL_Logging__MinLevel",
+                            "value": "Debug"
+                          },
+                          {
+                            "name": "PWNCTL_Logging__LogGroup",
+                            "value": {
+                              "Ref": "PwnwrkLogs49C21403"
+                            }
+                          },
+                          {
+                            "name": "PWNCTL_InstallPath",
+                            "value": "/mnt/efs"
+                          }
+                        ]
+                      }
+                    ],
+                    "cpu": "512",
+                    "executionRoleArn": {
+                      "Fn::GetAtt": [
+                        "PwnwrkRoleE2D9DEE5",
+                        "Arn"
+                      ]
+                    },
+                    "family": "PwnctlStackPwnwrkDef11880F4E",
+                    "memory": "2048",
+                    "networkMode": "awsvpc",
+                    "requiresCompatibilities": [
+                      "FARGATE"
+                    ],
+                    "taskRoleArn": {
+                      "Fn::GetAtt": [
+                        "PwnwrkRoleE2D9DEE5",
+                        "Arn"
+                      ]
+                    },
+                    "volumes": [
+                      {
+                        "name": "PwnwrkFs",
+                        "efsVolumeConfiguration": {
+                          "filesystemId": {
+                            "Ref": "PwnwrkFs38CFD1B2"
+                          },
+                          "authorizationConfig": {
+                            "accessPointId": {
+                              "Ref": "PwnwrkFsPwnctlApiFsapA45B1F35"
+                            },
+                            "iam": "ENABLED"
+                          },
+                          "rootDirectory": "/",
+                          "transitEncryption": "ENABLED"
+                        }
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ecs.CfnTaskDefinition",
+                  "version": "1.176.0"
+                }
+              },
+              "pwnwrk": {
+                "id": "pwnwrk",
+                "path": "PwnctlStack/PwnwrkDef/pwnwrk",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ecs.ContainerDefinition",
+                  "version": "1.176.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ecs.FargateTaskDefinition",
+              "version": "1.176.0"
+            }
+          },
+          "PwnwrkLogs": {
+            "id": "PwnwrkLogs",
+            "path": "PwnctlStack/PwnwrkLogs",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "PwnctlStack/PwnwrkLogs/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "logGroupName": "/aws/ecs/pwnwrk",
+                    "retentionInDays": 7
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-logs.CfnLogGroup",
+                  "version": "1.176.0"
+                }
+              },
+              "Policy": {
+                "id": "Policy",
+                "path": "PwnctlStack/PwnwrkLogs/Policy",
+                "children": {
+                  "ResourcePolicy": {
+                    "id": "ResourcePolicy",
+                    "path": "PwnctlStack/PwnwrkLogs/Policy/ResourcePolicy",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Logs::ResourcePolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "{\"Statement\":[{\"Action\":[\"logs:CreateLogStream\",\"logs:PutLogEvents\"],\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"ecs-tasks.amazonaws.com\"},\"Resource\":\"",
+                              {
+                                "Fn::GetAtt": [
+                                  "PwnwrkLogs49C21403",
+                                  "Arn"
+                                ]
+                              },
+                              "\"}],\"Version\":\"2012-10-17\"}"
+                            ]
+                          ]
+                        },
+                        "policyName": "PwnctlStackPwnwrkLogsPolicy74FE34B1"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-logs.CfnResourcePolicy",
+                      "version": "1.176.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-logs.ResourcePolicy",
+                  "version": "1.176.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-logs.LogGroup",
+              "version": "1.176.0"
+            }
+          },
+          "PwnwrkCluster": {
+            "id": "PwnwrkCluster",
+            "path": "PwnctlStack/PwnwrkCluster",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "PwnctlStack/PwnwrkCluster/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ECS::Cluster",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ecs.CfnCluster",
+                  "version": "1.176.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ecs.Cluster",
+              "version": "1.176.0"
+            }
+          },
+          "PwnwrkSvc": {
+            "id": "PwnwrkSvc",
+            "path": "PwnctlStack/PwnwrkSvc",
+            "children": {
+              "Service": {
+                "id": "Service",
+                "path": "PwnctlStack/PwnwrkSvc/Service",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ECS::Service",
+                  "aws:cdk:cloudformation:props": {
+                    "capacityProviderStrategy": [
+                      {
+                        "capacityProvider": "FARGATE",
+                        "weight": 1
+                      }
+                    ],
+                    "cluster": {
+                      "Ref": "PwnwrkCluster246B6C82"
+                    },
+                    "deploymentConfiguration": {
+                      "maximumPercent": 200,
+                      "minimumHealthyPercent": 50
+                    },
+                    "desiredCount": 0,
+                    "enableEcsManagedTags": false,
+                    "networkConfiguration": {
+                      "awsvpcConfiguration": {
+                        "assignPublicIp": "ENABLED",
+                        "subnets": [
+                          {
+                            "Ref": "PwnwrkVpcPublicSubnet1Subnet1SubnetE695BBDB"
+                          },
+                          {
+                            "Ref": "PwnwrkVpcPublicSubnet1Subnet2Subnet42578822"
+                          }
+                        ],
+                        "securityGroups": [
+                          {
+                            "Fn::GetAtt": [
+                              "PwnwrkSvcSecurityGroup5C9E8490",
+                              "GroupId"
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "taskDefinition": {
+                      "Ref": "PwnwrkDefB1160240"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ecs.CfnService",
+                  "version": "1.176.0"
+                }
+              },
+              "SecurityGroup": {
+                "id": "SecurityGroup",
+                "path": "PwnctlStack/PwnwrkSvc/SecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "PwnctlStack/PwnwrkSvc/SecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "PwnctlStack/PwnwrkSvc/SecurityGroup",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "PwnwrkVpcEA5D7932"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                      "version": "1.176.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                  "version": "1.176.0"
+                }
+              },
+              "ScalingRole": {
+                "id": "ScalingRole",
+                "path": "PwnctlStack/PwnwrkSvc/ScalingRole",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "1.176.0"
+                }
+              },
+              "TaskCount": {
+                "id": "TaskCount",
+                "path": "PwnctlStack/PwnwrkSvc/TaskCount",
+                "children": {
+                  "Target": {
+                    "id": "Target",
+                    "path": "PwnctlStack/PwnwrkSvc/TaskCount/Target",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "PwnctlStack/PwnwrkSvc/TaskCount/Target/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApplicationAutoScaling::ScalableTarget",
+                          "aws:cdk:cloudformation:props": {
+                            "maxCapacity": 5,
+                            "minCapacity": 0,
+                            "resourceId": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "service/",
+                                  {
+                                    "Ref": "PwnwrkCluster246B6C82"
+                                  },
+                                  "/",
+                                  {
+                                    "Fn::GetAtt": [
+                                      "PwnwrkSvcServiceD0F1546B",
+                                      "Name"
+                                    ]
+                                  }
+                                ]
+                              ]
+                            },
+                            "roleArn": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":iam::",
+                                  {
+                                    "Ref": "AWS::AccountId"
+                                  },
+                                  ":role/aws-service-role/ecs.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_ECSService"
+                                ]
+                              ]
+                            },
+                            "scalableDimension": "ecs:service:DesiredCount",
+                            "serviceNamespace": "ecs"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-applicationautoscaling.CfnScalableTarget",
+                          "version": "1.176.0"
+                        }
+                      },
+                      "ScaleInPolicy": {
+                        "id": "ScaleInPolicy",
+                        "path": "PwnctlStack/PwnwrkSvc/TaskCount/Target/ScaleInPolicy",
+                        "children": {
+                          "LowerPolicy": {
+                            "id": "LowerPolicy",
+                            "path": "PwnctlStack/PwnwrkSvc/TaskCount/Target/ScaleInPolicy/LowerPolicy",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "PwnctlStack/PwnwrkSvc/TaskCount/Target/ScaleInPolicy/LowerPolicy/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::ApplicationAutoScaling::ScalingPolicy",
+                                  "aws:cdk:cloudformation:props": {
+                                    "policyName": "PwnctlStackPwnwrkSvcTaskCountTargetScaleInPolicyLowerPolicy71FCA510",
+                                    "policyType": "StepScaling",
+                                    "scalingTargetId": {
+                                      "Ref": "PwnwrkSvcTaskCountTargetD25175FE"
+                                    },
+                                    "stepScalingPolicyConfiguration": {
+                                      "adjustmentType": "ExactCapacity",
+                                      "cooldown": 300,
+                                      "metricAggregationType": "Average",
+                                      "stepAdjustments": [
+                                        {
+                                          "metricIntervalLowerBound": -30,
+                                          "metricIntervalUpperBound": 0,
+                                          "scalingAdjustment": 2
+                                        },
+                                        {
+                                          "metricIntervalLowerBound": -59,
+                                          "metricIntervalUpperBound": -30,
+                                          "scalingAdjustment": 1
+                                        },
+                                        {
+                                          "metricIntervalUpperBound": -59,
+                                          "scalingAdjustment": 0
+                                        }
+                                      ]
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/aws-applicationautoscaling.CfnScalingPolicy",
+                                  "version": "1.176.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-applicationautoscaling.StepScalingAction",
+                              "version": "1.176.0"
+                            }
+                          },
+                          "LowerAlarm": {
+                            "id": "LowerAlarm",
+                            "path": "PwnctlStack/PwnwrkSvc/TaskCount/Target/ScaleInPolicy/LowerAlarm",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "PwnctlStack/PwnwrkSvc/TaskCount/Target/ScaleInPolicy/LowerAlarm/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                                  "aws:cdk:cloudformation:props": {
+                                    "comparisonOperator": "LessThanOrEqualToThreshold",
+                                    "evaluationPeriods": 1,
+                                    "alarmActions": [
+                                      {
+                                        "Ref": "PwnwrkSvcTaskCountTargetScaleInPolicyLowerPolicyD00CFAFA"
+                                      }
+                                    ],
+                                    "alarmDescription": "Lower threshold scaling alarm",
+                                    "dimensions": [
+                                      {
+                                        "name": "QueueName",
+                                        "value": {
+                                          "Fn::GetAtt": [
+                                            "pwnwrkfifo043C4E87",
+                                            "QueueName"
+                                          ]
+                                        }
+                                      }
+                                    ],
+                                    "metricName": "ApproximateNumberOfMessagesVisible",
+                                    "namespace": "AWS/SQS",
+                                    "period": 60,
+                                    "statistic": "Average",
+                                    "threshold": 60
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/aws-cloudwatch.CfnAlarm",
+                                  "version": "1.176.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-cloudwatch.Alarm",
+                              "version": "1.176.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-applicationautoscaling.StepScalingPolicy",
+                          "version": "1.176.0"
+                        }
+                      },
+                      "ScaleOutPolicy": {
+                        "id": "ScaleOutPolicy",
+                        "path": "PwnctlStack/PwnwrkSvc/TaskCount/Target/ScaleOutPolicy",
+                        "children": {
+                          "UpperPolicy": {
+                            "id": "UpperPolicy",
+                            "path": "PwnctlStack/PwnwrkSvc/TaskCount/Target/ScaleOutPolicy/UpperPolicy",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "PwnctlStack/PwnwrkSvc/TaskCount/Target/ScaleOutPolicy/UpperPolicy/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::ApplicationAutoScaling::ScalingPolicy",
+                                  "aws:cdk:cloudformation:props": {
+                                    "policyName": "PwnctlStackPwnwrkSvcTaskCountTargetScaleOutPolicyUpperPolicy06D5B4E1",
+                                    "policyType": "StepScaling",
+                                    "scalingTargetId": {
+                                      "Ref": "PwnwrkSvcTaskCountTargetD25175FE"
+                                    },
+                                    "stepScalingPolicyConfiguration": {
+                                      "adjustmentType": "ExactCapacity",
+                                      "cooldown": 300,
+                                      "metricAggregationType": "Average",
+                                      "stepAdjustments": [
+                                        {
+                                          "metricIntervalLowerBound": 0,
+                                          "metricIntervalUpperBound": 29,
+                                          "scalingAdjustment": 1
+                                        },
+                                        {
+                                          "metricIntervalLowerBound": 29,
+                                          "metricIntervalUpperBound": 59,
+                                          "scalingAdjustment": 2
+                                        },
+                                        {
+                                          "metricIntervalLowerBound": 59,
+                                          "scalingAdjustment": 3
+                                        }
+                                      ]
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/aws-applicationautoscaling.CfnScalingPolicy",
+                                  "version": "1.176.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-applicationautoscaling.StepScalingAction",
+                              "version": "1.176.0"
+                            }
+                          },
+                          "UpperAlarm": {
+                            "id": "UpperAlarm",
+                            "path": "PwnctlStack/PwnwrkSvc/TaskCount/Target/ScaleOutPolicy/UpperAlarm",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "PwnctlStack/PwnwrkSvc/TaskCount/Target/ScaleOutPolicy/UpperAlarm/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                                  "aws:cdk:cloudformation:props": {
+                                    "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                                    "evaluationPeriods": 1,
+                                    "alarmActions": [
+                                      {
+                                        "Ref": "PwnwrkSvcTaskCountTargetScaleOutPolicyUpperPolicy34F9E62D"
+                                      }
+                                    ],
+                                    "alarmDescription": "Upper threshold scaling alarm",
+                                    "dimensions": [
+                                      {
+                                        "name": "QueueName",
+                                        "value": {
+                                          "Fn::GetAtt": [
+                                            "pwnwrkfifo043C4E87",
+                                            "QueueName"
+                                          ]
+                                        }
+                                      }
+                                    ],
+                                    "metricName": "ApproximateNumberOfMessagesVisible",
+                                    "namespace": "AWS/SQS",
+                                    "period": 60,
+                                    "statistic": "Average",
+                                    "threshold": 1
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/aws-cloudwatch.CfnAlarm",
+                                  "version": "1.176.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/aws-cloudwatch.Alarm",
+                              "version": "1.176.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-applicationautoscaling.StepScalingPolicy",
+                          "version": "1.176.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-applicationautoscaling.ScalableTarget",
+                      "version": "1.176.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ecs.ScalableTaskCount",
+                  "version": "1.176.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ecs.FargateService",
+              "version": "1.176.0"
+            }
+          },
+          "CDKMetadata": {
+            "id": "CDKMetadata",
+            "path": "PwnctlStack/CDKMetadata",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "PwnctlStack/CDKMetadata/Default",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnResource",
+                  "version": "1.176.0"
+                }
+              },
+              "Condition": {
+                "id": "Condition",
+                "path": "PwnctlStack/CDKMetadata/Condition",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnCondition",
+                  "version": "1.176.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Construct",
+              "version": "1.176.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "1.176.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "1.176.0"
+    }
+  }
+}

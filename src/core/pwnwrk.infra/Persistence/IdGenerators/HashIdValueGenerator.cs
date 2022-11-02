@@ -8,7 +8,7 @@ using System.Text.Json;
 
 namespace pwnwrk.infra.Persistence.IdGenerators
 {
-    public class HashIdValueGenerator : StringValueGenerator, IDisposable
+    public sealed class HashIdValueGenerator : StringValueGenerator, IDisposable
     {
         public override string Next(EntityEntry entry) => GenerateHashId(entry.Entity as BaseAsset);
         protected override object NextValue(EntityEntry entry) => GenerateHashId(entry.Entity as BaseAsset);

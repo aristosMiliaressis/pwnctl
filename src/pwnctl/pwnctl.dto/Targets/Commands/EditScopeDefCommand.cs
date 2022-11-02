@@ -5,7 +5,7 @@ using MediatR;
 using pwnwrk.domain.Targets.Entities;
 using pwnctl.dto.Mediator;
 
-public class EditScopeDefCommand : ScopeDefinition, IMediatedRequest
+public sealed class EditScopeDefCommand : ScopeDefinition, IMediatedRequest
 {
     public static string Route => "/targets/{target}/scope/{scope}";
     public static HttpMethod Method => HttpMethod.Patch;

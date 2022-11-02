@@ -7,7 +7,7 @@ using MediatR;
 
 namespace pwnctl.api.MediatR.Handlers.Targets.Commands
 {
-    public class CreateTargetCommandHandler : IRequestHandler<CreateTargetCommand, MediatedResponse>
+    public sealed class CreateTargetCommandHandler : IRequestHandler<CreateTargetCommand, MediatedResponse>
     {
         private readonly PwnctlDbContext _context = new PwnctlDbContext();
 

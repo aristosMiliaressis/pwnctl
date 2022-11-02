@@ -2,7 +2,7 @@ using pwnwrk.domain.Common.BaseClasses;
 
 namespace pwnwrk.domain.Tasks.Entities
 {
-    public class TaskDefinition : BaseEntity<int>
+    public sealed class TaskDefinition : BaseEntity<int>
     {
         public string ShortName { get; private init; }
 		public string CommandTemplate { get; private init; }

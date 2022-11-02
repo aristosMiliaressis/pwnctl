@@ -5,7 +5,7 @@ using Npgsql;
 
 namespace pwnwrk.infra.Persistence
 {
-    public class QueryRunner
+    public sealed class QueryRunner
     {
         public async Task RunAsync(string sql)
         {

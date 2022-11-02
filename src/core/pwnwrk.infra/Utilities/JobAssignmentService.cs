@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace pwnwrk.infra.Utilities
 {
-    public class JobAssignmentService
+    public sealed class JobAssignmentService
     {
         private static readonly IJobQueueService _jobQueueService = JobQueueFactory.Create();
         private readonly PwnctlDbContext _context = new();

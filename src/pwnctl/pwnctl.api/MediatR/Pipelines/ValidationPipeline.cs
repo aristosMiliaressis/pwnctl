@@ -4,7 +4,7 @@ using pwnctl.dto.Mediator;
 
 namespace pwnctl.api.MediatR.Pipelines
 {
-    public class ValidationPipeline<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+    public sealed class ValidationPipeline<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
             where TResponse : MediatedResponse
             where TRequest : IRequest<TResponse>
     {

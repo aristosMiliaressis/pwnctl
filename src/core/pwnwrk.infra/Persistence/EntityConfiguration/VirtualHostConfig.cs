@@ -5,7 +5,7 @@ using pwnwrk.infra.Persistence.IdGenerators;
 
 namespace pwnwrk.infra.Persistence.EntityConfiguration
 {
-    public class VirtualHostConfig : IEntityTypeConfiguration<VirtualHost>
+    public sealed class VirtualHostConfig : IEntityTypeConfiguration<VirtualHost>
     {
         public void Configure(EntityTypeBuilder<VirtualHost> builder)
         {

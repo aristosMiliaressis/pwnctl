@@ -5,7 +5,7 @@ using pwnwrk.infra.Logging;
 using pwnctl.api.Extensions;
 using System.Net;
 
-public class ExceptionHandlingMiddleware
+public sealed class ExceptionHandlingMiddleware
 {
     private readonly RequestDelegate _next;
 

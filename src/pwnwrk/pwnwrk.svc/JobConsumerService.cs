@@ -11,7 +11,7 @@ using Serilog.Core;
 
 namespace pwnwrk.svc
 {
-    public class JobConsumerService : BackgroundService
+    public sealed class JobConsumerService : BackgroundService
     {
         private readonly IOptions<AppConfig> _config;
         private readonly SQSJobQueueService _queueService = new();

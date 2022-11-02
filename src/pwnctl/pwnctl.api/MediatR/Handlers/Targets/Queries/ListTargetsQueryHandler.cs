@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace pwnctl.api.MediatR.Handlers.Targets.Queries
 {
-    public class ListTargetsQueryHandler : IRequestHandler<ListTargetsQuery, MediatedResponse<TargetListViewModel>>
+    public sealed class ListTargetsQueryHandler : IRequestHandler<ListTargetsQuery, MediatedResponse<TargetListViewModel>>
     {
         private readonly PwnctlDbContext _context = new PwnctlDbContext();
 

@@ -10,7 +10,7 @@ using System.Text.Json;
 
 namespace pwnwrk.domain.Assets.Entities
 {
-    public class Host : BaseAsset
+    public sealed class Host : BaseAsset
     {
         [UniquenessAttribute]
         public string IP { get; private init; }

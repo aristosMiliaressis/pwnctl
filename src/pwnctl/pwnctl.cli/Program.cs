@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-internal class Program
+internal sealed class Program
 {
     static Dictionary<string, IModeHandler> _modeProviders = 
             AppDomain.CurrentDomain.GetAssemblies()

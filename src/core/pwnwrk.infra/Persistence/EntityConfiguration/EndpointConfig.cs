@@ -5,7 +5,7 @@ using pwnwrk.infra.Persistence.IdGenerators;
 
 namespace pwnwrk.infra.Persistence.EntityConfiguration
 {
-    public class EndpointConfig : IEntityTypeConfiguration<Endpoint>
+    public sealed class EndpointConfig : IEntityTypeConfiguration<Endpoint>
     {
         public void Configure(EntityTypeBuilder<Endpoint> builder)
         {

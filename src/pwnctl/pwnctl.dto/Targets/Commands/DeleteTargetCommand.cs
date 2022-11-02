@@ -5,7 +5,7 @@ using pwnctl.dto.Mediator;
 
 using MediatR;
 
-public class DeleteTargetCommand : Program, IMediatedRequest
+public sealed class DeleteTargetCommand : Program, IMediatedRequest
 {
     public static string Route => "/targets/{target}";
     public static HttpMethod Method => HttpMethod.Delete;

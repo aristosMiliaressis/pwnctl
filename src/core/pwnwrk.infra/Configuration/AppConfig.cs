@@ -3,7 +3,7 @@ using pwnwrk.infra.Logging;
 
 namespace pwnwrk.infra.Configuration
 {
-    public class AppConfig
+    public sealed class AppConfig
     {
         public string InstallPath { get; set; }
         public bool IsTestRun { get; set; }
@@ -13,19 +13,19 @@ namespace pwnwrk.infra.Configuration
         public AwsSettings Aws { get; set; } = new AwsSettings();
         public ApiSettings Api { get; set; } = new ApiSettings();
 
-        public class AwsSettings
+        public sealed class AwsSettings
         {
             public string Profile { get; set; } = "default";
             public bool InVpc { get; set; }
         }
 
-        public class ApiSettings
+        public sealed class ApiSettings
         {
             public string BaseUrl { get; set; }
             public string ApiKey { get; set; }
         }
 
-        public class DbSettings
+        public sealed class DbSettings
         {
             public string Username { get; set; }
             public string Password { get; set; }
@@ -36,13 +36,13 @@ namespace pwnwrk.infra.Configuration
                                            + $"Password={Password}";
         }
 
-        public class JobQueueSettings
+        public sealed class JobQueueSettings
         {
             public bool UseBash { get; set; }
             public int WorkerCount { get; set; }
         }
 
-        public class LogSettings
+        public sealed class LogSettings
         {
             public string MinLevel { get; set; }
             public string LogGroup { get; set; }

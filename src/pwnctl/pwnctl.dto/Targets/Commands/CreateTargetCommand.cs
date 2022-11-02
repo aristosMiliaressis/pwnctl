@@ -5,7 +5,7 @@ using pwnctl.dto.Mediator;
 
 using MediatR;
 
-public class CreateTargetCommand : Program, IMediatedRequest
+public sealed class CreateTargetCommand : Program, IMediatedRequest
 {
     public static string Route => "/targets";
     public static HttpMethod Method => HttpMethod.Post;

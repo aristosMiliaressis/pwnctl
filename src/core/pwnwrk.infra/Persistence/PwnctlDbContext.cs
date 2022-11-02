@@ -13,7 +13,7 @@ using pwnwrk.domain.Assets.Entities;
 
 namespace pwnwrk.infra.Persistence
 {
-    public class PwnctlDbContext : DbContext
+    public sealed class PwnctlDbContext : DbContext
     {     
         public static readonly ILoggerFactory _loggerFactory = LoggerFactory.Create(builder =>
         {

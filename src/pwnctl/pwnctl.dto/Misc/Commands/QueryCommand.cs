@@ -4,7 +4,7 @@ using pwnctl.dto.Mediator;
 
 using MediatR;
 
-public class QueryCommand : IMediatedRequest<string>
+public sealed class QueryCommand : IMediatedRequest<string>
 {
     public static string Route => "/query";
     public static HttpMethod Method => HttpMethod.Post;

@@ -5,7 +5,7 @@ using pwnwrk.domain.Notifications.Entities;
 
 namespace pwnwrk.infra.Persistence.EntityConfiguration
 {
-    public class ProgramConfig : IEntityTypeConfiguration<Program>
+    public sealed class ProgramConfig : IEntityTypeConfiguration<Program>
     {
         public void Configure(EntityTypeBuilder<Program> builder)
         {
@@ -22,7 +22,7 @@ namespace pwnwrk.infra.Persistence.EntityConfiguration
         }
     }
 
-    public class ScopeDefinitionConfig : IEntityTypeConfiguration<ScopeDefinition>
+    public sealed class ScopeDefinitionConfig : IEntityTypeConfiguration<ScopeDefinition>
     {
         public void Configure(EntityTypeBuilder<ScopeDefinition> builder)
         {
@@ -31,7 +31,7 @@ namespace pwnwrk.infra.Persistence.EntityConfiguration
     }
 
 
-    public class OperationalPolicyConfig : IEntityTypeConfiguration<OperationalPolicy>
+    public sealed class OperationalPolicyConfig : IEntityTypeConfiguration<OperationalPolicy>
     {
         public void Configure(EntityTypeBuilder<OperationalPolicy> builder)
         {
@@ -39,7 +39,7 @@ namespace pwnwrk.infra.Persistence.EntityConfiguration
         }
     }
 
-    public class NotificationRuleConfig : IEntityTypeConfiguration<NotificationRule>
+    public sealed class NotificationRuleConfig : IEntityTypeConfiguration<NotificationRule>
     {
         public void Configure(EntityTypeBuilder<NotificationRule> builder)
         {

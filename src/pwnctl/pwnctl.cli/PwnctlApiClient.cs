@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using pwnctl.dto.Mediator;
 using pwnwrk.infra;
 
-public class PwnctlApiClient
+public sealed class PwnctlApiClient
 {
     private readonly HttpClient _httpClient;
 

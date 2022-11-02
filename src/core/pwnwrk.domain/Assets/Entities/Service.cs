@@ -7,7 +7,7 @@ using System.Text.Json;
 
 namespace pwnwrk.domain.Assets.Entities
 {
-    public class Service : BaseAsset
+    public sealed class Service : BaseAsset
     {
         public ushort Port { get; private init; }
 

@@ -10,7 +10,7 @@ using pwnwrk.domain.Assets.BaseClasses;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 
-public class Tests
+public sealed class Tests
 {
     public Tests()
     {

@@ -48,7 +48,7 @@ namespace pwnwrk.domain.Assets.BaseClasses
 
         public abstract bool Matches(ScopeDefinition definition);
 
-        // converts asset to the AssetDTO class and serializes it to JSON
+        // converts asset to the AssetDTO sealed class and serializes it to JSON
         public abstract string ToJson();
     }
 }

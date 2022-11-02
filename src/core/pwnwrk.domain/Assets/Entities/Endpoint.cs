@@ -7,7 +7,7 @@ using System.Text.Json;
 
 namespace pwnwrk.domain.Assets.Entities
 {
-    public class Endpoint : BaseAsset
+    public sealed class Endpoint : BaseAsset
     {
         [UniquenessAttribute]
         public string Url { get; private init; }

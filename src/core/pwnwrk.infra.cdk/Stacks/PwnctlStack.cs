@@ -26,7 +26,7 @@ using pwnwrk.infra.Logging;
 
 namespace pwnwrk.infra.cdk.Stacks
 {
-    internal class PwnctlStack : Stack
+    internal sealed class PwnctlStack : Stack
     {
         internal PwnctlStack(Construct scope, string id, IStackProps props = null) : base(scope, id, props)
         {

@@ -3,7 +3,7 @@ using pwnwrk.domain.Notifications.Entities;
 
 namespace pwnwrk.infra.Notifications
 {
-    public class NotificationRuleChecker
+    public sealed class NotificationRuleChecker
     {
         private readonly List<NotificationRule> _notificationRules;
 

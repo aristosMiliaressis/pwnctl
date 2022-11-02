@@ -1,6 +1,6 @@
 namespace pwnwrk.domain.Assets.DTO
 {
-    public class AssetDTO
+    public sealed class AssetDTO
     {
         public string Asset { get; set; }
         public Dictionary<string, object> Tags { get; set; }

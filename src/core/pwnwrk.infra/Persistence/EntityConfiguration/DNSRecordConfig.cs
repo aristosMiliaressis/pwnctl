@@ -5,7 +5,7 @@ using pwnwrk.infra.Persistence.IdGenerators;
 
 namespace pwnwrk.infra.Persistence.EntityConfiguration
 {
-    public class DNSRecordConfig : IEntityTypeConfiguration<DNSRecord>
+    public sealed class DNSRecordConfig : IEntityTypeConfiguration<DNSRecord>
     {
         public void Configure(EntityTypeBuilder<DNSRecord> builder)
         {

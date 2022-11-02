@@ -5,7 +5,7 @@ using pwnwrk.infra.Persistence.IdGenerators;
 
 namespace pwnwrk.infra.Persistence.EntityConfiguration
 {
-    public class EmailConfig : IEntityTypeConfiguration<Email>
+    public sealed class EmailConfig : IEntityTypeConfiguration<Email>
     {
         public void Configure(EntityTypeBuilder<Email> builder)
         {

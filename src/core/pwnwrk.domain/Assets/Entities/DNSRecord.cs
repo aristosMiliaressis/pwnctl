@@ -7,7 +7,7 @@ using System.Text.Json;
 
 namespace pwnwrk.domain.Assets.Entities
 {
-    public class DNSRecord : BaseAsset
+    public sealed class DNSRecord : BaseAsset
     {
         [UniquenessAttribute]
         public RecordType Type { get; private init; }

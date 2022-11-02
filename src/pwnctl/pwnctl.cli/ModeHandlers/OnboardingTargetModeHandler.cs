@@ -7,7 +7,7 @@ using pwnctl.dto.Targets.Commands;
 
 namespace pwnctl.cli.ModeHandlers
 {
-    public class OnboardingTargetModeHandler : IModeHandler
+    public sealed class OnboardingTargetModeHandler : IModeHandler
     {
         public string ModeName => "onboard";
 

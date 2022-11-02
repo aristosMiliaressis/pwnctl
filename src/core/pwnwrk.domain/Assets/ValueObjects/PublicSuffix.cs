@@ -5,7 +5,7 @@ using pwnwrk.domain.Common.BaseClasses;
 
 namespace pwnwrk.domain.Assets.ValueObjects
 {
-    public class PublicSuffix : ValueObject
+    public sealed class PublicSuffix : ValueObject
     {
         public string Suffix { get; private set; }
 

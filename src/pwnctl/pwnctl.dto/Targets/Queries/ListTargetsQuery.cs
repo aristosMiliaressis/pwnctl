@@ -5,7 +5,7 @@ using pwnctl.dto.Mediator;
 
 using MediatR;
 
-public class ListTargetsQuery : IMediatedRequest<TargetListViewModel>
+public sealed class ListTargetsQuery : IMediatedRequest<TargetListViewModel>
 {
     public static string Route => "/targets";
     public static HttpMethod Method => HttpMethod.Get;

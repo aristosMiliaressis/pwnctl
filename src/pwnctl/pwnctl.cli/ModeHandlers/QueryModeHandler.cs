@@ -6,7 +6,7 @@ using pwnwrk.infra.Persistence;
 
 namespace pwnctl.cli.ModeHandlers
 {
-    public class QueryModeHandler : IModeHandler
+    public sealed class QueryModeHandler : IModeHandler
     {
         public string ModeName => "query";
         

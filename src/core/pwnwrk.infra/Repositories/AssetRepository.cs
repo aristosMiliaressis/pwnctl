@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace pwnwrk.infra.Repositories
 {
-    public class AssetRepository : IAssetRepository
+    public sealed class AssetRepository : IAssetRepository
     {
         private PwnctlDbContext _context = new();
 
