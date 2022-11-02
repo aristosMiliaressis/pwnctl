@@ -170,6 +170,16 @@ namespace pwnwrk.infra.cdk.Stacks
                 }
             });
 
+            var sqsEp = new InterfaceVpcEndpoint(this, AwsConstants.VpcSQSEndpoint, new InterfaceVpcEndpointProps
+            {
+                Vpc = vpc,
+                Service = InterfaceVpcEndpointAwsService.SQS,
+                Subnets = new SubnetSelection
+                {
+                    Subnets = vpc.IsolatedSubnets
+                }
+            });
+
             var function = new Function(this, AwsConstants.LambdaName, new FunctionProps
             {
                 Runtime = Runtime.DOTNET_6,

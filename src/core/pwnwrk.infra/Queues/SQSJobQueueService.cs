@@ -1,11 +1,9 @@
-﻿using pwnwrk.domain.Interfaces;
-using pwnwrk.infra.Configuration;
-using pwnwrk.infra.Aws;
+﻿using pwnwrk.infra.Aws;
 using Amazon.SQS;
 using Amazon.SQS.Model;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Serilog.Core;
+using pwnwrk.domain.Tasks.Entities;
 
 namespace pwnwrk.infra.Queues
 {
@@ -36,7 +34,7 @@ namespace pwnwrk.infra.Queues
         /// pushes a job to the pending queue.
         /// </summary>
         /// <param name="command"></param>
-        public async Task EnqueueAsync(domain.Entities.Task job)
+        public async Task EnqueueAsync(TaskRecord job)
         {
             PwnContext.Logger.Debug("Enqueue: " + job.WrappedCommand);
 

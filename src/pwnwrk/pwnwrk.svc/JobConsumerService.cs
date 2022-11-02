@@ -52,7 +52,7 @@ namespace pwnwrk.svc
                     {                      
                         var queuedTask = JsonSerializer.Deserialize<TaskAssigned>(message.Body);
 
-                        var task = await _context.Tasks.FindAsync(queuedTask.TaskId);
+                        var task = await _context.TaskRecords.FindAsync(queuedTask.TaskId);
                         if (task == null)
                         {
                             // normaly this should never happen, log and continue.

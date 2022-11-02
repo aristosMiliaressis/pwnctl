@@ -7,6 +7,7 @@ public static class AwsConstants
     public const string PublicSubnet1 = "PublicSubnet1";
     public const string PrivateSubnet1 = "PrivateSubnet1";
     public const string VpcSecMgrEndpoint = "PwnctlLambdaSecMgrEp";
+    public const string VpcSQSEndpoint = "PwnctlLambdaSQSEp";    
     public const string AuroraCluster = "PwnctlAuroraCluster";
     public const string AuroraInstance = "PwnctlAuroraPostgreSqlInstance";
     public const string AuroraInstanceUsername = "pwnadmin";

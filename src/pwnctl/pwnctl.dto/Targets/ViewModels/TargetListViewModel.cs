@@ -1,6 +1,6 @@
 namespace pwnctl.dto.Targets.ViewModels;
 
-using pwnwrk.domain.Entities;
+using pwnwrk.domain.Targets.Entities;
 
 public class TargetListViewModel
 {

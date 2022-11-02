@@ -24,7 +24,7 @@ namespace pwnwrk.infra.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("pwnwrk.domain.Entities.Assets.CloudService", b =>
+            modelBuilder.Entity("pwnwrk.domain.Assets.Entities.CloudService", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -60,7 +60,7 @@ namespace pwnwrk.infra.Persistence.Migrations
                     b.ToTable("CloudService");
                 });
 
-            modelBuilder.Entity("pwnwrk.domain.Entities.Assets.DNSRecord", b =>
+            modelBuilder.Entity("pwnwrk.domain.Assets.Entities.DNSRecord", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -101,7 +101,7 @@ namespace pwnwrk.infra.Persistence.Migrations
                     b.ToTable("DNSRecords");
                 });
 
-            modelBuilder.Entity("pwnwrk.domain.Entities.Assets.Domain", b =>
+            modelBuilder.Entity("pwnwrk.domain.Assets.Entities.Domain", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -134,7 +134,7 @@ namespace pwnwrk.infra.Persistence.Migrations
                     b.ToTable("Domains");
                 });
 
-            modelBuilder.Entity("pwnwrk.domain.Entities.Assets.Email", b =>
+            modelBuilder.Entity("pwnwrk.domain.Assets.Entities.Email", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -164,7 +164,7 @@ namespace pwnwrk.infra.Persistence.Migrations
                     b.ToTable("Emails");
                 });
 
-            modelBuilder.Entity("pwnwrk.domain.Entities.Assets.Endpoint", b =>
+            modelBuilder.Entity("pwnwrk.domain.Assets.Entities.Endpoint", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -200,7 +200,7 @@ namespace pwnwrk.infra.Persistence.Migrations
                     b.ToTable("Endpoints");
                 });
 
-            modelBuilder.Entity("pwnwrk.domain.Entities.Assets.Host", b =>
+            modelBuilder.Entity("pwnwrk.domain.Assets.Entities.Host", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -228,7 +228,7 @@ namespace pwnwrk.infra.Persistence.Migrations
                     b.ToTable("Hosts");
                 });
 
-            modelBuilder.Entity("pwnwrk.domain.Entities.Assets.Keyword", b =>
+            modelBuilder.Entity("pwnwrk.domain.Assets.Entities.Keyword", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -258,7 +258,7 @@ namespace pwnwrk.infra.Persistence.Migrations
                     b.ToTable("Keywords");
                 });
 
-            modelBuilder.Entity("pwnwrk.domain.Entities.Assets.NetRange", b =>
+            modelBuilder.Entity("pwnwrk.domain.Assets.Entities.NetRange", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -286,7 +286,7 @@ namespace pwnwrk.infra.Persistence.Migrations
                     b.ToTable("NetRanges");
                 });
 
-            modelBuilder.Entity("pwnwrk.domain.Entities.Assets.Parameter", b =>
+            modelBuilder.Entity("pwnwrk.domain.Assets.Entities.Parameter", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -325,7 +325,7 @@ namespace pwnwrk.infra.Persistence.Migrations
                     b.ToTable("Parameters");
                 });
 
-            modelBuilder.Entity("pwnwrk.domain.Entities.Assets.Service", b =>
+            modelBuilder.Entity("pwnwrk.domain.Assets.Entities.Service", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -369,7 +369,7 @@ namespace pwnwrk.infra.Persistence.Migrations
                     b.ToTable("Services");
                 });
 
-            modelBuilder.Entity("pwnwrk.domain.Entities.Assets.VirtualHost", b =>
+            modelBuilder.Entity("pwnwrk.domain.Assets.Entities.VirtualHost", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -743,22 +743,22 @@ namespace pwnwrk.infra.Persistence.Migrations
                     b.ToTable("TaskDefinitions");
                 });
 
-            modelBuilder.Entity("pwnwrk.domain.Entities.Assets.CloudService", b =>
+            modelBuilder.Entity("pwnwrk.domain.Assets.Entities.CloudService", b =>
                 {
-                    b.HasOne("pwnwrk.domain.Entities.Assets.Domain", "Domain")
+                    b.HasOne("pwnwrk.domain.Assets.Entities.Domain", "Domain")
                         .WithMany()
                         .HasForeignKey("DomainId");
 
                     b.Navigation("Domain");
                 });
 
-            modelBuilder.Entity("pwnwrk.domain.Entities.Assets.DNSRecord", b =>
+            modelBuilder.Entity("pwnwrk.domain.Assets.Entities.DNSRecord", b =>
                 {
-                    b.HasOne("pwnwrk.domain.Entities.Assets.Domain", "Domain")
+                    b.HasOne("pwnwrk.domain.Assets.Entities.Domain", "Domain")
                         .WithMany("DNSRecords")
                         .HasForeignKey("DomainId");
 
-                    b.HasOne("pwnwrk.domain.Entities.Assets.Host", "Host")
+                    b.HasOne("pwnwrk.domain.Assets.Entities.Host", "Host")
                         .WithMany("AARecords")
                         .HasForeignKey("HostId");
 
@@ -767,58 +767,58 @@ namespace pwnwrk.infra.Persistence.Migrations
                     b.Navigation("Host");
                 });
 
-            modelBuilder.Entity("pwnwrk.domain.Entities.Assets.Domain", b =>
+            modelBuilder.Entity("pwnwrk.domain.Assets.Entities.Domain", b =>
                 {
-                    b.HasOne("pwnwrk.domain.Entities.Assets.Domain", "RegistrationDomain")
+                    b.HasOne("pwnwrk.domain.Assets.Entities.Domain", "RegistrationDomain")
                         .WithMany()
                         .HasForeignKey("RegistrationDomainId");
 
                     b.Navigation("RegistrationDomain");
                 });
 
-            modelBuilder.Entity("pwnwrk.domain.Entities.Assets.Email", b =>
+            modelBuilder.Entity("pwnwrk.domain.Assets.Entities.Email", b =>
                 {
-                    b.HasOne("pwnwrk.domain.Entities.Assets.Domain", "Domain")
+                    b.HasOne("pwnwrk.domain.Assets.Entities.Domain", "Domain")
                         .WithMany()
                         .HasForeignKey("DomainId");
 
                     b.Navigation("Domain");
                 });
 
-            modelBuilder.Entity("pwnwrk.domain.Entities.Assets.Endpoint", b =>
+            modelBuilder.Entity("pwnwrk.domain.Assets.Entities.Endpoint", b =>
                 {
-                    b.HasOne("pwnwrk.domain.Entities.Assets.Service", "Service")
+                    b.HasOne("pwnwrk.domain.Assets.Entities.Service", "Service")
                         .WithMany()
                         .HasForeignKey("ServiceId");
 
                     b.Navigation("Service");
                 });
 
-            modelBuilder.Entity("pwnwrk.domain.Entities.Assets.Keyword", b =>
+            modelBuilder.Entity("pwnwrk.domain.Assets.Entities.Keyword", b =>
                 {
-                    b.HasOne("pwnwrk.domain.Entities.Assets.Domain", "Domain")
+                    b.HasOne("pwnwrk.domain.Assets.Entities.Domain", "Domain")
                         .WithMany()
                         .HasForeignKey("DomainId");
 
                     b.Navigation("Domain");
                 });
 
-            modelBuilder.Entity("pwnwrk.domain.Entities.Assets.Parameter", b =>
+            modelBuilder.Entity("pwnwrk.domain.Assets.Entities.Parameter", b =>
                 {
-                    b.HasOne("pwnwrk.domain.Entities.Assets.Endpoint", "Endpoint")
+                    b.HasOne("pwnwrk.domain.Assets.Entities.Endpoint", "Endpoint")
                         .WithMany()
                         .HasForeignKey("EndpointId");
 
                     b.Navigation("Endpoint");
                 });
 
-            modelBuilder.Entity("pwnwrk.domain.Entities.Assets.Service", b =>
+            modelBuilder.Entity("pwnwrk.domain.Assets.Entities.Service", b =>
                 {
-                    b.HasOne("pwnwrk.domain.Entities.Assets.Domain", "Domain")
+                    b.HasOne("pwnwrk.domain.Assets.Entities.Domain", "Domain")
                         .WithMany()
                         .HasForeignKey("DomainId");
 
-                    b.HasOne("pwnwrk.domain.Entities.Assets.Host", "Host")
+                    b.HasOne("pwnwrk.domain.Assets.Entities.Host", "Host")
                         .WithMany()
                         .HasForeignKey("HostId");
 
@@ -827,9 +827,9 @@ namespace pwnwrk.infra.Persistence.Migrations
                     b.Navigation("Host");
                 });
 
-            modelBuilder.Entity("pwnwrk.domain.Entities.Assets.VirtualHost", b =>
+            modelBuilder.Entity("pwnwrk.domain.Assets.Entities.VirtualHost", b =>
                 {
-                    b.HasOne("pwnwrk.domain.Entities.Assets.Service", "Service")
+                    b.HasOne("pwnwrk.domain.Assets.Entities.Service", "Service")
                         .WithMany()
                         .HasForeignKey("ServiceId");
 
@@ -867,47 +867,47 @@ namespace pwnwrk.infra.Persistence.Migrations
 
             modelBuilder.Entity("pwnwrk.domain.Entities.Tag", b =>
                 {
-                    b.HasOne("pwnwrk.domain.Entities.Assets.CloudService", "CloudService")
+                    b.HasOne("pwnwrk.domain.Assets.Entities.CloudService", "CloudService")
                         .WithMany("Tags")
                         .HasForeignKey("CloudServiceId");
 
-                    b.HasOne("pwnwrk.domain.Entities.Assets.DNSRecord", "DNSRecord")
+                    b.HasOne("pwnwrk.domain.Assets.Entities.DNSRecord", "DNSRecord")
                         .WithMany("Tags")
                         .HasForeignKey("DNSRecordId");
 
-                    b.HasOne("pwnwrk.domain.Entities.Assets.Domain", "Domain")
+                    b.HasOne("pwnwrk.domain.Assets.Entities.Domain", "Domain")
                         .WithMany("Tags")
                         .HasForeignKey("DomainId");
 
-                    b.HasOne("pwnwrk.domain.Entities.Assets.Email", null)
+                    b.HasOne("pwnwrk.domain.Assets.Entities.Email", null)
                         .WithMany("Tags")
                         .HasForeignKey("EmailId");
 
-                    b.HasOne("pwnwrk.domain.Entities.Assets.Endpoint", "Endpoint")
+                    b.HasOne("pwnwrk.domain.Assets.Entities.Endpoint", "Endpoint")
                         .WithMany("Tags")
                         .HasForeignKey("EndpointId");
 
-                    b.HasOne("pwnwrk.domain.Entities.Assets.Host", "Host")
+                    b.HasOne("pwnwrk.domain.Assets.Entities.Host", "Host")
                         .WithMany("Tags")
                         .HasForeignKey("HostId");
 
-                    b.HasOne("pwnwrk.domain.Entities.Assets.Keyword", null)
+                    b.HasOne("pwnwrk.domain.Assets.Entities.Keyword", null)
                         .WithMany("Tags")
                         .HasForeignKey("KeywordId");
 
-                    b.HasOne("pwnwrk.domain.Entities.Assets.NetRange", "NetRange")
+                    b.HasOne("pwnwrk.domain.Assets.Entities.NetRange", "NetRange")
                         .WithMany("Tags")
                         .HasForeignKey("NetRangeId");
 
-                    b.HasOne("pwnwrk.domain.Entities.Assets.Parameter", null)
+                    b.HasOne("pwnwrk.domain.Assets.Entities.Parameter", null)
                         .WithMany("Tags")
                         .HasForeignKey("ParameterId");
 
-                    b.HasOne("pwnwrk.domain.Entities.Assets.Service", "Service")
+                    b.HasOne("pwnwrk.domain.Assets.Entities.Service", "Service")
                         .WithMany("Tags")
                         .HasForeignKey("ServiceId");
 
-                    b.HasOne("pwnwrk.domain.Entities.Assets.VirtualHost", null)
+                    b.HasOne("pwnwrk.domain.Assets.Entities.VirtualHost", null)
                         .WithMany("Tags")
                         .HasForeignKey("VirtualHostId");
 
@@ -928,11 +928,11 @@ namespace pwnwrk.infra.Persistence.Migrations
 
             modelBuilder.Entity("pwnwrk.domain.Entities.Task", b =>
                 {
-                    b.HasOne("pwnwrk.domain.Entities.Assets.CloudService", "CloudService")
+                    b.HasOne("pwnwrk.domain.Assets.Entities.CloudService", "CloudService")
                         .WithMany("Tasks")
                         .HasForeignKey("CloudServiceId");
 
-                    b.HasOne("pwnwrk.domain.Entities.Assets.DNSRecord", "DNSRecord")
+                    b.HasOne("pwnwrk.domain.Assets.Entities.DNSRecord", "DNSRecord")
                         .WithMany("Tasks")
                         .HasForeignKey("DNSRecordId");
 
@@ -942,39 +942,39 @@ namespace pwnwrk.infra.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("pwnwrk.domain.Entities.Assets.Domain", "Domain")
+                    b.HasOne("pwnwrk.domain.Assets.Entities.Domain", "Domain")
                         .WithMany("Tasks")
                         .HasForeignKey("DomainId");
 
-                    b.HasOne("pwnwrk.domain.Entities.Assets.Email", null)
+                    b.HasOne("pwnwrk.domain.Assets.Entities.Email", null)
                         .WithMany("Tasks")
                         .HasForeignKey("EmailId");
 
-                    b.HasOne("pwnwrk.domain.Entities.Assets.Endpoint", "Endpoint")
+                    b.HasOne("pwnwrk.domain.Assets.Entities.Endpoint", "Endpoint")
                         .WithMany("Tasks")
                         .HasForeignKey("EndpointId");
 
-                    b.HasOne("pwnwrk.domain.Entities.Assets.Host", "Host")
+                    b.HasOne("pwnwrk.domain.Assets.Entities.Host", "Host")
                         .WithMany("Tasks")
                         .HasForeignKey("HostId");
 
-                    b.HasOne("pwnwrk.domain.Entities.Assets.Keyword", "Keyword")
+                    b.HasOne("pwnwrk.domain.Assets.Entities.Keyword", "Keyword")
                         .WithMany("Tasks")
                         .HasForeignKey("KeywordId");
 
-                    b.HasOne("pwnwrk.domain.Entities.Assets.NetRange", "NetRange")
+                    b.HasOne("pwnwrk.domain.Assets.Entities.NetRange", "NetRange")
                         .WithMany("Tasks")
                         .HasForeignKey("NetRangeId");
 
-                    b.HasOne("pwnwrk.domain.Entities.Assets.Parameter", null)
+                    b.HasOne("pwnwrk.domain.Assets.Entities.Parameter", null)
                         .WithMany("Tasks")
                         .HasForeignKey("ParameterId");
 
-                    b.HasOne("pwnwrk.domain.Entities.Assets.Service", "Service")
+                    b.HasOne("pwnwrk.domain.Assets.Entities.Service", "Service")
                         .WithMany("Tasks")
                         .HasForeignKey("ServiceId");
 
-                    b.HasOne("pwnwrk.domain.Entities.Assets.VirtualHost", null)
+                    b.HasOne("pwnwrk.domain.Assets.Entities.VirtualHost", null)
                         .WithMany("Tasks")
                         .HasForeignKey("VirtualHostId");
 
@@ -997,21 +997,21 @@ namespace pwnwrk.infra.Persistence.Migrations
                     b.Navigation("Service");
                 });
 
-            modelBuilder.Entity("pwnwrk.domain.Entities.Assets.CloudService", b =>
+            modelBuilder.Entity("pwnwrk.domain.Assets.Entities.CloudService", b =>
                 {
                     b.Navigation("Tags");
 
                     b.Navigation("Tasks");
                 });
 
-            modelBuilder.Entity("pwnwrk.domain.Entities.Assets.DNSRecord", b =>
+            modelBuilder.Entity("pwnwrk.domain.Assets.Entities.DNSRecord", b =>
                 {
                     b.Navigation("Tags");
 
                     b.Navigation("Tasks");
                 });
 
-            modelBuilder.Entity("pwnwrk.domain.Entities.Assets.Domain", b =>
+            modelBuilder.Entity("pwnwrk.domain.Assets.Entities.Domain", b =>
                 {
                     b.Navigation("DNSRecords");
 
@@ -1020,21 +1020,21 @@ namespace pwnwrk.infra.Persistence.Migrations
                     b.Navigation("Tasks");
                 });
 
-            modelBuilder.Entity("pwnwrk.domain.Entities.Assets.Email", b =>
+            modelBuilder.Entity("pwnwrk.domain.Assets.Entities.Email", b =>
                 {
                     b.Navigation("Tags");
 
                     b.Navigation("Tasks");
                 });
 
-            modelBuilder.Entity("pwnwrk.domain.Entities.Assets.Endpoint", b =>
+            modelBuilder.Entity("pwnwrk.domain.Assets.Entities.Endpoint", b =>
                 {
                     b.Navigation("Tags");
 
                     b.Navigation("Tasks");
                 });
 
-            modelBuilder.Entity("pwnwrk.domain.Entities.Assets.Host", b =>
+            modelBuilder.Entity("pwnwrk.domain.Assets.Entities.Host", b =>
                 {
                     b.Navigation("AARecords");
 
@@ -1043,35 +1043,35 @@ namespace pwnwrk.infra.Persistence.Migrations
                     b.Navigation("Tasks");
                 });
 
-            modelBuilder.Entity("pwnwrk.domain.Entities.Assets.Keyword", b =>
+            modelBuilder.Entity("pwnwrk.domain.Assets.Entities.Keyword", b =>
                 {
                     b.Navigation("Tags");
 
                     b.Navigation("Tasks");
                 });
 
-            modelBuilder.Entity("pwnwrk.domain.Entities.Assets.NetRange", b =>
+            modelBuilder.Entity("pwnwrk.domain.Assets.Entities.NetRange", b =>
                 {
                     b.Navigation("Tags");
 
                     b.Navigation("Tasks");
                 });
 
-            modelBuilder.Entity("pwnwrk.domain.Entities.Assets.Parameter", b =>
+            modelBuilder.Entity("pwnwrk.domain.Assets.Entities.Parameter", b =>
                 {
                     b.Navigation("Tags");
 
                     b.Navigation("Tasks");
                 });
 
-            modelBuilder.Entity("pwnwrk.domain.Entities.Assets.Service", b =>
+            modelBuilder.Entity("pwnwrk.domain.Assets.Entities.Service", b =>
                 {
                     b.Navigation("Tags");
 
                     b.Navigation("Tasks");
                 });
 
-            modelBuilder.Entity("pwnwrk.domain.Entities.Assets.VirtualHost", b =>
+            modelBuilder.Entity("pwnwrk.domain.Assets.Entities.VirtualHost", b =>
                 {
                     b.Navigation("Tags");
 

@@ -1,6 +1,5 @@
 namespace pwnctl.dto.Process.Commands;
 
-using pwnwrk.domain.Entities;
 using pwnctl.dto.Mediator;
 
 using MediatR;

@@ -1,4 +1,3 @@
-using pwnwrk.domain.Entities;
 using pwnctl.dto.Mediator;
 using pwnctl.dto.Targets.Commands;
 

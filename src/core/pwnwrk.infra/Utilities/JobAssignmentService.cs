@@ -1,9 +1,8 @@
-using pwnwrk.domain.Entities;
-using pwnwrk.domain.BaseClasses;
+using pwnwrk.domain.Tasks.Entities;
+using pwnwrk.domain.Assets.BaseClasses;
 using pwnwrk.infra.Persistence;
 using pwnwrk.infra.Persistence.Extensions;
 using pwnwrk.infra.Queues;
-using pwnwrk.domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace pwnwrk.infra.Utilities
@@ -63,12 +62,12 @@ namespace pwnwrk.infra.Utilities
 
             // only queue one task per TaskDefinition/Asset pair
             var lambda = ExpressionTreeBuilder.BuildTaskMatchingLambda(asset, definition);
-            var task = (pwnwrk.domain.Entities.Task) _context.FirstFromLambda(lambda);
+            var task = (TaskRecord) _context.FirstFromLambda(lambda);
             if (task != null)
                 return;
 
-            task = new pwnwrk.domain.Entities.Task(definition, asset);
-            _context.Tasks.Add(task);
+            task = new TaskRecord(definition, asset);
+            _context.TaskRecords.Add(task);
 
             await _context.SaveChangesAsync();
 

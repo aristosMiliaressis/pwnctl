@@ -4,9 +4,9 @@ using pwnwrk.infra.Utilities;
 using pwnwrk.infra.Persistence;
 using pwnwrk.infra.Persistence.Extensions;
 using pwnwrk.infra.Repositories;
-using pwnwrk.domain.Entities.Assets;
-using pwnwrk.domain.Entities;
-using pwnwrk.domain.BaseClasses;
+using pwnwrk.domain.Assets.Entities;
+using pwnwrk.domain.Common.Entities;
+using pwnwrk.domain.Assets.BaseClasses;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 
@@ -187,7 +187,7 @@ public class Tests
         await jobService.AssignAsync(netRange);
 
         // blacklist test
-        Assert.False(context.Tasks.Include(t => t.Definition).Any(t => t.Definition.ShortName == "nmap_basic"));
+        Assert.False(context.TaskRecords.Include(t => t.Definition).Any(t => t.Definition.ShortName == "nmap_basic"));
 
         var endpoint = new Endpoint("https", new Service(new Host("172.16.17.15"), 443), "/api/token");
         endpoint.AddTags(new List<Tag> {new Tag("Content-Type", "text/html")});
@@ -196,14 +196,14 @@ public class Tests
         var service = context.Services.First(h => h.Origin == "tcp://172.16.17.15:443");
         await jobService.AssignAsync(endpoint);
         // TaskDefinition.Filter fail test
-        Assert.False(context.Tasks.Include(t => t.Definition).Any(t => t.Definition.ShortName == "ffuf_common"));
+        Assert.False(context.TaskRecords.Include(t => t.Definition).Any(t => t.Definition.ShortName == "ffuf_common"));
 
         // aggresivness test
-        Assert.True(context.Tasks.Include(t => t.Definition).Any(t => t.Definition.ShortName == "hakrawler"));
-        Assert.False(context.Tasks.Include(t => t.Definition).Any(t => t.Definition.ShortName == "sqlmap"));
+        Assert.True(context.TaskRecords.Include(t => t.Definition).Any(t => t.Definition.ShortName == "hakrawler"));
+        Assert.False(context.TaskRecords.Include(t => t.Definition).Any(t => t.Definition.ShortName == "sqlmap"));
 
         // Task.Command interpolation test
-        var hakrawlerTask = context.Tasks.Include(t => t.Definition).First(t => t.Definition.ShortName == "hakrawler");
+        var hakrawlerTask = context.TaskRecords.Include(t => t.Definition).First(t => t.Definition.ShortName == "hakrawler");
         Assert.Equal("hakrawler -plain -h 'User-Agent: Mozilla/5.0' https://172.16.17.15:443/api/token/", hakrawlerTask.Command);
 
         endpoint = new Endpoint("https", service, "/");
@@ -212,19 +212,19 @@ public class Tests
         await jobService.AssignAsync(endpoint);
         
         // TaskDefinition.Filter pass test
-        Assert.True(context.Tasks.Include(t => t.Definition).Any(t => t.Definition.ShortName == "ffuf_common"));
+        Assert.True(context.TaskRecords.Include(t => t.Definition).Any(t => t.Definition.ShortName == "ffuf_common"));
 
         // multiple interpolation test
         var domain = new Domain("sub.tesla.com");
         context.Add(domain);
         context.SaveChanges();
         await jobService.AssignAsync(domain);
-        var resolutionTask = context.Tasks.Include(t => t.Definition).First(t => t.Definition.ShortName == "domain_resolution");
+        var resolutionTask = context.TaskRecords.Include(t => t.Definition).First(t => t.Definition.ShortName == "domain_resolution");
         Assert.Equal("dig +short sub.tesla.com | awk '{print \"sub.tesla.com IN A \" $1}'| pwnctl process", resolutionTask.Command);
 
         var keyword = new Keyword(domain, "tesla");
         await jobService.AssignAsync(keyword);
-        var cloudEnumTask = context.Tasks.Include(t => t.Definition).First(t => t.Definition.ShortName == "cloud_enum");
+        var cloudEnumTask = context.TaskRecords.Include(t => t.Definition).First(t => t.Definition.ShortName == "cloud_enum");
         Assert.Equal("cloud-enum.sh tesla", cloudEnumTask.Command);
 
         // TODO: AllowActive = false test, csv black&whitelist test
@@ -300,7 +300,7 @@ public class Tests
 
         var keyword = context.Keywords.First(d => d.Word == "tesla");
         Assert.True(keyword.InScope);
-        var cloudEnumTask = context.Tasks.Include(t => t.Definition).First(t => t.Definition.ShortName == "cloud_enum");
+        var cloudEnumTask = context.TaskRecords.Include(t => t.Definition).First(t => t.Definition.ShortName == "cloud_enum");
         Assert.Equal("cloud-enum.sh tesla", cloudEnumTask.Command);
 
         res = await processor.TryProccessAsync("tesla.com IN A 31.3.3.7");
@@ -381,7 +381,7 @@ public class Tests
         // process same asset twice and make sure tasks are only assigned once
         await processor.ProcessAsync(JsonSerializer.Serialize(teslaUrl));
         endpoint = (Endpoint) context.Endpoints.Include(e => e.Tags).Where(ep => ep.Url == "https://iis.tesla.com:443/").First();
-        var tasks = context.Tasks.Include(t => t.Definition).Where(t => t.EndpointId == endpoint.Id).ToList();
+        var tasks = context.TaskRecords.Include(t => t.Definition).Where(t => t.EndpointId == endpoint.Id).ToList();
         Assert.True(!tasks.GroupBy(t => t.DefinitionId).Any(g => g.Count() > 1));
         srvTag = endpoint.Tags.First(t => t.Name == "protocol");
         Assert.Equal("IIS", srvTag.Value);
@@ -400,7 +400,7 @@ public class Tests
         // test Tag filter
         await processor.ProcessAsync(JsonSerializer.Serialize(apacheTeslaUrl));
         endpoint = context.Endpoints.Include(e => e.Tags).Where(ep => ep.Url == "https://apache.tesla.com:443/").First();
-        tasks = context.Tasks.Include(t => t.Definition).Where(t => t.EndpointId == endpoint.Id).ToList();
+        tasks = context.TaskRecords.Include(t => t.Definition).Where(t => t.EndpointId == endpoint.Id).ToList();
         Assert.DoesNotContain(tasks, t => t.Definition.ShortName == "shortname_scanner");
 
         var sshService = new

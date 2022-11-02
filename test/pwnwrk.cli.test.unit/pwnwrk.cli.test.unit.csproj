@@ -34,9 +34,6 @@
     <Content Include="seed\*.*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content> 
-    <Content Include="scripts\*.*">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>  
   </ItemGroup>
 
 </Project>

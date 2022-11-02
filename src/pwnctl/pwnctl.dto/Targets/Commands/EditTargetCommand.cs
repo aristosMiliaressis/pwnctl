@@ -1,6 +1,6 @@
 namespace pwnctl.dto.Targets.Commands;
 
-using pwnwrk.domain.Entities;
+using pwnwrk.domain.Targets.Entities;
 using pwnctl.dto.Mediator;
 
 using MediatR;

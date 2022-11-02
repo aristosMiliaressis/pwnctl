@@ -14,9 +14,11 @@ namespace pwnctl.api.MediatR.Handlers.Targets.Queries
 
         public async Task<MediatedResponse<TargetListViewModel>> Handle(ListTargetsQuery command, CancellationToken cancellationToken)
         {
-            Console.WriteLine("ListTargetsQueryHandler");
-            var targets = await _context.Programs.AsNoTracking().ToListAsync(cancellationToken);
-            Console.WriteLine("MediatedResponse");
+            var targets = await _context.Programs
+                                        .Include(p => p.Policy)
+                                        .Include(p => p.Scope)
+                                        .AsNoTracking()
+                                        .ToListAsync(cancellationToken);
 
             return MediatedResponse<TargetListViewModel>.Success(new TargetListViewModel(targets));
         }

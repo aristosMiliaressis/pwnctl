@@ -1,4 +1,4 @@
-using pwnwrk.domain.Interfaces;
+using pwnwrk.domain.Assets.Interfaces;
 
 namespace pwnwrk.domain
 {

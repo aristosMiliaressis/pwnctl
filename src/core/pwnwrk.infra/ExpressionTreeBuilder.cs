@@ -1,6 +1,7 @@
-using pwnwrk.domain.Attributes;
-using pwnwrk.domain.BaseClasses;
-using pwnwrk.domain.Entities;
+using pwnwrk.domain.Assets.Attributes;
+using pwnwrk.domain.Assets.BaseClasses;
+using pwnwrk.domain.Common.Entities;
+using pwnwrk.domain.Tasks.Entities;
 using System.Reflection;
 using System.Linq.Expressions;
 
@@ -42,11 +43,11 @@ namespace pwnwrk.infra
         /// </summary>
         public static LambdaExpression BuildTaskMatchingLambda(BaseAsset asset, TaskDefinition definition)
         {
-            var type = typeof(domain.Entities.Task);
+            var type = typeof(TaskRecord);
 
             var _param = Expression.Parameter(type, "t");
 
-            var lref = Expression.PropertyOrField(_param, nameof(domain.Entities.Task.DefinitionId));
+            var lref = Expression.PropertyOrField(_param, nameof(TaskRecord.DefinitionId));
             var rval = Expression.Constant(definition.Id);
             var expression = Expression.Equal(lref, rval);
 

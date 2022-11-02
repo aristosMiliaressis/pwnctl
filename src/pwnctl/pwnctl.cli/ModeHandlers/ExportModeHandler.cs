@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using pwnwrk.infra.Repositories;
-using pwnwrk.domain.BaseClasses;
+using pwnwrk.domain.Assets.BaseClasses;
 
 namespace pwnctl.cli.ModeHandlers
 {

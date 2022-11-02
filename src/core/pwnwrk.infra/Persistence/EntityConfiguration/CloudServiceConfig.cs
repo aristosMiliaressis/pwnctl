@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using pwnwrk.domain.Entities.Assets;
+using pwnwrk.domain.Assets.Entities;
 using pwnwrk.infra.Persistence.IdGenerators;
 
 namespace pwnwrk.infra.Persistence.EntityConfiguration
@@ -13,7 +13,7 @@ namespace pwnwrk.infra.Persistence.EntityConfiguration
 
             builder.HasKey(t => t.Id);
 
-            builder.HasIndex(nameof(Email.Domainname)).IsUnique();
+            builder.HasIndex(nameof(Email.Hostname)).IsUnique();
 
             builder.HasOne(e => e.Domain)
                 .WithMany()

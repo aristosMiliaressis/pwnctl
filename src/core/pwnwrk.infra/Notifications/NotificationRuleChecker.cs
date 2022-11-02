@@ -1,10 +1,5 @@
-using pwnwrk.infra.Persistence;
-using pwnwrk.infra;
-using pwnwrk.domain.BaseClasses;
-using pwnwrk.domain.Entities;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
+using pwnwrk.domain.Assets.BaseClasses;
+using pwnwrk.domain.Notifications.Entities;
 
 namespace pwnwrk.infra.Notifications
 {

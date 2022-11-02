@@ -1,5 +1,5 @@
-using pwnwrk.domain.Interfaces;
-using pwnwrk.domain.ValueObjects;
+using pwnwrk.domain.Assets.Interfaces;
+using pwnwrk.domain.Assets.ValueObjects;
 using pwnwrk.infra.Configuration;
 
 namespace pwnwrk.infra.Repositories

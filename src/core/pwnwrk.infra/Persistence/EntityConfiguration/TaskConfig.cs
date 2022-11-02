@@ -1,12 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using pwnwrk.domain.Entities;
+using pwnwrk.domain.Tasks.Entities;
 
 namespace pwnwrk.infra.Persistence.EntityConfiguration
 {
-    public class TaskConfig : IEntityTypeConfiguration<domain.Entities.Task>
+    public class TaskConfig : IEntityTypeConfiguration<TaskRecord>
     {
-        public void Configure(EntityTypeBuilder<domain.Entities.Task> builder)
+        public void Configure(EntityTypeBuilder<TaskRecord> builder)
         {
             builder.HasKey(t => t.Id);
 

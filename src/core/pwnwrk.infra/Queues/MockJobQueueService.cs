@@ -1,7 +1,5 @@
-using System;
 using System.Diagnostics;
-using pwnwrk.domain.Interfaces;
-using pwnwrk.infra.Logging;
+using pwnwrk.domain.Tasks.Entities;
 
 namespace pwnwrk.infra.Queues
 {
@@ -11,7 +9,7 @@ namespace pwnwrk.infra.Queues
         /// pushes a job to the pending queue.
         /// </summary>
         /// <param name="command"></param>
-        public Task EnqueueAsync(domain.Entities.Task job)
+        public Task EnqueueAsync(TaskRecord job)
         {
             var psi = new ProcessStartInfo();
             psi.FileName = "/bin/bash";

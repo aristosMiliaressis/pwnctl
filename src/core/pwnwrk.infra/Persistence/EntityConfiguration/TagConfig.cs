@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using pwnwrk.domain.Entities;
+using pwnwrk.domain.Common.Entities;
 
 namespace pwnwrk.infra.Persistence.EntityConfiguration
 {

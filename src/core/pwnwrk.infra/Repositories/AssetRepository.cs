@@ -1,10 +1,8 @@
-using pwnwrk.infra;
 using pwnwrk.infra.Extensions;
 using pwnwrk.infra.Persistence;
 using pwnwrk.infra.Persistence.Extensions;
-using pwnwrk.domain.BaseClasses;
-using pwnwrk.domain.Entities.Assets;
-using pwnwrk.domain.Interfaces;
+using pwnwrk.domain.Assets.BaseClasses;
+using pwnwrk.domain.Assets.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace pwnwrk.infra.Repositories

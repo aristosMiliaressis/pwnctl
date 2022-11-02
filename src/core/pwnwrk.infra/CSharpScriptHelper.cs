@@ -1,5 +1,4 @@
-using pwnwrk.domain.BaseClasses;
-using Microsoft.CodeAnalysis;
+using pwnwrk.domain.Assets.BaseClasses;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using System.Reflection;

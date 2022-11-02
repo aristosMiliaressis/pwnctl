@@ -1,12 +1,11 @@
-﻿using pwnwrk.domain.Exceptions;
-using pwnwrk.infra.Utilities;
+﻿using pwnwrk.infra.Exceptions;
 using pwnwrk.infra.Repositories;
 using pwnwrk.infra.Extensions;
 using pwnwrk.infra.Persistence;
 using pwnwrk.infra.Persistence.Extensions;
 using pwnwrk.infra.Logging;
 using pwnwrk.infra.Notifications;
-using pwnwrk.domain.BaseClasses;
+using pwnwrk.domain.Assets.BaseClasses;
 using Microsoft.EntityFrameworkCore;
 
 namespace pwnwrk.infra.Utilities

@@ -1,5 +1,5 @@
-using pwnwrk.domain.Attributes;
-using pwnwrk.domain.BaseClasses;
+using pwnwrk.domain.Assets.Attributes;
+using pwnwrk.domain.Assets.BaseClasses;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
 using System.Text;

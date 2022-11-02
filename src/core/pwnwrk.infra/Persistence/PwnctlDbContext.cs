@@ -5,8 +5,11 @@ using System.Reflection;
 using pwnwrk.infra.Configuration;
 using pwnwrk.infra.Persistence.Extensions;
 using pwnwrk.infra.Persistence.IdGenerators;
-using pwnwrk.domain.Entities;
-using pwnwrk.domain.Entities.Assets;
+using pwnwrk.domain.Common.Entities;
+using pwnwrk.domain.Notifications.Entities;
+using pwnwrk.domain.Targets.Entities;
+using pwnwrk.domain.Tasks.Entities;
+using pwnwrk.domain.Assets.Entities;
 
 namespace pwnwrk.infra.Persistence
 {
@@ -29,7 +32,7 @@ namespace pwnwrk.infra.Persistence
         public DbSet<Program> Programs { get; set; }
         public DbSet<ScopeDefinition> ScopeDefinitions { get; set; }
         public DbSet<OperationalPolicy> OperationalPolicies { get; set; }
-        public DbSet<domain.Entities.Task> Tasks { get; set; }
+        public DbSet<TaskRecord> TaskRecords { get; set; }
         public DbSet<TaskDefinition> TaskDefinitions { get; set; }
         public DbSet<Domain> Domains { get; set; }
         public DbSet<NetRange> NetRanges { get; set; }

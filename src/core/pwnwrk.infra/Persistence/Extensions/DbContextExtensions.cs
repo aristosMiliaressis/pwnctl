@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using pwnwrk.domain.BaseClasses;
-using pwnwrk.domain.Entities;
+using pwnwrk.domain.Common.BaseClasses;
+using pwnwrk.domain.Targets.Entities;
 using System.Reflection;
 using System.Linq.Expressions;
 

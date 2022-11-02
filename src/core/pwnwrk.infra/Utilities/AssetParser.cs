@@ -1,12 +1,9 @@
-using pwnwrk.domain.BaseClasses;
-using pwnwrk.domain.Entities;
-using pwnwrk.domain.DTO;
-using pwnwrk.domain.Exceptions;
-using System.Collections.Generic;
+using pwnwrk.domain.Assets.BaseClasses;
+using pwnwrk.domain.Common.Entities;
+using pwnwrk.domain.Assets.DTO;
+using pwnwrk.infra.Exceptions;
 using System.Text.Json;
 using System.Reflection;
-using System;
-using System.Linq;
 
 namespace pwnwrk.infra.Utilities
 {

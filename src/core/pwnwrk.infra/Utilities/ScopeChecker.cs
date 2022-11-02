@@ -1,5 +1,5 @@
-using pwnwrk.domain.BaseClasses;
-using pwnwrk.domain.Entities;
+using pwnwrk.domain.Assets.BaseClasses;
+using pwnwrk.domain.Targets.Entities;
 
 namespace pwnwrk.infra.Utilities
 {
@@ -17,7 +17,7 @@ namespace pwnwrk.infra.Utilities
             return _scopeDefinitions.Any(d => asset.Matches(d));
         }
 
-        public pwnwrk.domain.Entities.Program GetApplicableProgram(BaseAsset asset)
+        public Program GetApplicableProgram(BaseAsset asset)
         {
             var scope = _scopeDefinitions.FirstOrDefault(d => asset.Matches(d));
 

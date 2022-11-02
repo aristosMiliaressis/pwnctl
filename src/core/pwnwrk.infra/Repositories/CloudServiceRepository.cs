@@ -1,7 +1,4 @@
-using pwnwrk.infra.Configuration;
-using pwnwrk.domain.Entities.Assets;
-using pwnwrk.domain.Interfaces;
-using pwnwrk.domain.ValueObjects;
+using pwnwrk.domain.Assets.Entities;
 
 namespace pwnwrk.infra.Repositories
 {
@@ -20,7 +17,7 @@ namespace pwnwrk.infra.Repositories
             }
         }
 
-        public CloudService GetCloudService(string domainname)
+        public CloudService GetCloudService(string hostname)
         {
             throw new NotImplementedException();
         }

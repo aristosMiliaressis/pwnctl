@@ -1,13 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using pwnwrk.domain.Entities.Assets;
+using pwnwrk.domain.Assets.Entities;
 using pwnwrk.infra.Persistence.IdGenerators;
 
 namespace pwnwrk.infra.Persistence.EntityConfiguration
 {
-    public class DomainConfig : IEntityTypeConfiguration<domain.Entities.Assets.Domain>
+    public class DomainConfig : IEntityTypeConfiguration<Domain>
     {
-        public void Configure(EntityTypeBuilder<domain.Entities.Assets.Domain> builder)
+        public void Configure(EntityTypeBuilder<Domain> builder)
         {
             builder.Property(c => c.Id).HasValueGenerator<HashIdValueGenerator>();
 

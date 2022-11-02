@@ -1,4 +1,3 @@
-using pwnwrk.domain.Interfaces;
 
 namespace pwnwrk.infra.Queues
 {

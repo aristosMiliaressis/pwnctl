@@ -31,8 +31,8 @@ namespace pwnctl.cli.ModeHandlers
             int inScopeEndpointCount = await context.Endpoints.Where(a => a.InScope).CountAsync();
             int inScopeParamCount = await context.Parameters.Where(a => a.InScope).CountAsync();
             int inScopeEmailCount = await context.Emails.Where(a => a.InScope).CountAsync();
-            var firstTask = await context.Tasks.OrderBy(t => t.QueuedAt).FirstOrDefaultAsync();
-            var lastTask = await context.Tasks.OrderBy(t => t.QueuedAt).FirstOrDefaultAsync();
+            var firstTask = await context.TaskRecords.OrderBy(t => t.QueuedAt).FirstOrDefaultAsync();
+            var lastTask = await context.TaskRecords.OrderBy(t => t.QueuedAt).FirstOrDefaultAsync();
 
             Console.WriteLine($"NetRanges: {netRangeCount}, InScope: {inScopeRangesCount}");
             Console.WriteLine($"Hosts: {hostCount}, InScope: {insCopeHostCount}");

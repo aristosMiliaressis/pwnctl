@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using pwnwrk.domain.Entities.Assets;
+using pwnwrk.domain.Assets.Entities;
 using pwnwrk.infra.Persistence.IdGenerators;
 
 namespace pwnwrk.infra.Persistence.EntityConfiguration

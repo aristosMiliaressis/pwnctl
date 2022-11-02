@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using pwnwrk.domain.Entities;
-using pwnwrk.infra.Notifications;
+using pwnwrk.domain.Notifications.Entities;
+using pwnwrk.domain.Targets.Entities;
+using pwnwrk.domain.Tasks.Entities;
 using Microsoft.Extensions.FileSystemGlobbing;
-using pwnwrk.infra.Configuration;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 

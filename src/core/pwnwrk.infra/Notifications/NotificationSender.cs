@@ -1,9 +1,6 @@
-using pwnwrk.domain.BaseClasses;
-using pwnwrk.domain.Entities;
-using pwnwrk.infra.Configuration;
-using pwnwrk.infra.Logging;
+using pwnwrk.domain.Assets.BaseClasses;
+using pwnwrk.domain.Notifications.Entities;
 using System.Diagnostics;
-using Serilog.Core;
 
 namespace pwnwrk.infra.Notifications
 {
