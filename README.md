@@ -10,7 +10,9 @@ recursive configuration based engine for external recon.
 
 the target scope is seeded or created trough the `pwnctl` cli/api, the scope is recursivly scanned by pushing jobs to the SQS queue that trigger serverless ECS instances to spin up and consume those jobs, collecting assets into an Aurora postgreSQL database, sending discord notifications according to `NotificationRules` and queueing further jobs according to `TaskDefinitions`, all infrastructure is provisioned as code trough CDK.
 
-![arch-phase0](img/arch-phase1.png)
+<p align="center">
+  <img src="https://github.com/aristosMiliaressis/pwnctl/blob/master/img/arch-phase1.png?raw=true">
+</p>
 
 ## `$ pwnctl process`
 
