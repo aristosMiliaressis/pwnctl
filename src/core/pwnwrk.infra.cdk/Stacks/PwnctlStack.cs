@@ -190,7 +190,6 @@ namespace pwnwrk.infra.cdk.Stacks
                     {"PWNCTL_Logging__Provider", LogProfile.Console.ToString()},
                     {"PWNCTL_Logging__MinLevel", "Debug"},
                     {"PWNCTL_Logging__LogGroup", AwsConstants.LambdaLogGroup},
-                    {"PWNCTL_EFS_MOUNT_POINT", AwsConstants.EfsMountPoint},
                     {"PWNCTL_InstallPath", AwsConstants.EfsMountPoint}
                 }
             });
@@ -282,7 +281,7 @@ namespace pwnwrk.infra.cdk.Stacks
                     {"PWNCTL_Logging__Provider", LogProfile.CloudWatch.ToString()},
                     {"PWNCTL_Logging__MinLevel", "Debug"},
                     {"PWNCTL_Logging__LogGroup", logGroup.LogGroupName},
-                    {"PWNCTL_EFS_MOUNT_POINT", AwsConstants.EfsMountPoint}
+                    {"PWNCTL_InstallPath", AwsConstants.EfsMountPoint}
                 }
             });
 

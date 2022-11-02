@@ -27,7 +27,7 @@ public class FsController : ControllerBase
         var directoryListing = Directory.GetDirectories(filePath).ToList();
         directoryListing.AddRange(Directory.GetFiles(filePath));
 
-        return Ok(directoryListing.Select(f => f.Replace(EnvironmentVariables.EfsMountPoint, "")));
+        return Ok(directoryListing.Select(f => f.Replace(EnvironmentVariables.InstallPath, "")));
     }
 
     [HttpGet("download")]
@@ -102,7 +102,7 @@ public class FsController : ControllerBase
         return Ok();
     }
 
-    private string FullPath(string path) => EnvironmentVariables.EfsMountPoint + (path.StartsWith("/") ? "" : "/") + path;
+    private string FullPath(string path) => EnvironmentVariables.InstallPath + (path.StartsWith("/") ? "" : "/") + path;
 
     private string GetFileContentType(string filePath)
     {

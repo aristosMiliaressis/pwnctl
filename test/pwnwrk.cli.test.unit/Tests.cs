@@ -16,7 +16,6 @@ public class Tests
     {
         Environment.SetEnvironmentVariable("PWNCTL_IsTestRun", "true");
         Environment.SetEnvironmentVariable("PWNCTL_InstallPath", ".");
-        Environment.SetEnvironmentVariable("PWNCTL_EFS_MOUNT_POINT", ".");
 
         // reset the database for every test method
         DatabaseInitializer.InitializeAsync().Wait();

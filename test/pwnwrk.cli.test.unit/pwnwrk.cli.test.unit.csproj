@@ -28,7 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="dns\*.*">
+    <Content Include="*.dat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content> 
     <Content Include="seed\*.*">

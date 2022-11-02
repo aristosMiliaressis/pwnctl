@@ -6,7 +6,7 @@ namespace pwnwrk.infra.Repositories
 {
     public class PublicSuffixRepository : IPublicSuffixRepository
     {
-        private static string _publicSuffixDataFile = $"{EnvironmentVariables.EfsMountPoint}/dns/public_suffix_list.dat";
+        private static string _publicSuffixDataFile = $"{EnvironmentVariables.InstallPath}/public_suffix_list.dat";
 
         private List<PublicSuffix> _publicSuffixes;
 
