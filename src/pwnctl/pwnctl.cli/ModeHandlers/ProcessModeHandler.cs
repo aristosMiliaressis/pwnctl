@@ -1,10 +1,7 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using pwnwrk.infra.Repositories;
-using pwnwrk.domain.BaseClasses;
 using pwnctl.dto.Process.Commands;
 
 namespace pwnctl.cli.ModeHandlers

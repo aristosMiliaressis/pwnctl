@@ -1,12 +1,12 @@
 namespace pwnctl.cli;
 
 using System;
-using System.Linq;
+using System.Text;
+using System.Text.Json;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using pwnctl.dto.Mediator;
-using pwnctl.dto;
 using pwnwrk.infra;
 
 public class PwnctlApiClient
@@ -60,9 +60,10 @@ public class PwnctlApiClient
 
     private async Task<MediatedResponse> _send(IBaseMediatedRequest request)
     {
-        var content = JsonContent.Create(request, request.GetType());
-        
+        var json = JsonSerializer.Serialize(request, request.GetType());
         var route = request.GetInterpolatedRoute();
+
+        var content = new StringContent(json, Encoding.UTF8, "application/json");     
 
         var response = await _httpClient.PostAsync(route, content);
         

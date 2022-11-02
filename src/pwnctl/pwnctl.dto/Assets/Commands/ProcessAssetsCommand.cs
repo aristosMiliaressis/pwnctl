@@ -5,7 +5,7 @@ using pwnctl.dto.Mediator;
 
 using MediatR;
 
-public class ProcessAssetsCommand : ScopeDefinition, IMediatedRequest
+public class ProcessAssetsCommand : IMediatedRequest
 {
     public static string Route => "/assets";
     public static HttpMethod Method => HttpMethod.Post;
