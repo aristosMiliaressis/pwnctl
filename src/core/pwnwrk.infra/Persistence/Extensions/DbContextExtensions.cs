@@ -1,5 +1,8 @@
 using Microsoft.EntityFrameworkCore;
+using pwnwrk.domain.Assets.BaseClasses;
+using pwnwrk.domain.Common.Entities;
 using pwnwrk.domain.Common.BaseClasses;
+using pwnwrk.domain.Tasks.Entities;
 using pwnwrk.domain.Targets.Entities;
 using System.Reflection;
 using System.Linq.Expressions;
@@ -15,6 +18,25 @@ namespace pwnwrk.infra.Persistence.Extensions
                             .Include(p => p.Scope)
                             .AsNoTracking()
                             .ToList();
+        }
+
+        public static Asset FindAsset(this DbContext context, Asset asset)
+        {
+            var lambda = ExpressionTreeBuilder.BuildAssetMatchingLambda(asset);
+
+            return (Asset)context.FirstFromLambda(lambda);
+        }
+
+        public static TaskRecord FindAssetTaskRecord(this DbContext context, Asset asset, TaskDefinition def)
+        {
+            var lambda = ExpressionTreeBuilder.BuildTaskMatchingLambda(asset, def);
+            return (TaskRecord)context.FirstFromLambda(lambda);
+        }
+
+        public static Tag FindAssetTag(this DbContext context, Asset asset, Tag tag)
+        {
+            var lambda = ExpressionTreeBuilder.BuildTagMatchingLambda(asset, tag);
+            return (Tag)context.FirstFromLambda(lambda);
         }
 
         public static Entity FirstFromLambda(this DbContext context, LambdaExpression lambda)

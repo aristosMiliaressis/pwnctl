@@ -6,6 +6,5 @@ namespace pwnwrk.infra.Repositories
     {
         Task UpdateAsync(Asset asset);
         Task AddOrUpdateAsync(Asset asset);
-        bool CheckIfExists(Asset asset);
     }
 }

@@ -1,9 +1,9 @@
 using pwnwrk.infra.Configuration;
 using pwnwrk.infra.Logging;
 using pwnwrk.infra.Repositories;
-using pwnwrk.domain.Assets.Entities;
-using pwnwrk.domain.Assets.BaseClasses;
 using pwnwrk.domain.Common.BaseClasses;
+using pwnwrk.domain.Assets.Interfaces;
+using System.Reflection;
 using Serilog.Core;
 
 namespace pwnwrk.infra
@@ -15,19 +15,19 @@ namespace pwnwrk.infra
             Config = PwnConfigFactory.Create();
             Logger = PwnLoggerFactory.Create();
 
-            Register(() => new PublicSuffixRepository(), 
-                     () => new CSharpFilterEvaluator());
+            AmbientService<IPublicSuffixRepository>.SetFactory(() => new PublicSuffixRepository());
+            AmbientService<IFilterEvaluator>.SetFactory(() => new CSharpFilterEvaluator());
         }
 
-        public static void Register(params AmbientService<IAmbientService>.AmbientServiceFactory[] factories)
+        public static void Register(params AmbientServiceFactory[] factories)
         {
             foreach (var factory in factories)
             {
-                var service = factory();
+                var service = factory.Invoke();
 
-                service
-                    .GetType()
-                    .GetMethod(nameof(AmbientService<IAmbientService>.SetFactory))
+                typeof(AmbientService<>)
+                    .MakeGenericType(service.GetType())
+                    .GetMethod(nameof(AmbientService<IAmbientService>.SetFactory), BindingFlags.Public | BindingFlags.Static)
                     .Invoke(service, new object[] { factory });
             }
         }

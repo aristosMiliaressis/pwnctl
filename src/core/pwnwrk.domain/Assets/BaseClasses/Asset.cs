@@ -59,13 +59,6 @@ namespace pwnwrk.domain.Assets.BaseClasses
             return program;
         }
 
-        public List<NotificationRule> GetMatchingNotificationRules(List<NotificationRule> rules)
-        {
-            return rules.Where(rule => rule.Subject == GetType().Name
-                                    && AmbientService<IFilterEvaluator>.Instance.Evaluate(rule.Filter, this))
-                        .ToList();
-        }
-
         public List<TaskDefinition> GetMatchingTaskDefinitions(List<TaskDefinition> definitions)
         {
             return definitions

@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
-using pwnwrk.domain.Assets.Entities;
+using pwnwrk.domain.Assets.BaseClasses;
 using pwnwrk.domain.Common.BaseClasses;
+using pwnwrk.domain.Assets.Interfaces;
 
 namespace pwnwrk.domain.Notifications.Entities
 {
@@ -13,5 +14,11 @@ namespace pwnwrk.domain.Notifications.Entities
         public string Severity { get; private init; }
 
         public NotificationRule() { }
+
+        public bool Check(Asset asset)
+        {
+            return Subject == asset.GetType().Name
+                && AmbientService<IFilterEvaluator>.Instance.Evaluate(Filter, asset);
+        }
     }
 }

@@ -1,3 +1,5 @@
+using pwnwrk.domain.Assets.Interfaces;
+using pwnwrk.domain.Assets.BaseClasses;
 using pwnwrk.domain.Common.BaseClasses;
 
 namespace pwnwrk.domain.Tasks.Entities
@@ -12,6 +14,13 @@ namespace pwnwrk.domain.Tasks.Entities
         public string Filter { get; private init; }
 
         public TaskDefinition() {}
+
+        public bool Matches(Asset asset)
+        {
+            return Subject == asset.GetType().Name
+                && (string.IsNullOrEmpty(Filter)
+                    || AmbientService<IFilterEvaluator>.Instance.Evaluate(Filter, asset));
+        }
 
         // Extrapolate list of parameter names from CommandTemplate
         public List<string> Parameters

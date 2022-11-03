@@ -5,11 +5,11 @@ public interface IAmbientService
 
 }
 
-public class AmbientService<TService>
+public delegate IAmbientService AmbientServiceFactory();
+
+public static class AmbientService<TService>
     where TService: IAmbientService
 {
-    public delegate IAmbientService AmbientServiceFactory();
-
     private static AmbientServiceFactory _factory { get; set; }
     private static TService _instance;
 
@@ -32,7 +32,7 @@ public class AmbientService<TService>
                 throw new Exception($"AmbientService<{typeof(TService).Name}> not configured.");
             }
 
-            _instance = (TService) _factory();
+            _instance = (TService) _factory.Invoke();
 
             return _instance;
         }

@@ -1,11 +1,11 @@
 namespace pwnwrk.test.unit;
 
+using pwnwrk.infra;
 using pwnwrk.infra.Utilities;
 using pwnwrk.infra.Persistence;
 using pwnwrk.infra.Persistence.Extensions;
 using pwnwrk.infra.Repositories;
 using pwnwrk.domain.Assets.Entities;
-using pwnwrk.domain.Common.Entities;
 using pwnwrk.domain.Assets.BaseClasses;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
@@ -189,7 +189,7 @@ public sealed class Tests
                {"Content-Type", "text/html"}
             }
         };
-        Console.WriteLine(JsonSerializer.Serialize(exampleUrl));
+
         // TaskDefinition.Filter fail test
         await processor.ProcessAsync(JsonSerializer.Serialize(exampleUrl));
         Assert.False(context.TaskRecords.Include(t => t.Definition).Any(t => t.Definition.ShortName == "ffuf_common"));
@@ -244,9 +244,9 @@ public sealed class Tests
         var inScopeDomain = new Domain("tesla.com");
         var outOfScope = new Domain("www.outofscope.com");
 
-        Assert.False(repository.CheckIfExists(inScopeDomain));
+        Assert.Null(context.FindAsset(inScopeDomain));
         await repository.AddOrUpdateAsync(inScopeDomain);
-        Assert.True(repository.CheckIfExists(inScopeDomain));
+        Assert.NotNull(context.FindAsset(inScopeDomain));
         inScopeDomain = context.Domains.First(d => d.Name == "tesla.com");
         await repository.AddOrUpdateAsync(outOfScope);
         outOfScope = context.Domains.First(d => d.Name == "www.outofscope.com");
@@ -254,23 +254,23 @@ public sealed class Tests
         var record1 = new DNSRecord(DNSRecord.RecordType.A, "hackerone.com", "1.3.3.7");
         var record2 = new DNSRecord(DNSRecord.RecordType.AAAA, "hackerone.com", "dead:beef::::");
 
-        Assert.False(repository.CheckIfExists(record1));
-        Assert.False(repository.CheckIfExists(record2));
+        Assert.Null(context.FindAsset(record1));
+        Assert.Null(context.FindAsset(record2));
         await repository.AddOrUpdateAsync(record1);
-        Assert.True(repository.CheckIfExists(record1));
-        Assert.False(repository.CheckIfExists(record2));
+        Assert.NotNull(context.FindAsset(record1));
+        Assert.Null(context.FindAsset(record2));
         await repository.AddOrUpdateAsync(record2);
-        Assert.True(repository.CheckIfExists(record2));
+        Assert.NotNull(context.FindAsset(record2));
 
         var netRange = new NetRange("10.1.101.0", 24);
-        Assert.False(repository.CheckIfExists(netRange));
+        Assert.Null(context.FindAsset(netRange));
         await repository.AddOrUpdateAsync(netRange);
-        Assert.True(repository.CheckIfExists(netRange));
+        Assert.NotNull(context.FindAsset(netRange));
 
         var service = new Service(inScopeDomain, 443);
-        Assert.False(repository.CheckIfExists(service));
+        Assert.Null(context.FindAsset(service));
         await repository.AddOrUpdateAsync(service);
-        Assert.True(repository.CheckIfExists(service));
+        Assert.NotNull(context.FindAsset(service));
     }
 
     [Fact]

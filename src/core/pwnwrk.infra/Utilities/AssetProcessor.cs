@@ -89,26 +89,24 @@ namespace pwnwrk.infra.Utilities
                 return;
             }
 
-            var notifications = asset.GetMatchingNotificationRules(_notificationRules);
-            foreach (var notification in notifications)
+            foreach (var rule in _notificationRules.Where(rule => rule.Check(asset)))
             {
-                _notificationSender.Send(asset, notification);
+                _notificationSender.Send(asset, rule);
             }
 
             var allowedTaskDefinitions = program.AllowedTasks(_taskDefinitions, asset.GetType());
+            var matchingTasks = allowedTaskDefinitions.Where(def => def.Matches(asset));
 
-            var matchingTasks = asset.GetMatchingTaskDefinitions(allowedTaskDefinitions);
             foreach(var definition in matchingTasks)
             {
                 // only queue tasks once per Taskdefinition/Asset pair
-                var lambda = ExpressionTreeBuilder.BuildTaskMatchingLambda(asset, definition);
-                var task = (TaskRecord)_context.FirstFromLambda(lambda);
+                var task = _context.FindAssetTaskRecord(asset, definition);
                 if (task != null)
                     continue;
 
                 task = new TaskRecord(definition, asset);
-                _context.TaskRecords.Add(task);
 
+                _context.TaskRecords.Add(task);
                 await _context.SaveChangesAsync();
                 
                 await _jobQueueService.EnqueueAsync(task);

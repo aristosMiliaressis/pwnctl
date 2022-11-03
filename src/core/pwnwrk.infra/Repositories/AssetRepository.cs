@@ -35,7 +35,7 @@ namespace pwnwrk.infra.Repositories
                     reference.SetValue(asset, assetRef);
                 });
 
-            if (!CheckIfExists(asset))
+            if (_context.FindAsset(asset) == null)
             {
                 asset.FoundAt = DateTime.UtcNow;
 
@@ -43,11 +43,10 @@ namespace pwnwrk.infra.Repositories
             }
             else if (asset.Tags != null)
             {
-                var matchingAsset = GetMatchingAsset(asset);
+                var matchingAsset = _context.FindAsset(asset);
                 foreach(var tag in asset.Tags) 
                 {
-                    var lambda = ExpressionTreeBuilder.BuildTagMatchingLambda(matchingAsset, tag);
-                    var existingTag = _context.FirstFromLambda(lambda);
+                    var existingTag = _context.FindAssetTag(matchingAsset, tag);
                     if (existingTag == null) 
                     {
                         tag.SetAsset(matchingAsset);
@@ -59,27 +58,15 @@ namespace pwnwrk.infra.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public bool CheckIfExists(Asset asset)
-        {
-            return GetMatchingAsset(asset) != null;
-        }
-
         public async Task<Asset> GetAssetWithReferencesAsync(Asset asset)
         {
-            asset = GetMatchingAsset(asset);
+            asset = _context.FindAsset(asset);
             if (asset == null)
                 return null;
 
             await _context.Entry(asset).LoadReferencesRecursivelyAsync();
 
             return asset;
-        }
-
-        private Asset GetMatchingAsset(Asset asset)
-        {
-            var lambda = ExpressionTreeBuilder.BuildAssetMatchingLambda(asset);
-
-            return (Asset) _context.FirstFromLambda(lambda);
         }
 
         public List<Host> ListHosts()
