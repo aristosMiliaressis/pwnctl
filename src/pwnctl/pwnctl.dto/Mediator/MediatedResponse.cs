@@ -21,27 +21,27 @@ public class MediatedResponse
 
     public static MediatedResponse Error(string template, params string[] args)
     {
-        return new MediatedResponse(MediatorError.GenericClientError(string.Format(template, args)));
+        return new(MediatorError.GenericClientError(string.Format(template, args)));
     }
 
     public static MediatedResponse ValidationFailure(IEnumerable<ValidationFailure> validationFailures)
     {
-        return new MediatedResponse(validationFailures
-                                    .Select(fail => new MediatorError(MediatorError.ErrorType.ValidationError, fail.ErrorMessage))
-                                    .ToArray());
+        return new(validationFailures
+                    .Select(fail => new MediatorError(MediatorError.ErrorType.ValidationError, fail.ErrorMessage))
+                    .ToArray());
     }
 
     public static MediatedResponse Success()
     {
-        return new MediatedResponse();
+        return new();
     }
 
     public static MediatedResponse Create(HttpStatusCode status)
     {
         return status switch
         {
-            HttpStatusCode.InternalServerError => new MediatedResponse(MediatorError.InternalServerError),
-            HttpStatusCode.Unauthorized => new MediatedResponse(MediatorError.Unauthorized),
+            HttpStatusCode.InternalServerError => new(MediatorError.InternalServerError),
+            HttpStatusCode.Unauthorized => new(MediatorError.Unauthorized),
             _ => throw new NotImplementedException()
         };
     }
@@ -73,7 +73,7 @@ public sealed class MediatedResponse<TResult> : MediatedResponse
 
     public static MediatedResponse<TResult> Success(TResult result)
     {
-        return new MediatedResponse<TResult>(result);
+        return new(result);
     }
 
     public new static MediatedResponse Success()

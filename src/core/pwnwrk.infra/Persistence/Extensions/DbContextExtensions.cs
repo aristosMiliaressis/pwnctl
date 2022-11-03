@@ -7,17 +7,17 @@ using System.Linq.Expressions;
 namespace pwnwrk.infra.Persistence.Extensions
 {
     public static class DbContextExtensions
-    {
-        public static List<ScopeDefinition> ListScopeDefinitions(this PwnctlDbContext context)
+    {        
+        public static List<Program> ListPrograms(this PwnctlDbContext context)
         {
-            return context.ScopeDefinitions
-                        .Include(d => d.Program)
-                            .ThenInclude(p => p.Policy)
-                        .AsNoTracking()
-                        .ToList();
+            return context.Programs
+                            .Include(p => p.Policy)
+                            .Include(p => p.Scope)
+                            .AsNoTracking()
+                            .ToList();
         }
 
-        public static BaseEntity FirstFromLambda(this DbContext context, LambdaExpression lambda)
+        public static Entity FirstFromLambda(this DbContext context, LambdaExpression lambda)
         {
             var type = lambda.Parameters.First().Type;
 
@@ -29,7 +29,7 @@ namespace pwnwrk.infra.Persistence.Extensions
             var filteredQueryable = whereMethod.Invoke(null, new object[] { queryableDbSet, lambda });
 
             var firstOrDefaultMethod = _firstOrDefaultMethod.MakeGenericMethod(type);
-            return (BaseEntity)firstOrDefaultMethod.Invoke(null, new object[] { filteredQueryable });
+            return (Entity)firstOrDefaultMethod.Invoke(null, new object[] { filteredQueryable });
         }
 
         public static void ConvertDateTimesToUtc(this DbContext context)

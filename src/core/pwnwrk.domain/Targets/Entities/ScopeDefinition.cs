@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace pwnwrk.domain.Targets.Entities
 {
-    public class ScopeDefinition : BaseEntity<int>
+    public class ScopeDefinition : Entity<int>
     {
         public ScopeType Type { get; init; }
         public string Pattern { get; init; }

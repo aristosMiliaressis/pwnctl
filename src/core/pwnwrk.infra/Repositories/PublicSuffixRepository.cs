@@ -10,7 +10,7 @@ namespace pwnwrk.infra.Repositories
 
         private List<PublicSuffix> _publicSuffixes;
 
-        public List<PublicSuffix> GetSuffixes()
+        public List<PublicSuffix> List()
         {
             if (_publicSuffixes == null)
             {

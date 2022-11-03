@@ -9,7 +9,7 @@ using System.Text.Json;
 
 namespace pwnwrk.domain.Assets.Entities
 {
-    public sealed class NetRange : BaseAsset
+    public sealed class NetRange : Asset
     {
         [UniquenessAttribute]
         public string FirstAddress { get; private init; }
@@ -26,7 +26,7 @@ namespace pwnwrk.domain.Assets.Entities
             NetPrefixBits = netPrefix;
         }
 
-        public static bool TryParse(string assetText, List<Tag> tags, out BaseAsset[] assets)
+        public static bool TryParse(string assetText, List<Tag> tags, out Asset[] assets)
         {
             try
             {
@@ -35,7 +35,7 @@ namespace pwnwrk.domain.Assets.Entities
                 var netRange = new NetRange(firstAddress, netPrefixBits);
                 netRange.AddTags(tags);
 
-                assets = new BaseAsset[] { netRange };
+                assets = new Asset[] { netRange };
                 return true;
             }
             catch
@@ -56,7 +56,7 @@ namespace pwnwrk.domain.Assets.Entities
             return ((ipAddr & cidrMask) == (cidrAddr & cidrMask));
         }
 
-        public override bool Matches(ScopeDefinition definition)
+        internal override bool Matches(ScopeDefinition definition)
         {
             return definition.Type == ScopeType.CIDR && NetRange.RoutesTo(FirstAddress, definition.Pattern);
         }

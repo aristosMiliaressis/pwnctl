@@ -11,9 +11,9 @@ public sealed class MediatorError
         Message = message;
     }
 
-    public static MediatorError GenericClientError(string message) => new MediatorError(ErrorType.GenericClientError, message);
-    public static MediatorError InternalServerError => new MediatorError(ErrorType.InternalServerError, "Internal Server Error");
-    public static MediatorError Unauthorized => new MediatorError(ErrorType.Unauthorized, "Client Unauthorized");
+    public static MediatorError GenericClientError(string message) => new(ErrorType.GenericClientError, message);
+    public static MediatorError InternalServerError => new(ErrorType.InternalServerError, "Internal Server Error");
+    public static MediatorError Unauthorized => new(ErrorType.Unauthorized, "Client Unauthorized");
 
     public int ToStatusCode()
     {

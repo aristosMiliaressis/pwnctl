@@ -7,7 +7,7 @@ using System.Text.Json;
 
 namespace pwnwrk.domain.Assets.Entities
 {
-    public sealed class CloudService : BaseAsset
+    public sealed class CloudService : Asset
     {
         [UniquenessAttribute]
         public string Hostname { get; set; }
@@ -24,14 +24,14 @@ namespace pwnwrk.domain.Assets.Entities
             Domain = domain;
         }
 
-        public static bool TryParse(string assetText, List<Tag> tags, out BaseAsset[] assets)
+        public static bool TryParse(string assetText, List<Tag> tags, out Asset[] assets)
         {
             assets = null;
 
             return false;
         }
 
-        public override bool Matches(ScopeDefinition definition)
+        internal override bool Matches(ScopeDefinition definition)
         {
             return Domain.Matches(definition);
         }

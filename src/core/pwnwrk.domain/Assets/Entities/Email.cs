@@ -8,7 +8,7 @@ using System.Text.Json;
 
 namespace pwnwrk.domain.Assets.Entities
 {
-    public sealed class Email : BaseAsset
+    public sealed class Email : Asset
     {
         [UniquenessAttribute]
         public string Address { get; private init; }
@@ -24,7 +24,7 @@ namespace pwnwrk.domain.Assets.Entities
             Domain = domain;
         }
 
-        public static bool TryParse(string assetText, List<Tag> tags, out BaseAsset[] assets)
+        public static bool TryParse(string assetText, List<Tag> tags, out Asset[] assets)
         {
             assets = null;
             if (!MailboxAddress.TryParse(assetText, out MailboxAddress address))
@@ -32,7 +32,7 @@ namespace pwnwrk.domain.Assets.Entities
 
             var domain = new Domain(address.Domain);
 
-            assets = new BaseAsset[] 
+            assets = new Asset[] 
             {
                 new Email(domain, address.Address),
                 domain
@@ -41,7 +41,7 @@ namespace pwnwrk.domain.Assets.Entities
             return true;
         }
 
-        public override bool Matches(ScopeDefinition definition)
+        internal override bool Matches(ScopeDefinition definition)
         {
             return Domain.Matches(definition);
         }

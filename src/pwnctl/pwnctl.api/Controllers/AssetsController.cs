@@ -5,7 +5,7 @@ using pwnctl.dto.Process.Commands;
 
 [ApiController]
 [Route("[controller]")]
-public sealed class AssetsController : BaseController
+public sealed class AssetsController : Controller
 {
     [HttpPost]
     public async Task<ActionResult> ProcessAssets(ProcessAssetsCommand command)

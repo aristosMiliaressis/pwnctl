@@ -10,7 +10,7 @@ using System.Text.Json;
 
 namespace pwnwrk.domain.Assets.Entities
 {
-    public sealed class Host : BaseAsset
+    public sealed class Host : Asset
     {
         [UniquenessAttribute]
         public string IP { get; private init; }
@@ -35,13 +35,13 @@ namespace pwnwrk.domain.Assets.Entities
             Version = version;
         }
 
-        public static bool TryParse(string assetText, List<Tag> tags, out BaseAsset[] assets)
+        public static bool TryParse(string assetText, List<Tag> tags, out Asset[] assets)
         {
             if (IPAddress.TryParse(assetText, out IPAddress address))
             {
                 var host = new Host(assetText, address.AddressFamily);
                 host.AddTags(tags);
-                assets = new BaseAsset[] { host };
+                assets = new Asset[] { host };
                 return true;
             }
 
@@ -49,7 +49,7 @@ namespace pwnwrk.domain.Assets.Entities
             return false;
         }
 
-        public override bool Matches(ScopeDefinition definition)
+        internal override bool Matches(ScopeDefinition definition)
         {
             return (definition.Type == ScopeType.CIDR && NetRange.RoutesTo(IP, definition.Pattern))
             || (definition.Type == ScopeType.DomainRegex && AARecords.Any(r => r.Domain.Matches(definition)));

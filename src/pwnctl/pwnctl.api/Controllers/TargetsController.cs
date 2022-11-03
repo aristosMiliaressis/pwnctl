@@ -8,7 +8,7 @@ using pwnctl.dto.Targets.Queries;
 
 [ApiController]
 [Route("[controller]")]
-public sealed class TargetsController : BaseController
+public sealed class TargetsController : Controller
 {
     [HttpEndpoint<ListTargetsQuery>]
     public async Task<ActionResult> GetTargets()

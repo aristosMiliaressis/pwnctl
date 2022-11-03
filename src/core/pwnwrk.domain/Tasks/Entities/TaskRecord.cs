@@ -5,15 +5,15 @@ using pwnwrk.domain.Assets.Entities;
 
 namespace pwnwrk.domain.Tasks.Entities
 {
-    public sealed class TaskRecord : BaseEntity<int>
+    public sealed class TaskRecord : Entity<int>
     {
         public int DefinitionId { get; private init; }
         public TaskDefinition Definition { get; private init; }
 
-		public int? ReturnCode { get; set; }
+		public int? ExitCode { get; private set; }
 		public DateTime QueuedAt { get; private init; }
-		public DateTime StartedAt { get; set; }
-		public DateTime FinishedAt { get; set; }
+		public DateTime StartedAt { get; private set; }
+		public DateTime FinishedAt { get; private set; }
 		public string Arguments { get; private init; }
 
         public Host Host { get; private init; }
@@ -42,11 +42,11 @@ namespace pwnwrk.domain.Tasks.Entities
 
         private TaskRecord() {}
 
-        public TaskRecord(TaskDefinition definition, BaseAsset asset)
+        public TaskRecord(TaskDefinition definition, Asset asset)
         {
             GetType().GetProperty(asset.GetType().Name + "Id").SetValue(this, asset.Id);
 
-            QueuedAt = DateTime.Now;
+            QueuedAt = DateTime.UtcNow;
             Definition = definition;
             List<object> arguments = new();
             foreach(var param in definition.Parameters)
@@ -57,6 +57,17 @@ namespace pwnwrk.domain.Tasks.Entities
                 arguments.Add(arg);
             }
             Arguments = JsonSerializer.Serialize(arguments);
+        }
+
+        public void Started()
+        {
+            StartedAt = DateTime.UtcNow;
+        }
+
+        public void Finished(int exitCode)
+        {
+            ExitCode = exitCode;
+            FinishedAt = DateTime.UtcNow;
         }
 
         // Interpolate asset arguments into CommandTemplate

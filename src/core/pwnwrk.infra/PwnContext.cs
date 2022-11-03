@@ -1,8 +1,9 @@
 using pwnwrk.infra.Configuration;
 using pwnwrk.infra.Logging;
 using pwnwrk.infra.Repositories;
-using pwnwrk.infra.Persistence;
-using pwnwrk.domain;
+using pwnwrk.domain.Assets.Entities;
+using pwnwrk.domain.Assets.BaseClasses;
+using pwnwrk.domain.Common.BaseClasses;
 using Serilog.Core;
 
 namespace pwnwrk.infra
@@ -11,16 +12,27 @@ namespace pwnwrk.infra
     {
         static PwnContext()
         {
-            PwnContext.Config = PwnConfigFactory.Create();
-            PwnContext.Logger = PwnLoggerFactory.Create();
-            PwnwrkDomainShim.PublicSuffixRepository = new PublicSuffixRepository();
-            if (PwnContext.Config.Aws.InVpc)
+            Config = PwnConfigFactory.Create();
+            Logger = PwnLoggerFactory.Create();
+
+            Register(() => new PublicSuffixRepository(), 
+                     () => new CSharpFilterEvaluator());
+        }
+
+        public static void Register(params AmbientService<IAmbientService>.AmbientServiceFactory[] factories)
+        {
+            foreach (var factory in factories)
             {
-                DatabaseInitializer.InitializeAsync().Wait();
+                var service = factory();
+
+                service
+                    .GetType()
+                    .GetMethod(nameof(AmbientService<IAmbientService>.SetFactory))
+                    .Invoke(service, new object[] { factory });
             }
         }
 
-        public static AppConfig Config { get; set; }
-        public static Logger Logger { get; set; }
+        public static AppConfig Config { get; private set; }
+        public static Logger Logger { get; private set; }
     }
 }

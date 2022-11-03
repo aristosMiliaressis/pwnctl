@@ -7,7 +7,7 @@ using System.Text.Json;
 
 namespace pwnwrk.domain.Assets.Entities
 {
-    public sealed class Service : BaseAsset
+    public sealed class Service : Asset
     {
         public ushort Port { get; private init; }
 
@@ -42,9 +42,9 @@ namespace pwnwrk.domain.Assets.Entities
             Origin = l4Proto.ToString().ToLower() + "://" + host.IP + ":" + port;
         }
 
-        public static bool TryParse(string assetText, List<Tag> tags, out BaseAsset[] assets)
+        public static bool TryParse(string assetText, List<Tag> tags, out Asset[] assets)
         {
-            var _assets = new List<BaseAsset>();
+            var _assets = new List<Asset>();
             try
             {
                 string strPort = assetText.Split(':').Last();
@@ -63,7 +63,7 @@ namespace pwnwrk.domain.Assets.Entities
 
                 var port = ushort.Parse(strPort);
 
-                if (Host.TryParse(assetText, null, out BaseAsset[] hostAssets))
+                if (Host.TryParse(assetText, null, out Asset[] hostAssets))
                 {
                     _assets.Add((Host)hostAssets[0]);
                     var service = new Service((Host)hostAssets[0], port, protocol);
@@ -72,7 +72,7 @@ namespace pwnwrk.domain.Assets.Entities
                     assets = _assets.ToArray();
                     return true;
                 }
-                else if (Domain.TryParse(assetText, null, out BaseAsset[] domains))
+                else if (Domain.TryParse(assetText, null, out Asset[] domains))
                 {
                     _assets.Add((Domain)domains[0]);
                     var service = new Service((Domain)domains[0], port, protocol);
@@ -93,7 +93,7 @@ namespace pwnwrk.domain.Assets.Entities
             return false;
         }
 
-        public override bool Matches(ScopeDefinition definition)
+        internal override bool Matches(ScopeDefinition definition)
         {
             return Host != null && Host.Matches(definition)
                 || Domain != null && Domain.Matches(definition);

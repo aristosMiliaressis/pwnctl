@@ -4,7 +4,7 @@ using pwnwrk.domain.Common.BaseClasses;
 
 namespace pwnwrk.domain.Common.Entities
 {
-    public sealed class Tag : BaseEntity<int>
+    public sealed class Tag : Entity<int>
     {
         public string Name { get; private init; }
         public string Value { get; private init; }
@@ -38,7 +38,7 @@ namespace pwnwrk.domain.Common.Entities
             Value = value;
         }
 
-        public void SetAsset(BaseAsset asset)
+        public void SetAsset(Asset asset)
         {
             GetType().GetProperty(asset.GetType().Name).SetValue(this, asset);
         }

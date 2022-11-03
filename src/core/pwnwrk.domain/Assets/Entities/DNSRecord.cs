@@ -7,7 +7,7 @@ using System.Text.Json;
 
 namespace pwnwrk.domain.Assets.Entities
 {
-    public sealed class DNSRecord : BaseAsset
+    public sealed class DNSRecord : Asset
     {
         [UniquenessAttribute]
         public RecordType Type { get; private init; }
@@ -30,11 +30,11 @@ namespace pwnwrk.domain.Assets.Entities
             Key = key;
             Value = value;
 
-            if (Host.TryParse(key, null, out BaseAsset[] hosts))
+            if (Host.TryParse(key, null, out Asset[] hosts))
             {
                 Host = (Host)hosts[0];
             }
-            else if (Domain.TryParse(key, null, out BaseAsset[] domains))
+            else if (Domain.TryParse(key, null, out Asset[] domains))
             {
                 Domain = (Domain)domains[0];
             }
@@ -43,15 +43,15 @@ namespace pwnwrk.domain.Assets.Entities
             {
                 Host = (Host)hosts[0];
             }
-            else if (Domain.TryParse(value, null, out BaseAsset[] domains))
+            else if (Domain.TryParse(value, null, out Asset[] domains))
             {
                 Domain = (Domain)domains[0];
             }
         }
 
-        public static bool TryParse(string assetText, List<Tag> tags, out BaseAsset[] assets)
+        public static bool TryParse(string assetText, List<Tag> tags, out Asset[] assets)
         {
-            var _assets = new List<BaseAsset>();
+            var _assets = new List<Asset>();
             assetText = assetText.Replace("\t", " ");
             var parts = assetText.Split(" ");
 
@@ -80,7 +80,7 @@ namespace pwnwrk.domain.Assets.Entities
             return false;
         }
 
-        public override bool Matches(ScopeDefinition definition)
+        internal override bool Matches(ScopeDefinition definition)
         {
             return(Host != null && Host.Matches(definition))
                 || (Domain != null && Domain.Matches(definition));

@@ -4,7 +4,7 @@ using pwnwrk.domain.Assets.BaseClasses;
 
 namespace pwnwrk.domain.Assets.Entities
 {
-    public sealed class Keyword : BaseAsset
+    public sealed class Keyword : Asset
     {
         [UniquenessAttribute]
         public string Word { get; private init; }
@@ -20,7 +20,7 @@ namespace pwnwrk.domain.Assets.Entities
             Word = word;
         }
 
-        public override bool Matches(ScopeDefinition definition)
+        internal override bool Matches(ScopeDefinition definition)
         {
             return Domain.Matches(definition);
         }

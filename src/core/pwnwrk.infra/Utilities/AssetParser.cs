@@ -9,7 +9,7 @@ namespace pwnwrk.infra.Utilities
 {
     public static class AssetParser
     {
-        public static bool TryParse(string assetText, out Type[] assetTypes, out BaseAsset[] assets)
+        public static bool TryParse(string assetText, out Type[] assetTypes, out Asset[] assets)
         {
             try
             {
@@ -24,7 +24,7 @@ namespace pwnwrk.infra.Utilities
             }
         }
 
-        public static BaseAsset[] Parse(string assetText, out Type[] assetTypes)
+        public static Asset[] Parse(string assetText, out Type[] assetTypes)
         {
             if (string.IsNullOrWhiteSpace(assetText))
                 throw new ArgumentException("Null or whitespace asset.", nameof(assetText));
@@ -47,7 +47,7 @@ namespace pwnwrk.infra.Utilities
                     continue;
                 }
 
-                var assets = (BaseAsset[])parameters[2];
+                var assets = (Asset[])parameters[2];
                 assetTypes = assets.Select(a => a.GetType()).ToArray();
                 return assets;
             }
@@ -72,9 +72,9 @@ namespace pwnwrk.infra.Utilities
             tags = entry.Tags.Select(t => new Tag(t.Key, t.Value.ToString())).ToList();
         }
 
-        private static readonly IEnumerable<MethodInfo> _tryParseMethods = Assembly.GetAssembly(typeof(BaseAsset))
+        private static readonly IEnumerable<MethodInfo> _tryParseMethods = Assembly.GetAssembly(typeof(Asset))
                                                 .GetTypes()
-                                                .Where(t => !t.IsAbstract && typeof(BaseAsset).IsAssignableFrom(t))
+                                                .Where(t => !t.IsAbstract && typeof(Asset).IsAssignableFrom(t))
                                                 .Select(t => t.GetMethod("TryParse"));
     }
 }

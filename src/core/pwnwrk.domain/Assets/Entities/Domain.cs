@@ -1,6 +1,8 @@
 ﻿using pwnwrk.domain.Assets.Attributes;
 using pwnwrk.domain.Assets.BaseClasses;
 using pwnwrk.domain.Common.Entities;
+using pwnwrk.domain.Common.BaseClasses;
+using pwnwrk.domain.Assets.Interfaces;
 using pwnwrk.domain.Assets.DTO;
 using pwnwrk.domain.Targets.Enums;
 using pwnwrk.domain.Targets.Entities;
@@ -10,7 +12,7 @@ using System.Text.Json;
 
 namespace pwnwrk.domain.Assets.Entities
 {
-    public sealed class Domain : BaseAsset
+    public sealed class Domain : Asset
     {
         [UniquenessAttribute]
         public string Name { get; private init; }
@@ -35,7 +37,7 @@ namespace pwnwrk.domain.Assets.Entities
             }
         }
 
-        public static bool TryParse(string assetText, List<Tag> tags, out BaseAsset[] assets)
+        public static bool TryParse(string assetText, List<Tag> tags, out Asset[] assets)
         {
             assets = null;
 
@@ -53,7 +55,7 @@ namespace pwnwrk.domain.Assets.Entities
                 var domain = new Domain(assetText);
                 domain.AddTags(tags);
 
-                assets = new BaseAsset[] { domain };
+                assets = new Asset[] { domain };
                 if (domain.RegistrationDomain != null)
                 {
                     var parentDomain = domain.RegistrationDomain.Name;
@@ -99,13 +101,13 @@ namespace pwnwrk.domain.Assets.Entities
 
         public PublicSuffix GetPublicSuffix()
         {
-            return PwnwrkDomainShim.PublicSuffixRepository.GetSuffixes()
+            return AmbientService<IPublicSuffixRepository>.Instance.List()
                          .Where(suffix => Name.EndsWith($".{suffix.Suffix}"))
                          .OrderByDescending(s => s.Suffix.Length)
                          .FirstOrDefault();
         }
 
-        public override bool Matches(ScopeDefinition definition)
+        internal override bool Matches(ScopeDefinition definition)
         {
             return definition.Type == ScopeType.DomainRegex 
                 && new Regex(definition.Pattern).Matches(Name).Count > 0;

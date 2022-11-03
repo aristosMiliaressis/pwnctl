@@ -14,7 +14,7 @@ namespace pwnctl.cli.ModeHandlers
         
         public Task Handle(string[] args)
         {
-            void WriteToConsole(IEnumerable<BaseAsset> assets)
+            void WriteToConsole(IEnumerable<Asset> assets)
             {
                 assets.ToList().ForEach(a => Console.WriteLine(a.ToJson() + "\n"));
             }
@@ -37,37 +37,37 @@ namespace pwnctl.cli.ModeHandlers
             AssetRepository repository = new();
             if (@class.ToLower() == "hosts")
             {
-                var assets = repository.ListHosts().Select(a => (BaseAsset)a);
+                var assets = repository.ListHosts().Select(a => (Asset)a);
                 WriteToConsole(assets);
             }
             if (@class.ToLower() == "endpoints")
             {
-                var assets = repository.ListEndpoints().Select(a => (BaseAsset)a);
+                var assets = repository.ListEndpoints().Select(a => (Asset)a);
                 WriteToConsole(assets);
             }
             if (@class.ToLower() == "domains")
             {
-                var assets = repository.ListDomains().Select(a => (BaseAsset)a);
+                var assets = repository.ListDomains().Select(a => (Asset)a);
                 WriteToConsole(assets);
             }
             if (@class.ToLower() == "services")
             {
-                var assets = repository.ListServices().Select(a => (BaseAsset)a);
+                var assets = repository.ListServices().Select(a => (Asset)a);
                 WriteToConsole(assets);
             }
             if (@class.ToLower() == "dnsrecords")
             {
-                var assets = repository.ListDNSRecords().Select(a => (BaseAsset)a);
+                var assets = repository.ListDNSRecords().Select(a => (Asset)a);
                 WriteToConsole(assets);
             }
             if (@class.ToLower() == "netranges")
             {
-                var assets = repository.ListNetRanges().Select(a => (BaseAsset)a);
+                var assets = repository.ListNetRanges().Select(a => (Asset)a);
                 WriteToConsole(assets);
             }
             if (@class.ToLower() == "emails")
             {
-                var assets = repository.ListEmails().Select(a => (BaseAsset)a);
+                var assets = repository.ListEmails().Select(a => (Asset)a);
                 WriteToConsole(assets);
             }
 

@@ -4,7 +4,7 @@ using pwnwrk.domain.Targets.Entities;
 
 namespace pwnwrk.domain.Assets.Entities
 {
-    public sealed class VirtualHost : BaseAsset
+    public sealed class VirtualHost : Asset
     {
         public string Name { get; private init; }
         public Service Service { get; private init; }
@@ -18,12 +18,12 @@ namespace pwnwrk.domain.Assets.Entities
             Name = name;
         }
 
-        public override bool Matches(ScopeDefinition definition)
+        internal override bool Matches(ScopeDefinition definition)
         {
             throw new NotImplementedException();
         }
 
-        public static bool TryParse(string assetText, List<Tag> tags, out BaseAsset[] assets)
+        public static bool TryParse(string assetText, List<Tag> tags, out Asset[] assets)
         {
             throw new NotImplementedException();
         }

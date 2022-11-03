@@ -12,7 +12,7 @@ namespace pwnwrk.infra
         /// <summary>
         /// builds a LambdaExpression object that matches the `asset` parameter
         /// </summary>
-        public static LambdaExpression BuildAssetMatchingLambda(BaseAsset asset)
+        public static LambdaExpression BuildAssetMatchingLambda(Asset asset)
         {
             var type = asset.GetType();
 
@@ -41,7 +41,7 @@ namespace pwnwrk.infra
         /// <summary>
         /// builds a LambdaExpression object that matches a task of the provided TaskDefinition that has been queued against the provided asset.
         /// </summary>
-        public static LambdaExpression BuildTaskMatchingLambda(BaseAsset asset, TaskDefinition definition)
+        public static LambdaExpression BuildTaskMatchingLambda(Asset asset, TaskDefinition definition)
         {
             var type = typeof(TaskRecord);
 
@@ -66,7 +66,7 @@ namespace pwnwrk.infra
         /// <summary>
         /// builds a LambdaExpression object that matches the provided tag & asset combination 
         /// </summary>
-        public static LambdaExpression BuildTagMatchingLambda(BaseAsset asset, Tag tag)
+        public static LambdaExpression BuildTagMatchingLambda(Asset asset, Tag tag)
         {
             var type = typeof(Tag);
 

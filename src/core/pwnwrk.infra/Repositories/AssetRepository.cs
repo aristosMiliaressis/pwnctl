@@ -11,23 +11,23 @@ namespace pwnwrk.infra.Repositories
     {
         private PwnctlDbContext _context = new();
 
-        public async Task UpdateAsync(BaseAsset asset)
+        public async Task UpdateAsync(Asset asset)
         {
             _context.Update(asset);
             await _context.SaveChangesAsync();
         }
 
-        public async Task AddOrUpdateAsync(BaseAsset asset)
+        public async Task AddOrUpdateAsync(Asset asset)
         {
             // replacing asset references from db to prevent ChangeTracker 
             // from trying to add already existing assets and violating 
             // uniqness contraints.
             await asset.GetType()
                 .GetProperties()
-                .Where(p => p.PropertyType.IsAssignableTo(typeof(BaseAsset)))
+                .Where(p => p.PropertyType.IsAssignableTo(typeof(Asset)))
                 .ToList().ForEachAsync(async reference =>
                 {
-                    var assetRef = (BaseAsset)reference.GetValue(asset);
+                    var assetRef = (Asset)reference.GetValue(asset);
                     if (assetRef == null)
                         return;
 
@@ -37,7 +37,7 @@ namespace pwnwrk.infra.Repositories
 
             if (!CheckIfExists(asset))
             {
-                asset.FoundAt = DateTime.Now;
+                asset.FoundAt = DateTime.UtcNow;
 
                 _context.Add(asset);
             }
@@ -59,12 +59,12 @@ namespace pwnwrk.infra.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public bool CheckIfExists(BaseAsset asset)
+        public bool CheckIfExists(Asset asset)
         {
             return GetMatchingAsset(asset) != null;
         }
 
-        public async Task<BaseAsset> GetAssetWithReferencesAsync(BaseAsset asset)
+        public async Task<Asset> GetAssetWithReferencesAsync(Asset asset)
         {
             asset = GetMatchingAsset(asset);
             if (asset == null)
@@ -75,11 +75,11 @@ namespace pwnwrk.infra.Repositories
             return asset;
         }
 
-        private BaseAsset GetMatchingAsset(BaseAsset asset)
+        private Asset GetMatchingAsset(Asset asset)
         {
             var lambda = ExpressionTreeBuilder.BuildAssetMatchingLambda(asset);
 
-            return (BaseAsset) _context.FirstFromLambda(lambda);
+            return (Asset) _context.FirstFromLambda(lambda);
         }
 
         public List<Host> ListHosts()

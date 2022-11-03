@@ -15,7 +15,7 @@ namespace pwnctl.cli.ModeHandlers
         
         public Task Handle(string[] args)
         {
-            void WriteToFile(string filename, IEnumerable<BaseAsset> assets)
+            void WriteToFile(string filename, IEnumerable<Asset> assets)
             {
                 assets.ToList().ForEach(a => File.AppendAllText(filename, a.ToJson() + "\n"));
             }
@@ -45,19 +45,19 @@ namespace pwnctl.cli.ModeHandlers
             }
 
             AssetRepository repository = new();
-            var hosts = repository.ListHosts().Select(a => (BaseAsset)a);
+            var hosts = repository.ListHosts().Select(a => (Asset)a);
             WriteToFile(Path.Combine(path, "hosts.json"), hosts);
-            var endpoints = repository.ListEndpoints().Select(a => (BaseAsset)a);
+            var endpoints = repository.ListEndpoints().Select(a => (Asset)a);
             WriteToFile(Path.Combine(path, "endpoints.json"), endpoints);
-            var domains = repository.ListDomains().Select(a => (BaseAsset)a);
+            var domains = repository.ListDomains().Select(a => (Asset)a);
             WriteToFile(Path.Combine(path, "domains.json"), domains);
-            var services = repository.ListServices().Select(a => (BaseAsset)a);
+            var services = repository.ListServices().Select(a => (Asset)a);
             WriteToFile(Path.Combine(path, "services.json"), services);
-            var records = repository.ListDNSRecords().Select(a => (BaseAsset)a);
+            var records = repository.ListDNSRecords().Select(a => (Asset)a);
             WriteToFile(Path.Combine(path, "records.json"), records);
-            var netRanges = repository.ListNetRanges().Select(a => (BaseAsset)a);
+            var netRanges = repository.ListNetRanges().Select(a => (Asset)a);
             WriteToFile(Path.Combine(path, "netRanges.json"), netRanges);
-            var emails = repository.ListEmails().Select(a => (BaseAsset)a);
+            var emails = repository.ListEmails().Select(a => (Asset)a);
             WriteToFile(Path.Combine(path, "emails.json"), emails);
 
             return Task.CompletedTask;

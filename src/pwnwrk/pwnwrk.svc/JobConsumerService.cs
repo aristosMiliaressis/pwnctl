@@ -61,12 +61,12 @@ namespace pwnwrk.svc
                             continue;
                         }
 
-                        task.StartedAt = DateTime.UtcNow;
+                        task.Started();
 
                         Process process = await ExecuteCommandAsync(queuedTask.Command, stoppingToken);
 
-                        task.FinishedAt = DateTime.UtcNow;
-                        task.ReturnCode = process.ExitCode;
+                        task.Finished(process.ExitCode);
+                        
                         _context.Update(task);
                         await _context.SaveChangesAsync();
 

@@ -6,7 +6,7 @@ namespace pwnwrk.infra.Notifications
 {
     public sealed class NotificationSender
     {
-        public void Send(BaseAsset asset, NotificationRule rule)
+        public void Send(Asset asset, NotificationRule rule)
         {
             PwnContext.Logger.Debug("Send( " + rule.ShortName + ")");
 

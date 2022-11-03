@@ -24,7 +24,7 @@ public sealed class Tests
     [Fact]
     public void AssetParser_Tests()
     {
-        AssetParser.TryParse("example.com", out Type[] assetTypes, out BaseAsset[] assets);
+        AssetParser.TryParse("example.com", out Type[] assetTypes, out Asset[] assets);
         Assert.Contains(assetTypes, t => t == typeof(Domain));
         Assert.Contains(assets, t => t.GetType() == typeof(Domain));
         Assert.Contains(assetTypes, t => t == typeof(Keyword));
@@ -86,7 +86,6 @@ public sealed class Tests
         Assert.Contains(assetTypes, t => t == typeof(Endpoint));
         Assert.Contains(assets, t => t.GetType() == typeof(Endpoint));
 
-
         AssetParser.TryParse("multi.level.sub.example.com", out assetTypes, out assets);
         Assert.Contains(assets, t => ((Domain)t).Name == "example.com");
         Assert.Contains(assets, t => ((Domain)t).Name == "sub.example.com");
@@ -126,47 +125,45 @@ public sealed class Tests
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task ScopeChecker_Tests()
+    public async System.Threading.Tasks.Task ScopeChecking_Tests()
     {
         PwnctlDbContext context = new();
 
-        var scopeDefinitions = context.ListScopeDefinitions();
-
-        var scopeChecker = new ScopeChecker(scopeDefinitions);
+        var programs = context.ListPrograms();
 
         // net range
-        Assert.True(scopeChecker.IsInScope(new NetRange("172.16.17.0", 24)));
-        Assert.False(scopeChecker.IsInScope(new NetRange("172.16.16.0", 24)));
+        Assert.NotNull(new NetRange("172.16.17.0", 24).GetOwningProgram(programs));
+        Assert.Null(new NetRange("172.16.16.0", 24).GetOwningProgram(programs));
 
         // host in netrange
-        Assert.True(scopeChecker.IsInScope(new Host("172.16.17.4")));
-        Assert.False(scopeChecker.IsInScope(new Host("172.16.16.5")));
+        Assert.NotNull(new Host("172.16.17.4").GetOwningProgram(programs));
+        Assert.Null(new Host("172.16.16.5").GetOwningProgram(programs));
 
         // endpoint in net range
-        Assert.True(scopeChecker.IsInScope(new Endpoint("https", new Service(new Host("172.16.17.15"), 443), "/api/token")));
-        Assert.False(scopeChecker.IsInScope(new Endpoint("https", new Service(new Host("172.16.16.15"), 443), "/api/token")));
+        Assert.NotNull(new Endpoint("https", new Service(new Host("172.16.17.15"), 443), "/api/token").GetOwningProgram(programs));
+        Assert.Null(new Endpoint("https", new Service(new Host("172.16.16.15"), 443), "/api/token").GetOwningProgram(programs));
 
         // domain
-        Assert.True(scopeChecker.IsInScope(new Domain("tesla.com")));
-        Assert.True(scopeChecker.IsInScope(new Keyword(new Domain("tesla.com"), "tesla")));
-        Assert.False(scopeChecker.IsInScope(new Keyword(new Domain("tttesla.com"), "tttesla")));
-        Assert.False(scopeChecker.IsInScope(new Domain("tttesla.com")));
-        Assert.False(scopeChecker.IsInScope(new Domain("tesla.com.net")));
-        //Assert.False(scopeChecker.IsInScope(new Domain("tesla.com.test")));
-        Assert.False(scopeChecker.IsInScope(new Domain("tesla2.com")));
+        Assert.NotNull(new Domain("tesla.com").GetOwningProgram(programs));
+        Assert.NotNull(new Keyword(new Domain("tesla.com"), "tesla").GetOwningProgram(programs));
+        Assert.Null(new Keyword(new Domain("tttesla.com"), "tttesla").GetOwningProgram(programs));
+        Assert.Null(new Domain("tttesla.com").GetOwningProgram(programs));
+        Assert.Null(new Domain("tesla.com.net").GetOwningProgram(programs));
+        //Assert.Null(new Domain("tesla.com.test").GetOwningProgram(programs));
+        Assert.Null(new Domain("tesla2.com").GetOwningProgram(programs));
 
         // Emails
-        Assert.True(scopeChecker.IsInScope(new Email(new Domain("tesla.com"), "no-reply@tesla.com")));
-        Assert.False(scopeChecker.IsInScope(new Email(new Domain("tesla2.com"), "no-reply@tesla2.com")));
+        Assert.NotNull(new Email(new Domain("tesla.com"), "no-reply@tesla.com").GetOwningProgram(programs));
+        Assert.Null(new Email(new Domain("tesla2.com"), "no-reply@tesla2.com").GetOwningProgram(programs));
 
         //subdomain
-        Assert.True(scopeChecker.IsInScope(new Domain("xyz.tesla.com")));
-        Assert.False(scopeChecker.IsInScope(new Domain("xyz.tesla2.com")));
+        Assert.NotNull(new Domain("xyz.tesla.com").GetOwningProgram(programs));
+        Assert.Null(new Domain("xyz.tesla2.com").GetOwningProgram(programs));
 
         // DNS records
-        Assert.True(scopeChecker.IsInScope(new DNSRecord(DNSRecord.RecordType.A, "xyz.tesla.com", "1.3.3.7")));
-        Assert.True(scopeChecker.IsInScope(new DNSRecord(DNSRecord.RecordType.A, "example.com", "172.16.17.15")));
-        Assert.False(scopeChecker.IsInScope(new DNSRecord(DNSRecord.RecordType.A, "example.com", "172.16.16.15")));
+        Assert.NotNull(new DNSRecord(DNSRecord.RecordType.A, "xyz.tesla.com", "1.3.3.7").GetOwningProgram(programs));
+        Assert.NotNull(new DNSRecord(DNSRecord.RecordType.A, "example.com", "172.16.17.15").GetOwningProgram(programs));
+        Assert.Null(new DNSRecord(DNSRecord.RecordType.A, "example.com", "172.16.16.15").GetOwningProgram(programs));
 
         // test for inscope host from domain relationship
         AssetProcessor processor = new();
@@ -176,26 +173,25 @@ public sealed class Tests
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task JobAssignment_Tests()
+    public async System.Threading.Tasks.Task TaskFiltering_Tests()
     {
-        JobAssignmentService jobService = new();
         PwnctlDbContext context = new();
-
-        var netRange = new NetRange("172.16.17.0", 24);
-        context.Add(netRange);
-        context.SaveChanges();
-        await jobService.AssignAsync(netRange);
+        AssetProcessor processor = new();
 
         // blacklist test
+        await processor.ProcessAsync("172.16.17.0/24");
         Assert.False(context.TaskRecords.Include(t => t.Definition).Any(t => t.Definition.ShortName == "nmap_basic"));
 
-        var endpoint = new Endpoint("https", new Service(new Host("172.16.17.15"), 443), "/api/token");
-        endpoint.AddTags(new List<Tag> {new Tag("Content-Type", "text/html")});
-        context.Add(endpoint);
-        context.SaveChanges();
-        var service = context.Services.First(h => h.Origin == "tcp://172.16.17.15:443");
-        await jobService.AssignAsync(endpoint);
+        var exampleUrl = new
+        {
+            asset = "https://172.16.17.15/api/token",
+            tags = new Dictionary<string, string>{
+               {"Content-Type", "text/html"}
+            }
+        };
+        Console.WriteLine(JsonSerializer.Serialize(exampleUrl));
         // TaskDefinition.Filter fail test
+        await processor.ProcessAsync(JsonSerializer.Serialize(exampleUrl));
         Assert.False(context.TaskRecords.Include(t => t.Definition).Any(t => t.Definition.ShortName == "ffuf_common"));
 
         // aggresivness test
@@ -206,24 +202,19 @@ public sealed class Tests
         var hakrawlerTask = context.TaskRecords.Include(t => t.Definition).First(t => t.Definition.ShortName == "hakrawler");
         Assert.Equal("hakrawler -plain -h 'User-Agent: Mozilla/5.0' https://172.16.17.15:443/api/token/", hakrawlerTask.Command);
 
-        endpoint = new Endpoint("https", service, "/");
-        context.Add(endpoint);
-        context.SaveChanges();
-        await jobService.AssignAsync(endpoint);
-        
         // TaskDefinition.Filter pass test
+        await processor.ProcessAsync("https://172.16.17.15/");
         Assert.True(context.TaskRecords.Include(t => t.Definition).Any(t => t.Definition.ShortName == "ffuf_common"));
 
         // multiple interpolation test
-        var domain = new Domain("sub.tesla.com");
-        context.Add(domain);
-        context.SaveChanges();
-        await jobService.AssignAsync(domain);
-        var resolutionTask = context.TaskRecords.Include(t => t.Definition).First(t => t.Definition.ShortName == "domain_resolution");
+        await processor.ProcessAsync("sub.tesla.com");
+        var resolutionTask = context.TaskRecords
+                                    .Include(t => t.Definition)
+                                    .First(t => t.Arguments.Contains("sub.tesla.com") 
+                                             && t.Definition.ShortName == "domain_resolution");
         Assert.Equal("dig +short sub.tesla.com | awk '{print \"sub.tesla.com IN A \" $1}'| pwnctl process", resolutionTask.Command);
 
-        var keyword = new Keyword(domain, "tesla");
-        await jobService.AssignAsync(keyword);
+        // Keyword test
         var cloudEnumTask = context.TaskRecords.Include(t => t.Definition).First(t => t.Definition.ShortName == "cloud_enum");
         Assert.Equal("cloud-enum.sh tesla", cloudEnumTask.Command);
 
@@ -288,9 +279,7 @@ public sealed class Tests
         AssetProcessor processor = new();
         PwnctlDbContext context = new();
 
-        var scopeDefinitions = context.ListScopeDefinitions();
-
-        var scopeChecker = new ScopeChecker(scopeDefinitions);
+        var programs = context.ListPrograms();
 
         var res = await processor.TryProccessAsync("tesla.com");
         Assert.True(res);
@@ -315,8 +304,7 @@ public sealed class Tests
         Assert.NotNull(host.AARecords.First());
         Assert.True(host.AARecords.First().InScope);
         Assert.True(host.AARecords.First().Domain.InScope);
-        var program = scopeChecker.GetApplicableProgram(host);
-        Assert.NotNull(program);
+        Assert.NotNull(host.GetOwningProgram(programs));
 
         res = await processor.TryProccessAsync("85.25.105.204:65530");
         host = context.Hosts.First(h => h.IP == "85.25.105.204");
@@ -339,7 +327,7 @@ public sealed class Tests
             }
         };
 
-        BaseAsset[] assets = AssetParser.Parse(JsonSerializer.Serialize(exampleUrl), out Type[] assetTypes);
+        Asset[] assets = AssetParser.Parse(JsonSerializer.Serialize(exampleUrl), out Type[] assetTypes);
 
         var endpoint = (Endpoint) assets.First(a => a.GetType() == typeof(Endpoint));
         Assert.NotNull(endpoint.Tags);

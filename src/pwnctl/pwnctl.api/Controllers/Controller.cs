@@ -4,7 +4,7 @@ using pwnctl.dto.Mediator;
 
 namespace pwnctl.api.Controllers
 {
-    public abstract class BaseController : ControllerBase
+    public abstract class Controller : ControllerBase
     {
         private IMediator _mediator;
         protected IMediator Mediator => _mediator ??= HttpContext.RequestServices.GetService<IMediator>();

@@ -50,7 +50,11 @@ tasks:
   deploy-app:
     deps: [clean-cdk, build-api]
     cmds:
-      - cdk deploy -o src/core/pwnwrk.infra.cdk/cdk.out
+      - |
+        cdk deploy -o src/core/pwnwrk.infra.cdk/cdk.out
+        apiKey=$(aws secretsmanager get-secret-value --secret-id /aws/secret/pwnctl/Api/ApiKey | jq -r .SecretString)
+        functionUrl=$(aws ssm get-parameter --name /pwnctl/Api/BaseUrl | jq -r .Parameter.Value)
+        curl -H "X-Api-Key: $apiKey" ${functionUrl}/db/initialize
 
   upload-files:
     cmds:

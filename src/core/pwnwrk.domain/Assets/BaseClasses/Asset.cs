@@ -1,4 +1,6 @@
 ﻿using pwnwrk.domain.Assets.Attributes;
+using pwnwrk.domain.Assets.Interfaces;
+using pwnwrk.domain.Notifications.Entities;
 using pwnwrk.domain.Targets.Entities;
 using pwnwrk.domain.Tasks.Entities;
 using pwnwrk.domain.Common.BaseClasses;
@@ -7,7 +9,7 @@ using System.Reflection;
 
 namespace pwnwrk.domain.Assets.BaseClasses
 {
-    public abstract class BaseAsset : BaseEntity<string>
+    public abstract class Asset : Entity<string>
     {
         public DateTime FoundAt { get; set; }
         public string FoundBy { get; set; }
@@ -46,9 +48,34 @@ namespace pwnwrk.domain.Assets.BaseClasses
 
         public string DomainIdentifier => string.Join(",", GetType().GetProperties().Where(p => p.GetCustomAttribute(typeof(UniquenessAttribute)) != null).Select(p => p.GetValue(this).ToString()));
 
-        public abstract bool Matches(ScopeDefinition definition);
+        internal abstract bool Matches(ScopeDefinition definition);
 
-        // converts asset to the AssetDTO sealed class and serializes it to JSON
+        public Program GetOwningProgram(List<Program> programs)
+        {
+            var program = programs.FirstOrDefault(program => program.Scope.Any(scope => Matches(scope)));
+
+            InScope = program != null;
+
+            return program;
+        }
+
+        public List<NotificationRule> GetMatchingNotificationRules(List<NotificationRule> rules)
+        {
+            return rules.Where(rule => rule.Subject == GetType().Name
+                                    && AmbientService<IFilterEvaluator>.Instance.Evaluate(rule.Filter, this))
+                        .ToList();
+        }
+
+        public List<TaskDefinition> GetMatchingTaskDefinitions(List<TaskDefinition> definitions)
+        {
+            return definitions
+                    .Where(definition => definition.Subject == GetType().Name)
+                    .Where(definition => string.IsNullOrEmpty(definition.Filter)
+                                     || AmbientService<IFilterEvaluator>.Instance.Evaluate(definition.Filter, this))
+                    .ToList();
+        }
+
+        // converts asset to the AssetDTO class and serializes it to JSON
         public abstract string ToJson();
     }
 }

@@ -10,10 +10,10 @@ namespace pwnwrk.infra.Persistence.IdGenerators
 {
     public sealed class HashIdValueGenerator : StringValueGenerator, IDisposable
     {
-        public override string Next(EntityEntry entry) => GenerateHashId(entry.Entity as BaseAsset);
-        protected override object NextValue(EntityEntry entry) => GenerateHashId(entry.Entity as BaseAsset);
+        public override string Next(EntityEntry entry) => GenerateHashId(entry.Entity as Asset);
+        protected override object NextValue(EntityEntry entry) => GenerateHashId(entry.Entity as Asset);
 
-        private string GenerateHashId(BaseAsset asset)
+        private string GenerateHashId(Asset asset)
         {
             var uniqnessValues = asset.GetType()
                         .GetProperties()

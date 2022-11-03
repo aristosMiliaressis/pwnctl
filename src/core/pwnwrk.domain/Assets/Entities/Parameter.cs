@@ -5,7 +5,7 @@ using pwnwrk.domain.Targets.Entities;
 
 namespace pwnwrk.domain.Assets.Entities
 {
-    public sealed class Parameter : BaseAsset
+    public sealed class Parameter : Asset
     {
         public Endpoint Endpoint { get; private init; }
         public string EndpointId { get; private init; }
@@ -30,12 +30,12 @@ namespace pwnwrk.domain.Assets.Entities
             UrlEncodedCsValues = urlEncodedCsValues;
         }
 
-        public static bool TryParse(string assetText, List<Tag> tags, out BaseAsset[] assets)
+        public static bool TryParse(string assetText, List<Tag> tags, out Asset[] assets)
         {
             throw new NotImplementedException();
         }
 
-        public override bool Matches(ScopeDefinition definition)
+        internal override bool Matches(ScopeDefinition definition)
         {
             return Endpoint.Matches(definition);
         }

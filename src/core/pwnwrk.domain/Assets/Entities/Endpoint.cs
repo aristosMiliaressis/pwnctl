@@ -7,7 +7,7 @@ using System.Text.Json;
 
 namespace pwnwrk.domain.Assets.Entities
 {
-    public sealed class Endpoint : BaseAsset
+    public sealed class Endpoint : Asset
     {
         [UniquenessAttribute]
         public string Url { get; private init; }
@@ -50,14 +50,14 @@ namespace pwnwrk.domain.Assets.Entities
             Url = $"{Service.Origin.Replace("tcp", scheme)}{path}" + (path.EndsWith("/") ? "" : "/");
         }
 
-        public static bool TryParse(string assetText, List<Tag> tags, out BaseAsset[] assets)
+        public static bool TryParse(string assetText, List<Tag> tags, out Asset[] assets)
         {
-            var _assets = new List<BaseAsset>();
+            var _assets = new List<Asset>();
             try
             {
                 var uri = new Uri(assetText);
 
-                var origin = Host.TryParse(uri.Host, null, out BaseAsset[] hostAssets)
+                var origin = Host.TryParse(uri.Host, null, out Asset[] hostAssets)
                         ? new Service((Host)hostAssets[0], (ushort)uri.Port)
                         : new Service(new Domain(uri.Host), (ushort)uri.Port);
 
@@ -86,7 +86,7 @@ namespace pwnwrk.domain.Assets.Entities
             }
         }
 
-        public override bool Matches(ScopeDefinition definition)
+        internal override bool Matches(ScopeDefinition definition)
         {
             return Service.Matches(definition);
         }
