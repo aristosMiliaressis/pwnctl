@@ -11,7 +11,7 @@ uploadDirectory() {
           dstDir=$2; 
           echo "Creating $dstDir"
           curl -XPUT ${functionUrl}fs/create?path=$dstDir \
-                    -H "X-Api-Key: $apiKey"
+                    -H "X-Api-Key: $apiKey" >/dev/null
      fi
 
      for file in $srcDir/*; 
@@ -29,3 +29,5 @@ uploadDirectory() {
 
 uploadDirectory ./deployment
 uploadDirectory ./src/core/pwnwrk.infra/Persistence/seed /seed
+
+curl -H "X-Api-Key: $apiKey" -XPOST ${functionUrl}db/initialize

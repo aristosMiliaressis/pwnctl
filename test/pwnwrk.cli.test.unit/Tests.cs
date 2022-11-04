@@ -82,6 +82,9 @@ public sealed class Tests
         Assert.Contains(assetTypes, t => t == typeof(Service));
         Assert.Contains(assets, t => t.GetType() == typeof(Service));
 
+        // subdirectory parsing test
+        Assert.Contains(assets, t => t.GetType() == typeof(Endpoint) && ((Endpoint)t).Url == "https://xyz.example.com:8443/api/");
+
         AssetParser.TryParse("https://xyz.example.com:8443/api/token?_u=xxx", out assetTypes, out assets);
         Assert.Contains(assetTypes, t => t == typeof(Endpoint));
         Assert.Contains(assets, t => t.GetType() == typeof(Endpoint));
@@ -181,6 +184,7 @@ public sealed class Tests
         // blacklist test
         await processor.ProcessAsync("172.16.17.0/24");
         Assert.False(context.TaskRecords.Include(t => t.Definition).Any(t => t.Definition.ShortName == "nmap_basic"));
+        Assert.False(context.TaskRecords.Include(t => t.Definition).Any(t => t.Definition.ShortName == "ffuf_common"));
 
         var exampleUrl = new
         {
@@ -192,7 +196,6 @@ public sealed class Tests
 
         // TaskDefinition.Filter fail test
         await processor.ProcessAsync(JsonSerializer.Serialize(exampleUrl));
-        Assert.False(context.TaskRecords.Include(t => t.Definition).Any(t => t.Definition.ShortName == "ffuf_common"));
 
         // aggresivness test
         Assert.True(context.TaskRecords.Include(t => t.Definition).Any(t => t.Definition.ShortName == "hakrawler"));

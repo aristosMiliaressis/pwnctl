@@ -157,6 +157,7 @@ namespace pwnwrk.infra.cdk.Stacks
             pwnctlApiRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonElasticFileSystemClientFullAccess"));
             pwnctlApiRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("SecretsManagerReadWrite"));
             pwnctlApiRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonRDSFullAccess"));
+            queue.GrantSendMessages(pwnctlApiRole);
             apiKeySecret.GrantRead(pwnctlApiRole);
             dbCredSecret.GrantRead(pwnctlApiRole);
 

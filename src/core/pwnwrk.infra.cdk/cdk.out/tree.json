@@ -1206,6 +1206,20 @@
                           "Statement": [
                             {
                               "Action": [
+                                "sqs:GetQueueAttributes",
+                                "sqs:GetQueueUrl",
+                                "sqs:SendMessage"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "pwnwrkfifo043C4E87",
+                                  "Arn"
+                                ]
+                              }
+                            },
+                            {
+                              "Action": [
                                 "secretsmanager:DescribeSecret",
                                 "secretsmanager:GetSecretValue"
                               ],
@@ -1614,7 +1628,7 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "s3Bucket": {
-                        "Ref": "AssetParameters09e404afb689dfacbd1713775fc5e04156b87d28ac70906a838a9b43d32c77faS3BucketD9A04499"
+                        "Ref": "AssetParameters4eab94c03a5fe14a05a2926dd10fab8e163faccd4768f3975ba06eccfb5445f0S3Bucket50D35E4B"
                       },
                       "s3Key": {
                         "Fn::Join": [
@@ -1627,7 +1641,7 @@
                                   "Fn::Split": [
                                     "||",
                                     {
-                                      "Ref": "AssetParameters09e404afb689dfacbd1713775fc5e04156b87d28ac70906a838a9b43d32c77faS3VersionKeyCC5BC885"
+                                      "Ref": "AssetParameters4eab94c03a5fe14a05a2926dd10fab8e163faccd4768f3975ba06eccfb5445f0S3VersionKeyE967766E"
                                     }
                                   ]
                                 }
@@ -1640,7 +1654,7 @@
                                   "Fn::Split": [
                                     "||",
                                     {
-                                      "Ref": "AssetParameters09e404afb689dfacbd1713775fc5e04156b87d28ac70906a838a9b43d32c77faS3VersionKeyCC5BC885"
+                                      "Ref": "AssetParameters4eab94c03a5fe14a05a2926dd10fab8e163faccd4768f3975ba06eccfb5445f0S3VersionKeyE967766E"
                                     }
                                   ]
                                 }
@@ -1813,13 +1827,13 @@
             "id": "AssetParameters",
             "path": "PwnctlStack/AssetParameters",
             "children": {
-              "09e404afb689dfacbd1713775fc5e04156b87d28ac70906a838a9b43d32c77fa": {
-                "id": "09e404afb689dfacbd1713775fc5e04156b87d28ac70906a838a9b43d32c77fa",
-                "path": "PwnctlStack/AssetParameters/09e404afb689dfacbd1713775fc5e04156b87d28ac70906a838a9b43d32c77fa",
+              "4eab94c03a5fe14a05a2926dd10fab8e163faccd4768f3975ba06eccfb5445f0": {
+                "id": "4eab94c03a5fe14a05a2926dd10fab8e163faccd4768f3975ba06eccfb5445f0",
+                "path": "PwnctlStack/AssetParameters/4eab94c03a5fe14a05a2926dd10fab8e163faccd4768f3975ba06eccfb5445f0",
                 "children": {
                   "S3Bucket": {
                     "id": "S3Bucket",
-                    "path": "PwnctlStack/AssetParameters/09e404afb689dfacbd1713775fc5e04156b87d28ac70906a838a9b43d32c77fa/S3Bucket",
+                    "path": "PwnctlStack/AssetParameters/4eab94c03a5fe14a05a2926dd10fab8e163faccd4768f3975ba06eccfb5445f0/S3Bucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "1.176.0"
@@ -1827,7 +1841,7 @@
                   },
                   "S3VersionKey": {
                     "id": "S3VersionKey",
-                    "path": "PwnctlStack/AssetParameters/09e404afb689dfacbd1713775fc5e04156b87d28ac70906a838a9b43d32c77fa/S3VersionKey",
+                    "path": "PwnctlStack/AssetParameters/4eab94c03a5fe14a05a2926dd10fab8e163faccd4768f3975ba06eccfb5445f0/S3VersionKey",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "1.176.0"
@@ -1835,7 +1849,7 @@
                   },
                   "ArtifactHash": {
                     "id": "ArtifactHash",
-                    "path": "PwnctlStack/AssetParameters/09e404afb689dfacbd1713775fc5e04156b87d28ac70906a838a9b43d32c77fa/ArtifactHash",
+                    "path": "PwnctlStack/AssetParameters/4eab94c03a5fe14a05a2926dd10fab8e163faccd4768f3975ba06eccfb5445f0/ArtifactHash",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "1.176.0"

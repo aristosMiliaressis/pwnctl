@@ -46,7 +46,7 @@ namespace pwnwrk.domain.Assets.Entities
         {
             Scheme = scheme;
             Service = service;
-            Path = path;
+            Path = string.IsNullOrEmpty(path) ? "/" : path;
             Url = $"{Service.Origin.Replace("tcp", scheme)}{path}" + (path.EndsWith("/") ? "" : "/");
         }
 
@@ -73,6 +73,15 @@ namespace pwnwrk.domain.Assets.Entities
                     .Split("&")
                     .Select(p => new Parameter(endpoint, p.Split("=")[0], Parameter.ParamType.Query, null))
                     .Where(p => !string.IsNullOrEmpty(p.Name));
+
+                // Adds all subdirectories
+                string path = endpoint.Path;
+                do
+                {
+                    path = string.Join("/", path.Split("/").Reverse().Skip(1).Reverse());
+                    _assets.Add(new Endpoint(endpoint.Scheme, endpoint.Service, path));
+                } while(path.Length > 1);
+
                 if (_params.Any())
                     _assets.AddRange(_params);
 

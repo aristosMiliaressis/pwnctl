@@ -19,19 +19,6 @@ namespace pwnwrk.infra
             AmbientService<IFilterEvaluator>.SetFactory(() => new CSharpFilterEvaluator());
         }
 
-        public static void Register(params AmbientServiceFactory[] factories)
-        {
-            foreach (var factory in factories)
-            {
-                var service = factory.Invoke();
-
-                typeof(AmbientService<>)
-                    .MakeGenericType(service.GetType())
-                    .GetMethod(nameof(AmbientService<IAmbientService>.SetFactory), BindingFlags.Public | BindingFlags.Static)
-                    .Invoke(service, new object[] { factory });
-            }
-        }
-
         public static AppConfig Config { get; private set; }
         public static Logger Logger { get; private set; }
     }

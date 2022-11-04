@@ -7,7 +7,7 @@ using pwnwrk.infra.Persistence;
 [Route("[controller]")]
 public sealed class DbController : ControllerBase
 {
-    [HttpPost("/initialize")]
+    [HttpPost("initialize")]
     public async Task<ActionResult> Initialize()
     {
         await DatabaseInitializer.InitializeAsync();
@@ -15,7 +15,7 @@ public sealed class DbController : ControllerBase
         return Ok();
     }
 
-    [HttpPost("/query")]
+    [HttpPost("query")]
     public Task<ActionResult> Query()
     {
         throw new NotImplementedException();
