@@ -22,17 +22,15 @@ namespace pwnwrk.infra.Configuration
         public sealed class ApiSettings
         {
             public string BaseUrl { get; set; }
-            public string ApiKey { get; set; }
         }
 
         public sealed class DbSettings
         {
-            public string Username { get; set; }
             public string Password { get; set; }
             public string Host { get; set; }
             public string ConnectionString => $"Host={Host};"
                                            + $"Database={AwsConstants.DatabaseName};"
-                                           + $"Username={Username};"
+                                           + $"Username={AwsConstants.AuroraInstanceUsername};"
                                            + $"Password={Password}";
         }
 

@@ -574,8 +574,8 @@
      }
     ]
    },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
    "Metadata": {
     "aws:cdk:path": "PwnctlStack/PwnwrkFs/Resource"
    }
@@ -720,21 +720,6 @@
     "aws:cdk:path": "PwnctlStack/PwnwrkFs/PwnctlApiFsap/Resource"
    }
   },
-  "PwnctlApiKeySecretE3511A9C": {
-   "Type": "AWS::SecretsManager::Secret",
-   "Properties": {
-    "GenerateSecretString": {
-     "ExcludePunctuation": true,
-     "IncludeSpace": false
-    },
-    "Name": "/aws/secret/pwnctl/Api/ApiKey"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete",
-   "Metadata": {
-    "aws:cdk:path": "PwnctlStack/PwnctlApiKeySecret/Resource"
-   }
-  },
   "PwnctlApiRole0647AFDD": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -795,18 +780,6 @@
         {
          "Ref": "AWS::Partition"
         },
-        ":iam::aws:policy/SecretsManagerReadWrite"
-       ]
-      ]
-     },
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
         ":iam::aws:policy/AmazonRDSFullAccess"
        ]
       ]
@@ -835,21 +808,6 @@
          "Arn"
         ]
        }
-      },
-      {
-       "Action": [
-        "secretsmanager:DescribeSecret",
-        "secretsmanager:GetSecretValue"
-       ],
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Ref": "PwnctlApiKeySecretE3511A9C"
-        },
-        {
-         "Ref": "PwnctlAuroraPostgreSqlInstanceCredsDEF288A5"
-        }
-       ]
       },
       {
        "Action": "elasticfilesystem:ClientMount",
@@ -922,94 +880,6 @@
    },
    "Metadata": {
     "aws:cdk:path": "PwnctlStack/PwnctlApiRole/DefaultPolicy/Resource"
-   }
-  },
-  "PwnctlLambdaSecMgrEpSecurityGroup7381FD02": {
-   "Type": "AWS::EC2::SecurityGroup",
-   "Properties": {
-    "GroupDescription": "PwnctlStack/PwnctlLambdaSecMgrEp/SecurityGroup",
-    "SecurityGroupEgress": [
-     {
-      "CidrIp": "0.0.0.0/0",
-      "Description": "Allow all outbound traffic by default",
-      "IpProtocol": "-1"
-     }
-    ],
-    "SecurityGroupIngress": [
-     {
-      "CidrIp": {
-       "Fn::GetAtt": [
-        "PwnwrkVpcEA5D7932",
-        "CidrBlock"
-       ]
-      },
-      "Description": {
-       "Fn::Join": [
-        "",
-        [
-         "from ",
-         {
-          "Fn::GetAtt": [
-           "PwnwrkVpcEA5D7932",
-           "CidrBlock"
-          ]
-         },
-         ":443"
-        ]
-       ]
-      },
-      "FromPort": 443,
-      "IpProtocol": "tcp",
-      "ToPort": 443
-     }
-    ],
-    "VpcId": {
-     "Ref": "PwnwrkVpcEA5D7932"
-    }
-   },
-   "Metadata": {
-    "aws:cdk:path": "PwnctlStack/PwnctlLambdaSecMgrEp/SecurityGroup/Resource"
-   }
-  },
-  "PwnctlLambdaSecMgrEp794FDF65": {
-   "Type": "AWS::EC2::VPCEndpoint",
-   "Properties": {
-    "ServiceName": {
-     "Fn::Join": [
-      "",
-      [
-       "com.amazonaws.",
-       {
-        "Ref": "AWS::Region"
-       },
-       ".secretsmanager"
-      ]
-     ]
-    },
-    "VpcId": {
-     "Ref": "PwnwrkVpcEA5D7932"
-    },
-    "PrivateDnsEnabled": true,
-    "SecurityGroupIds": [
-     {
-      "Fn::GetAtt": [
-       "PwnctlLambdaSecMgrEpSecurityGroup7381FD02",
-       "GroupId"
-      ]
-     }
-    ],
-    "SubnetIds": [
-     {
-      "Ref": "PwnwrkVpcPrivateSubnet1Subnet1Subnet3EE433F9"
-     },
-     {
-      "Ref": "PwnwrkVpcPrivateSubnet1Subnet2Subnet1F43F2E2"
-     }
-    ],
-    "VpcEndpointType": "Interface"
-   },
-   "Metadata": {
-    "aws:cdk:path": "PwnctlStack/PwnctlLambdaSecMgrEp/Resource"
    }
   },
   "PwnctlLambdaSQSEpSecurityGroupB5E10ABD": {
@@ -1128,7 +998,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "AssetParameters4eab94c03a5fe14a05a2926dd10fab8e163faccd4768f3975ba06eccfb5445f0S3Bucket50D35E4B"
+      "Ref": "AssetParameters8765f7582a82d3a0e5379b5ff127444d492df6465e05aab949f800c16070e858S3Bucket99721BBD"
      },
      "S3Key": {
       "Fn::Join": [
@@ -1141,7 +1011,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "AssetParameters4eab94c03a5fe14a05a2926dd10fab8e163faccd4768f3975ba06eccfb5445f0S3VersionKeyE967766E"
+             "Ref": "AssetParameters8765f7582a82d3a0e5379b5ff127444d492df6465e05aab949f800c16070e858S3VersionKey072819E1"
             }
            ]
           }
@@ -1154,7 +1024,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "AssetParameters4eab94c03a5fe14a05a2926dd10fab8e163faccd4768f3975ba06eccfb5445f0S3VersionKeyE967766E"
+             "Ref": "AssetParameters8765f7582a82d3a0e5379b5ff127444d492df6465e05aab949f800c16070e858S3VersionKey072819E1"
             }
            ]
           }
@@ -1172,6 +1042,7 @@
     },
     "Environment": {
      "Variables": {
+      "PWNCTL_DisableSecurityManager": "true",
       "PWNCTL_Aws__InVpc": "true",
       "PWNCTL_JobQueue__QueueName": "pwnwrk.fifo",
       "PWNCTL_JobQueue__DLQName": "pwnwrk-dlq.fifo",
@@ -1213,7 +1084,7 @@
     "Handler": "pwnctl.api",
     "MemorySize": 512,
     "Runtime": "dotnet6",
-    "Timeout": 90,
+    "Timeout": 180,
     "VpcConfig": {
      "SecurityGroupIds": [
       {
@@ -1242,7 +1113,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "PwnctlStack/PwnctlApi/Resource",
-    "aws:asset:path": "asset.4eab94c03a5fe14a05a2926dd10fab8e163faccd4768f3975ba06eccfb5445f0.0",
+    "aws:asset:path": "asset.8765f7582a82d3a0e5379b5ff127444d492df6465e05aab949f800c16070e858.0",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
@@ -1280,7 +1151,7 @@
   "PwnctlApiFunctionUrl4D6F2F30": {
    "Type": "AWS::Lambda::Url",
    "Properties": {
-    "AuthType": "NONE",
+    "AuthType": "AWS_IAM",
     "TargetFunctionArn": {
      "Fn::GetAtt": [
       "PwnctlApiB48EE417",
@@ -1294,27 +1165,6 @@
    ],
    "Metadata": {
     "aws:cdk:path": "PwnctlStack/PwnctlApi/FunctionUrl/Resource"
-   }
-  },
-  "PwnctlApiinvokefunctionurl85C4A16E": {
-   "Type": "AWS::Lambda::Permission",
-   "Properties": {
-    "Action": "lambda:InvokeFunctionUrl",
-    "FunctionName": {
-     "Fn::GetAtt": [
-      "PwnctlApiB48EE417",
-      "Arn"
-     ]
-    },
-    "Principal": "*",
-    "FunctionUrlAuthType": "NONE"
-   },
-   "DependsOn": [
-    "PwnwrkFsEfsMountTarget1F17EAFD8",
-    "PwnwrkFsEfsMountTarget2D74F929D"
-   ],
-   "Metadata": {
-    "aws:cdk:path": "PwnctlStack/PwnctlApi/invoke-function-url"
    }
   },
   "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB": {
@@ -1505,6 +1355,18 @@
          "Ref": "AWS::Partition"
         },
         ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/SecretsManagerReadWrite"
        ]
       ]
      }
@@ -1989,7 +1851,7 @@
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/31U247aMBD9ln03pnSl7VOlhrBdIbWrlFDeBzNkXRI79QWEovx7x84NdqUqDz5zZjKeqxd88eWJf3r4Bhc7E4fTvBHaIG9yB+LENmi1NwJZYi064gqpCpYe1ahItbLOeOECm4GBCh2aIJDmIJ3UqmXBd4PiM292tQi6XZayzO9LKXK/Vxh/ntBGe4db2Jc48RNHoWghIXgejVlm5BkcTj7WisIg/ELsBa79pb2UOMrurULlWI7CG+muL0b7Ol73X2KtCoPWsuj+CAIpoWd1qLVUrr9jEFtmURh0tgIFBRqqaZR7nwF1xxZMge4mptHgvaZl5mB5swIHe7CYlt6GYndZjwGvlh+IwTIKa+oYKIEU4F/y9sujj4WOoGV4JPK7LDG/0j9V0NxLP7VXfWgsEYLKkQ3p34gtk1DxZqO7LsYz09Tx2IsOtayEan8Aus8rMXR0xAP4bcrA90eGppLWxsGyjzMIk2l5HFCS+dKLE7ollYeVuqBUfuhiQzOpoksSxrKMeBjmKbx7hu6xVVgJQ9N/N+OjQGUToWxUFQhzak8rPEolh5zeM1o5kArNLTf1aIC9uxzNWYpuGXqYCyjDMgS/aegHLVldU7BxL8A7bcmCwqWwR9PYseDknskd1nln3VfghknGttyZtEyU2h8u4MQbb5ISTByNCNq2ZSvtXtHN6WXhT3P++rxN6VVJ6nq2QxNa9/X8yBfzBanpe/hjpZwZykJWyDfd+Q/KU6yqmQQAAA=="
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/31U247aMBD9ln03pnSl7VOlhrBdIbWrlFDeBzNkXRI79QWEovx7x84NdqUqD545Mzk+c0kWfPHliX96+AYXOxOH07wR2iBvcgfixDZotTcCWWItOsIKqQqWHtUYSLWyznjhApqBgQodmuBQ5CCd1KplgbtB8Zk3u1qE2C5LWeb3pRS53yuML0/WRnuHW9iXOOETRlK0kBCYx2SWGXkGhxPHWpEMsl8IvcC1v7T3EkfVvVWoHMtReCPd9cVoX8fr/gusVWHQWhbpjyCQCnpWh1pL5fo7BrdlFoVBZytQUKChnka/5wxWd2zBFOhuNI0J7yMtMwfLmxU42IPFtPQ2NLurehS8Wn4AhszorGlioASSwL/E9sujj42ORsvwSOB3WWJ+pXeqELn3fmqvemksEYLakQ3l37gtk1DxZqO7KcYz0zTxOIvOalkJ1f4AdJ9XYpjoaA/Gb1MGnA6S/DiDsIuWx5Ukny+9OKFbUkNYqQsS/0MXG9pCFUnIGRsx2sP6ToLuEbrHVuEjMLTvd1s9OtQoERpFfYCwmfa0wqNUcqjiPaKVA6nQ3GLTVAazp8vRnKXo1r83cwFlWP/Am4YJ0GdV1yQ2fgngnbaUQXJJ9pgaZxRI7pHcYZ132X0HbpBkHMRdSstEqf3hAk688SYpwcRliEbbtmyl3Su6Of1L+NOcvz5vU/qPJHU926GxRPj1/MgX8wWF6Xn4Y6WcGapCVsg33fkP0dfqIYsEAAA="
    },
    "Metadata": {
     "aws:cdk:path": "PwnctlStack/CDKMetadata/Default"
@@ -1998,17 +1860,17 @@
   }
  },
  "Parameters": {
-  "AssetParameters4eab94c03a5fe14a05a2926dd10fab8e163faccd4768f3975ba06eccfb5445f0S3Bucket50D35E4B": {
+  "AssetParameters8765f7582a82d3a0e5379b5ff127444d492df6465e05aab949f800c16070e858S3Bucket99721BBD": {
    "Type": "String",
-   "Description": "S3 bucket for asset \"4eab94c03a5fe14a05a2926dd10fab8e163faccd4768f3975ba06eccfb5445f0\""
+   "Description": "S3 bucket for asset \"8765f7582a82d3a0e5379b5ff127444d492df6465e05aab949f800c16070e858\""
   },
-  "AssetParameters4eab94c03a5fe14a05a2926dd10fab8e163faccd4768f3975ba06eccfb5445f0S3VersionKeyE967766E": {
+  "AssetParameters8765f7582a82d3a0e5379b5ff127444d492df6465e05aab949f800c16070e858S3VersionKey072819E1": {
    "Type": "String",
-   "Description": "S3 key for asset version \"4eab94c03a5fe14a05a2926dd10fab8e163faccd4768f3975ba06eccfb5445f0\""
+   "Description": "S3 key for asset version \"8765f7582a82d3a0e5379b5ff127444d492df6465e05aab949f800c16070e858\""
   },
-  "AssetParameters4eab94c03a5fe14a05a2926dd10fab8e163faccd4768f3975ba06eccfb5445f0ArtifactHashDFA51BB8": {
+  "AssetParameters8765f7582a82d3a0e5379b5ff127444d492df6465e05aab949f800c16070e858ArtifactHash36A08007": {
    "Type": "String",
-   "Description": "Artifact hash for asset \"4eab94c03a5fe14a05a2926dd10fab8e163faccd4768f3975ba06eccfb5445f0\""
+   "Description": "Artifact hash for asset \"8765f7582a82d3a0e5379b5ff127444d492df6465e05aab949f800c16070e858\""
   },
   "AssetParametersc8dfcc3db7a767ebc6f9417372a8fee940927c659f793315834a6784dab3d686S3Bucket821B928E": {
    "Type": "String",

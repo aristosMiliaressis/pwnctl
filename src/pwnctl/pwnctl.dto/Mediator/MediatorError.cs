@@ -17,7 +17,7 @@ public sealed class MediatorError
 
     public int ToStatusCode()
     {
-        return int.Parse(Type.ToString().Substring(0, 3));
+        return int.Parse(((int)Type).ToString().Substring(0, 3));
     }
 
     public enum ErrorType

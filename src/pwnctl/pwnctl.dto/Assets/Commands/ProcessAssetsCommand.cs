@@ -1,4 +1,4 @@
-namespace pwnctl.dto.Process.Commands;
+namespace pwnctl.dto.Assets.Commands;
 
 using pwnctl.dto.Mediator;
 

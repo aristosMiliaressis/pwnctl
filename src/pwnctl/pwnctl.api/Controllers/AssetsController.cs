@@ -1,7 +1,7 @@
 namespace pwnctl.api.Controllers;
 
 using Microsoft.AspNetCore.Mvc;
-using pwnctl.dto.Process.Commands;
+using pwnctl.dto.Assets.Commands;
 
 [ApiController]
 [Route("[controller]")]

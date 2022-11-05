@@ -11,7 +11,13 @@ namespace pwnwrk.infra.cdk
         {
             var app = new App(new AppProps());
 
-            var pwnctlStack = new PwnctlStack(app, AwsConstants.StackName, new StackProps());
+            // var baseStack = new BaseStack(app, "PwnBaseStack");
+
+            // var pwnctlStack = new PwnctlStack(app, "PwnctlStack");
+
+            // var pwnwrkStack = new PwnwrkStack(app, "PwnwrkStack");
+
+            new PwnctlMonolithStack(app, "PwnctlStack");
 
             app.Synth();
         }

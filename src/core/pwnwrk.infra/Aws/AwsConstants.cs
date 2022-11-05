@@ -2,7 +2,6 @@ namespace pwnwrk.infra.Aws;
 
 public static class AwsConstants
 {
-    public const string StackName = "PwnctlStack";
     public const string VpcId = "PwnwrkVpc";
     public const string PublicSubnet1 = "PublicSubnet1";
     public const string PrivateSubnet1 = "PrivateSubnet1";
@@ -18,6 +17,7 @@ public static class AwsConstants
     public const int QueueVisibilityTimeoutInSec = 30;
     public const string EfsId = "PwnwrkFs";
     public const string EfsMountPoint = "/mnt/efs";
+    public const string PwnctlEfsAccessPointId = "PwnctlEfsAccessPointId";
     public const string EcsClusterName = "PwnwrkCluster";
     public const string EcsLogGroupId = "PwnwrkLogs";
     public const string EcsRoleName = "PwnwrkRole";
@@ -30,8 +30,6 @@ public static class AwsConstants
     public const string LambdaLogGroup = $"/aws/lambda/{LambdaName}";
     public const string EcsLogGroupName = "/aws/ecs/pwnwrk";
     public const string DatabaseCredSecretName = $"/aws/secret/pwnctl/Db";
-    public const string ApiKeyId = "PwnctlApiKeySecret";
-    public const string ApiKeyName = "/aws/secret/pwnctl/Api/ApiKey";
     public const string ApiUrlParamId = "PwnctlApiUrlParam";
     public const string ApiUrlParam = "/pwnctl/Api/BaseUrl";
     public const string ScaleInPolicy = "ScaleInPolicy";

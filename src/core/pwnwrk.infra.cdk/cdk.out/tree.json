@@ -1073,34 +1073,6 @@
               "version": "1.176.0"
             }
           },
-          "PwnctlApiKeySecret": {
-            "id": "PwnctlApiKeySecret",
-            "path": "PwnctlStack/PwnctlApiKeySecret",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "PwnctlStack/PwnctlApiKeySecret/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
-                  "aws:cdk:cloudformation:props": {
-                    "generateSecretString": {
-                      "excludePunctuation": true,
-                      "includeSpace": false
-                    },
-                    "name": "/aws/secret/pwnctl/Api/ApiKey"
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-secretsmanager.CfnSecret",
-                  "version": "1.176.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-secretsmanager.Secret",
-              "version": "1.176.0"
-            }
-          },
           "PwnctlApiRole": {
             "id": "PwnctlApiRole",
             "path": "PwnctlStack/PwnctlApiRole",
@@ -1168,18 +1140,6 @@
                             {
                               "Ref": "AWS::Partition"
                             },
-                            ":iam::aws:policy/SecretsManagerReadWrite"
-                          ]
-                        ]
-                      },
-                      {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:",
-                            {
-                              "Ref": "AWS::Partition"
-                            },
                             ":iam::aws:policy/AmazonRDSFullAccess"
                           ]
                         ]
@@ -1217,21 +1177,6 @@
                                   "Arn"
                                 ]
                               }
-                            },
-                            {
-                              "Action": [
-                                "secretsmanager:DescribeSecret",
-                                "secretsmanager:GetSecretValue"
-                              ],
-                              "Effect": "Allow",
-                              "Resource": [
-                                {
-                                  "Ref": "PwnctlApiKeySecretE3511A9C"
-                                },
-                                {
-                                  "Ref": "PwnctlAuroraPostgreSqlInstanceCredsDEF288A5"
-                                }
-                              ]
                             },
                             {
                               "Action": "elasticfilesystem:ClientMount",
@@ -1317,124 +1262,6 @@
             },
             "constructInfo": {
               "fqn": "@aws-cdk/aws-iam.Role",
-              "version": "1.176.0"
-            }
-          },
-          "PwnctlLambdaSecMgrEp": {
-            "id": "PwnctlLambdaSecMgrEp",
-            "path": "PwnctlStack/PwnctlLambdaSecMgrEp",
-            "children": {
-              "SecurityGroup": {
-                "id": "SecurityGroup",
-                "path": "PwnctlStack/PwnctlLambdaSecMgrEp/SecurityGroup",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "PwnctlStack/PwnctlLambdaSecMgrEp/SecurityGroup/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
-                      "aws:cdk:cloudformation:props": {
-                        "groupDescription": "PwnctlStack/PwnctlLambdaSecMgrEp/SecurityGroup",
-                        "securityGroupEgress": [
-                          {
-                            "cidrIp": "0.0.0.0/0",
-                            "description": "Allow all outbound traffic by default",
-                            "ipProtocol": "-1"
-                          }
-                        ],
-                        "securityGroupIngress": [
-                          {
-                            "cidrIp": {
-                              "Fn::GetAtt": [
-                                "PwnwrkVpcEA5D7932",
-                                "CidrBlock"
-                              ]
-                            },
-                            "ipProtocol": "tcp",
-                            "fromPort": 443,
-                            "toPort": 443,
-                            "description": {
-                              "Fn::Join": [
-                                "",
-                                [
-                                  "from ",
-                                  {
-                                    "Fn::GetAtt": [
-                                      "PwnwrkVpcEA5D7932",
-                                      "CidrBlock"
-                                    ]
-                                  },
-                                  ":443"
-                                ]
-                              ]
-                            }
-                          }
-                        ],
-                        "vpcId": {
-                          "Ref": "PwnwrkVpcEA5D7932"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
-                      "version": "1.176.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
-                  "version": "1.176.0"
-                }
-              },
-              "Resource": {
-                "id": "Resource",
-                "path": "PwnctlStack/PwnctlLambdaSecMgrEp/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EC2::VPCEndpoint",
-                  "aws:cdk:cloudformation:props": {
-                    "serviceName": {
-                      "Fn::Join": [
-                        "",
-                        [
-                          "com.amazonaws.",
-                          {
-                            "Ref": "AWS::Region"
-                          },
-                          ".secretsmanager"
-                        ]
-                      ]
-                    },
-                    "vpcId": {
-                      "Ref": "PwnwrkVpcEA5D7932"
-                    },
-                    "privateDnsEnabled": true,
-                    "securityGroupIds": [
-                      {
-                        "Fn::GetAtt": [
-                          "PwnctlLambdaSecMgrEpSecurityGroup7381FD02",
-                          "GroupId"
-                        ]
-                      }
-                    ],
-                    "subnetIds": [
-                      {
-                        "Ref": "PwnwrkVpcPrivateSubnet1Subnet1Subnet3EE433F9"
-                      },
-                      {
-                        "Ref": "PwnwrkVpcPrivateSubnet1Subnet2Subnet1F43F2E2"
-                      }
-                    ],
-                    "vpcEndpointType": "Interface"
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.CfnVPCEndpoint",
-                  "version": "1.176.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-ec2.InterfaceVpcEndpoint",
               "version": "1.176.0"
             }
           },
@@ -1628,7 +1455,7 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "s3Bucket": {
-                        "Ref": "AssetParameters4eab94c03a5fe14a05a2926dd10fab8e163faccd4768f3975ba06eccfb5445f0S3Bucket50D35E4B"
+                        "Ref": "AssetParameters8765f7582a82d3a0e5379b5ff127444d492df6465e05aab949f800c16070e858S3Bucket99721BBD"
                       },
                       "s3Key": {
                         "Fn::Join": [
@@ -1641,7 +1468,7 @@
                                   "Fn::Split": [
                                     "||",
                                     {
-                                      "Ref": "AssetParameters4eab94c03a5fe14a05a2926dd10fab8e163faccd4768f3975ba06eccfb5445f0S3VersionKeyE967766E"
+                                      "Ref": "AssetParameters8765f7582a82d3a0e5379b5ff127444d492df6465e05aab949f800c16070e858S3VersionKey072819E1"
                                     }
                                   ]
                                 }
@@ -1654,7 +1481,7 @@
                                   "Fn::Split": [
                                     "||",
                                     {
-                                      "Ref": "AssetParameters4eab94c03a5fe14a05a2926dd10fab8e163faccd4768f3975ba06eccfb5445f0S3VersionKeyE967766E"
+                                      "Ref": "AssetParameters8765f7582a82d3a0e5379b5ff127444d492df6465e05aab949f800c16070e858S3VersionKey072819E1"
                                     }
                                   ]
                                 }
@@ -1672,6 +1499,7 @@
                     },
                     "environment": {
                       "variables": {
+                        "PWNCTL_DisableSecurityManager": "true",
                         "PWNCTL_Aws__InVpc": "true",
                         "PWNCTL_JobQueue__QueueName": "pwnwrk.fifo",
                         "PWNCTL_JobQueue__DLQName": "pwnwrk-dlq.fifo",
@@ -1713,7 +1541,7 @@
                     "handler": "pwnctl.api",
                     "memorySize": 512,
                     "runtime": "dotnet6",
-                    "timeout": 90,
+                    "timeout": 180,
                     "vpcConfig": {
                       "subnetIds": [
                         {
@@ -1775,7 +1603,7 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Lambda::Url",
                       "aws:cdk:cloudformation:props": {
-                        "authType": "NONE",
+                        "authType": "AWS_IAM",
                         "targetFunctionArn": {
                           "Fn::GetAtt": [
                             "PwnctlApiB48EE417",
@@ -1794,28 +1622,6 @@
                   "fqn": "@aws-cdk/aws-lambda.FunctionUrl",
                   "version": "1.176.0"
                 }
-              },
-              "invoke-function-url": {
-                "id": "invoke-function-url",
-                "path": "PwnctlStack/PwnctlApi/invoke-function-url",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
-                  "aws:cdk:cloudformation:props": {
-                    "action": "lambda:InvokeFunctionUrl",
-                    "functionName": {
-                      "Fn::GetAtt": [
-                        "PwnctlApiB48EE417",
-                        "Arn"
-                      ]
-                    },
-                    "principal": "*",
-                    "functionUrlAuthType": "NONE"
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
-                  "version": "1.176.0"
-                }
               }
             },
             "constructInfo": {
@@ -1827,13 +1633,13 @@
             "id": "AssetParameters",
             "path": "PwnctlStack/AssetParameters",
             "children": {
-              "4eab94c03a5fe14a05a2926dd10fab8e163faccd4768f3975ba06eccfb5445f0": {
-                "id": "4eab94c03a5fe14a05a2926dd10fab8e163faccd4768f3975ba06eccfb5445f0",
-                "path": "PwnctlStack/AssetParameters/4eab94c03a5fe14a05a2926dd10fab8e163faccd4768f3975ba06eccfb5445f0",
+              "8765f7582a82d3a0e5379b5ff127444d492df6465e05aab949f800c16070e858": {
+                "id": "8765f7582a82d3a0e5379b5ff127444d492df6465e05aab949f800c16070e858",
+                "path": "PwnctlStack/AssetParameters/8765f7582a82d3a0e5379b5ff127444d492df6465e05aab949f800c16070e858",
                 "children": {
                   "S3Bucket": {
                     "id": "S3Bucket",
-                    "path": "PwnctlStack/AssetParameters/4eab94c03a5fe14a05a2926dd10fab8e163faccd4768f3975ba06eccfb5445f0/S3Bucket",
+                    "path": "PwnctlStack/AssetParameters/8765f7582a82d3a0e5379b5ff127444d492df6465e05aab949f800c16070e858/S3Bucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "1.176.0"
@@ -1841,7 +1647,7 @@
                   },
                   "S3VersionKey": {
                     "id": "S3VersionKey",
-                    "path": "PwnctlStack/AssetParameters/4eab94c03a5fe14a05a2926dd10fab8e163faccd4768f3975ba06eccfb5445f0/S3VersionKey",
+                    "path": "PwnctlStack/AssetParameters/8765f7582a82d3a0e5379b5ff127444d492df6465e05aab949f800c16070e858/S3VersionKey",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "1.176.0"
@@ -1849,7 +1655,7 @@
                   },
                   "ArtifactHash": {
                     "id": "ArtifactHash",
-                    "path": "PwnctlStack/AssetParameters/4eab94c03a5fe14a05a2926dd10fab8e163faccd4768f3975ba06eccfb5445f0/ArtifactHash",
+                    "path": "PwnctlStack/AssetParameters/8765f7582a82d3a0e5379b5ff127444d492df6465e05aab949f800c16070e858/ArtifactHash",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "1.176.0"
@@ -2124,6 +1930,18 @@
                               "Ref": "AWS::Partition"
                             },
                             ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+                          ]
+                        ]
+                      },
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":iam::aws:policy/SecretsManagerReadWrite"
                           ]
                         ]
                       }

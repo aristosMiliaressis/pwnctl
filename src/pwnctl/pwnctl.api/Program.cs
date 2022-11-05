@@ -1,5 +1,6 @@
+using pwnctl.api.Extensions;
 using pwnctl.api.Middleware;
-using pwnctl.api.MediatR.Pipelines;
+using pwnctl.api.Mediator.Pipelines;
 using pwnctl.dto;
 using MediatR;
 using FluentValidation;
@@ -26,8 +27,9 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
-app.UseMiddleware<ApiKeyMiddleware>();
 
 app.MapControllers();
+
+//app.MapMediatedEndpoints(typeof(PwnctlDtoAssemblyMarker));
 
 app.Run();

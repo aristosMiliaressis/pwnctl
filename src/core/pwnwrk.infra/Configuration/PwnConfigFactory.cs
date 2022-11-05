@@ -6,22 +6,25 @@ namespace pwnwrk.infra.Configuration
     {
         public static AppConfig Create()
         {
+            var installPath = EnvironmentVariables.InstallPath ?? "/etc/pwnctl";
+
             IConfigurationBuilder builder = new ConfigurationBuilder()
-                                        .AddEnvironmentVariables(prefix: "PWNCTL_")
-                                        .AddSecretsManager(configurator: options => 
-                                        {
-                                            options.SecretFilter = entry => entry.Name.StartsWith("/aws/secret/pwnctl/");
-                                            options.KeyGenerator = (entry, s) => s.Replace("/aws/secret/pwnctl/", "").Replace("/", ":");
-                                        });
+                                        .SetBasePath(Path.GetFullPath(installPath))
+                                        .AddIniFile("config.ini", optional: true, reloadOnChange: true)
+                                        .AddEnvironmentVariables(prefix: "PWNCTL_");
+            
+            if (!EnvironmentVariables.DisableSecurityManager)
+            {
+                builder = builder.AddSecretsManager(configurator: options => 
+                {
+                    options.SecretFilter = entry => entry.Name.StartsWith("/aws/secret/pwnctl/");
+                    options.KeyGenerator = (entry, s) => s.Replace("/aws/secret/pwnctl/", "").Replace("/", ":");
+                });
+            }
 
             if (!EnvironmentVariables.InVpc)
             {
-                var installPath = EnvironmentVariables.InstallPath ?? "/etc/pwnctl";
-
-                builder = builder
-                            .SetBasePath(Path.GetFullPath(installPath))
-                            .AddIniFile("config.ini", optional: true, reloadOnChange: true)
-                            .AddSystemsManager("/pwnctl");
+                builder = builder.AddSystemsManager("/pwnctl");
             }
 
             return builder.Build().Get<AppConfig>();

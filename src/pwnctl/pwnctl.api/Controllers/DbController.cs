@@ -7,8 +7,8 @@ using pwnwrk.infra.Persistence;
 [Route("[controller]")]
 public sealed class DbController : ControllerBase
 {
-    [HttpPost("initialize")]
-    public async Task<ActionResult> Initialize()
+    [HttpPost("seed")]
+    public async Task<ActionResult> Seed()
     {
         await DatabaseInitializer.InitializeAsync();
 

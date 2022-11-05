@@ -362,5 +362,4 @@ bin/
 *.txt
 *.db
 
-cdk.out/*
 **/deployment/*

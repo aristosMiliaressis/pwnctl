@@ -8,7 +8,13 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using pwnctl.dto.Mediator;
 using pwnwrk.infra;
+using Amazon.Runtime;
+using Amazon.Runtime.CredentialManagement;
 
+/// <summary>
+/// an api client that utilizes the custom Mediated Api contract and
+/// requires no extra implementation to support api extensions
+/// </summary>
 public sealed class PwnctlApiClient
 {
     private readonly HttpClient _httpClient;
@@ -17,7 +23,6 @@ public sealed class PwnctlApiClient
     {
         _httpClient = new HttpClient();
         _httpClient.BaseAddress = new Uri(PwnContext.Config.Api.BaseUrl);
-        _httpClient.DefaultRequestHeaders.Add("X-Api-Key", PwnContext.Config.Api.ApiKey);
     }
 
     public async Task<TResult> Send<TResult>(IMediatedRequest<TResult> request)
@@ -60,15 +65,36 @@ public sealed class PwnctlApiClient
 
     private async Task<MediatedResponse> _send(IBaseMediatedRequest request)
     {
-        var json = JsonSerializer.Serialize(request, request.GetType());
+        var concreteRequestType = request.GetType();
+
+        var json = JsonSerializer.Serialize(request, concreteRequestType);
         var route = request.GetInterpolatedRoute();
 
-        var content = new StringContent(json, Encoding.UTF8, "application/json");     
+        Console.WriteLine(route);
+        var httpRequest = new HttpRequestMessage {
+            Method = MediatedRequestTypeHelper.GetMethod(concreteRequestType),
+            RequestUri = new Uri(route, UriKind.Relative),
+            Content = new StringContent(json, Encoding.UTF8, "application/json")
+        };
 
-        var response = await _httpClient.PostAsync(route, content);
+        var response = await _httpClient.SendAsync(httpRequest, 
+                                            regionName: "us-east-1", // TODO: get this from profile
+                                            serviceName: "lambda",
+                                            credentials: GetAWSCredentialsFromProfile());
         
         response.EnsureSuccessStatusCode();
 
         return await response.Content.ReadFromJsonAsync<MediatedResponse>();;
+    }
+
+    private static AWSCredentials GetAWSCredentialsFromProfile()
+    {
+        var credentialProfileStoreChain = new CredentialProfileStoreChain();
+
+        AWSCredentials defaultCredentials;
+        if (credentialProfileStoreChain.TryGetAWSCredentials(PwnContext.Config.Aws.Profile, out defaultCredentials))
+            return defaultCredentials;
+        
+        throw new AmazonClientException("Unable to find a default profile in CredentialProfileStoreChain.");
     }
 }

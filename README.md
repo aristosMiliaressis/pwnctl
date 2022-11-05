@@ -71,7 +71,7 @@ tags are a way to store arbitary metadata relating to an asset, they can be used
 **`task-definitions.yml`**
 ```YAML
 - ShortName: ping_sweep
-  CommandTemplate: "rand=`mktemp`; nmap -sn {{CIDR}} -oG $rand; cat $rand | grep 'Status: Up' | cut -f 2 -d ' '"
+  CommandTemplate: "rand=`mktemp`;nmap -sn {{CIDR}} -oG $rand;cat $rand|grep 'Status: Up'|cut -f 2 -d ' '"
   IsActive: true
   Aggressiveness: 1
   Subject: NetRange

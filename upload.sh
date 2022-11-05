@@ -1,6 +1,5 @@
 #!/bin/bash
 
-apiKey=$(aws secretsmanager get-secret-value --secret-id /aws/secret/pwnctl/Api/ApiKey | jq -r .SecretString)
 functionUrl=$(aws ssm get-parameter --name /pwnctl/Api/BaseUrl | jq -r .Parameter.Value)
 
 uploadDirectory() {
@@ -10,8 +9,7 @@ uploadDirectory() {
      then 
           dstDir=$2; 
           echo "Creating $dstDir"
-          curl -XPUT ${functionUrl}fs/create?path=$dstDir \
-                    -H "X-Api-Key: $apiKey" >/dev/null
+          python3 -m awscurl -X PUT --service lambda ${functionUrl}fs/create?path=$dstDir >/dev/null
      fi
 
      for file in $srcDir/*; 
@@ -19,15 +17,32 @@ uploadDirectory() {
           if [ -f $file ];
           then
                echo "Uploading $file"
-               curl -XPUT ${functionUrl}fs/upload?path=$dstDir${file#"$srcDir"} \
-                    -H "X-Api-Key: $apiKey" \
-                    -H 'Content-Type: text/plain' \
-                    --data-binary @$file
+               python3 -m awscurl -X PUT ${functionUrl}fs/upload?path=$dstDir${file#"$srcDir"} \
+                    --service lambda -d @$file \
+                    -H 'Content-Type: text/plain'
           fi          
      done
+}
+
+setupDb() {
+     # SecretsManager is not used by the lambda cause it is in
+     # a private subnet and would require a Vpc Endpoint to
+     # access SecretsManager api which costs 7.20$ + tax per month
+     dbHostname=$(aws secretsmanager get-secret-value --secret-id /aws/secret/pwnctl/Db | jq -r .SecretString | jq -r .host)
+     dbPassword=$(aws secretsmanager get-secret-value --secret-id /aws/secret/pwnctl/Db | jq -r .SecretString | jq -r .password)
+     python3 -m awscurl -X PUT ${functionUrl}fs/upload?path=/config.ini \
+                         --service lambda \
+                         -H 'Content-Type: text/plain' \
+                         -d "$(printf "[Db]\nHost = $dbHostname\nPassword = $dbPassword\n")"
+                         
+
+
+     python3 -m awscurl --service lambda -X POST ${functionUrl}db/seed
 }
 
 uploadDirectory ./deployment
 uploadDirectory ./src/core/pwnwrk.infra/Persistence/seed /seed
 
-curl -H "X-Api-Key: $apiKey" -XPOST ${functionUrl}db/initialize
+setupDb
+
+

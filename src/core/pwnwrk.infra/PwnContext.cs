@@ -3,7 +3,6 @@ using pwnwrk.infra.Logging;
 using pwnwrk.infra.Repositories;
 using pwnwrk.domain.Common.BaseClasses;
 using pwnwrk.domain.Assets.Interfaces;
-using System.Reflection;
 using Serilog.Core;
 
 namespace pwnwrk.infra

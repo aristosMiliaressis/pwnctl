@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using pwnctl.dto.Process.Commands;
+using pwnctl.dto.Assets.Commands;
 
 namespace pwnctl.cli.ModeHandlers
 {
