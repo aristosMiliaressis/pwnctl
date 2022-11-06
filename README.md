@@ -32,14 +32,14 @@ the target scope is onboarded trough the cli or api, than it is recursivly scann
 2. iterates over definitions and calls `bool Matches(ScopeDefinition def)` on asset objects.
 3. if any returns true asset is in scope.
 
-- [x] CIDR/DomainRegex/UrlRegex Scope Types
-
 **To Do**
 - [ ] out of scope flag on ScopeDefinition
 
 ### Scope Configuration
 
-scope definitions are configured in `target-*.yml` files along with some policy rules effecting which tasks are allowed to be run against the given scope.
+scope definitions can be seeded trough `target-*.yml` files or trough the api/cli.
+
+target policies allow filtering tasks per target.
 
 **`target-*.yml`**
 ```YAML

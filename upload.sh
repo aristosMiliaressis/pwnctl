@@ -44,5 +44,3 @@ uploadDirectory ./deployment
 uploadDirectory ./src/core/pwnwrk.infra/Persistence/seed /seed
 
 setupDb
-
-

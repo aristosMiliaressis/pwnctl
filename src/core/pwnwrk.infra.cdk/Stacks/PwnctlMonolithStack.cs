@@ -205,12 +205,8 @@ namespace pwnwrk.infra.cdk.Stacks
             ecsTaskExecutionRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("service-role/AmazonECSTaskExecutionRolePolicy"));
             ecsTaskExecutionRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonElasticFileSystemClientFullAccess"));
             ecsTaskExecutionRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonEC2ContainerRegistryReadOnly"));
-            ecsTaskExecutionRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("SecretsManagerReadWrite"));
-            ecsTaskExecutionRole.AddToPolicy(new PolicyStatement(new PolicyStatementProps
-            {
-                Resources = new[] { "*" },
-                Actions = new[] { "logs:*", "cloudwatch:*" }
-            }));
+            ecsTaskExecutionRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("CloudWatchLogsFullAccess"));
+            ecsTaskExecutionRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonRDSFullAccess"));
             queue.GrantConsumeMessages(ecsTaskExecutionRole);
             queue.GrantSendMessages(ecsTaskExecutionRole);
             dbSecret.GrantRead(ecsTaskExecutionRole);
@@ -304,7 +300,8 @@ namespace pwnwrk.infra.cdk.Stacks
                 }
             });
 
-            fs.Connections.AllowFrom(fargateService, Port.Tcp(2049));
+            fs.Connections.AllowDefaultPortFrom(fargateService);
+            dbCluster.Connections.AllowDefaultPortFrom(fargateService);
 
             var queueDepthMetric = new Metric(new MetricProps
             {

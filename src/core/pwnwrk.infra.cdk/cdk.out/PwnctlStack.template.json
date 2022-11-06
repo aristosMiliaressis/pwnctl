@@ -448,6 +448,40 @@
     "aws:cdk:path": "PwnctlStack/PwnctlAuroraCluster/SecurityGroup/from PwnctlStackPwnctlApiSecurityGroup4CD6FE49:{IndirectPort}"
    }
   },
+  "PwnctlAuroraClusterSecurityGroupfromPwnctlStackPwnwrkSvcSecurityGroup36899230IndirectPortAAD4C3EC": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "IpProtocol": "tcp",
+    "Description": "from PwnctlStackPwnwrkSvcSecurityGroup36899230:{IndirectPort}",
+    "FromPort": {
+     "Fn::GetAtt": [
+      "PwnctlAuroraClusterD2431BAE",
+      "Endpoint.Port"
+     ]
+    },
+    "GroupId": {
+     "Fn::GetAtt": [
+      "PwnctlAuroraClusterSecurityGroup77BB75EE",
+      "GroupId"
+     ]
+    },
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "PwnwrkSvcSecurityGroup5C9E8490",
+      "GroupId"
+     ]
+    },
+    "ToPort": {
+     "Fn::GetAtt": [
+      "PwnctlAuroraClusterD2431BAE",
+      "Endpoint.Port"
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "PwnctlStack/PwnctlAuroraCluster/SecurityGroup/from PwnctlStackPwnwrkSvcSecurityGroup36899230:{IndirectPort}"
+   }
+  },
   "PwnctlAuroraClusterD2431BAE": {
    "Type": "AWS::RDS::DBCluster",
    "Properties": {
@@ -998,7 +1032,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "AssetParameters8a9a8405cbced642d86c7d6824facf1c09db8e1d267a16a024a7ae6619937941S3Bucket5522340A"
+      "Ref": "AssetParametersd7f522816b1e3264860f0ca4240de6d1954dc53df8717406fa17b1756d2c3b3eS3Bucket5C6849F3"
      },
      "S3Key": {
       "Fn::Join": [
@@ -1011,7 +1045,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "AssetParameters8a9a8405cbced642d86c7d6824facf1c09db8e1d267a16a024a7ae6619937941S3VersionKey94EC2C3D"
+             "Ref": "AssetParametersd7f522816b1e3264860f0ca4240de6d1954dc53df8717406fa17b1756d2c3b3eS3VersionKeyA8F22DAB"
             }
            ]
           }
@@ -1024,7 +1058,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "AssetParameters8a9a8405cbced642d86c7d6824facf1c09db8e1d267a16a024a7ae6619937941S3VersionKey94EC2C3D"
+             "Ref": "AssetParametersd7f522816b1e3264860f0ca4240de6d1954dc53df8717406fa17b1756d2c3b3eS3VersionKeyA8F22DAB"
             }
            ]
           }
@@ -1112,7 +1146,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "PwnctlStack/PwnctlApi/Resource",
-    "aws:asset:path": "asset.8a9a8405cbced642d86c7d6824facf1c09db8e1d267a16a024a7ae6619937941.0",
+    "aws:asset:path": "asset.d7f522816b1e3264860f0ca4240de6d1954dc53df8717406fa17b1756d2c3b3e.0",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
@@ -1365,7 +1399,19 @@
         {
          "Ref": "AWS::Partition"
         },
-        ":iam::aws:policy/SecretsManagerReadWrite"
+        ":iam::aws:policy/CloudWatchLogsFullAccess"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonRDSFullAccess"
        ]
       ]
      }
@@ -1380,14 +1426,6 @@
    "Properties": {
     "PolicyDocument": {
      "Statement": [
-      {
-       "Action": [
-        "cloudwatch:*",
-        "logs:*"
-       ],
-       "Effect": "Allow",
-       "Resource": "*"
-      },
       {
        "Action": [
         "sqs:ChangeMessageVisibility",
@@ -1859,17 +1897,17 @@
   }
  },
  "Parameters": {
-  "AssetParameters8a9a8405cbced642d86c7d6824facf1c09db8e1d267a16a024a7ae6619937941S3Bucket5522340A": {
+  "AssetParametersd7f522816b1e3264860f0ca4240de6d1954dc53df8717406fa17b1756d2c3b3eS3Bucket5C6849F3": {
    "Type": "String",
-   "Description": "S3 bucket for asset \"8a9a8405cbced642d86c7d6824facf1c09db8e1d267a16a024a7ae6619937941\""
+   "Description": "S3 bucket for asset \"d7f522816b1e3264860f0ca4240de6d1954dc53df8717406fa17b1756d2c3b3e\""
   },
-  "AssetParameters8a9a8405cbced642d86c7d6824facf1c09db8e1d267a16a024a7ae6619937941S3VersionKey94EC2C3D": {
+  "AssetParametersd7f522816b1e3264860f0ca4240de6d1954dc53df8717406fa17b1756d2c3b3eS3VersionKeyA8F22DAB": {
    "Type": "String",
-   "Description": "S3 key for asset version \"8a9a8405cbced642d86c7d6824facf1c09db8e1d267a16a024a7ae6619937941\""
+   "Description": "S3 key for asset version \"d7f522816b1e3264860f0ca4240de6d1954dc53df8717406fa17b1756d2c3b3e\""
   },
-  "AssetParameters8a9a8405cbced642d86c7d6824facf1c09db8e1d267a16a024a7ae6619937941ArtifactHash7DA937BC": {
+  "AssetParametersd7f522816b1e3264860f0ca4240de6d1954dc53df8717406fa17b1756d2c3b3eArtifactHash39BED6A9": {
    "Type": "String",
-   "Description": "Artifact hash for asset \"8a9a8405cbced642d86c7d6824facf1c09db8e1d267a16a024a7ae6619937941\""
+   "Description": "Artifact hash for asset \"d7f522816b1e3264860f0ca4240de6d1954dc53df8717406fa17b1756d2c3b3e\""
   },
   "AssetParametersc8dfcc3db7a767ebc6f9417372a8fee940927c659f793315834a6784dab3d686S3Bucket821B928E": {
    "Type": "String",
