@@ -9,5 +9,5 @@ public interface ISerializer : IAmbientService
     object Deserialize(string json, Type type);
 
     string Serialize<T>(T obj);
-    string Serialize<T>(T obj, Type type);
+    string Serialize(object obj, Type type);
 }

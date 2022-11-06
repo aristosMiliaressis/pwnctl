@@ -6,9 +6,9 @@
 
 recursive configuration based engine for external recon.
 
-### Architecture
+### Overview
 
-the target scope is seeded or created trough the `pwnctl` cli/api, the scope is recursivly scanned by pushing jobs to the SQS queue that trigger serverless ECS instances to spin up and consume those jobs, collecting assets into an Aurora postgreSQL database, sending discord notifications according to `NotificationRules` and queueing further jobs according to `TaskDefinitions`, all infrastructure is provisioned as code trough CDK.
+the target scope is onboarded trough the cli or api, than it is recursivly scanned by pushing jobs to the SQS queue that trigger serverless ECS instances to spin up and consume those jobs, collecting assets into an Aurora postgreSQL database, sending discord notifications according to `NotificationRules` and queueing further jobs according to `TaskDefinitions`, all infrastructure is provisioned as code trough CDK.
 
 <p align="center">
   <img src="https://github.com/aristosMiliaressis/pwnctl/blob/master/img/arch-phase1.png?raw=true">
@@ -21,9 +21,9 @@ the target scope is seeded or created trough the `pwnctl` cli/api, the scope is 
 3. checks if it exists in db
 4. if not adds it
 5. checks if it is in scope according to `ScopeDefinitions`
-6. if not in scope continues to next line
+6. if not in scope continues to next asset
 7. checks `NotificationRules` and sends notifications if any apply
-8. checks `TaskDefinitions` for the asset class and queue them according to Task Filter & rules
+8. checks `TaskDefinitions` for the asset class and queue them according to Task Filter & the target policy
 - [x] JSONL(ine) input format with arbitary key/value `Tags` for storing metadata about assets
 
 ### In Scope checking process
@@ -31,6 +31,8 @@ the target scope is seeded or created trough the `pwnctl` cli/api, the scope is 
 1. selects all ScopeDefinitions from all programs in db
 2. iterates over definitions and calls `bool Matches(ScopeDefinition def)` on asset objects.
 3. if any returns true asset is in scope.
+
+- [x] CIDR/DomainRegex/UrlRegex Scope Types
 
 **To Do**
 - [ ] out of scope flag on ScopeDefinition
@@ -165,5 +167,5 @@ prints a summary about queued tasks and found assets
 4. run `task simple-setup`
 
 **To Do**
-- [ ] private ecr registry (+ cdk integration with github action in `ci.yml`)
 - [ ] terraform discord server
+- [ ] private ecr registry

@@ -27,7 +27,7 @@ public class AppJsonSerializer : ISerializer
         return JsonSerializer.Serialize(obj, _options);
     }
 
-    public string Serialize<T>(T obj, Type type)
+    public string Serialize(object obj, Type type)
     {
         return JsonSerializer.Serialize(obj, type, _options);
     }
