@@ -29,7 +29,7 @@ public sealed class PwnctlApiClient
     {
         var apiResponse = await _send(request);
 
-        return (TResult)apiResponse.Result;
+        return PwnContext.Serializer.Deserialize<TResult>((JsonElement)apiResponse.Result);
     }
 
     public async Task Send(IMediatedRequest request)
@@ -39,62 +39,46 @@ public sealed class PwnctlApiClient
         return;
     }
 
-    public async Task<MediatedResponse<TResult>> TrySend<TResult>(IMediatedRequest<TResult> request)
-    {
-        try
-        {
-            return (MediatedResponse<TResult>)await _send(request);
-        }
-        catch
-        {
-            return (MediatedResponse<TResult>)MediatedResponse.Create(System.Net.HttpStatusCode.InternalServerError);
-        }
-    }
-
-    public async Task<MediatedResponse> TrySend(IMediatedRequest request)
-    {
-        try
-        {
-            return await _send(request);
-        }
-        catch
-        {
-            return MediatedResponse.Create(System.Net.HttpStatusCode.InternalServerError);
-        }
-    }
-
     private async Task<MediatedResponse> _send(IBaseMediatedRequest request)
     {
         var concreteRequestType = request.GetType();
 
-        var json = JsonSerializer.Serialize(request, concreteRequestType);
+        var json = PwnContext.Serializer.Serialize(request, concreteRequestType);
         var route = request.GetInterpolatedRoute();
 
-        Console.WriteLine(route);
         var httpRequest = new HttpRequestMessage {
-            Method = MediatedRequestTypeHelper.GetMethod(concreteRequestType),
+            Method = MediatedRequestTypeHelper.GetVerb(concreteRequestType),
             RequestUri = new Uri(route, UriKind.Relative),
             Content = new StringContent(json, Encoding.UTF8, "application/json")
         };
 
-        var response = await _httpClient.SendAsync(httpRequest, 
+        HttpResponseMessage response = null;
+        try
+        {
+            response = await _httpClient.SendAsync(httpRequest,
                                             regionName: "us-east-1", // TODO: get this from profile
                                             serviceName: "lambda",
-                                            credentials: GetAWSCredentialsFromProfile());
-        
-        response.EnsureSuccessStatusCode();
+                                            credentials: GetAWSProfileCredentials(PwnContext.Config.Aws.Profile));
 
-        return await response.Content.ReadFromJsonAsync<MediatedResponse>();;
+            response.EnsureSuccessStatusCode();
+        }
+        catch (HttpRequestException)
+        {
+            json = await response.Content.ReadAsStringAsync();
+            Console.WriteLine(json);
+        }
+
+        return await response.Content.ReadFromJsonAsync<MediatedResponse>();
     }
 
-    private static AWSCredentials GetAWSCredentialsFromProfile()
+    private static AWSCredentials GetAWSProfileCredentials(string profile)
     {
         var credentialProfileStoreChain = new CredentialProfileStoreChain();
 
         AWSCredentials defaultCredentials;
-        if (credentialProfileStoreChain.TryGetAWSCredentials(PwnContext.Config.Aws.Profile, out defaultCredentials))
+        if (credentialProfileStoreChain.TryGetAWSCredentials(profile, out defaultCredentials))
             return defaultCredentials;
         
-        throw new AmazonClientException("Unable to find a default profile in CredentialProfileStoreChain.");
+        throw new AmazonClientException($"Unable to find profile {profile} in CredentialProfileStoreChain.");
     }
 }

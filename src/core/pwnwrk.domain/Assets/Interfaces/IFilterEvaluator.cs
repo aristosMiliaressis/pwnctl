@@ -1,5 +1,5 @@
 using pwnwrk.domain.Assets.BaseClasses;
-using pwnwrk.domain.Common.BaseClasses;
+using pwnwrk.domain.Common.Interfaces;
 
 namespace pwnwrk.domain.Assets.Interfaces;
 

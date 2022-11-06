@@ -8,5 +8,5 @@ using MediatR;
 public sealed class ListTargetsQuery : IMediatedRequest<TargetListViewModel>
 {
     public static string Route => "/targets";
-    public static HttpMethod Method => HttpMethod.Get;
+    public static HttpMethod Verb => HttpMethod.Get;
 }

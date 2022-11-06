@@ -1,9 +1,6 @@
 namespace pwnwrk.domain.Common.BaseClasses;
 
-public interface IAmbientService
-{
-
-}
+using pwnwrk.domain.Common.Interfaces;
 
 public delegate IAmbientService AmbientServiceFactory();
 

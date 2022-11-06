@@ -1,9 +1,10 @@
 namespace pwnctl.api.Extensions;
 
-using System.Text.Json;
 using System.Reflection;
 using MediatR;
 using pwnctl.dto.Mediator;
+using pwnwrk.infra;
+using pwnwrk.domain.Common.Interfaces;
 
 public static class WebApplicationExtensions
 {
@@ -33,32 +34,44 @@ public static class WebApplicationExtensions
         {
             var routePattern = MediatedRequestTypeHelper.GetRoute(requestType);
 
-            var requestMethod = MediatedRequestTypeHelper.GetMethod(requestType);
+            var requestVerb = MediatedRequestTypeHelper.GetVerb(requestType);
 
-            if (requestMethod == null)
+            if (requestVerb == null)
             {
                 throw new Exception($"Mediated Request {requestType.Name} method is required but set to null.");
             }
 
             // TODO: validate route syntax & args
+            // TODO: add support for Patch verb
 
-            app.MapMethods(routePattern, 
-                        new List<string> { requestMethod.Method }, 
-                        async context => 
+            var mapMethod = typeof(EndpointRouteBuilderExtensions)
+                                .GetMethods(BindingFlags.Public | BindingFlags.Static)
+                                .Where(m => m.Name.ToUpper() == ("MAP"+requestVerb.Method))
+                                .Where(m => m.GetParameters()
+                                        .Select(p => p.ParameterType)
+                                        .Contains(typeof(RequestDelegate)))
+                                .First();
+
+            var deserializeMethod = typeof(ISerializer).GetMethod("Deserialize", 1, new Type[] { typeof(string) });
+
+            RequestDelegate requestDelegate = async context =>
             {
-                IBaseMediatedRequest request = null;
+                string json = null;
                 using (var sr = new StreamReader(context.Request.Body))
                 {
-                    var json = await sr.ReadToEndAsync();
-                    request = JsonSerializer.Deserialize<IBaseMediatedRequest>(json);
+                    json = await sr.ReadToEndAsync();
                 }
 
                 var mediator = context.RequestServices.GetService<IMediator>();
 
-                var result = (MediatedResponse) await mediator.Send(request);
+                var request = PwnContext.Serializer.Deserialize(json, requestType);
+
+                var result = (MediatedResponse)await mediator.Send(request);
 
                 await context.Response.Create(result);
-            });
+            };
+
+            mapMethod.Invoke(null, new object[] { app, routePattern, requestDelegate });
         }
     }
 }

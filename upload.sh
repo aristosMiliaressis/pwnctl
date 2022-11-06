@@ -9,7 +9,7 @@ uploadDirectory() {
      then 
           dstDir=$2; 
           echo "Creating $dstDir"
-          python3 -m awscurl -X PUT --service lambda ${functionUrl}fs/create?path=$dstDir >/dev/null
+          python3 -m awscurl -X PUT --service lambda ${functionUrl}fs/create?path=$dstDir 2>/dev/null
      fi
 
      for file in $srcDir/*; 

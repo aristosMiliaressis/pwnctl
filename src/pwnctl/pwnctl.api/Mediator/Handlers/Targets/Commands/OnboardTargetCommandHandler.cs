@@ -7,15 +7,15 @@ using MediatR;
 
 namespace pwnctl.api.Mediator.Handlers.Targets.Commands
 {
-    public sealed class CreateTargetCommandHandler : IRequestHandler<CreateTargetCommand, MediatedResponse>
+    public sealed class OnboardTargetCommandHandler : IRequestHandler<OnboardTargetCommand, MediatedResponse>
     {
         private readonly PwnctlDbContext _context = new PwnctlDbContext();
 
-        public async Task<MediatedResponse> Handle(CreateTargetCommand command, CancellationToken cancellationToken)
+        public async Task<MediatedResponse> Handle(OnboardTargetCommand command, CancellationToken cancellationToken)
         {
             var existingProgram = await _context.Programs.FirstOrDefaultAsync(p => p.Name == command.Name);
             if (existingProgram != null)
-                return MediatedResponse.Error("Target %s already exists.", command.Name);
+                return MediatedResponse.Error("Target {0} already exists.", command.Name);
 
             _context.Programs.Add(command);
             await _context.SaveChangesAsync();

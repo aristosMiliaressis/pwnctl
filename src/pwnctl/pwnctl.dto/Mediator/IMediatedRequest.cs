@@ -5,7 +5,7 @@ using MediatR;
 public interface IBaseMediatedRequest
 {
     static abstract string Route { get; }
-    static abstract HttpMethod Method { get; }
+    static abstract HttpMethod Verb { get; }
 }
 
 public interface IMediatedRequest : IBaseMediatedRequest, IRequest<MediatedResponse>

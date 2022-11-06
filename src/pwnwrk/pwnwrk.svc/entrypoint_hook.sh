@@ -5,18 +5,6 @@ then
     cp "/mnt/efs/amass.ini" /etc/amass/config.ini
 fi
 
-if test -f "/mnt/efs/aws.config"; 
-then
-    mkdir ~/.aws
-    cp "/mnt/efs/aws.config" ~/.aws/config
-fi
-
-if test -f "/mnt/efs/aws.credentials"; 
-then
-    cp "/mnt/efs/aws.credentials" ~/.aws/credentials
-fi
-
-
 if test -f "/mnt/efs/provider-config.yaml"; 
 then
     mkdir -p $HOME/.config/notify/

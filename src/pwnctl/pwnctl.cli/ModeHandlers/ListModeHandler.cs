@@ -1,10 +1,9 @@
 using System;
-using System.Linq;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using pwnwrk.infra.Repositories;
-using pwnwrk.domain.Assets.BaseClasses;
+using pwnctl.dto.Assets.Queries;
+using pwnctl.dto.Targets.Queries;
+using pwnwrk.infra;
 
 namespace pwnctl.cli.ModeHandlers
 {
@@ -12,66 +11,57 @@ namespace pwnctl.cli.ModeHandlers
     {
         public string ModeName => "list";
         
-        public Task Handle(string[] args)
+        public async Task Handle(string[] args)
         {
-            void WriteToConsole(IEnumerable<Asset> assets)
-            {
-                assets.ToList().ForEach(a => Console.WriteLine(a.ToJson() + "\n"));
-            }
-
             if (args.Length < 2 || args[1] != "--class")
             {
                 Console.WriteLine("--class option is required");
                 PrintHelpSection();
-                return Task.CompletedTask;
+                return;
             }
             else if (args.Length < 3)
             {
                 Console.WriteLine("No value provided for --class option");
                 PrintHelpSection();
-                return Task.CompletedTask;
+                return;
             }
 
-            var @class = args[2];
+            var @class = args[2].ToLower();
+            var client = new PwnctlApiClient();
 
-            AssetRepository repository = new();
-            if (@class.ToLower() == "hosts")
+            if (@class == "hosts")
             {
-                var assets = repository.ListHosts().Select(a => (Asset)a);
-                WriteToConsole(assets);
+                await client.Send(new ListHostsQuery());
             }
-            if (@class.ToLower() == "endpoints")
+            if (@class == "endpoints")
             {
-                var assets = repository.ListEndpoints().Select(a => (Asset)a);
-                WriteToConsole(assets);
+                await client.Send(new ListEndpointsQuery());
             }
-            if (@class.ToLower() == "domains")
+            if (@class == "domains")
             {
-                var assets = repository.ListDomains().Select(a => (Asset)a);
-                WriteToConsole(assets);
+                await client.Send(new ListDomainsQuery());
             }
-            if (@class.ToLower() == "services")
+            if (@class == "services")
             {
-                var assets = repository.ListServices().Select(a => (Asset)a);
-                WriteToConsole(assets);
+                await client.Send(new ListServicesQuery());
             }
-            if (@class.ToLower() == "dnsrecords")
+            if (@class == "dnsrecords")
             {
-                var assets = repository.ListDNSRecords().Select(a => (Asset)a);
-                WriteToConsole(assets);
+                await client.Send(new ListDnsRecordsQuery());
             }
-            if (@class.ToLower() == "netranges")
+            if (@class == "netranges")
             {
-                var assets = repository.ListNetRanges().Select(a => (Asset)a);
-                WriteToConsole(assets);
+                await client.Send(new ListNetRangesQuery());
             }
-            if (@class.ToLower() == "emails")
+            if (@class == "emails")
             {
-                var assets = repository.ListEmails().Select(a => (Asset)a);
-                WriteToConsole(assets);
+                await client.Send(new ListEmailsQuery());
             }
-
-            return Task.CompletedTask;
+            if (@class == "targets")
+            {
+                var result = await client.Send(new ListTargetsQuery());
+                Console.WriteLine(PwnContext.Serializer.Serialize(result));
+            }
         }
 
         public void PrintHelpSection()

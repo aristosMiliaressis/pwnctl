@@ -1,8 +1,7 @@
 // using System;
 // using System.IO;
 // using System.Linq;
-// using System.Text.Json;
-// using System.Collections.Generic;
+// // using System.Collections.Generic;
 // using Amazon.CDK;
 // using Amazon.CDK.AWS.EC2;
 // using Amazon.CDK.AWS.ECS;
@@ -125,7 +124,6 @@
 //                 return;
 //             }
 
-//             function.AddEnvironment("PWNCTL_DisableSecurityManager", "true");
 //             function.AddEnvironment("PWNCTL_Db__Host", BaseStack.DbCluster.ClusterEndpoint.Hostname);
 //             function.AddEnvironment("PWNCTL_Db__Password", BaseStack.UsafeDbPassword);
 //             function.AddEnvironment("PWNCTL_Api__ApiKey", unsafeApiKey);

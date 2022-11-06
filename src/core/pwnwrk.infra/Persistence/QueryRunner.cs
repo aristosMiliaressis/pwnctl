@@ -1,5 +1,4 @@
-using System.Text.Json;
-using pwnwrk.infra.Configuration;
+using pwnwrk.infra.Logging;
 using System.Data.SqlClient;
 using Npgsql;
 
@@ -7,9 +6,8 @@ namespace pwnwrk.infra.Persistence
 {
     public sealed class QueryRunner
     {
-        public async Task RunAsync(string sql)
+        public async Task<string> RunAsync(string sql)
         {
-            //TODO: maybe split sql on ';' semicolon to execute statements separatly
             using (var connection = new NpgsqlConnection(PwnContext.Config.Db.ConnectionString))
             {
                 var command = new NpgsqlCommand(sql, connection);
@@ -18,14 +16,14 @@ namespace pwnwrk.infra.Persistence
                     await connection.OpenAsync();
                     NpgsqlDataReader reader = await command.ExecuteReaderAsync();
                     var row = Serialize(reader);
-                    string json = string.Join("\n", row.Select(r => JsonSerializer.Serialize(r)));
-                    //string json = JsonSerializer.Serialize(row, Formatting.Indented);
-                    Console.WriteLine(json);
+                    string json = string.Join("\n", row.Select(r => PwnContext.Serializer.Serialize(r)));
                     await reader.CloseAsync();
+                    return json;
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    PwnContext.Logger.Error(ex.ToRecursiveExInfo());
+                    return null;
                 }
             }
         }

@@ -8,7 +8,7 @@ using MediatR;
 public sealed class DeleteTargetCommand : Program, IMediatedRequest
 {
     public static string Route => "/targets/{target}";
-    public static HttpMethod Method => HttpMethod.Delete;
+    public static HttpMethod Verb => HttpMethod.Delete;
 
     public string Target { get; set; }
 }

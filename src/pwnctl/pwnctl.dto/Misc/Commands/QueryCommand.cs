@@ -7,7 +7,7 @@ using MediatR;
 public sealed class QueryCommand : IMediatedRequest<string>
 {
     public static string Route => "/query";
-    public static HttpMethod Method => HttpMethod.Post;
+    public static HttpMethod Verb => HttpMethod.Post;
 
     public string Sql { get; set; }
 }

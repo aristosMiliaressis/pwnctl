@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Linq;
 using System.Text.Json;
 using System.Collections.Generic;
 using Amazon.CDK;
@@ -162,7 +161,7 @@ namespace pwnwrk.infra.cdk.Stacks
             var function = new Function(this, AwsConstants.LambdaName, new FunctionProps
             {
                 Runtime = Runtime.DOTNET_6,
-                MemorySize = 512,
+                MemorySize = 1024,
                 Timeout = Duration.Seconds(60),
                 Code = Code.FromAsset(Path.Join("src", "pwnctl", "pwnctl.api", "bin", "Release", "net6.0")),
                 Handler = "pwnctl.api",
@@ -172,7 +171,6 @@ namespace pwnwrk.infra.cdk.Stacks
                 LogRetention = RetentionDays.ONE_WEEK,
                 Environment = new Dictionary<string, string>()
                 {
-                    {"PWNCTL_DisableSecurityManager", "true"},
                     {"PWNCTL_Aws__InVpc", "true"},
                     {"PWNCTL_JobQueue__QueueName", AwsConstants.QueueName},
                     {"PWNCTL_JobQueue__DLQName", AwsConstants.DLQName},

@@ -1,5 +1,5 @@
-using System.Text.Json;
 using pwnwrk.domain.Common.BaseClasses;
+using pwnwrk.domain.Common.Interfaces;
 using pwnwrk.domain.Assets.BaseClasses;
 using pwnwrk.domain.Assets.Entities;
 
@@ -56,7 +56,7 @@ namespace pwnwrk.domain.Tasks.Entities
                 var arg = asset.GetType().GetProperty(param).GetValue(asset);
                 arguments.Add(arg);
             }
-            Arguments = JsonSerializer.Serialize(arguments);
+            Arguments = AmbientService<ISerializer>.Instance.Serialize(arguments);
         }
 
         public void Started()
@@ -76,10 +76,7 @@ namespace pwnwrk.domain.Tasks.Entities
             {
                 string command = Definition.CommandTemplate;
 
-                var args = JsonSerializer.Deserialize<List<string>>(Arguments, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                }).Distinct();
+                var args = AmbientService<ISerializer>.Instance.Deserialize<List<string>>(Arguments).Distinct();
                 foreach (var arg in args)
                 {
                     command = command.Replace("{{" + command.Split("{{")[1].Split("}}")[0] + "}}", arg);

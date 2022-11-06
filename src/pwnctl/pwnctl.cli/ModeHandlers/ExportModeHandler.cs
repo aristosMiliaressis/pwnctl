@@ -4,7 +4,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using pwnwrk.infra.Repositories;
+using pwnctl.dto.Assets.Queries;
 using pwnwrk.domain.Assets.BaseClasses;
 
 namespace pwnctl.cli.ModeHandlers
@@ -13,7 +13,7 @@ namespace pwnctl.cli.ModeHandlers
     {
         public string ModeName => "export";
         
-        public Task Handle(string[] args)
+        public async Task Handle(string[] args)
         {
             void WriteToFile(string filename, IEnumerable<Asset> assets)
             {
@@ -24,13 +24,13 @@ namespace pwnctl.cli.ModeHandlers
             {
                 Console.WriteLine("--path option is required");
                 PrintHelpSection();
-                return Task.CompletedTask;
+                return;
             }
             else if (args.Length < 3)
             {
                 Console.WriteLine("No value provided for --path option");
                 PrintHelpSection();
-                return Task.CompletedTask;
+                return;
             }
 
             var path = args[2];
@@ -44,23 +44,22 @@ namespace pwnctl.cli.ModeHandlers
                 throw new Exception($"Unable to create export directory {path}", ex);
             }
 
-            AssetRepository repository = new();
-            var hosts = repository.ListHosts().Select(a => (Asset)a);
-            WriteToFile(Path.Combine(path, "hosts.json"), hosts);
-            var endpoints = repository.ListEndpoints().Select(a => (Asset)a);
-            WriteToFile(Path.Combine(path, "endpoints.json"), endpoints);
-            var domains = repository.ListDomains().Select(a => (Asset)a);
-            WriteToFile(Path.Combine(path, "domains.json"), domains);
-            var services = repository.ListServices().Select(a => (Asset)a);
-            WriteToFile(Path.Combine(path, "services.json"), services);
-            var records = repository.ListDNSRecords().Select(a => (Asset)a);
-            WriteToFile(Path.Combine(path, "records.json"), records);
-            var netRanges = repository.ListNetRanges().Select(a => (Asset)a);
-            WriteToFile(Path.Combine(path, "netRanges.json"), netRanges);
-            var emails = repository.ListEmails().Select(a => (Asset)a);
-            WriteToFile(Path.Combine(path, "emails.json"), emails);
+            var client = new PwnctlApiClient();
 
-            return Task.CompletedTask;
+            var hosts = await client.Send(new ListHostsQuery());
+            WriteToFile(Path.Combine(path, "hosts.json"), hosts.Hosts.Select(a => (Asset)a));
+            var endpoints = await client.Send(new ListEndpointsQuery());
+            WriteToFile(Path.Combine(path, "endpoints.json"), endpoints.Endpoints.Select(a => (Asset)a));
+            var domains = await client.Send(new ListDomainsQuery());
+            WriteToFile(Path.Combine(path, "domains.json"), domains.Domains.Select(a => (Asset)a));
+            var services = await client.Send(new ListServicesQuery());
+            WriteToFile(Path.Combine(path, "services.json"), services.Services.Select(a => (Asset)a));
+            var records = await client.Send(new ListDnsRecordsQuery());
+            WriteToFile(Path.Combine(path, "records.json"), records.DNSRecords.Select(a => (Asset)a));
+            var netRanges = await client.Send(new ListNetRangesQuery());
+            WriteToFile(Path.Combine(path, "netRanges.json"), netRanges.NetRanges.Select(a => (Asset)a));
+            var emails = await client.Send(new ListEmailsQuery());
+            WriteToFile(Path.Combine(path, "emails.json"), emails.Emails.Select(a => (Asset)a));
         }
 
         public void PrintHelpSection()

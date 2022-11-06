@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using pwnwrk.infra.Persistence;
+using pwnctl.dto.Db.Commands;
 
 namespace pwnctl.cli.ModeHandlers
 {
@@ -13,15 +14,20 @@ namespace pwnctl.cli.ModeHandlers
         public async Task Handle(string[] args)
         {
             var queryRunner = new QueryRunner();
-            var input = new List<string>();
+            string line, query = string.Empty;
 
-            string line;
             while (!string.IsNullOrEmpty(line = Console.ReadLine()))
             {
-                input.Add(line);
+                query += line + "\n";
             }
 
-            await queryRunner.RunAsync(string.Join("\n", input));
+            var command = new RunSqlQueryCommand
+            {
+                Query = query
+            };
+
+            var client = new PwnctlApiClient();
+            await client.Send(command);        
         }
 
         public void PrintHelpSection()

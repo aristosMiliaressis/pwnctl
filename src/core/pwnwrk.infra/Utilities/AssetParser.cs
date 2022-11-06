@@ -2,7 +2,6 @@ using pwnwrk.domain.Assets.BaseClasses;
 using pwnwrk.domain.Common.Entities;
 using pwnwrk.domain.Assets.DTO;
 using pwnwrk.infra.Exceptions;
-using System.Text.Json;
 using System.Reflection;
 
 namespace pwnwrk.infra.Utilities
@@ -63,10 +62,7 @@ namespace pwnwrk.infra.Utilities
             if (!assetText.StartsWith("{"))
                 return;
 
-            var entry = JsonSerializer.Deserialize<AssetDTO>(assetText, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
+            var entry = PwnContext.Serializer.Deserialize<AssetDTO>(assetText);
 
             assetText = entry.Asset;
             tags = entry.Tags.Select(t => new Tag(t.Key, t.Value.ToString())).ToList();

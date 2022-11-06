@@ -4,7 +4,7 @@ public static class MediatedRequestExtensions
 {
     public static string GetInterpolatedRoute(this IBaseMediatedRequest request)
     {
-        string route = MediatedRequestTypeHelper.GetFullRoute(request.GetType());
+        string route = MediatedRequestTypeHelper.GetRoute(request.GetType());
 
         route.Split("{")
             .Skip(1)

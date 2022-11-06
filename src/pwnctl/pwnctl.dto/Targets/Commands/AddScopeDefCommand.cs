@@ -8,7 +8,7 @@ using MediatR;
 public sealed class AddScopeDefCommand : ScopeDefinition, IMediatedRequest
 {
     public static string Route => "/targets/{target}/scope";
-    public static HttpMethod Method => HttpMethod.Post;
+    public static HttpMethod Verb => HttpMethod.Post;
 
     public string Target { get; set; }
 }

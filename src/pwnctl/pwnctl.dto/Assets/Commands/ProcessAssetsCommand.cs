@@ -7,7 +7,7 @@ using MediatR;
 public sealed class ProcessAssetsCommand : IMediatedRequest
 {
     public static string Route => "/assets";
-    public static HttpMethod Method => HttpMethod.Post;
+    public static HttpMethod Verb => HttpMethod.Post;
 
     public List<string> Assets { get; set; }
 }

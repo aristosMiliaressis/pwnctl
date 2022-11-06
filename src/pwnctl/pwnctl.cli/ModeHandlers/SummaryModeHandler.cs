@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
 using pwnwrk.infra.Persistence;
+using pwnctl.dto.Db.Queries;
 
 namespace pwnctl.cli.ModeHandlers
 {
@@ -13,41 +14,23 @@ namespace pwnctl.cli.ModeHandlers
         
         public async Task Handle(string[] args)
         {
-            PwnctlDbContext context = new();
-            int netRangeCount = await context.NetRanges.CountAsync();
-            int hostCount = await context.Hosts.CountAsync();
-            int domainCount = await context.Domains.CountAsync();
-            int recordCount = await context.DNSRecords.CountAsync();
-            int serviceCount = await context.Services.CountAsync();
-            int endpointCount = await context.Endpoints.CountAsync();
-            int paramCount = await context.Parameters.CountAsync();
-            int emailCount = await context.Emails.CountAsync();
-            int tagCount = await context.Tags.CountAsync();
-            int inScopeRangesCount = await context.NetRanges.Where(a => a.InScope).CountAsync();
-            int insCopeHostCount = await context.Hosts.CountAsync();
-            int inScopeDomainCount = await context.Domains.Where(a => a.InScope).CountAsync();
-            int inScopeRecordCount = await context.DNSRecords.Where(a => a.InScope).CountAsync();
-            int inScopeServiceCount = await context.Services.Where(a => a.InScope).CountAsync();
-            int inScopeEndpointCount = await context.Endpoints.Where(a => a.InScope).CountAsync();
-            int inScopeParamCount = await context.Parameters.Where(a => a.InScope).CountAsync();
-            int inScopeEmailCount = await context.Emails.Where(a => a.InScope).CountAsync();
-            var firstTask = await context.TaskRecords.OrderBy(t => t.QueuedAt).FirstOrDefaultAsync();
-            var lastTask = await context.TaskRecords.OrderBy(t => t.QueuedAt).FirstOrDefaultAsync();
+            var client = new PwnctlApiClient();
+            var model = await client.Send(new SummaryQuery());
 
-            Console.WriteLine($"NetRanges: {netRangeCount}, InScope: {inScopeRangesCount}");
-            Console.WriteLine($"Hosts: {hostCount}, InScope: {insCopeHostCount}");
-            Console.WriteLine($"Domains: {domainCount}, InScope: {inScopeDomainCount}");
-            Console.WriteLine($"DNSRecords: {recordCount}, InScope: {inScopeRecordCount}");
-            Console.WriteLine($"Services: {serviceCount}, InScope: {inScopeServiceCount}");
-            Console.WriteLine($"Endpoints: {endpointCount}, InScope: {inScopeEndpointCount}");
-            Console.WriteLine($"Parameters: {paramCount}, InScope: {inScopeParamCount}");
-            Console.WriteLine($"Emais: {emailCount}, InScope: {inScopeEmailCount}");
-            Console.WriteLine($"Tags: {tagCount}");
-            if (firstTask != null)
+            Console.WriteLine($"NetRanges: {model.NetRangeCount}, InScope: {model.InScopeRangesCount}");
+            Console.WriteLine($"Hosts: {model.HostCount}, InScope: {model.InsCopeHostCount}");
+            Console.WriteLine($"Domains: {model.DomainCount}, InScope: {model.InScopeDomainCount}");
+            Console.WriteLine($"DNSRecords: {model.RecordCount}, InScope: {model.InScopeRecordCount}");
+            Console.WriteLine($"Services: {model.ServiceCount}, InScope: {model.InScopeServiceCount}");
+            Console.WriteLine($"Endpoints: {model.EndpointCount}, InScope: {model.InScopeEndpointCount}");
+            Console.WriteLine($"Parameters: {model.ParamCount}, InScope: {model.InScopeParamCount}");
+            Console.WriteLine($"Emais: {model.EmailCount}, InScope: {model.InScopeEmailCount}");
+            Console.WriteLine($"Tags: {model.TagCount}");
+            if (model.FirstTask != null)
             {
                 Console.WriteLine();
-                Console.WriteLine("First Queued Task: " + firstTask.QueuedAt);
-                Console.WriteLine("Last Queued Task: " + lastTask.QueuedAt);
+                Console.WriteLine("First Queued Task: " + model.FirstTask);
+                Console.WriteLine("Last Queued Task: " + model.LastTask);
             }
         }
 

@@ -4,17 +4,12 @@ public static class MediatedRequestTypeHelper
 {
     public static string GetRoute(Type type)
     {
-        return string.Join("/", type.GetProperty(nameof(IBaseMediatedRequest.Route)).GetValue(null).ToString().Split("/").Skip(2));
-    }
-
-    public static string GetFullRoute(Type type)
-    {
         return string.Join("/", type.GetProperty(nameof(IBaseMediatedRequest.Route)).GetValue(null).ToString().Split("/"));
     }
 
-    public static HttpMethod GetMethod(Type type)
+    public static HttpMethod GetVerb(Type type)
     {
-        return (HttpMethod)type.GetProperty(nameof(IBaseMediatedRequest.Method)).GetValue(null);
+        return (HttpMethod)type.GetProperty(nameof(IBaseMediatedRequest.Verb)).GetValue(null);
     }
 
     public static void CheckRequestConfig(Type type)

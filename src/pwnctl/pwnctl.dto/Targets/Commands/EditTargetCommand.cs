@@ -8,7 +8,7 @@ using MediatR;
 public sealed class EditTargetCommand : Program, IMediatedRequest
 {
     public static string Route => "/targets/{target}";
-    public static HttpMethod Method => HttpMethod.Patch;
+    public static HttpMethod Verb => HttpMethod.Put;
 
     public string Target { get; set; }
 }

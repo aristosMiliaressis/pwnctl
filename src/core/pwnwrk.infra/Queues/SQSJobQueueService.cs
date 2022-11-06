@@ -1,7 +1,6 @@
 ﻿using pwnwrk.infra.Aws;
 using Amazon.SQS;
 using Amazon.SQS.Model;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 using pwnwrk.domain.Tasks.Entities;
 
@@ -48,7 +47,7 @@ namespace pwnwrk.infra.Queues
             {
                 MessageGroupId = Guid.NewGuid().ToString(),
                 QueueUrl = this[AwsConstants.QueueName],
-                MessageBody = JsonSerializer.Serialize(task)
+                MessageBody = PwnContext.Serializer.Serialize(task)
             };
 
             await _sqsClient.SendMessageAsync(request);
@@ -65,7 +64,7 @@ namespace pwnwrk.infra.Queues
             var messageResponse = await _sqsClient.ReceiveMessageAsync(receiveRequest, ct);
             if (messageResponse.HttpStatusCode != System.Net.HttpStatusCode.OK)
             {
-                PwnContext.Logger.Warning(JsonSerializer.Serialize(messageResponse));
+                PwnContext.Logger.Warning(PwnContext.Serializer.Serialize(messageResponse));
                 PwnContext.Logger.Warning($"HttpStatusCode: {messageResponse.HttpStatusCode}");
                 // TODO: error handling
             }
@@ -79,7 +78,7 @@ namespace pwnwrk.infra.Queues
 
             var response = await _sqsClient.DeleteMessageAsync(this[AwsConstants.QueueName], message.ReceiptHandle, ct);
             if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
-                PwnContext.Logger.Debug("DeleteMessage: " + JsonSerializer.Serialize(response));
+                PwnContext.Logger.Debug("DeleteMessage: " + PwnContext.Serializer.Serialize(response));
         }
 
         public async Task ChangeBatchVisibility(List<Message> messages, CancellationToken ct)
@@ -99,7 +98,7 @@ namespace pwnwrk.infra.Queues
 
             var response = await _sqsClient.ChangeMessageVisibilityBatchAsync(request, ct);
             if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
-                PwnContext.Logger.Debug("ChangeMessageVisibility: " + JsonSerializer.Serialize(response));
+                PwnContext.Logger.Debug("ChangeMessageVisibility: " + PwnContext.Serializer.Serialize(response));
         }
     }
 

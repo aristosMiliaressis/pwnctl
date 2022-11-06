@@ -2,8 +2,9 @@
 using pwnwrk.domain.Assets.BaseClasses;
 using pwnwrk.domain.Assets.DTO;
 using pwnwrk.domain.Common.Entities;
+using pwnwrk.domain.Common.BaseClasses;
+using pwnwrk.domain.Common.Interfaces;
 using pwnwrk.domain.Targets.Entities;
-using System.Text.Json;
 
 namespace pwnwrk.domain.Assets.Entities
 {
@@ -126,7 +127,7 @@ namespace pwnwrk.domain.Assets.Entities
 
             Tags.ForEach(t => dto.Tags.Add(t.Name, t.Value));
 
-            return JsonSerializer.Serialize(dto);
+            return AmbientService<ISerializer>.Instance.Serialize(dto);
         }
     }
 }

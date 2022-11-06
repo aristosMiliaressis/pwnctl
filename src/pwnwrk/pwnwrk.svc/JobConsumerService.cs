@@ -5,7 +5,6 @@ using pwnwrk.infra.Queues;
 using pwnwrk.infra.Logging;
 using pwnwrk.infra.Persistence;
 using System.Diagnostics;
-using System.Text.Json;
 using Microsoft.Extensions.Options;
 using Serilog.Core;
 
@@ -29,6 +28,11 @@ namespace pwnwrk.svc
             PwnContext.Logger.Information($"{nameof(JobConsumerService)} started.");
             _stoppingToken = stoppingToken;
 
+            Console.WriteLine(PwnContext.Config.Db.Host);
+            Console.WriteLine(PwnContext.Config.Db.Password);
+            Console.WriteLine(PwnContext.Config.Db.ConnectionString);
+            Console.WriteLine(PwnContext.Config.Logging.Provider.ToString());
+
             while (!stoppingToken.IsCancellationRequested)
             {
                 try
@@ -50,7 +54,7 @@ namespace pwnwrk.svc
 
                     foreach (var message in messages)
                     {                      
-                        var queuedTask = JsonSerializer.Deserialize<TaskAssigned>(message.Body);
+                        var queuedTask = PwnContext.Serializer.Deserialize<TaskAssigned>(message.Body);
 
                         var task = await _context.TaskRecords.FindAsync(queuedTask.TaskId);
                         if (task == null)

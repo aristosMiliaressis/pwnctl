@@ -8,7 +8,7 @@ using pwnctl.dto.Mediator;
 public sealed class EditScopeDefCommand : ScopeDefinition, IMediatedRequest
 {
     public static string Route => "/targets/{target}/scope/{scope}";
-    public static HttpMethod Method => HttpMethod.Patch;
+    public static HttpMethod Verb => HttpMethod.Put;
 
     public string Target { get; set; }
 }

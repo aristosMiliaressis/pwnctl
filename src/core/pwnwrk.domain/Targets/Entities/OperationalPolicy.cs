@@ -14,8 +14,6 @@ namespace pwnwrk.domain.Targets.Entities
 		public int? MaxAggressiveness { get; init; }
 		public bool AllowActive { get; init; }
 
-        // TODO: bool Allows(TaskDefinition definition)
-
         public OperationalPolicy() {}
     }
 }

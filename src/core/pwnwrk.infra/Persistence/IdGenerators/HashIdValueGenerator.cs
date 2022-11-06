@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
 using System.Text;
 using System.Reflection;
-using System.Text.Json;
 
 namespace pwnwrk.infra.Persistence.IdGenerators
 {
@@ -19,7 +18,7 @@ namespace pwnwrk.infra.Persistence.IdGenerators
                         .GetProperties()
                         .Where(p => p.GetCustomAttribute(typeof(UniquenessAttribute)) != null)
                         .Select(p => p.GetValue(asset));
-            var json = JsonSerializer.Serialize(uniqnessValues);
+            var json = PwnContext.Serializer.Serialize(uniqnessValues);
             var bytes = Encoding.UTF8.GetBytes(json);
             return Convert.ToHexString(_md5.ComputeHash(bytes));
         }

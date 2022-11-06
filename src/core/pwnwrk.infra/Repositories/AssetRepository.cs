@@ -69,55 +69,67 @@ namespace pwnwrk.infra.Repositories
             return asset;
         }
 
-        public List<Host> ListHosts()
+        public async Task<List<Host>> ListHostsAsync()
         {
-            return _context.Hosts.Include(a => a.Tags).AsNoTracking().ToList();
+            return await _context.Hosts
+                                .Include(a => a.Tags)
+                                .AsNoTracking()
+                                .ToListAsync();
         }
 
-        public List<Domain> ListDomains()
+        public async Task<List<Domain>> ListDomainsAsync()
         {
-            return _context.Domains.Include(a => a.Tags).AsNoTracking().ToList();
+            return await _context.Domains
+                                .Include(a => a.Tags)
+                                .AsNoTracking()
+                                .ToListAsync();
         }
 
-        public List<DNSRecord> ListDNSRecords()
+        public async Task<List<DNSRecord>> ListDNSRecordsAsync()
         {
-            return _context.DNSRecords.Include(a => a.Tags).AsNoTracking().ToList();
+            return await _context.DNSRecords
+                                .Include(a => a.Tags)
+                                .AsNoTracking()
+                                .ToListAsync();
         }
 
-        public List<Endpoint> ListEndpoints()
+        public async Task<List<Endpoint>> ListEndpointsAsync()
         {
-            return _context.Endpoints
+            return await _context.Endpoints
                             .Include(a => a.Tags)
                             .Include(e => e.Service)
                                 .ThenInclude(s => s.Host)
                             .Include(e => e.Service)
                                 .ThenInclude(s => s.Domain)
                             .AsNoTracking()
-                            .ToList();
+                            .ToListAsync();
         }
 
-        public List<NetRange> ListNetRanges()
+        public async Task<List<NetRange>> ListNetRangesAsync()
         {
-            return _context.NetRanges.Include(a => a.Tags).AsNoTracking().ToList();
+            return await _context.NetRanges
+                                .Include(a => a.Tags)
+                                .AsNoTracking()
+                                .ToListAsync();
         }
 
-        public List<Service> ListServices()
+        public async Task<List<Service>> ListServicesAsync()
         {
-            return _context.Services
+            return await _context.Services
                             .Include(a => a.Tags)
                             .Include(e => e.Host)
                             .Include(e => e.Domain)
                             .AsNoTracking()
-                            .ToList();
+                            .ToListAsync();
         }
 
-        public List<Email> ListEmails()
+        public async Task<List<Email>> ListEmailsAsync()
         {
-            return _context.Emails
+            return await _context.Emails
                             .Include(a => a.Tags)
                             .Include(e => e.Domain)
                             .AsNoTracking()
-                            .ToList();
+                            .ToListAsync();
         }
     }
 }

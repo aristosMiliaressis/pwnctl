@@ -1455,7 +1455,7 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "s3Bucket": {
-                        "Ref": "AssetParameters8765f7582a82d3a0e5379b5ff127444d492df6465e05aab949f800c16070e858S3Bucket99721BBD"
+                        "Ref": "AssetParameters8a9a8405cbced642d86c7d6824facf1c09db8e1d267a16a024a7ae6619937941S3Bucket5522340A"
                       },
                       "s3Key": {
                         "Fn::Join": [
@@ -1468,7 +1468,7 @@
                                   "Fn::Split": [
                                     "||",
                                     {
-                                      "Ref": "AssetParameters8765f7582a82d3a0e5379b5ff127444d492df6465e05aab949f800c16070e858S3VersionKey072819E1"
+                                      "Ref": "AssetParameters8a9a8405cbced642d86c7d6824facf1c09db8e1d267a16a024a7ae6619937941S3VersionKey94EC2C3D"
                                     }
                                   ]
                                 }
@@ -1481,7 +1481,7 @@
                                   "Fn::Split": [
                                     "||",
                                     {
-                                      "Ref": "AssetParameters8765f7582a82d3a0e5379b5ff127444d492df6465e05aab949f800c16070e858S3VersionKey072819E1"
+                                      "Ref": "AssetParameters8a9a8405cbced642d86c7d6824facf1c09db8e1d267a16a024a7ae6619937941S3VersionKey94EC2C3D"
                                     }
                                   ]
                                 }
@@ -1499,7 +1499,6 @@
                     },
                     "environment": {
                       "variables": {
-                        "PWNCTL_DisableSecurityManager": "true",
                         "PWNCTL_Aws__InVpc": "true",
                         "PWNCTL_JobQueue__QueueName": "pwnwrk.fifo",
                         "PWNCTL_JobQueue__DLQName": "pwnwrk-dlq.fifo",
@@ -1539,9 +1538,9 @@
                       }
                     ],
                     "handler": "pwnctl.api",
-                    "memorySize": 512,
+                    "memorySize": 1024,
                     "runtime": "dotnet6",
-                    "timeout": 180,
+                    "timeout": 60,
                     "vpcConfig": {
                       "subnetIds": [
                         {
@@ -1633,13 +1632,13 @@
             "id": "AssetParameters",
             "path": "PwnctlStack/AssetParameters",
             "children": {
-              "8765f7582a82d3a0e5379b5ff127444d492df6465e05aab949f800c16070e858": {
-                "id": "8765f7582a82d3a0e5379b5ff127444d492df6465e05aab949f800c16070e858",
-                "path": "PwnctlStack/AssetParameters/8765f7582a82d3a0e5379b5ff127444d492df6465e05aab949f800c16070e858",
+              "8a9a8405cbced642d86c7d6824facf1c09db8e1d267a16a024a7ae6619937941": {
+                "id": "8a9a8405cbced642d86c7d6824facf1c09db8e1d267a16a024a7ae6619937941",
+                "path": "PwnctlStack/AssetParameters/8a9a8405cbced642d86c7d6824facf1c09db8e1d267a16a024a7ae6619937941",
                 "children": {
                   "S3Bucket": {
                     "id": "S3Bucket",
-                    "path": "PwnctlStack/AssetParameters/8765f7582a82d3a0e5379b5ff127444d492df6465e05aab949f800c16070e858/S3Bucket",
+                    "path": "PwnctlStack/AssetParameters/8a9a8405cbced642d86c7d6824facf1c09db8e1d267a16a024a7ae6619937941/S3Bucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "1.176.0"
@@ -1647,7 +1646,7 @@
                   },
                   "S3VersionKey": {
                     "id": "S3VersionKey",
-                    "path": "PwnctlStack/AssetParameters/8765f7582a82d3a0e5379b5ff127444d492df6465e05aab949f800c16070e858/S3VersionKey",
+                    "path": "PwnctlStack/AssetParameters/8a9a8405cbced642d86c7d6824facf1c09db8e1d267a16a024a7ae6619937941/S3VersionKey",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "1.176.0"
@@ -1655,7 +1654,7 @@
                   },
                   "ArtifactHash": {
                     "id": "ArtifactHash",
-                    "path": "PwnctlStack/AssetParameters/8765f7582a82d3a0e5379b5ff127444d492df6465e05aab949f800c16070e858/ArtifactHash",
+                    "path": "PwnctlStack/AssetParameters/8a9a8405cbced642d86c7d6824facf1c09db8e1d267a16a024a7ae6619937941/ArtifactHash",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "1.176.0"

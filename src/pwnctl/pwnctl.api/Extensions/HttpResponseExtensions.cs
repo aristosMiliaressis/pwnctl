@@ -1,8 +1,8 @@
 namespace pwnctl.api.Extensions;
 
 using pwnctl.dto.Mediator;
+using pwnwrk.infra;
 using System.Net;
-using System.Text.Json;
 
 public static class HttpResponseExtensions
 {
@@ -12,14 +12,14 @@ public static class HttpResponseExtensions
                             ? (int)HttpStatusCode.OK
                             : result.Errors.MaxBy(err => err.Type).ToStatusCode();
                             
-        var json = JsonSerializer.Serialize(result);
+        var json = PwnContext.Serializer.Serialize(result);
         
         await response.WriteAsync(json);
     }
 
     public static async Task Create(this HttpResponse response, HttpStatusCode status)
     {
-        var json = JsonSerializer.Serialize(MediatedResponse.Create(status));
+        var json = PwnContext.Serializer.Serialize(MediatedResponse.Create(status));
         response.StatusCode = (int)status;
         await response.WriteAsync(json);
     }

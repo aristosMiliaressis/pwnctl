@@ -1,22 +1,25 @@
 using System;
-using System.Collections.Generic;
+using pwnwrk.infra;
 using System.Threading.Tasks;
-using System.Text.Json;
 
 using pwnctl.dto.Targets.Commands;
 
 namespace pwnctl.cli.ModeHandlers
 {
-    public sealed class OnboardingTargetModeHandler : IModeHandler
+    public sealed class OnboardTargetModeHandler : IModeHandler
     {
         public string ModeName => "onboard";
 
         public async Task Handle(string[] args)
         {
-            string json = string.Empty;
-            while (!string.IsNullOrEmpty(json += Console.ReadLine()));
+            string line, json = string.Empty;
 
-            var command = JsonSerializer.Deserialize<CreateTargetCommand>(json);
+            while (!string.IsNullOrEmpty(line = Console.ReadLine()))
+            {
+                json += line + "\n";
+            }
+
+            var command = PwnContext.Serializer.Deserialize<OnboardTargetCommand>(json);
 
             var client = new PwnctlApiClient();
             await client.Send(command);

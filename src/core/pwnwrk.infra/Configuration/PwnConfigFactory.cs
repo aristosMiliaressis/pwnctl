@@ -12,19 +12,16 @@ namespace pwnwrk.infra.Configuration
                                         .SetBasePath(Path.GetFullPath(installPath))
                                         .AddIniFile("config.ini", optional: true, reloadOnChange: true)
                                         .AddEnvironmentVariables(prefix: "PWNCTL_");
-            
-            if (!EnvironmentVariables.DisableSecurityManager)
+         
+            if (!EnvironmentVariables.InVpc)
             {
-                builder = builder.AddSecretsManager(configurator: options => 
+                builder = builder
+                            .AddSystemsManager("/pwnctl")
+                            .AddSecretsManager(configurator: options =>
                 {
                     options.SecretFilter = entry => entry.Name.StartsWith("/aws/secret/pwnctl/");
                     options.KeyGenerator = (entry, s) => s.Replace("/aws/secret/pwnctl/", "").Replace("/", ":");
                 });
-            }
-
-            if (!EnvironmentVariables.InVpc)
-            {
-                builder = builder.AddSystemsManager("/pwnctl");
             }
 
             return builder.Build().Get<AppConfig>();
