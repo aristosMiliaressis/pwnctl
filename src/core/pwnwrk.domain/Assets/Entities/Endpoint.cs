@@ -41,7 +41,7 @@ namespace pwnwrk.domain.Assets.Entities
             }
         }
 
-        private Endpoint() {}
+        public Endpoint() {}
         
         public Endpoint(string scheme, Service service, string path)
         {

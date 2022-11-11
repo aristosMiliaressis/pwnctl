@@ -1,4 +1,3 @@
-using pwnwrk.infra.Configuration;
 using Serilog;
 using Serilog.Core;
 using Serilog.Events;

@@ -19,8 +19,12 @@ public static class HttpResponseExtensions
 
     public static async Task Create(this HttpResponse response, HttpStatusCode status)
     {
-        var json = PwnContext.Serializer.Serialize(MediatedResponse.Create(status));
         response.StatusCode = (int)status;
+
+        var result = MediatedResponse.Create(status);
+
+        var json = PwnContext.Serializer.Serialize(result);
+
         await response.WriteAsync(json);
     }
 }

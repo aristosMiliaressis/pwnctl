@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using pwnwrk.domain.Common.BaseClasses;
 
 namespace pwnwrk.domain.Assets.ValueObjects

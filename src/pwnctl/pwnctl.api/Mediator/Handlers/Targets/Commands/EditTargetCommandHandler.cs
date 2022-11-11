@@ -1,4 +1,3 @@
-using pwnctl.dto;
 using pwnctl.dto.Mediator;
 using pwnctl.dto.Targets.Commands;
 

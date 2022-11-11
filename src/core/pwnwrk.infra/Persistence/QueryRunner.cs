@@ -1,5 +1,4 @@
 using pwnwrk.infra.Logging;
-using System.Data.SqlClient;
 using Npgsql;
 
 namespace pwnwrk.infra.Persistence

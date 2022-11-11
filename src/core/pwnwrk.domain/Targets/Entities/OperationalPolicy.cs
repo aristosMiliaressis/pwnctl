@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using pwnwrk.domain.Common.BaseClasses;
 
 namespace pwnwrk.domain.Targets.Entities

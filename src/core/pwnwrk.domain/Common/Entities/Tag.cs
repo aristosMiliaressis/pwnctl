@@ -1,5 +1,5 @@
-using pwnwrk.domain.Assets.BaseClasses;
 using pwnwrk.domain.Assets.Entities;
+using pwnwrk.domain.Assets.BaseClasses;
 using pwnwrk.domain.Common.BaseClasses;
 
 namespace pwnwrk.domain.Common.Entities

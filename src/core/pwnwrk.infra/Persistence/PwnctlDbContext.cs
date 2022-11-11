@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore.ValueGeneration;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
-using pwnwrk.infra.Configuration;
 using pwnwrk.infra.Persistence.Extensions;
 using pwnwrk.infra.Persistence.IdGenerators;
 using pwnwrk.domain.Common.Entities;

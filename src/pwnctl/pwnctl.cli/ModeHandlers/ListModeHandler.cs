@@ -29,39 +29,20 @@ namespace pwnctl.cli.ModeHandlers
             var @class = args[2].ToLower();
             var client = new PwnctlApiClient();
 
-            if (@class == "hosts")
+            object result = @class switch
             {
-                await client.Send(new ListHostsQuery());
-            }
-            if (@class == "endpoints")
-            {
-                await client.Send(new ListEndpointsQuery());
-            }
-            if (@class == "domains")
-            {
-                await client.Send(new ListDomainsQuery());
-            }
-            if (@class == "services")
-            {
-                await client.Send(new ListServicesQuery());
-            }
-            if (@class == "dnsrecords")
-            {
-                await client.Send(new ListDnsRecordsQuery());
-            }
-            if (@class == "netranges")
-            {
-                await client.Send(new ListNetRangesQuery());
-            }
-            if (@class == "emails")
-            {
-                await client.Send(new ListEmailsQuery());
-            }
-            if (@class == "targets")
-            {
-                var result = await client.Send(new ListTargetsQuery());
-                Console.WriteLine(PwnContext.Serializer.Serialize(result));
-            }
+                "hosts" => await client.Send(new ListHostsQuery()),
+                "endpoints" => await client.Send(new ListEndpointsQuery()),
+                "domains" => await client.Send(new ListDomainsQuery()),
+                "services" => await client.Send(new ListServicesQuery()),
+                "netranges" => await client.Send(new ListNetRangesQuery()),
+                "dnsrecords" => await client.Send(new ListDnsRecordsQuery()),
+                "emails" => await client.Send(new ListEmailsQuery()),
+                "targets" => await client.Send(new ListTargetsQuery()),
+                 _ => throw new NotSupportedException("Not supported class " + @class)
+            };
+            
+            Console.WriteLine(PwnContext.Serializer.Serialize(result));
         }
 
         public void PrintHelpSection()

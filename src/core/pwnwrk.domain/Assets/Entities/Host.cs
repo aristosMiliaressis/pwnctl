@@ -19,7 +19,7 @@ namespace pwnwrk.domain.Assets.Entities
 
         public List<DNSRecord> AARecords { get; private init; } = new List<DNSRecord>();
 
-        private Host() {}
+        public Host() {}
 
         public Host(string ip)
         {

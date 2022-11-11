@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using pwnwrk.infra.Logging;
-using Serilog.Core;
 
 namespace pwnwrk.infra.Persistence.Extensions
 {

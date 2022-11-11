@@ -15,13 +15,13 @@ namespace pwnwrk.domain.Assets.Entities
     public sealed class Domain : Asset
     {
         [UniquenessAttribute]
-        public string Name { get; private init; }
-        public bool IsRegistrationDomain { get; private init; }
+        public string Name { get; init; }
+        public bool IsRegistrationDomain { get; init; }
         public string RegistrationDomainId { get; private init; }
         public Domain RegistrationDomain { get; private init; }
         public List<DNSRecord> DNSRecords { get; private init; }
 
-        private Domain() {}
+        public Domain() {}
 
         public Domain(string domain)
         {

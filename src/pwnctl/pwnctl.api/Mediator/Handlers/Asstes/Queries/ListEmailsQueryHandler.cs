@@ -1,11 +1,8 @@
-using pwnctl.dto.Targets.Queries;
-using pwnctl.dto.Targets.ViewModels;
 using pwnctl.dto.Mediator;
 using pwnwrk.infra.Persistence;
 
 using MediatR;
 using pwnwrk.infra.Repositories;
-using pwnwrk.domain.Assets.BaseClasses;
 using pwnctl.dto.Assets.Queries;
 using pwnctl.dto.Assets.ViewModels;
 

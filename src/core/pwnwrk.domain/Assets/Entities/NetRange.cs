@@ -18,8 +18,8 @@ namespace pwnwrk.domain.Assets.Entities
         public ushort NetPrefixBits { get; private init; }
 
         public string CIDR => $"{FirstAddress}/{NetPrefixBits}";
-    
-        private NetRange() {}
+
+        public NetRange() {}
         
         public NetRange(string firstAddress, ushort netPrefix)
         {

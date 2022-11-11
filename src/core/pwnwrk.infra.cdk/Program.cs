@@ -1,7 +1,6 @@
 using Amazon.CDK;
 
 using pwnwrk.infra.cdk.Stacks;
-using pwnwrk.infra.Aws;
 
 namespace pwnwrk.infra.cdk
 {

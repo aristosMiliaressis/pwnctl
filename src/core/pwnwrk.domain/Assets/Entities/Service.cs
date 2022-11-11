@@ -24,7 +24,7 @@ namespace pwnwrk.domain.Assets.Entities
         public string DomainId { get; private init; }
         public Domain Domain { get; private init; }
 
-        private Service() { }
+        public Service() { }
 
         public Service(Domain domain, ushort port, TransportProtocol l4Proto = TransportProtocol.TCP)
         {

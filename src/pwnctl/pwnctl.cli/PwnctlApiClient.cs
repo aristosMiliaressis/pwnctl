@@ -55,10 +55,12 @@ public sealed class PwnctlApiClient
         HttpResponseMessage response = null;
         try
         {
+            var (profile, credentials) = GetAWSProfileCredentials(PwnContext.Config.Aws.Profile);
+
             response = await _httpClient.SendAsync(httpRequest,
-                                            regionName: "us-east-1", // TODO: get this from profile
+                                            regionName: profile.Region.SystemName,
                                             serviceName: "lambda",
-                                            credentials: GetAWSProfileCredentials(PwnContext.Config.Aws.Profile));
+                                            credentials: credentials);
 
             response.EnsureSuccessStatusCode();
         }
@@ -71,14 +73,16 @@ public sealed class PwnctlApiClient
         return await response.Content.ReadFromJsonAsync<MediatedResponse>();
     }
 
-    private static AWSCredentials GetAWSProfileCredentials(string profile)
+    private static (CredentialProfile, AWSCredentials) GetAWSProfileCredentials(string profileName)
     {
         var credentialProfileStoreChain = new CredentialProfileStoreChain();
 
-        AWSCredentials defaultCredentials;
-        if (credentialProfileStoreChain.TryGetAWSCredentials(profile, out defaultCredentials))
-            return defaultCredentials;
-        
-        throw new AmazonClientException($"Unable to find profile {profile} in CredentialProfileStoreChain.");
+        if (!credentialProfileStoreChain.TryGetProfile(profileName, out CredentialProfile profile))
+            throw new AmazonClientException($"Unable to find profile {profile} in CredentialProfileStoreChain.");
+
+        if (!credentialProfileStoreChain.TryGetAWSCredentials(profileName, out AWSCredentials credentials))
+            throw new AmazonClientException($"Unable to find credentials {profile} in CredentialProfileStoreChain.");
+
+        return (profile, credentials);
     }
 }

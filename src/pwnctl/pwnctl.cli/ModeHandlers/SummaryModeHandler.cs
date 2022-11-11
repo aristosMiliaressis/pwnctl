@@ -1,9 +1,6 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 
-using pwnwrk.infra.Persistence;
 using pwnctl.dto.Db.Queries;
 
 namespace pwnctl.cli.ModeHandlers

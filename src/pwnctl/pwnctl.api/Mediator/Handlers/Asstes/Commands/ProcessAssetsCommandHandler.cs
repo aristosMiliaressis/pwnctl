@@ -1,6 +1,4 @@
-using Microsoft.EntityFrameworkCore;
 using pwnctl.dto.Mediator;
-using pwnwrk.infra.Persistence;
 using pwnwrk.infra.Utilities;
 using pwnctl.dto.Assets.Commands;
 

@@ -25,6 +25,8 @@ uploadDirectory() {
 }
 
 setupDb() {
+     echo "Seeding db"
+
      # SecretsManager is not used by the lambda cause it is in
      # a private subnet and would require a Vpc Endpoint to
      # access SecretsManager api which costs 7.20$ + tax per month
@@ -37,7 +39,7 @@ setupDb() {
                          
 
 
-     python3 -m awscurl --service lambda -X POST ${functionUrl}db/seed
+     python3 -m awscurl --service lambda -X POST ${functionUrl}db/seed > /dev/null
 }
 
 uploadDirectory ./deployment

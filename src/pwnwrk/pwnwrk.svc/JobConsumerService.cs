@@ -6,7 +6,6 @@ using pwnwrk.infra.Logging;
 using pwnwrk.infra.Persistence;
 using System.Diagnostics;
 using Microsoft.Extensions.Options;
-using Serilog.Core;
 
 namespace pwnwrk.svc
 {

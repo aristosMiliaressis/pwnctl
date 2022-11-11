@@ -23,7 +23,7 @@ namespace pwnwrk.domain.Assets.Entities
         public Host Host { get; private init; }
         public Domain Domain { get; private init; }
 
-        private DNSRecord() {}
+        public DNSRecord() {}
         
         public DNSRecord(RecordType type, string key, string value)
         {

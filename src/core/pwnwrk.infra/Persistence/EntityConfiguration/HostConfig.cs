@@ -2,11 +2,6 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using pwnwrk.domain.Assets.Entities;
 using pwnwrk.infra.Persistence.IdGenerators;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace pwnwrk.infra.Persistence.EntityConfiguration
 {

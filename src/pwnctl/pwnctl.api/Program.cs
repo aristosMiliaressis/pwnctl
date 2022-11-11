@@ -7,9 +7,9 @@ using FluentValidation;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//builder.Services.AddControllers();
-
 builder.Services.AddAWSLambdaHosting(LambdaEventSource.HttpApi);
+
+builder.Services.AddControllers();
 
 builder.Services.AddMediatR(typeof(PwnctlDtoAssemblyMarker), typeof(Program));
 
@@ -24,12 +24,11 @@ builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 var app = builder.Build();
 
 app.UseHttpsRedirection();
-//app.UseAuthorization();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-//app.MapControllers();
-
 app.MapMediatedEndpoints(typeof(PwnctlDtoAssemblyMarker));
+
+app.MapControllers();
 
 app.Run();

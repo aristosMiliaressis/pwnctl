@@ -52,8 +52,6 @@ public static class WebApplicationExtensions
                                         .Contains(typeof(RequestDelegate)))
                                 .First();
 
-            var deserializeMethod = typeof(ISerializer).GetMethod("Deserialize", 1, new Type[] { typeof(string) });
-
             RequestDelegate requestDelegate = async context =>
             {
                 string json = null;
@@ -61,6 +59,8 @@ public static class WebApplicationExtensions
                 {
                     json = await sr.ReadToEndAsync();
                 }
+
+                if (string.IsNullOrEmpty(json)) json = "{}";
 
                 var mediator = context.RequestServices.GetService<IMediator>();
 

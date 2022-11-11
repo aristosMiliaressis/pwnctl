@@ -3,9 +3,6 @@ using pwnctl.dto.Db.Queries;
 using pwnctl.dto.Db.ViewModels;
 using pwnwrk.infra.Persistence;
 
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using MediatR;
 

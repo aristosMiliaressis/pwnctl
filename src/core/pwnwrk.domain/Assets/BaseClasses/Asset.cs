@@ -1,6 +1,5 @@
 ﻿using pwnwrk.domain.Assets.Attributes;
 using pwnwrk.domain.Assets.Interfaces;
-using pwnwrk.domain.Notifications.Entities;
 using pwnwrk.domain.Targets.Entities;
 using pwnwrk.domain.Tasks.Entities;
 using pwnwrk.domain.Common.BaseClasses;
@@ -12,11 +11,11 @@ namespace pwnwrk.domain.Assets.BaseClasses
     public abstract class Asset : Entity<string>
     {
         public DateTime FoundAt { get; set; }
-        public string FoundBy { get; set; }
-        public bool InScope { get; set; }
+        public string FoundBy { get; private set; }
+        public bool InScope { get; private set; }
 
-        public List<TaskRecord> Tasks { get; set; } = new List<TaskRecord>();
-        public List<Tag> Tags { get; private set; } = new List<Tag>();
+        public List<TaskRecord> Tasks { get; private set; } = new List<TaskRecord>();
+        public List<Tag> Tags { get; set; } = new List<Tag>();
         
         public string this[string key]
         { 
