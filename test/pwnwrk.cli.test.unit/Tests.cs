@@ -246,10 +246,10 @@ public sealed class Tests
         var outOfScope = new Domain("www.outofscope.com");
 
         Assert.Null(context.FindAsset(inScopeDomain));
-        await repository.AddOrUpdateAsync(inScopeDomain);
+        await repository.SaveAsync(inScopeDomain);
         Assert.NotNull(context.FindAsset(inScopeDomain));
         inScopeDomain = context.Domains.First(d => d.Name == "tesla.com");
-        await repository.AddOrUpdateAsync(outOfScope);
+        await repository.SaveAsync(outOfScope);
         outOfScope = context.Domains.First(d => d.Name == "www.outofscope.com");
 
         var record1 = new DNSRecord(DNSRecord.RecordType.A, "hackerone.com", "1.3.3.7");
@@ -257,20 +257,20 @@ public sealed class Tests
 
         Assert.Null(context.FindAsset(record1));
         Assert.Null(context.FindAsset(record2));
-        await repository.AddOrUpdateAsync(record1);
+        await repository.SaveAsync(record1);
         Assert.NotNull(context.FindAsset(record1));
         Assert.Null(context.FindAsset(record2));
-        await repository.AddOrUpdateAsync(record2);
+        await repository.SaveAsync(record2);
         Assert.NotNull(context.FindAsset(record2));
 
         var netRange = new NetRange("10.1.101.0", 24);
         Assert.Null(context.FindAsset(netRange));
-        await repository.AddOrUpdateAsync(netRange);
+        await repository.SaveAsync(netRange);
         Assert.NotNull(context.FindAsset(netRange));
 
         var service = new Service(inScopeDomain, 443);
         Assert.Null(context.FindAsset(service));
-        await repository.AddOrUpdateAsync(service);
+        await repository.SaveAsync(service);
         Assert.NotNull(context.FindAsset(service));
     }
 

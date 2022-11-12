@@ -564,7 +564,7 @@
     "MessageRetentionPeriod": 1209600,
     "QueueName": "pwnwrk-dlq.fifo",
     "ReceiveMessageWaitTimeSeconds": 20,
-    "VisibilityTimeout": 30
+    "VisibilityTimeout": 3600
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete",
@@ -590,7 +590,7 @@
      },
      "maxReceiveCount": 10
     },
-    "VisibilityTimeout": 30
+    "VisibilityTimeout": 3600
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete",
@@ -1079,7 +1079,7 @@
       "PWNCTL_Aws__InVpc": "true",
       "PWNCTL_JobQueue__QueueName": "pwnwrk.fifo",
       "PWNCTL_JobQueue__DLQName": "pwnwrk-dlq.fifo",
-      "PWNCTL_JobQueue__VisibilityTimeout": "30",
+      "PWNCTL_JobQueue__VisibilityTimeout": "3600",
       "PWNCTL_Logging__Provider": "Console",
       "PWNCTL_Logging__MinLevel": "Debug",
       "PWNCTL_Logging__LogGroup": "/aws/lambda/PwnctlApi",
@@ -1511,7 +1511,7 @@
        },
        {
         "Name": "PWNCTL_JobQueue__VisibilityTimeout",
-        "Value": "30"
+        "Value": "3600"
        },
        {
         "Name": "PWNCTL_Logging__Provider",
