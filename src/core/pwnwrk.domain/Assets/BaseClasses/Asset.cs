@@ -1,17 +1,19 @@
 ﻿using pwnwrk.domain.Assets.Attributes;
+using pwnwrk.domain.Assets.DTO;
 using pwnwrk.domain.Assets.Interfaces;
 using pwnwrk.domain.Targets.Entities;
 using pwnwrk.domain.Tasks.Entities;
 using pwnwrk.domain.Common.BaseClasses;
 using pwnwrk.domain.Common.Entities;
 using System.Reflection;
+using System.Text.Json.Serialization;
 
 namespace pwnwrk.domain.Assets.BaseClasses
 {
     public abstract class Asset : Entity<string>
     {
         public DateTime FoundAt { get; set; }
-        public string FoundBy { get; private set; }
+        public string FoundBy { get; set; }
         public bool InScope { get; private set; }
 
         public List<TaskRecord> Tasks { get; private set; } = new List<TaskRecord>();
@@ -45,6 +47,7 @@ namespace pwnwrk.domain.Assets.BaseClasses
             tags.ForEach(t => this[t.Name] = t.Value);
         }
 
+        [JsonIgnore]
         public string DomainIdentifier => string.Join(",", GetType().GetProperties().Where(p => p.GetCustomAttribute(typeof(UniquenessAttribute)) != null).Select(p => p.GetValue(this).ToString()));
 
         internal abstract bool Matches(ScopeDefinition definition);
@@ -63,11 +66,11 @@ namespace pwnwrk.domain.Assets.BaseClasses
             return definitions
                     .Where(definition => definition.Subject == GetType().Name)
                     .Where(definition => string.IsNullOrEmpty(definition.Filter)
-                                     || AmbientService<IFilterEvaluator>.Instance.Evaluate(definition.Filter, this))
+                                     || IFilterEvaluator.Instance.Evaluate(definition.Filter, this))
                     .ToList();
         }
 
         // converts asset to the AssetDTO class and serializes it to JSON
-        public abstract string ToJson();
+        public abstract AssetDTO ToDTO();
     }
 }

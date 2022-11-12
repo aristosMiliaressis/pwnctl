@@ -2,8 +2,6 @@
 using pwnwrk.domain.Assets.BaseClasses;
 using pwnwrk.domain.Assets.DTO;
 using pwnwrk.domain.Common.Entities;
-using pwnwrk.domain.Common.BaseClasses;
-using pwnwrk.domain.Common.Interfaces;
 using pwnwrk.domain.Targets.Entities;
 using pwnwrk.domain.Targets.Enums;
 using System.Net;
@@ -62,7 +60,7 @@ namespace pwnwrk.domain.Assets.Entities
             return definition.Type == ScopeType.CIDR && NetRange.RoutesTo(FirstAddress, definition.Pattern);
         }
 
-        public override string ToJson()
+        public override AssetDTO ToDTO()
         {
             var dto = new AssetDTO
             {
@@ -82,7 +80,7 @@ namespace pwnwrk.domain.Assets.Entities
 
             Tags.ForEach(t => dto.Tags.Add(t.Name, t.Value));
 
-            return AmbientService<ISerializer>.Instance.Serialize(dto);
+            return dto;
         }
     }
 }

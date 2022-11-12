@@ -17,7 +17,7 @@ namespace pwnwrk.domain.Notifications.Entities
         public bool Check(Asset asset)
         {
             return Subject == asset.GetType().Name
-                && AmbientService<IFilterEvaluator>.Instance.Evaluate(Filter, asset);
+                && IFilterEvaluator.Instance.Evaluate(Filter, asset);
         }
     }
 }

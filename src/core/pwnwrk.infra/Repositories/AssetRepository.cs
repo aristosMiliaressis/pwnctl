@@ -11,13 +11,7 @@ namespace pwnwrk.infra.Repositories
     {
         private PwnctlDbContext _context = new();
 
-        public async Task UpdateAsync(Asset asset)
-        {
-            _context.Update(asset);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task AddOrUpdateAsync(Asset asset)
+        public async Task SaveAsync(Asset asset)
         {
             // replacing asset references from db to prevent ChangeTracker 
             // from trying to add already existing assets and violating 
@@ -35,19 +29,27 @@ namespace pwnwrk.infra.Repositories
                     reference.SetValue(asset, assetRef);
                 });
 
+            // if asset doesn't exist add it
             if (_context.FindAsset(asset) == null)
             {
                 asset.FoundAt = DateTime.UtcNow;
 
                 _context.Add(asset);
+
+                await _context.SaveChangesAsync();
+
+                return;
             }
-            else if (asset.Tags != null)
+
+            // otherwise add any new tags & tasks
+
+            if (asset.Tags != null)
             {
                 var matchingAsset = _context.FindAsset(asset);
-                foreach(var tag in asset.Tags) 
+                foreach (var tag in asset.Tags)
                 {
                     var existingTag = _context.FindAssetTag(matchingAsset, tag);
-                    if (existingTag == null) 
+                    if (existingTag == null)
                     {
                         tag.SetAsset(matchingAsset);
                         _context.Add(tag);
@@ -55,10 +57,24 @@ namespace pwnwrk.infra.Repositories
                 }
             }
 
+            if (asset.Tasks != null)
+            {
+                var matchingAsset = _context.FindAsset(asset);
+                foreach (var task in asset.Tasks)
+                {
+                    var existingTask = _context.FindAssetTaskRecord(matchingAsset, task.Definition);
+                    if (existingTask == null)
+                    {
+                        _context.Entry(task.Definition).State = EntityState.Unchanged;
+                        _context.Add(task);
+                    }
+                }
+            }
+
             await _context.SaveChangesAsync();
         }
 
-        public async Task<Asset> GetAssetWithReferencesAsync(Asset asset)
+        private async Task<Asset> GetAssetWithReferencesAsync(Asset asset)
         {
             asset = _context.FindAsset(asset);
             if (asset == null)

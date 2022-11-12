@@ -2,7 +2,6 @@ using pwnwrk.domain.Assets.Attributes;
 using pwnwrk.domain.Assets.BaseClasses;
 using pwnwrk.domain.Common.Entities;
 using pwnwrk.domain.Common.BaseClasses;
-using pwnwrk.domain.Common.Interfaces;
 using pwnwrk.domain.Targets.Entities;
 using pwnwrk.domain.Assets.DTO;
 
@@ -37,7 +36,7 @@ namespace pwnwrk.domain.Assets.Entities
             return Domain.Matches(definition);
         }
 
-        public override string ToJson()
+        public override AssetDTO ToDTO()
         {
             var dto = new AssetDTO
             {
@@ -57,7 +56,7 @@ namespace pwnwrk.domain.Assets.Entities
 
             Tags.ForEach(t => dto.Tags.Add(t.Name, t.Value));
 
-            return AmbientService<ISerializer>.Instance.Serialize(dto);
+            return dto;
         }
     }
 }

@@ -1,9 +1,9 @@
-namespace pwnwrk.domain.Common.Interfaces;
+namespace pwnwrk.infra.Serialization;
 
 using System.Text.Json;
 
-public interface ISerializer : IAmbientService
-{
+public interface ISerializer
+{   
     T Deserialize<T>(string json);
     T Deserialize<T>(JsonElement element);
     object Deserialize(string json, Type type);

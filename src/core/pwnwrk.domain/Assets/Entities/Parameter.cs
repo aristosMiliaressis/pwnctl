@@ -1,4 +1,5 @@
 using pwnwrk.domain.Assets.Attributes;
+using pwnwrk.domain.Assets.DTO;
 using pwnwrk.domain.Assets.BaseClasses;
 using pwnwrk.domain.Common.Entities;
 using pwnwrk.domain.Targets.Entities;
@@ -49,7 +50,7 @@ namespace pwnwrk.domain.Assets.Entities
             Header,
         }
 
-        public override string ToJson()
+        public override AssetDTO ToDTO()
         {
             throw new NotImplementedException();
         }

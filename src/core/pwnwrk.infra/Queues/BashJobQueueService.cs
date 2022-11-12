@@ -11,7 +11,7 @@ namespace pwnwrk.infra.Queues
         /// pushes a job to the pending queue.
         /// </summary>
         /// <param name="command"></param>
-        public async Task EnqueueAsync(TaskRecord job)
+        public /*async*/ Task EnqueueAsync(TaskRecord job)
         {
             var psi = new ProcessStartInfo();
             psi.FileName = "job-queue.sh";
@@ -24,12 +24,13 @@ namespace pwnwrk.infra.Queues
             using var process = Process.Start(psi);
             using (StreamWriter sr = process.StandardInput)
             {
-                await sr.WriteLineAsync(job.WrappedCommand);
+                //await sr.WriteLineAsync(job.WrappedCommand);
                 sr.Flush();
                 sr.Close();
             }
 
             process.WaitForExit();
+            return Task.CompletedTask;
         }
     }
 }

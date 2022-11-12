@@ -1,4 +1,5 @@
 using pwnwrk.infra.Logging;
+using pwnwrk.infra;
 using Npgsql;
 
 namespace pwnwrk.infra.Persistence

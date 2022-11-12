@@ -1,6 +1,5 @@
 namespace pwnwrk.infra.Serialization;
 
-using pwnwrk.domain.Common.Interfaces;
 using System.Text.Json;
 
 public class AppJsonSerializer : ISerializer

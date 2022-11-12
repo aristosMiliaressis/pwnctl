@@ -19,7 +19,7 @@ namespace pwnwrk.domain.Tasks.Entities
         {
             return Subject == asset.GetType().Name
                 && (string.IsNullOrEmpty(Filter)
-                    || AmbientService<IFilterEvaluator>.Instance.Evaluate(Filter, asset));
+                    || IFilterEvaluator.Instance.Evaluate(Filter, asset));
         }
 
         // Extrapolate list of parameter names from CommandTemplate

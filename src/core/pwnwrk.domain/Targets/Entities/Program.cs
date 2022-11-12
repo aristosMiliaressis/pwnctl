@@ -15,7 +15,7 @@ namespace pwnwrk.domain.Targets.Entities
 
         public Program() {}
 
-        public List<TaskDefinition> AllowedTasks(List<TaskDefinition> definitions, Type assetType)
+        public List<TaskDefinition> GetAllowedTasks(List<TaskDefinition> definitions, Type assetType)
         {
             List<TaskDefinition> allowedTasks = new();
 

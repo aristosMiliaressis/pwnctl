@@ -4,7 +4,6 @@ using System.Reflection;
 using MediatR;
 using pwnctl.dto.Mediator;
 using pwnwrk.infra;
-using pwnwrk.domain.Common.Interfaces;
 
 public static class WebApplicationExtensions
 {

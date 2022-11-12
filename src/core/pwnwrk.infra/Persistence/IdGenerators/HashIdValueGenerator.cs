@@ -1,9 +1,10 @@
-using pwnwrk.domain.Assets.Attributes;
-using pwnwrk.domain.Assets.BaseClasses;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore.ValueGeneration;
 using System.Text;
 using System.Reflection;
+using System.Security.Cryptography;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.ValueGeneration;
+using pwnwrk.domain.Assets.Attributes;
+using pwnwrk.domain.Assets.BaseClasses;
 
 namespace pwnwrk.infra.Persistence.IdGenerators
 {
@@ -17,6 +18,7 @@ namespace pwnwrk.infra.Persistence.IdGenerators
             var uniqnessValues = asset.GetType()
                         .GetProperties()
                         .Where(p => p.GetCustomAttribute(typeof(UniquenessAttribute)) != null)
+                        .OrderBy(p => p.Name)
                         .Select(p => p.GetValue(asset));
             var json = PwnContext.Serializer.Serialize(uniqnessValues);
             var bytes = Encoding.UTF8.GetBytes(json);
@@ -30,6 +32,6 @@ namespace pwnwrk.infra.Persistence.IdGenerators
             _md5.Dispose();
         }
 
-        private System.Security.Cryptography.MD5 _md5 = System.Security.Cryptography.MD5.Create();
+        private MD5 _md5 = MD5.Create();
     }
 }

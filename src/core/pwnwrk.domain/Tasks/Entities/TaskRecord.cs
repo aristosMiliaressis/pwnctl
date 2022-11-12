@@ -1,5 +1,4 @@
 using pwnwrk.domain.Common.BaseClasses;
-using pwnwrk.domain.Common.Interfaces;
 using pwnwrk.domain.Assets.BaseClasses;
 using pwnwrk.domain.Assets.Entities;
 
@@ -14,8 +13,7 @@ namespace pwnwrk.domain.Tasks.Entities
 		public DateTime QueuedAt { get; private init; }
 		public DateTime StartedAt { get; private set; }
 		public DateTime FinishedAt { get; private set; }
-		public string Arguments { get; private init; }
-
+        
         public Host Host { get; private init; }
         public string HostId { get; private init; }
 
@@ -40,23 +38,19 @@ namespace pwnwrk.domain.Tasks.Entities
         public CloudService CloudService { get; private init; }
         public string CloudServiceId { get; private init; }
 
+        public string Discriminator { get; private init; }
+
         private TaskRecord() {}
 
         public TaskRecord(TaskDefinition definition, Asset asset)
         {
-            GetType().GetProperty(asset.GetType().Name + "Id").SetValue(this, asset.Id);
+            Discriminator = asset.GetType().Name;
+
+            GetType().GetProperty(Discriminator).SetValue(this, asset);
+            asset.Tasks.Add(this);
 
             QueuedAt = DateTime.UtcNow;
             Definition = definition;
-            List<object> arguments = new();
-            foreach(var param in definition.Parameters)
-            {
-                if (asset.GetType().GetProperty(param) == null)
-                    throw new Exception($"Property {param} not found on type {asset.GetType().Name}");
-                var arg = asset.GetType().GetProperty(param).GetValue(asset);
-                arguments.Add(arg);
-            }
-            Arguments = AmbientService<ISerializer>.Instance.Serialize(arguments);
         }
 
         public void Started()
@@ -70,14 +64,37 @@ namespace pwnwrk.domain.Tasks.Entities
             FinishedAt = DateTime.UtcNow;
         }
 
+        public List<string> Arguments
+        {
+            get
+            {
+                List<string> arguments = new();
+
+                var asset = GetType().GetProperty(Discriminator).GetValue(this);
+                var assetType = asset.GetType();
+
+                foreach (var param in Definition.Parameters)
+                {
+                    var prop = assetType.GetProperty(param);
+                    if (prop == null)
+                        throw new Exception($"Property {param} not found on type {Discriminator}");
+
+                    var arg = prop.GetValue(asset);
+
+                    arguments.Add(arg.ToString());
+                }
+
+                return arguments;
+            }
+        }
+
         // Interpolate asset arguments into CommandTemplate
         public string Command {
             get
             {
                 string command = Definition.CommandTemplate;
 
-                var args = AmbientService<ISerializer>.Instance.Deserialize<List<string>>(Arguments).Distinct();
-                foreach (var arg in args)
+                foreach (var arg in Arguments.Distinct())
                 {
                     command = command.Replace("{{" + command.Split("{{")[1].Split("}}")[0] + "}}", arg);
                 }
@@ -85,15 +102,5 @@ namespace pwnwrk.domain.Tasks.Entities
                 return command;
             }
         }
-
-        public string WrappedCommand => @$"{Command} | while read assetLine;
-do 
-    if [[ ${{assetLine::1}} == '{{' ]]; 
-    then 
-        echo $assetLine | jq -c '.tags += {{""FoundBy"": ""{Definition.ShortName}""}}';
-    else 
-        echo '{{""asset"":""'$assetLine'"", ""tags"":{{""FoundBy"":""{Definition.ShortName}""}}}}'; 
-    fi; 
-done | pwnwrk".Replace("\r\n", "").Replace("\n", "");
     }
 }

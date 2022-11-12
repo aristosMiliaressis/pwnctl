@@ -15,7 +15,9 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Commands
 
             var json = await queryRunner.RunAsync(command.Query);
 
-            return MediatedResponse<object>.Success(PwnContext.Serializer.Deserialize<object>(json));
+            var result = PwnContext.Serializer.Deserialize<object>(json);
+
+            return MediatedResponse<object>.Success(result);
         }
     }
 }

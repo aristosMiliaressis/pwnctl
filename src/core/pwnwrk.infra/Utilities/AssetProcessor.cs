@@ -26,10 +26,9 @@ namespace pwnwrk.infra.Utilities
 
         public AssetProcessor()
         {
-            _taskDefinitions = _context.TaskDefinitions
-                                            .ToList();
-
             _programs = _context.ListPrograms();
+
+            _taskDefinitions = _context.TaskDefinitions.ToList();
 
             _notificationRules = _context.NotificationRules.AsNoTracking().ToList();
         }
@@ -78,13 +77,11 @@ namespace pwnwrk.infra.Utilities
                     await HandleAssetAsync(refAsset);
                 });
 
-            await _assetRepo.AddOrUpdateAsync(asset);
-
-            // load asset references to be used in scope checking process
-            asset = await _assetRepo.GetAssetWithReferencesAsync(asset);
-
             var program = asset.GetOwningProgram(_programs);
-            if (program == null)
+
+            await _assetRepo.SaveAsync(asset);
+            
+            if (!asset.InScope)
             {
                 return;
             }
@@ -94,25 +91,21 @@ namespace pwnwrk.infra.Utilities
                 _notificationSender.Send(asset, rule);
             }
 
-            var allowedTaskDefinitions = program.AllowedTasks(_taskDefinitions, asset.GetType());
-            var matchingTasks = allowedTaskDefinitions.Where(def => def.Matches(asset));
+            var allowedTaskDefinitions = program.GetAllowedTasks(_taskDefinitions, asset.GetType());
 
-            foreach(var definition in matchingTasks)
+            foreach(var definition in allowedTaskDefinitions.Where(def => def.Matches(asset)))
             {
-                // only queue tasks once per Taskdefinition/Asset pair
+                // only queue tasks once per definition/asset pair
                 var task = _context.FindAssetTaskRecord(asset, definition);
                 if (task != null)
                     continue;
 
                 task = new TaskRecord(definition, asset);
 
-                _context.TaskRecords.Add(task);
-                await _context.SaveChangesAsync();
-                
                 await _jobQueueService.EnqueueAsync(task);
             }
-            
-            await _assetRepo.UpdateAsync(asset);
+
+            await _assetRepo.SaveAsync(asset);
         }
     }
 }

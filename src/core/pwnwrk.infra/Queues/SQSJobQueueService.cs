@@ -3,6 +3,7 @@ using Amazon.SQS;
 using Amazon.SQS.Model;
 using System.Text.Json.Serialization;
 using pwnwrk.domain.Tasks.Entities;
+using pwnwrk.infra;
 
 namespace pwnwrk.infra.Queues
 {
@@ -35,12 +36,12 @@ namespace pwnwrk.infra.Queues
         /// <param name="command"></param>
         public async Task EnqueueAsync(TaskRecord job)
         {
-            PwnContext.Logger.Debug("Enqueue: " + job.WrappedCommand);
+            PwnContext.Logger.Debug("Enqueue: " + job.Command);
 
             var task = new TaskAssigned() 
             { 
                 TaskId = job.Id,
-                Command = job.WrappedCommand
+                Command = job.Command
             };
 
             var request = new SendMessageRequest

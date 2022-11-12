@@ -2,6 +2,7 @@ using pwnwrk.domain.Assets.BaseClasses;
 using pwnwrk.domain.Common.Entities;
 using pwnwrk.domain.Assets.DTO;
 using pwnwrk.infra.Exceptions;
+using pwnwrk.infra;
 using System.Reflection;
 
 namespace pwnwrk.infra.Utilities

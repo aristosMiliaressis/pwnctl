@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using pwnctl.dto.Assets.Queries;
 using pwnwrk.domain.Assets.BaseClasses;
+using pwnwrk.infra;
 
 namespace pwnctl.cli.ModeHandlers
 {
@@ -17,7 +18,7 @@ namespace pwnctl.cli.ModeHandlers
         {
             void WriteToFile(string filename, IEnumerable<Asset> assets)
             {
-                assets.ToList().ForEach(a => File.AppendAllText(filename, a.ToJson() + "\n"));
+                assets.ToList().ForEach(a => File.AppendAllText(filename, PwnContext.Serializer.Serialize(a.ToDTO()) + "\n"));
             }
 
             if (args.Length < 2 || args[1] != "--path")

@@ -20,6 +20,20 @@ namespace pwnwrk.infra.Persistence.Extensions
                             .ToList();
         }
 
+        public static IQueryable<TaskRecord> JoinedTaskRecordQueryable(this PwnctlDbContext context)
+        {
+            return context.TaskRecords
+                            .Include(r => r.Definition)
+                            .Include(r => r.Host)
+                            .Include(r => r.Domain)
+                            .Include(r => r.Endpoint)
+                            .Include(r => r.NetRange)
+                            .Include(r => r.DNSRecord)
+                            .Include(r => r.Service)
+                            .Include(r => r.CloudService)
+                            .Include(r => r.Keyword);
+        }
+
         public static Asset FindAsset(this DbContext context, Asset asset)
         {
             var lambda = ExpressionTreeBuilder.BuildAssetMatchingLambda(asset);

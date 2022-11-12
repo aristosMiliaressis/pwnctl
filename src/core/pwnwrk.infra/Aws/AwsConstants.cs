@@ -14,7 +14,7 @@ public static class AwsConstants
     public const string DatabaseCredSecret = $"{AuroraInstance}Creds";
     public const string QueueName = "pwnwrk.fifo";
     public const string DLQName = "pwnwrk-dlq.fifo";
-    public const int QueueVisibilityTimeoutInSec = 30;
+    public const int QueueVisibilityTimeoutInSec = 3600;
     public const string EfsId = "PwnwrkFs";
     public const string EfsMountPoint = "/mnt/efs";
     public const string PwnctlEfsAccessPointId = "PwnctlEfsAccessPointId";

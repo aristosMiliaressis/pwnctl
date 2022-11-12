@@ -2,7 +2,6 @@
 using pwnwrk.domain.Assets.BaseClasses;
 using pwnwrk.domain.Common.Entities;
 using pwnwrk.domain.Common.BaseClasses;
-using pwnwrk.domain.Common.Interfaces;
 using pwnwrk.domain.Assets.Interfaces;
 using pwnwrk.domain.Assets.DTO;
 using pwnwrk.domain.Targets.Enums;
@@ -101,7 +100,7 @@ namespace pwnwrk.domain.Assets.Entities
 
         public PublicSuffix GetPublicSuffix()
         {
-            return AmbientService<IPublicSuffixRepository>.Instance.List()
+            return IPublicSuffixRepository.Instance.List()
                          .Where(suffix => Name.EndsWith($".{suffix.Suffix}"))
                          .OrderByDescending(s => s.Suffix.Length)
                          .FirstOrDefault();
@@ -113,7 +112,7 @@ namespace pwnwrk.domain.Assets.Entities
                 && new Regex(definition.Pattern).Matches(Name).Count > 0;
         }
 
-        public override string ToJson()
+        public override AssetDTO ToDTO()
         {
             var dto = new AssetDTO
             {
@@ -132,7 +131,7 @@ namespace pwnwrk.domain.Assets.Entities
 
             Tags.ForEach(t => dto.Tags.Add(t.Name, t.Value));
 
-            return AmbientService<ISerializer>.Instance.Serialize(dto);
+            return dto;
         }
 
         private static readonly Regex _domainRegex = new Regex("(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]");

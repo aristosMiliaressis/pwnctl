@@ -1,11 +1,14 @@
+using pwnwrk.domain.Tasks.Entities;
 using pwnwrk.infra;
 using pwnwrk.infra.Aws;
 using pwnwrk.infra.Configuration;
 using pwnwrk.infra.Queues;
 using pwnwrk.infra.Logging;
 using pwnwrk.infra.Persistence;
+using pwnwrk.infra.Persistence.Extensions;
 using System.Diagnostics;
 using Microsoft.Extensions.Options;
+using Microsoft.EntityFrameworkCore;
 
 namespace pwnwrk.svc
 {
@@ -50,7 +53,10 @@ namespace pwnwrk.svc
                     {                      
                         var queuedTask = PwnContext.Serializer.Deserialize<TaskAssigned>(message.Body);
 
-                        var task = await _context.TaskRecords.FindAsync(queuedTask.TaskId);
+                        var task = await _context
+                                            .JoinedTaskRecordQueryable()
+                                            .FirstOrDefaultAsync(r => r.Id == queuedTask.TaskId);
+                                            
                         if (task == null)
                         {
                             // normaly this should never happen, log and continue.
@@ -61,7 +67,7 @@ namespace pwnwrk.svc
 
                         task.Started();
 
-                        Process process = await ExecuteCommandAsync(queuedTask.Command, stoppingToken);
+                        Process process = await ExecuteCommandAsync(queuedTask.Command, task.Definition, stoppingToken);
 
                         task.Finished(process.ExitCode);
                         
@@ -83,7 +89,7 @@ namespace pwnwrk.svc
             }            
         }
 
-        private async Task<Process> ExecuteCommandAsync(string command, CancellationToken stoppingToken)
+        private async Task<Process> ExecuteCommandAsync(string command, TaskDefinition definition, CancellationToken stoppingToken)
         {
             PwnContext.Logger.Debug(command);
             
@@ -101,7 +107,15 @@ namespace pwnwrk.svc
 
                 using (StreamWriter sr = process.StandardInput)
                 {
-                    await sr.WriteLineAsync(command);
+                    await sr.WriteLineAsync(@$"{command} | while read assetLine;
+do 
+    if [[ ${{assetLine::1}} == '{{' ]]; 
+    then 
+        echo $assetLine | jq -c '.tags += {{""FoundBy"": ""{definition.ShortName}""}}';
+    else 
+        echo '{{""asset"":""'$assetLine'"", ""tags"":{{""FoundBy"":""{definition.ShortName}""}}}}'; 
+    fi; 
+done | pwnwrk".Replace("\r\n", "").Replace("\n", ""));
                     sr.Flush();
                     sr.Close();
                 }

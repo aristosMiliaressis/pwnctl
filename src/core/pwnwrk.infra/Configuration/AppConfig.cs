@@ -31,7 +31,7 @@ namespace pwnwrk.infra.Configuration
             public string ConnectionString => $"Host={Host};"
                                            + $"Database={AwsConstants.DatabaseName};"
                                            + $"Username={AwsConstants.AuroraInstanceUsername};"
-                                           + $"Password={Password}";
+                                           + $"Password={Password};Timeout=30";
         }
 
         public sealed class JobQueueSettings

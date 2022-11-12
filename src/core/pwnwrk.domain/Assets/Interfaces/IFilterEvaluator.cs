@@ -1,9 +1,10 @@
 using pwnwrk.domain.Assets.BaseClasses;
-using pwnwrk.domain.Common.Interfaces;
 
 namespace pwnwrk.domain.Assets.Interfaces;
 
-public interface IFilterEvaluator : IAmbientService
+public interface IFilterEvaluator
 {
+    static IFilterEvaluator Instance { get; set; }
+
     bool Evaluate(string filter, Asset asset);
 }

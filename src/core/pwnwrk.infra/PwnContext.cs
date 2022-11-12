@@ -1,11 +1,9 @@
-using pwnwrk.infra.Configuration;
-using pwnwrk.infra.Logging;
-using pwnwrk.infra.Repositories;
-using pwnwrk.infra.Serialization;
-using pwnwrk.domain.Common.BaseClasses;
-using pwnwrk.domain.Common.Interfaces;
 using pwnwrk.domain.Assets.Interfaces;
-using Serilog.Core;
+using pwnwrk.infra.Configuration;
+using pwnwrk.infra.Repositories;
+using pwnwrk.infra.Logging;
+using pwnwrk.infra.Serialization;
+using Serilog;
 
 namespace pwnwrk.infra
 {
@@ -13,17 +11,12 @@ namespace pwnwrk.infra
     {
         static PwnContext()
         {
-            Config = PwnConfigFactory.Create();
-            Logger = PwnLoggerFactory.Create();
-            Serializer = new AppJsonSerializer();
-            
-            AmbientService<IPublicSuffixRepository>.SetFactory(() => new PublicSuffixRepository());
-            AmbientService<IFilterEvaluator>.SetFactory(() => new CSharpFilterEvaluator());
-            AmbientService<ISerializer>.SetFactory(() => new AppJsonSerializer());
+            IFilterEvaluator.Instance = new CSharpFilterEvaluator();
+            IPublicSuffixRepository.Instance = new PublicSuffixRepository();
         }
 
-        public static AppConfig Config { get; private set; }
-        public static Logger Logger { get; private set; }
-        public static ISerializer Serializer { get; private set; }
+        public static AppConfig Config { get; private set; } = PwnConfigFactory.Create();
+        public static ILogger Logger { get; private set; } = PwnLoggerFactory.Create();
+        public static ISerializer Serializer { get; private set; } = new AppJsonSerializer();
     }
 }

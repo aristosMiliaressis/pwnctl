@@ -9,6 +9,7 @@ using pwnwrk.domain.Notifications.Entities;
 using pwnwrk.domain.Targets.Entities;
 using pwnwrk.domain.Tasks.Entities;
 using pwnwrk.domain.Assets.Entities;
+using pwnwrk.domain.Assets.BaseClasses;
 
 namespace pwnwrk.infra.Persistence
 {
@@ -50,12 +51,14 @@ namespace pwnwrk.infra.Persistence
         public override int SaveChanges()
         {
             this.ConvertDateTimesToUtc();
+
             return base.SaveChanges();
         }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             this.ConvertDateTimesToUtc();
+
             return base.SaveChangesAsync();
         }
 

@@ -4,7 +4,6 @@ namespace pwnwrk.infra.Repositories
 {
     public interface IAssetRepository
     {
-        Task UpdateAsync(Asset asset);
-        Task AddOrUpdateAsync(Asset asset);
+        Task SaveAsync(Asset asset);
     }
 }

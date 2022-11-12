@@ -182,8 +182,8 @@ public sealed class Tests
 
         // blacklist test
         await processor.ProcessAsync("172.16.17.0/24");
-        Assert.False(context.TaskRecords.Include(t => t.Definition).Any(t => t.Definition.ShortName == "nmap_basic"));
-        Assert.False(context.TaskRecords.Include(t => t.Definition).Any(t => t.Definition.ShortName == "ffuf_common"));
+        Assert.False(context.JoinedTaskRecordQueryable().Any(t => t.Definition.ShortName == "nmap_basic"));
+        Assert.False(context.JoinedTaskRecordQueryable().Any(t => t.Definition.ShortName == "ffuf_common"));
 
         var exampleUrl = new
         {
@@ -197,27 +197,26 @@ public sealed class Tests
         await processor.ProcessAsync(PwnContext.Serializer.Serialize(exampleUrl));
 
         // aggresivness test
-        Assert.True(context.TaskRecords.Include(t => t.Definition).Any(t => t.Definition.ShortName == "hakrawler"));
-        Assert.False(context.TaskRecords.Include(t => t.Definition).Any(t => t.Definition.ShortName == "sqlmap"));
+        Assert.True(context.JoinedTaskRecordQueryable().Any(t => t.Definition.ShortName == "hakrawler"));
+        Assert.False(context.JoinedTaskRecordQueryable().Any(t => t.Definition.ShortName == "sqlmap"));
 
         // Task.Command interpolation test
-        var hakrawlerTask = context.TaskRecords.Include(t => t.Definition).First(t => t.Definition.ShortName == "hakrawler");
+        var hakrawlerTask = context.JoinedTaskRecordQueryable().First(t => t.Definition.ShortName == "hakrawler");
         Assert.Equal("hakrawler -plain -h 'User-Agent: Mozilla/5.0' https://172.16.17.15:443/api/token/", hakrawlerTask.Command);
 
         // TaskDefinition.Filter pass test
         await processor.ProcessAsync("https://172.16.17.15/");
-        Assert.True(context.TaskRecords.Include(t => t.Definition).Any(t => t.Definition.ShortName == "ffuf_common"));
+        Assert.True(context.JoinedTaskRecordQueryable().Any(t => t.Definition.ShortName == "ffuf_common"));
 
         // multiple interpolation test
         await processor.ProcessAsync("sub.tesla.com");
-        var resolutionTask = context.TaskRecords
-                                    .Include(t => t.Definition)
-                                    .First(t => t.Arguments.Contains("sub.tesla.com") 
+        var resolutionTask = context.JoinedTaskRecordQueryable()
+                                    .First(t => t.Domain.Name == "sub.tesla.com" 
                                              && t.Definition.ShortName == "domain_resolution");
         Assert.Equal("dig +short sub.tesla.com | awk '{print \"sub.tesla.com IN A \" $1}'| pwnctl process", resolutionTask.Command);
 
         // Keyword test
-        var cloudEnumTask = context.TaskRecords.Include(t => t.Definition).First(t => t.Definition.ShortName == "cloud_enum");
+        var cloudEnumTask = context.JoinedTaskRecordQueryable().First(t => t.Definition.ShortName == "cloud_enum");
         Assert.Equal("cloud-enum.sh tesla", cloudEnumTask.Command);
 
         // TODO: AllowActive = false test, csv black&whitelist test
@@ -291,7 +290,7 @@ public sealed class Tests
 
         var keyword = context.Keywords.First(d => d.Word == "tesla");
         Assert.True(keyword.InScope);
-        var cloudEnumTask = context.TaskRecords.Include(t => t.Definition).First(t => t.Definition.ShortName == "cloud_enum");
+        var cloudEnumTask = context.JoinedTaskRecordQueryable().First(t => t.Definition.ShortName == "cloud_enum");
         Assert.Equal("cloud-enum.sh tesla", cloudEnumTask.Command);
 
         res = await processor.TryProccessAsync("tesla.com IN A 31.3.3.7");
@@ -371,7 +370,7 @@ public sealed class Tests
         // process same asset twice and make sure tasks are only assigned once
         await processor.ProcessAsync(PwnContext.Serializer.Serialize(teslaUrl));
         endpoint = (Endpoint) context.Endpoints.Include(e => e.Tags).Where(ep => ep.Url == "https://iis.tesla.com:443/").First();
-        var tasks = context.TaskRecords.Include(t => t.Definition).Where(t => t.EndpointId == endpoint.Id).ToList();
+        var tasks = context.JoinedTaskRecordQueryable().Where(t => t.EndpointId == endpoint.Id).ToList();
         Assert.True(!tasks.GroupBy(t => t.DefinitionId).Any(g => g.Count() > 1));
         srvTag = endpoint.Tags.First(t => t.Name == "protocol");
         Assert.Equal("IIS", srvTag.Value);
@@ -390,7 +389,7 @@ public sealed class Tests
         // test Tag filter
         await processor.ProcessAsync(PwnContext.Serializer.Serialize(apacheTeslaUrl));
         endpoint = context.Endpoints.Include(e => e.Tags).Where(ep => ep.Url == "https://apache.tesla.com:443/").First();
-        tasks = context.TaskRecords.Include(t => t.Definition).Where(t => t.EndpointId == endpoint.Id).ToList();
+        tasks = context.JoinedTaskRecordQueryable().Where(t => t.EndpointId == endpoint.Id).ToList();
         Assert.DoesNotContain(tasks, t => t.Definition.ShortName == "shortname_scanner");
 
         var sshService = new
