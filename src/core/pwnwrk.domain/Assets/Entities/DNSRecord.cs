@@ -10,11 +10,11 @@ namespace pwnwrk.domain.Assets.Entities
     public sealed class DNSRecord : Asset
     {
         [UniquenessAttribute]
-        public RecordType Type { get; private init; }
+        public RecordType Type { get; init; }
 
         [UniquenessAttribute]
-        public string Key {get; private init;}
-        public string Value { get; private init; }
+        public string Key {get; init;}
+        public string Value { get; init; }
 
         public string HostId { get; private init; }
         public string DomainId { get; private init; }

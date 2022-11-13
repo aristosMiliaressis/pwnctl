@@ -9,19 +9,19 @@ namespace pwnwrk.domain.Assets.Entities
 {
     public sealed class Service : Asset
     {
-        public ushort Port { get; private init; }
+        public ushort Port { get; init; }
 
         [UniquenessAttribute]
-        public string Origin { get; private init; }
+        public string Origin { get; init; }
 
-        public TransportProtocol TransportProtocol { get; private init; }
-        public string ApplicationProtocol { get; private init; }
+        public TransportProtocol TransportProtocol { get; init; }
+        public string ApplicationProtocol { get; init; }
 
         public string HostId { get; private init; }
-        public Host Host { get; private init; }
+        public Host Host { get; init; }
 
         public string DomainId { get; private init; }
-        public Domain Domain { get; private init; }
+        public Domain Domain { get; init; }
 
         public Service() { }
 

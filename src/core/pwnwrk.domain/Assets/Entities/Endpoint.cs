@@ -10,13 +10,13 @@ namespace pwnwrk.domain.Assets.Entities
     public sealed class Endpoint : Asset
     {
         [UniquenessAttribute]
-        public string Url { get; private init; }
+        public string Url { get; init; }
 
         public string ServiceId { get; private init; }
-        public Service Service { get; private init; }
+        public Service Service { get; init; }
 
-        public string Scheme { get; private init; }
-        public string Path { get; private init; }
+        public string Scheme { get; init; }
+        public string Path { get; init; }
         public string Filename 
         {
             get

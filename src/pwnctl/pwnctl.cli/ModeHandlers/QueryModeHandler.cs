@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
+using pwnwrk.infra;
 using pwnwrk.infra.Persistence;
 using pwnctl.dto.Db.Commands;
 
@@ -26,7 +27,9 @@ namespace pwnctl.cli.ModeHandlers
             };
 
             var client = new PwnctlApiClient();
-            await client.Send(command);        
+            var result = await client.Send(command);
+
+            Console.WriteLine(PwnContext.Serializer.Serialize(result));
         }
 
         public void PrintHelpSection()

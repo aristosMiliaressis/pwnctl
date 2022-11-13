@@ -28,6 +28,8 @@ public sealed class PwnctlApiClient
     public async Task<TResult> Send<TResult>(IMediatedRequest<TResult> request)
     {
         var apiResponse = await _send(request);
+        if (apiResponse.Result == null)
+            return default;
 
         return PwnContext.Serializer.Deserialize<TResult>((JsonElement)apiResponse.Result);
     }
@@ -51,17 +53,17 @@ public sealed class PwnctlApiClient
             RequestUri = new Uri(route, UriKind.Relative),
             Content = new StringContent(json, Encoding.UTF8, "application/json")
         };
+        
+        var (profile, credentials) = GetAWSProfileCredentials(PwnContext.Config.Aws.Profile);
 
         HttpResponseMessage response = null;
         try
         {
-            var (profile, credentials) = GetAWSProfileCredentials(PwnContext.Config.Aws.Profile);
-
             response = await _httpClient.SendAsync(httpRequest,
                                             regionName: profile.Region.SystemName,
                                             serviceName: "lambda",
                                             credentials: credentials);
-
+            
             response.EnsureSuccessStatusCode();
         }
         catch (HttpRequestException)

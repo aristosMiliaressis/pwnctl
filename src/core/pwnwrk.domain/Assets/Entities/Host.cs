@@ -13,8 +13,8 @@ namespace pwnwrk.domain.Assets.Entities
     public sealed class Host : Asset
     {
         [UniquenessAttribute]
-        public string IP { get; private init; }
-        public AddressFamily Version { get; private init; }
+        public string IP { get; init; }
+        public AddressFamily Version { get; init; }
 
         public List<DNSRecord> AARecords { get; private init; } = new List<DNSRecord>();
 

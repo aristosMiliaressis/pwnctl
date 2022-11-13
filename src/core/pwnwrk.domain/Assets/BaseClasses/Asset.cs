@@ -14,7 +14,7 @@ namespace pwnwrk.domain.Assets.BaseClasses
     {
         public DateTime FoundAt { get; set; }
         public string FoundBy { get; set; }
-        public bool InScope { get; private set; }
+        public bool InScope { get; set; }
 
         public List<TaskRecord> Tasks { get; private set; } = new List<TaskRecord>();
         public List<Tag> Tags { get; set; } = new List<Tag>();

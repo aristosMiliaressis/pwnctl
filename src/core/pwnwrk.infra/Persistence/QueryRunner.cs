@@ -15,8 +15,8 @@ namespace pwnwrk.infra.Persistence
                 {
                     await connection.OpenAsync();
                     NpgsqlDataReader reader = await command.ExecuteReaderAsync();
-                    var row = Serialize(reader);
-                    string json = string.Join("\n", row.Select(r => PwnContext.Serializer.Serialize(r)));
+                    var rows = Serialize(reader);
+                    var json = PwnContext.Serializer.Serialize(rows);
                     await reader.CloseAsync();
                     return json;
                 }

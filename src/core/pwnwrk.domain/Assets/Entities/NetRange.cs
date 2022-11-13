@@ -11,9 +11,9 @@ namespace pwnwrk.domain.Assets.Entities
     public sealed class NetRange : Asset
     {
         [UniquenessAttribute]
-        public string FirstAddress { get; private init; }
+        public string FirstAddress { get; init; }
         [UniquenessAttribute]
-        public ushort NetPrefixBits { get; private init; }
+        public ushort NetPrefixBits { get; init; }
 
         public string CIDR => $"{FirstAddress}/{NetPrefixBits}";
 

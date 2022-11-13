@@ -8,7 +8,7 @@ namespace pwnwrk.domain.Assets.Entities
     public sealed class Keyword : Asset
     {
         [UniquenessAttribute]
-        public string Word { get; private init; }
+        public string Word { get; init; }
 
         public Domain Domain { get; private init; }
         public string DomainId { get; private init; }

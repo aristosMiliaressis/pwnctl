@@ -1,6 +1,7 @@
 namespace pwnwrk.infra.Serialization;
 
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 public static class JsonSerializerOptionsFactory
 {
@@ -8,7 +9,8 @@ public static class JsonSerializerOptionsFactory
     {
         return new JsonSerializerOptions
         {
-            PropertyNameCaseInsensitive = true
+            PropertyNameCaseInsensitive = true,
+            ReferenceHandler = ReferenceHandler.IgnoreCycles
         };
     }
 }

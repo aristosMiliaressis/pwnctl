@@ -11,12 +11,12 @@ namespace pwnwrk.domain.Assets.Entities
         public Endpoint Endpoint { get; private init; }
         public string EndpointId { get; private init; }
         [UniquenessAttribute]
-        public string Url { get; private init; }
+        public string Url { get; init; }
 
         [UniquenessAttribute]
-        public string Name { get; private init; }
+        public string Name { get; init; }
         [UniquenessAttribute]
-        public ParamType Type { get; private init; }
+        public ParamType Type { get; init; }
 
         public string UrlEncodedCsValues { get; private init; }
 

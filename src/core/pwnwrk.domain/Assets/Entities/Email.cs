@@ -11,7 +11,7 @@ namespace pwnwrk.domain.Assets.Entities
     public sealed class Email : Asset
     {
         [UniquenessAttribute]
-        public string Address { get; private init; }
+        public string Address { get; init; }
         public string Hostname  => Address.Split("@").Last();
         public Domain Domain { get; private init; }
         public string DomainId { get; private init; }

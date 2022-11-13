@@ -7,17 +7,17 @@ using MediatR;
 
 namespace pwnctl.api.Mediator.Handlers.Targets.Commands
 {
-    public sealed class RunSqlQueryCommandHandler : IRequestHandler<RunSqlQueryCommand, MediatedResponse<object>>
+    public sealed class RunSqlQueryCommandHandler : IRequestHandler<RunSqlQueryCommand, MediatedResponse<List<object>>>
     {
-        public async Task<MediatedResponse<object>> Handle(RunSqlQueryCommand command, CancellationToken cancellationToken)
+        public async Task<MediatedResponse<List<object>>> Handle(RunSqlQueryCommand command, CancellationToken cancellationToken)
         {
             var queryRunner = new QueryRunner();
 
             var json = await queryRunner.RunAsync(command.Query);
 
-            var result = PwnContext.Serializer.Deserialize<object>(json);
+            var result = PwnContext.Serializer.Deserialize<List<object>>(json);
 
-            return MediatedResponse<object>.Success(result);
+            return MediatedResponse<List<object>>.Success(result);
         }
     }
 }
