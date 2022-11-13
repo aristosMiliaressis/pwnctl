@@ -3,7 +3,7 @@
 ip=$1
 temp=`mktemp`;
 
-rustscan -r 1-65535 -a $ip -- -sSV --script-args http.useragent="Mozilla/9.1 (compatible; Windows       NT 5.0 build 1420;)" -oG $temp >/dev/null;
+rustscan -r 1-65535 -a $ip -- -sSV --script-args http.useragent="Mozilla/9.1" -oG $temp >/dev/null;
 # naabu -silent -p 0-65535 -host $ip -nmap "nmap -sSVC --script-args http.useragent='$(uagen)' -oG $temp" >/dev/null
 
 cat $temp \

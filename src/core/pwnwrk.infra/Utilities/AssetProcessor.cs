@@ -91,9 +91,11 @@ namespace pwnwrk.infra.Utilities
                 _notificationSender.Send(asset, rule);
             }
 
-            var allowedTaskDefinitions = program.GetAllowedTasks(_taskDefinitions, asset.GetType());
+            var matchingTasks = program
+                                    .GetAllowedTasks(_taskDefinitions)
+                                    .Where(def => def.Matches(asset));
 
-            foreach(var definition in allowedTaskDefinitions.Where(def => def.Matches(asset)))
+            foreach(var definition in matchingTasks)
             {
                 // only queue tasks once per definition/asset pair
                 var task = _context.FindAssetTaskRecord(asset, definition);
@@ -102,10 +104,10 @@ namespace pwnwrk.infra.Utilities
 
                 task = new TaskRecord(definition, asset);
 
+                await _assetRepo.SaveAsync(asset);
+
                 await _jobQueueService.EnqueueAsync(task);
             }
-
-            await _assetRepo.SaveAsync(asset);
         }
     }
 }

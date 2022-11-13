@@ -15,14 +15,14 @@ namespace pwnwrk.domain.Targets.Entities
 
         public Program() {}
 
-        public List<TaskDefinition> GetAllowedTasks(List<TaskDefinition> definitions, Type assetType)
+        public List<TaskDefinition> GetAllowedTasks(List<TaskDefinition> definitions)
         {
             List<TaskDefinition> allowedTasks = new();
 
             var whitelist = Policy.Whitelist?.Split(",") ?? new string[0];
             var blacklist = Policy.Blacklist?.Split(",") ?? new string[0];
 
-            foreach (var definition in definitions.Where(d => d.Subject == assetType.Name))
+            foreach (var definition in definitions)
             {
                 if (blacklist.Contains(definition.ShortName))
                 {

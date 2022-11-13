@@ -2,7 +2,7 @@
 
 temp=`mktemp`
 
-curl https://public-dns.info/nameservers.txt | shuf -n 200 >$temp
+curl https://public-dns.info/nameservers.txt | shuf -n 2000 >$temp
 
 dnsvalidator -tL $temp -threads 10 -o /opt/tools/dnsvalidator/resolvers.txt
 
