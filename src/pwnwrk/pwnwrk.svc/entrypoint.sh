@@ -13,12 +13,16 @@ then
     get-psl.sh /mnt/efs
 fi
 
-# if the resolver list is older than 6 hours replace it with a new one
-if [ ! -f "/mnt/efs/resolvers_top25.txt" ] || [ $(((`date +%s` - `stat -L --format %Y /mnt/efs/resolvers_top25.txt`))) -gt $((60*60*6)) ]
+# if no resolvers list generate new one
+if [ ! -f "/mnt/efs/resolvers_top25.txt" ] 
 then
     echo "Getting fresh resolvers"
     get-valid-resolvers.sh 2>&1 >/dev/null
     cp /opt/wordlists/dns/resolvers_top25.txt /mnt/efs/resolvers_top25.txt
+# else if list is older than 6 hours take it but move it out of efs so next task will have to regenerate it
+elif [ $(((`date +%s` - `stat -L --format %Y /mnt/efs/resolvers_top25.txt`))) -gt $((60*60*6)) ]
+then
+    mv /mnt/efs/resolvers_top25.txt /opt/wordlists/dns/resolvers_top25.txt
 else
     cp /mnt/efs/resolvers_top25.txt /opt/wordlists/dns/resolvers_top25.txt
 fi

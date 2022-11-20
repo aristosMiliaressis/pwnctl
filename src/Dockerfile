@@ -61,6 +61,13 @@ RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o awscliv2.
     && ./aws/install --update \
     && rm -rf ./aws
 
+# Setting up xvfb & chromium for headless browsing
+RUN apt-get update \
+    && apt-get install -y chromium-browser \
+        libgbm1 \
+        libxkbcommon0 \
+        xvfb
+
 # Installing recon tools
 RUN mkdir /opt/wordlists \
  && mkdir /opt/scripts \
@@ -74,8 +81,6 @@ RUN go install github.com/tomnomnom/waybackurls@latest
 RUN go install github.com/projectdiscovery/tlsx/cmd/tlsx@latest
 RUN go install github.com/projectdiscovery/dnsx/cmd/dnsx@latest
 RUN go install github.com/projectdiscovery/httpx/cmd/httpx@latest
-RUN go install github.com/projectdiscovery/shuffledns/cmd/shuffledns@latest
-RUN go install github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
 RUN go install github.com/projectdiscovery/notify/cmd/notify@latest
 RUN go install github.com/projectdiscovery/katana/cmd/katana@latest
 RUN go install github.com/lc/gau/v2/cmd/gau@latest
@@ -85,14 +90,13 @@ RUN go install github.com/aristosMiliaressis/urgo@latest
 RUN go install github.com/ffuf/ffuf@latest
 
 RUN pip install useragent-picker-cli && uagen
-RUN pip3 install arjun
 RUN mkdir -p /etc/amass/scripts \
     && git clone https://github.com/PatrikFehrenbach/amass-tools.git /etc/amass/scripts
 RUN wget https://github.com/RustScan/RustScan/releases/download/2.0.1/rustscan_2.0.1_amd64.deb \
     && dpkg -i rustscan_2.0.1_amd64.deb && rm rustscan_2.0.1_amd64.deb
 RUN curl -o /opt/wordlists/common.txt https://raw.githubusercontent.com/danielmiessler/SecLists/master/Discovery/Web-Content/common.txt
 RUN curl -o /opt/wordlists/commonspeak2.txt https://raw.githubusercontent.com/assetnote/commonspeak2-wordlists/master/subdomains/subdomains.txt
-
+RUN curl -o /opt/wordlists/best-dns-wordlist.txt https://wordlists-cdn.assetnote.io/data/manual/best-dns-wordlist.txt
 WORKDIR /opt/tools
 
 RUN git clone https://github.com/zmap/zdns.git && cd zdns && go build && cp zdns /usr/bin
@@ -107,10 +111,8 @@ RUN git clone https://github.com/s0md3v/Corsy.git \
     && pip3 install -r Corsy/requirements.txt \
     && chmod +x Corsy/corsy.py \
     && ln -s /opt/tools/Corsy/corsy.py /usr/local/bin
-RUN git clone https://github.com/ProjectAnte/dnsgen \
-    && cd dnsgen \
-    && pip3 install -r requirements.txt \
-    && python3 setup.py install
+RUN git clone https://github.com/cramppet/regulator && cd regulator && pip3 install -r requirements.txt
+RUN pip3 install py-altdns==1.0.2
 RUN git clone https://github.com/dcsync/recontools.git
 RUN curl -L https://github.com/OWASP/Amass/releases/download/v3.19.3/amass_linux_amd64.zip -o /tmp/amass_linux_amd64.zip \
     && unzip -o /tmp/amass_linux_amd64.zip -d /opt/tools/amass/ \
@@ -131,9 +133,21 @@ RUN curl https://github.com/urbanadventurer/WhatWeb/archive/refs/tags/v0.5.5.zip
     && make install
 RUN git clone https://github.com/EnableSecurity/wafw00f.git \
     && cd wafw00f && python3 setup.py install
-
 RUN go install github.com/rverton/webanalyze/cmd/webanalyze@latest \
     && webanalyze -update
+
+RUN curl https://api.github.com/repos/michenriksen/aquatone/releases/latest 2>/dev/null \
+    | grep browser_download_url \
+    | awk '{print $2}' \
+    | tr -d '"' \
+    | grep 'aquatone_linux_amd64' \
+    | wget -qi - \
+    && unzip aquatone_linux_amd64* \
+    && mv aquatone /usr/local/bin
+RUN git clone https://github.com/xnl-h4ck3r/waymore.git \
+    && cd waymore \
+    && python3 setup.py install
+RUN go install github.com/detectify/page-fetch@latest
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 

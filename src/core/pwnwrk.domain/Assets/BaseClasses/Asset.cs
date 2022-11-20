@@ -25,7 +25,7 @@ namespace pwnwrk.domain.Assets.BaseClasses
             set {
                 // if a property with the tag name exists on the asset class, set that property instead of adding a tag.
                 var property = this.GetType().GetProperties().FirstOrDefault(p => p.Name.ToLower() == key.ToLower());
-                if (property != null)
+                if (property != null && property.GetValue(this) == default)
                 {
                     property.SetValue(this, value);
                     return;

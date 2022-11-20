@@ -32,9 +32,6 @@ the target scope is onboarded trough the cli or api, than it is recursivly scann
 2. iterates over definitions and calls `bool Matches(ScopeDefinition def)` on asset objects.
 3. if any returns true asset is in scope.
 
-**To Do**
-- [ ] out of scope flag on ScopeDefinition
-
 ### Scope Configuration
 
 scope definitions can be seeded trough `target-*.yml` files or trough the api/cli.
@@ -73,8 +70,14 @@ tags are a way to store arbitary metadata relating to an asset, they can be used
 **`task-definitions.yml`**
 ```YAML
 - ShortName: ping_sweep
-  CommandTemplate: "rand=`mktemp`;nmap -sn {{CIDR}} -oG $rand;cat $rand|grep 'Status: Up'|cut -f 2 -d ' '"
+  CommandTemplate: ping-sweep.sh {{CIDR}}
   IsActive: true
+  Aggressiveness: 1
+  Subject: NetRange
+
+- ShortName: reverse_range_lookup
+  CommandTemplate: reverse-range-lookup.sh {{CIDR}}
+  IsActive: false
   Aggressiveness: 1
   Subject: NetRange
 
@@ -84,6 +87,18 @@ tags are a way to store arbitary metadata relating to an asset, they can be used
   Aggressiveness: 1
   Subject: Domain
 
+- ShortName: httpx
+  CommandTemplate: echo {{Name}} | httpx -silent
+  IsActive: true
+  Aggressiveness: 2
+  Subject: Domain
+
+- ShortName: zone_trasfer
+  CommandTemplate: zone-transfer.sh {{Name}}
+  IsActive: true
+  Aggressiveness: 2
+  Subject: Domain
+
 - ShortName: sub_enum
   CommandTemplate: sub-enum.sh {{Name}}
   IsActive: false
@@ -91,25 +106,132 @@ tags are a way to store arbitary metadata relating to an asset, they can be used
   Filter: Domain.IsRegistrationDomain == true
   Subject: Domain
 
+- ShortName: tld_brute
+  CommandTemplate: tld-brute.sh {{Name}}
+  IsActive: false
+  Aggressiveness: 2
+  Subject: Domain
+  Filter: Domain.IsRegistrationDomain == true
+
+- ShortName: asn_lookup
+  CommandTemplate: asn-lookup.sh {{IP}}
+  IsActive: false
+  Aggressiveness: 1
+  Subject: Host
+
+- ShortName: reverse_lookup
+  CommandTemplate: dig +short -x {{IP}}
+  IsActive: false
+  Aggressiveness: 1
+  Subject: Host
+
 - ShortName: tcp_scan
   CommandTemplate: tcp-scan.sh {{IP}}
   IsActive: true
   Aggressiveness: 15
   Subject: Host
 
+- ShortName: udp_scan
+  CommandTemplate: udp-scan.sh {{IP}}
+  IsActive: true
+  Aggressiveness: 15
+  Subject: Host
+
+- ShortName: get_alt_names
+  CommandTemplate: get-alt-names.sh {{IP}}
+  IsActive: true
+  Aggressiveness: 3
+  Subject: Host
+
+- ShortName: get_all_urls
+  CommandTemplate: get-all-urls.sh {{Url}}
+  IsActive: true
+  Aggressiveness: 10
+  Subject: Endpoint
+  Filter: Endpoint.Path == "/"
+
 - ShortName: dir_brute_common
-  CommandTemplate: dir-brute.sh {{Url}} /opt/wordlists/Discovery/Web-Content/common.txt
+  CommandTemplate: dir-brute.sh {{Url}} /opt/wordlists/common.txt
   IsActive: true
   Aggressiveness: 8
   Filter: Endpoint.Path == "/"
   Subject: Endpoint
 
-- ShortName: hakrawler
-  CommandTemplate: "echo '{{Url}}' | hakrawler -insecure -h 'User-Agent: Mozilla/5.0'"
+- ShortName: file_brute_config
+  CommandTemplate: file-brute.sh {{Url}} /opt/wordlists/config.txt
+  IsActive: true
+  Aggressiveness: 8
+  Filter: Endpoint.Path == "/"
+  Subject: Endpoint
+
+- ShortName: wafw00f
+  CommandTemplate: wafw00f.sh {{Url}}
+  IsActive: true
+  Aggressiveness: 2
+  Filter: Endpoint.Path == "/"
+  Subject: Endpoint
+
+- ShortName: grab_url_metadata
+  CommandTemplate: grab-url-metadata.sh {{Url}}
+  IsActive: true
+  Aggressiveness: 2
+  Filter: Endpoint.Path == "/"
+  Subject: Endpoint
+
+- ShortName: webanalyze
+  CommandTemplate: webanalyze.sh {{Url}}
+  IsActive: true
+  Aggressiveness: 5
+  Filter: Endpoint.Path == "/"
+  Subject: Endpoint
+
+- ShortName: webcrawl
+  CommandTemplate: webcrawl.sh '{{Url}}'
   IsActive: true
   Aggressiveness: 3
   Filter: Endpoint["Content-Type"].Contains("/html") || Endpoint["Content-Type"].Contains("/xhtml")
   Subject: Endpoint
+
+- ShortName: link_finder
+  CommandTemplate: link-finder.sh {{Url}}
+  IsActive: true
+  Aggressiveness: 3
+  Filter: Endpoint.Extension == "js" ||Endpoint.Extension == "jsm"||Endpoint["Content-Type"].Contains("/javascript")
+  Subject: Endpoint
+
+- ShortName: cors_check
+  CommandTemplate: cors-check.sh {{Url}}
+  IsActive: true
+  Aggressiveness: 5
+  Subject: Endpoint
+  Filter: Endpoint["Content-Type"].Contains("/json") || Endpoint["Content-Type"].Contains("/xml")
+
+- ShortName: shortname_scanning
+  CommandTemplate: shortname-check.sh {{Url}}
+  IsActive: true
+  Aggressiveness: 5
+  Subject: Endpoint
+  Filter: Endpoint["Title"].Contains("Internet Information Services")
+
+- ShortName: shortname_scanning
+  CommandTemplate: shortname-check.sh {{Origin}}
+  IsActive: true
+  Aggressiveness: 5
+  Subject: Service
+  Filter: Service["Version"].Contains("IIS") || Service["Version"].Contains("Microsoft HTTPAPI")
+
+- ShortName: zone_walking
+  CommandTemplate: ldns-walk {{Key}} | tail -n +2 | cut -d ' ' -f 1
+  IsActive: true
+  Aggressiveness: 1
+  Filter: DNSRecord.Type == pwnwrk.domain.Assets.Entities.DNSRecord.RecordType.NSEC
+  Subject: DNSRecord
+
+- ShortName: cloud_enum
+  CommandTemplate: cloud-enum.sh {{Word}}
+  IsActive: true
+  Aggressiveness: 5
+  Subject: Keyword
 ```
 
 ## Notification Configuration
