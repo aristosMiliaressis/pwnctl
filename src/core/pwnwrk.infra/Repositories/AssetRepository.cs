@@ -4,6 +4,7 @@ using pwnwrk.infra.Persistence.Extensions;
 using pwnwrk.domain.Assets.BaseClasses;
 using pwnwrk.domain.Assets.Entities;
 using Microsoft.EntityFrameworkCore;
+using pwnwrk.domain.Common.BaseClasses;
 
 namespace pwnwrk.infra.Repositories
 {
@@ -11,11 +12,8 @@ namespace pwnwrk.infra.Repositories
     {
         private PwnctlDbContext _context = new();
 
-        public async Task SaveAsync(Asset asset)
+        public async Task<Asset> LoadReferences(Asset asset)
         {
-            // replacing asset references from db to prevent ChangeTracker 
-            // from trying to add already existing assets and violating 
-            // uniqness contraints.
             await asset.GetType()
                 .GetProperties()
                 .Where(p => p.PropertyType.IsAssignableTo(typeof(Asset)))
@@ -25,64 +23,49 @@ namespace pwnwrk.infra.Repositories
                     if (assetRef == null)
                         return;
 
-                    assetRef = await GetAssetWithReferencesAsync(assetRef);
+                    assetRef = _context.FindAsset(assetRef);
+                    if (assetRef == null)
+                        return;
+
+                    await _context.Entry(assetRef).LoadReferencesRecursivelyAsync();
+
                     reference.SetValue(asset, assetRef);
                 });
+            
+            return asset;
+        }
+
+        public async Task SaveAsync(Asset asset)
+        {
+            foreach (var tag in asset.Tags)
+            {
+                var existingTag = _context.FindAssetTag(asset, tag);
+                if (existingTag == null)
+                {
+                    _context.Entry(tag).State = EntityState.Added;
+                }
+            }
+
+            var existingAsset = _context.FindAsset(asset);
 
             // if asset doesn't exist add it
-            if (_context.FindAsset(asset) == null)
+            if (existingAsset == null)
             {
                 asset.FoundAt = DateTime.UtcNow;
 
-                _context.Add(asset);
+                _context.Entry(asset).State = EntityState.Added;
 
+                Console.WriteLine(asset.DomainIdentifier);
                 await _context.SaveChangesAsync();
 
                 return;
             }
 
-            // otherwise add any new tags & tasks
-
-            if (asset.Tags != null)
-            {
-                var matchingAsset = _context.FindAsset(asset);
-                foreach (var tag in asset.Tags)
-                {
-                    var existingTag = _context.FindAssetTag(matchingAsset, tag);
-                    if (existingTag == null)
-                    {
-                        tag.SetAsset(matchingAsset);
-                        _context.Add(tag);
-                    }
-                }
-            }
-
-            if (asset.Tasks != null)
-            {
-                var matchingAsset = _context.FindAsset(asset);
-                foreach (var task in asset.Tasks)
-                {
-                    var existingTask = _context.FindAssetTaskRecord(matchingAsset, task.Definition);
-                    if (existingTask == null)
-                    {
-                        _context.Entry(task.Definition).State = EntityState.Unchanged;
-                        _context.Add(task);
-                    }
-                }
-            }
+            // otherwise update the InScope flag
+            existingAsset.InScope = asset.InScope;
+            _context.Entry(existingAsset).State = EntityState.Modified;
 
             await _context.SaveChangesAsync();
-        }
-
-        private async Task<Asset> GetAssetWithReferencesAsync(Asset asset)
-        {
-            asset = _context.FindAsset(asset);
-            if (asset == null)
-                return null;
-
-            await _context.Entry(asset).LoadReferencesRecursivelyAsync();
-
-            return asset;
         }
 
         public async Task<List<Host>> ListHostsAsync()

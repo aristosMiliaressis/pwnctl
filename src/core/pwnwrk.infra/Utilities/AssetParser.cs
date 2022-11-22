@@ -66,7 +66,10 @@ namespace pwnwrk.infra.Utilities
             var entry = PwnContext.Serializer.Deserialize<AssetDTO>(assetText);
 
             assetText = entry.Asset;
-            tags = entry.Tags.Select(t => new Tag(t.Key, t.Value.ToString())).ToList();
+            tags = entry.Tags
+                    .Where(t => t.Value != null)
+                    .Select(t => new Tag(t.Key, t.Value.ToString()))
+                    .ToList();
         }
 
         private static readonly IEnumerable<MethodInfo> _tryParseMethods = Assembly.GetAssembly(typeof(Asset))

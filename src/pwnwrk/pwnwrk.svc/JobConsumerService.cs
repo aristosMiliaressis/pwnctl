@@ -1,92 +1,78 @@
 using pwnwrk.domain.Tasks.Entities;
 using pwnwrk.infra;
 using pwnwrk.infra.Aws;
-using pwnwrk.infra.Configuration;
 using pwnwrk.infra.Queues;
 using pwnwrk.infra.Logging;
 using pwnwrk.infra.Persistence;
 using pwnwrk.infra.Persistence.Extensions;
 using System.Diagnostics;
-using Microsoft.Extensions.Options;
+using Amazon.SQS.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace pwnwrk.svc
 {
     public sealed class JobConsumerService : BackgroundService
     {
-        private readonly IOptions<AppConfig> _config;
         private readonly SQSJobQueueService _queueService = new();
         private readonly PwnctlDbContext _context = new();
-        private CancellationToken _stoppingToken;
-        private List<Amazon.SQS.Model.Message> _unprocessedMessages = new List<Amazon.SQS.Model.Message>();
-
-        public JobConsumerService(IOptions<AppConfig> config)
-        {
-            _config = config;
-        }
+        private List<Message> _unprocessedMessages = new List<Message>();
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             PwnContext.Logger.Information($"{nameof(JobConsumerService)} started.");
-            _stoppingToken = stoppingToken;
 
-            while (!stoppingToken.IsCancellationRequested)
+            try
             {
-                try
+                while (!stoppingToken.IsCancellationRequested)
                 {
                     var messages = await _queueService.ReceiveAsync(stoppingToken);
                     if (messages == null || !messages.Any())
                     {
                         PwnContext.Logger.Information($"queue is empty");
-                        Thread.Sleep(60000);
-                        continue;
+                        Environment.Exit(0);
                     }
 
                     _unprocessedMessages = new(messages);
 
                     var timer = new System.Timers.Timer(1000 * 60 * (AwsConstants.QueueVisibilityTimeoutInSec - 1));
-                    timer.Elapsed += async (sender, e) => await ChallengeMessageVisibility();
+                    timer.Elapsed += async (sender, e) => await ChallengeMessageVisibility(stoppingToken);
                     timer.AutoReset = false;
                     timer.Start();
 
                     foreach (var message in messages)
-                    {                      
-                        var queuedTask = PwnContext.Serializer.Deserialize<TaskAssigned>(message.Body);
+                    {
+                        var queuedTask = PwnContext.Serializer.Deserialize<TaskEntity>(message.Body);
 
-                        var task = await _context
+                        var taskRecord = await _context
                                             .JoinedTaskRecordQueryable()
                                             .FirstOrDefaultAsync(r => r.Id == queuedTask.TaskId);
                                             
-                        if (task == null)
+                        if (taskRecord == null)
                         {
-                            // normaly this should never happen, log and continue.
                             PwnContext.Logger.Error($"Task: {queuedTask.TaskId}:'{queuedTask.Command}' not found");
                             await _queueService.DequeueAsync(message, stoppingToken);
                             continue;
                         }
 
-                        task.Started();
+                        taskRecord.Started();
 
-                        Process process = await ExecuteCommandAsync(queuedTask.Command, task.Definition, stoppingToken);
+                        Process process = await ExecuteCommandAsync(queuedTask.Command, taskRecord.Definition, stoppingToken);
 
-                        task.Finished(process.ExitCode);
+                        taskRecord.Finished(process.ExitCode);
                         
-                        _context.Update(task);
+                        _context.Update(taskRecord);
                         await _context.SaveChangesAsync();
 
-                        //if (process.ExitCode == 0) ??
                         await _queueService.DequeueAsync(message, stoppingToken);
-                        //else
-                        // move to dead letter queue
 
                         _unprocessedMessages.Remove(message);
                     }
                 }
-                catch (Exception ex)
-                {
-                    PwnContext.Logger.Error(ex.ToRecursiveExInfo());
-                }
-            }            
+            }
+            catch (Exception ex)
+            {
+                PwnContext.Logger.Error(ex.ToRecursiveExInfo());
+            }
         }
 
         private async Task<Process> ExecuteCommandAsync(string command, TaskDefinition definition, CancellationToken stoppingToken)
@@ -128,9 +114,9 @@ done | pwnwrk".Replace("\r\n", "").Replace("\n", ""));
             return process;
         }
 
-        public async Task ChallengeMessageVisibility()
+        public async Task ChallengeMessageVisibility(CancellationToken stoppingToken)
         {
-            await _queueService.ChangeBatchVisibility(_unprocessedMessages, _stoppingToken);
+            await _queueService.ChangeBatchVisibility(_unprocessedMessages, stoppingToken);
         }
     }
 }

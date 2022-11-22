@@ -38,7 +38,7 @@ namespace pwnwrk.infra.Queues
         {
             PwnContext.Logger.Debug("Enqueue: " + job.Command);
 
-            var task = new TaskAssigned() 
+            var task = new TaskEntity() 
             { 
                 TaskId = job.Id,
                 Command = job.Command
@@ -103,7 +103,7 @@ namespace pwnwrk.infra.Queues
         }
     }
 
-    public sealed class TaskAssigned
+    public sealed class TaskEntity
     {
         [JsonPropertyName("taskId")]
         public int TaskId { get; init; }

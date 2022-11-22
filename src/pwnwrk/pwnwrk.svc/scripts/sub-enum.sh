@@ -35,7 +35,7 @@ generate_ai_learned_alts() {
 	./make_brute_list.sh $regulator_rules $potential_subs_file
 	
 	rm $regulator_rules
-	cd -
+	cd - >/dev/null
 }
 
 passive_subdomain_enum | tee $potential_subs_file

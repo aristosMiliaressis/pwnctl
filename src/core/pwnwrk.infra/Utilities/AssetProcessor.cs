@@ -77,6 +77,8 @@ namespace pwnwrk.infra.Utilities
                     await HandleAssetAsync(refAsset);
                 });
 
+            asset = await _assetRepo.LoadReferences(asset);
+
             var program = asset.GetOwningProgram(_programs);
 
             await _assetRepo.SaveAsync(asset);
@@ -104,7 +106,8 @@ namespace pwnwrk.infra.Utilities
 
                 task = new TaskRecord(definition, asset);
 
-                await _assetRepo.SaveAsync(asset);
+                _context.Entry(task).State = EntityState.Added;
+                await _context.SaveChangesAsync();
 
                 await _jobQueueService.EnqueueAsync(task);
             }

@@ -44,7 +44,7 @@ namespace pwnwrk.infra.Persistence.Extensions
         public static TaskRecord FindAssetTaskRecord(this DbContext context, Asset asset, TaskDefinition def)
         {
             var lambda = ExpressionTreeBuilder.BuildTaskMatchingLambda(asset, def);
-            return (TaskRecord)context.FirstFromLambda(lambda);
+            return (TaskRecord)context.FirstNotTrackedFromLambda(lambda);
         }
 
         public static Tag FindAssetTag(this DbContext context, Asset asset, Tag tag)
@@ -63,6 +63,24 @@ namespace pwnwrk.infra.Persistence.Extensions
             var whereMethod = _whereMethod.MakeGenericMethod(type);
 
             var filteredQueryable = whereMethod.Invoke(null, new object[] { queryableDbSet, lambda });
+
+            var firstOrDefaultMethod = _firstOrDefaultMethod.MakeGenericMethod(type);
+            return (Entity)firstOrDefaultMethod.Invoke(null, new object[] { filteredQueryable });
+        }
+
+        public static Entity FirstNotTrackedFromLambda(this DbContext context, LambdaExpression lambda)
+        {
+            var type = lambda.Parameters.First().Type;
+
+            var dbSetMethod = _dbSetMethod.MakeGenericMethod(type);
+            var queryableDbSet = dbSetMethod.Invoke(context, null);
+
+            var whereMethod = _whereMethod.MakeGenericMethod(type);
+
+            var filteredQueryable = whereMethod.Invoke(null, new object[] { queryableDbSet, lambda });
+
+            var asNoTrackingMethod = _asNoTrackingMethod.MakeGenericMethod(type);
+            filteredQueryable = asNoTrackingMethod.Invoke(null, new object[] { filteredQueryable });
 
             var firstOrDefaultMethod = _firstOrDefaultMethod.MakeGenericMethod(type);
             return (Entity)firstOrDefaultMethod.Invoke(null, new object[] { filteredQueryable });
@@ -107,5 +125,6 @@ namespace pwnwrk.infra.Persistence.Extensions
         private static MethodInfo _dbSetMethod = typeof(PwnctlDbContext).GetMethod(nameof(PwnctlDbContext.Set), BindingFlags.Public | BindingFlags.Instance, null, Array.Empty<Type>(), null);
         private static MethodInfo _whereMethod = typeof(Queryable).GetMethods().Where(m => m.Name == nameof(Queryable.Where)).First();
         private static MethodInfo _firstOrDefaultMethod = typeof(Queryable).GetMethods().Where(m => m.Name == nameof(Queryable.FirstOrDefault)).First();
+        private static MethodInfo _asNoTrackingMethod = typeof(EntityFrameworkQueryableExtensions).GetMethods().Where(m => m.Name == nameof(EntityFrameworkQueryableExtensions.AsNoTracking)).First();
     }
 }
