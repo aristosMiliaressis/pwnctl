@@ -802,6 +802,18 @@
         {
          "Ref": "AWS::Partition"
         },
+        ":iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
         ":iam::aws:policy/AmazonElasticFileSystemClientFullAccess"
        ]
       ]
@@ -1032,7 +1044,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Ref": "AssetParameters6f649b44fc3daf6706e054ccdc4ef1ac5140f2fb35de21273f12b2ba3e372385S3Bucket20C2170E"
+      "Ref": "AssetParametersab135435d722284827f32726bd07d331764c00b1f9336bbc5242fdad43aca386S3Bucket1FB364D5"
      },
      "S3Key": {
       "Fn::Join": [
@@ -1045,7 +1057,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "AssetParameters6f649b44fc3daf6706e054ccdc4ef1ac5140f2fb35de21273f12b2ba3e372385S3VersionKeyFEDCCB0A"
+             "Ref": "AssetParametersab135435d722284827f32726bd07d331764c00b1f9336bbc5242fdad43aca386S3VersionKey62471A40"
             }
            ]
           }
@@ -1058,7 +1070,7 @@
            "Fn::Split": [
             "||",
             {
-             "Ref": "AssetParameters6f649b44fc3daf6706e054ccdc4ef1ac5140f2fb35de21273f12b2ba3e372385S3VersionKeyFEDCCB0A"
+             "Ref": "AssetParametersab135435d722284827f32726bd07d331764c00b1f9336bbc5242fdad43aca386S3VersionKey62471A40"
             }
            ]
           }
@@ -1146,7 +1158,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "PwnctlStack/PwnctlApi/Resource",
-    "aws:asset:path": "asset.6f649b44fc3daf6706e054ccdc4ef1ac5140f2fb35de21273f12b2ba3e372385.0",
+    "aws:asset:path": "asset.ab135435d722284827f32726bd07d331764c00b1f9336bbc5242fdad43aca386.0",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
@@ -1515,7 +1527,11 @@
        },
        {
         "Name": "PWNCTL_Logging__Provider",
-        "Value": "CloudWatch"
+        "Value": "File"
+       },
+       {
+        "Name": "PWNCTL_Logging__FilePath",
+        "Value": "/mnt/efs/"
        },
        {
         "Name": "PWNCTL_Logging__MinLevel",
@@ -1772,8 +1788,13 @@
        "ScalingAdjustment": 2
       },
       {
+       "MetricIntervalLowerBound": -59,
        "MetricIntervalUpperBound": -30,
        "ScalingAdjustment": 1
+      },
+      {
+       "MetricIntervalUpperBound": -59,
+       "ScalingAdjustment": 0
       }
      ]
     }
@@ -1892,17 +1913,17 @@
   }
  },
  "Parameters": {
-  "AssetParameters6f649b44fc3daf6706e054ccdc4ef1ac5140f2fb35de21273f12b2ba3e372385S3Bucket20C2170E": {
+  "AssetParametersab135435d722284827f32726bd07d331764c00b1f9336bbc5242fdad43aca386S3Bucket1FB364D5": {
    "Type": "String",
-   "Description": "S3 bucket for asset \"6f649b44fc3daf6706e054ccdc4ef1ac5140f2fb35de21273f12b2ba3e372385\""
+   "Description": "S3 bucket for asset \"ab135435d722284827f32726bd07d331764c00b1f9336bbc5242fdad43aca386\""
   },
-  "AssetParameters6f649b44fc3daf6706e054ccdc4ef1ac5140f2fb35de21273f12b2ba3e372385S3VersionKeyFEDCCB0A": {
+  "AssetParametersab135435d722284827f32726bd07d331764c00b1f9336bbc5242fdad43aca386S3VersionKey62471A40": {
    "Type": "String",
-   "Description": "S3 key for asset version \"6f649b44fc3daf6706e054ccdc4ef1ac5140f2fb35de21273f12b2ba3e372385\""
+   "Description": "S3 key for asset version \"ab135435d722284827f32726bd07d331764c00b1f9336bbc5242fdad43aca386\""
   },
-  "AssetParameters6f649b44fc3daf6706e054ccdc4ef1ac5140f2fb35de21273f12b2ba3e372385ArtifactHashB259EFA1": {
+  "AssetParametersab135435d722284827f32726bd07d331764c00b1f9336bbc5242fdad43aca386ArtifactHashFB65AC47": {
    "Type": "String",
-   "Description": "Artifact hash for asset \"6f649b44fc3daf6706e054ccdc4ef1ac5140f2fb35de21273f12b2ba3e372385\""
+   "Description": "Artifact hash for asset \"ab135435d722284827f32726bd07d331764c00b1f9336bbc5242fdad43aca386\""
   },
   "AssetParametersc8dfcc3db7a767ebc6f9417372a8fee940927c659f793315834a6784dab3d686S3Bucket821B928E": {
    "Type": "String",

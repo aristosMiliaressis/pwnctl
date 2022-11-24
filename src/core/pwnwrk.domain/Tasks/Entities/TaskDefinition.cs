@@ -17,9 +17,13 @@ namespace pwnwrk.domain.Tasks.Entities
 
         public bool Matches(Asset asset)
         {
-            return Subject == asset.GetType().Name
-                && (string.IsNullOrEmpty(Filter)
-                    || IFilterEvaluator.Instance.Evaluate(Filter, asset));
+            if (Subject != asset.GetType().Name)
+                return false;
+
+            if (string.IsNullOrEmpty(Filter))
+                return true;
+
+            return IFilterEvaluator.Instance.Evaluate(Filter, asset);
         }
 
         // Extrapolate list of parameter names from CommandTemplate
@@ -32,7 +36,7 @@ namespace pwnwrk.domain.Tasks.Entities
                 var segments = CommandTemplate.Split("}}");
                 foreach (var seg in segments)
                 {
-                    if (seg.Split("{{").Count() ==1)
+                    if (seg.Split("{{").Count() == 1)
                         continue;
 
                     _params.Add(seg.Split("{{")[1]);

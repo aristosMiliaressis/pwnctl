@@ -263,7 +263,8 @@ namespace pwnwrk.infra.cdk.Stacks
                     {"PWNCTL_JobQueue__QueueName", queue.QueueName},
                     {"PWNCTL_JobQueue__DLQName", dlq.QueueName},
                     {"PWNCTL_JobQueue__VisibilityTimeout", AwsConstants.QueueVisibilityTimeoutInSec.ToString()},
-                    {"PWNCTL_Logging__Provider", LogProfile.CloudWatch.ToString()},
+                    {"PWNCTL_Logging__Provider", LogProfile.File.ToString()},
+                    {"PWNCTL_Logging__FilePath", "/mnt/efs/"},
                     {"PWNCTL_Logging__MinLevel", "Debug"},
                     {"PWNCTL_Logging__LogGroup", logGroup.LogGroupName},
                     {"PWNCTL_InstallPath", AwsConstants.EfsMountPoint}
@@ -324,6 +325,11 @@ namespace pwnwrk.infra.cdk.Stacks
                 AdjustmentType = AdjustmentType.EXACT_CAPACITY,
                 ScalingSteps = new[]
                 {
+                    new ScalingInterval
+                    {
+                        Upper = 1,
+                        Change = 0
+                    },
                     new ScalingInterval
                     {
                         Upper = 30,

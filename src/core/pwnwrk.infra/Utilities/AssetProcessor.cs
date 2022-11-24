@@ -77,7 +77,7 @@ namespace pwnwrk.infra.Utilities
                     await HandleAssetAsync(refAsset);
                 });
 
-            asset = await _assetRepo.LoadReferences(asset);
+            asset = await _assetRepo.LoadRelatedAssets(asset);
 
             var program = asset.GetOwningProgram(_programs);
 

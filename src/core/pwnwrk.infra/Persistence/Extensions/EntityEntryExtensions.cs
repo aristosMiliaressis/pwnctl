@@ -5,7 +5,7 @@ namespace pwnwrk.infra.Persistence.Extensions
 {
     public static class EntityEntryExtensions
     {
-        public static async Task LoadReferencesRecursivelyAsync(this EntityEntry entry, CancellationToken token = default, List<Type> refChain = null)
+        public static async Task LoadReferencesRecursivelyAsync(this EntityEntry entry, Func<Type, bool> filter, CancellationToken token = default, List<Type> refChain = null)
         {
             if (entry == null)
                 return;
@@ -25,17 +25,23 @@ namespace pwnwrk.infra.Persistence.Extensions
                 return;
             refChain.Add(type);
 
-            foreach (var nestedReference in entry.References)
+            foreach (var reference in entry.References)
             {
-                await nestedReference.LoadAsync(token);
-                await nestedReference.TargetEntry.LoadReferencesRecursivelyAsync(token, refChain);
+                if (!filter(reference.Metadata.ClrType))
+                    continue;
+                
+                await reference.LoadAsync(token);
+                await reference.TargetEntry.LoadReferencesRecursivelyAsync(filter, token, refChain);
             }
 
-            foreach (var nestedCollection in entry.Collections)
+            foreach (var collection in entry.Collections)
             {
+                if (!filter(collection.Metadata.ClrType))
+                    continue;
+
                 try
                 {
-                    await nestedCollection.LoadAsync(token);
+                    await collection.LoadAsync(token);
                 }
                 catch (Exception ex)
                 {
@@ -43,10 +49,10 @@ namespace pwnwrk.infra.Persistence.Extensions
                     continue;
                 }
 
-                var enumerator = nestedCollection.CurrentValue.GetEnumerator();
+                var enumerator = collection.CurrentValue.GetEnumerator();
                 while (enumerator.MoveNext())
                 {
-                    await nestedCollection.FindEntry(enumerator.Current).LoadReferencesRecursivelyAsync(token, refChain);
+                    await collection.FindEntry(enumerator.Current).LoadReferencesRecursivelyAsync(filter, token, refChain);
                 }
             }
         }

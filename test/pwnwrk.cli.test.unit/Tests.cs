@@ -8,6 +8,7 @@ using pwnwrk.infra.Repositories;
 using pwnwrk.domain.Assets.Entities;
 using pwnwrk.domain.Assets.BaseClasses;
 using Microsoft.EntityFrameworkCore;
+using pwnwrk.domain.Assets.Enums;
 
 public sealed class Tests
 {
@@ -163,9 +164,9 @@ public sealed class Tests
         Assert.Null(new Domain("xyz.tesla2.com").GetOwningProgram(programs));
 
         // DNS records
-        Assert.NotNull(new DNSRecord(DNSRecord.RecordType.A, "xyz.tesla.com", "1.3.3.7").GetOwningProgram(programs));
-        Assert.NotNull(new DNSRecord(DNSRecord.RecordType.A, "example.com", "172.16.17.15").GetOwningProgram(programs));
-        Assert.Null(new DNSRecord(DNSRecord.RecordType.A, "example.com", "172.16.16.15").GetOwningProgram(programs));
+        Assert.NotNull(new DNSRecord(DnsRecordType.A, "xyz.tesla.com", "1.3.3.7").GetOwningProgram(programs));
+        Assert.NotNull(new DNSRecord(DnsRecordType.A, "example.com", "172.16.17.15").GetOwningProgram(programs));
+        Assert.Null(new DNSRecord(DnsRecordType.A, "example.com", "172.16.16.15").GetOwningProgram(programs));
 
         // test for inscope host from domain relationship
         AssetProcessor processor = new();
@@ -252,8 +253,8 @@ public sealed class Tests
         await repository.SaveAsync(outOfScope);
         outOfScope = context.Domains.First(d => d.Name == "www.outofscope.com");
 
-        var record1 = new DNSRecord(DNSRecord.RecordType.A, "hackerone.com", "1.3.3.7");
-        var record2 = new DNSRecord(DNSRecord.RecordType.AAAA, "hackerone.com", "dead:beef::::");
+        var record1 = new DNSRecord(DnsRecordType.A, "hackerone.com", "1.3.3.7");
+        var record2 = new DNSRecord(DnsRecordType.AAAA, "hackerone.com", "dead:beef::::");
 
         Assert.Null(context.FindAsset(record1));
         Assert.Null(context.FindAsset(record2));

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using pwnwrk.infra.Persistence;
@@ -11,9 +12,10 @@ using pwnwrk.infra.Persistence;
 namespace pwnwrk.infra.Persistence.Migrations
 {
     [DbContext(typeof(PwnctlDbContext))]
-    partial class PwnctlDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221123181427_task_record_state")]
+    partial class task_record_state
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

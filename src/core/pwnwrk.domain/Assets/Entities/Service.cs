@@ -1,8 +1,8 @@
 ﻿using pwnwrk.domain.Assets.Attributes;
 using pwnwrk.domain.Assets.BaseClasses;
 using pwnwrk.domain.Assets.DTO;
+using pwnwrk.domain.Assets.Enums;
 using pwnwrk.domain.Common.Entities;
-using pwnwrk.domain.Common.BaseClasses;
 using pwnwrk.domain.Targets.Entities;
 
 namespace pwnwrk.domain.Assets.Entities
@@ -123,12 +123,5 @@ namespace pwnwrk.domain.Assets.Entities
 
             return dto;
         }
-    }
-    public enum TransportProtocol
-    {
-        TCP,
-        UDP,
-        SCTP,
-        Unknown = 99
     }
 }

@@ -26,11 +26,13 @@ the target scope is onboarded trough the cli or api, than it is recursivly scann
 8. checks `TaskDefinitions` for the asset class and queue them according to Task Filter & the target policy
 - [x] JSONL(ine) input format with arbitary key/value `Tags` for storing metadata about assets
 
-### In Scope checking process
+### In Scope checking rules
 
-1. selects all ScopeDefinitions from all programs in db
-2. iterates over definitions and calls `bool Matches(ScopeDefinition def)` on asset objects.
-3. if any returns true asset is in scope.
+- Domains are in scope if there is a matching DomainRegex type ScopeDefinition
+- Hosts are in scope if there is a matching CIDR ScopeDefinition
+- Hosts are in scope if an A record is found linking them to an in scope domain
+- Endpoints are in scope if there is a matching UrlRegex type ScopeDefinition
+- DNSRecords/Services/Endpoints/Parameters are in scope if they are related to an in scope domain or host
 
 ### Scope Configuration
 
@@ -65,7 +67,7 @@ tasks are configured per asset class and can be filtered trough C# script in the
 
 ### Asset Tagging
 
-tags are a way to store arbitary metadata relating to an asset, they can be used in the `Filter` field to chain tasks into workflows where one task (e.g nmap) discovers some metadata relating to an asset (e.g. http protocol running on port) which than causes a metadata specific task to be queued (e.g. some http specific task)
+tags are a way to store arbitary metadata relating to an asset, they can be used in the `Filter` field (trough an indexer on the asset base class) to chain tasks into workflows where one task (e.g nmap) discovers some metadata relating to an asset (e.g. IIS service banner) which than causes a metadata specific task to be queued (e.g. IIS shortname scanning)
 
 **`task-definitions.yml`**
 ```YAML
@@ -236,9 +238,9 @@ tags are a way to store arbitary metadata relating to an asset, they can be used
 
 ## Notification Configuration
 
-1. workers send status notification at start up & shutdown
+1. worker instances send status notification at start up & shutdown
 2. cronjob sends report detailing findings by asset class & task status (pending/completed/failed)
-3. configurable notification rules with CSharpScript `Filter` field like `TaskDefinitions`
+3. configurable notification rules with CSharpScript `Filter` field like `TaskDefinitions` 
 
 **`notification-rules.yml`**
 ```YAML

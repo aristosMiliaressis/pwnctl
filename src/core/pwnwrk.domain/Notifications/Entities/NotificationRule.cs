@@ -16,8 +16,10 @@ namespace pwnwrk.domain.Notifications.Entities
 
         public bool Check(Asset asset)
         {
-            return Subject == asset.GetType().Name
-                && IFilterEvaluator.Instance.Evaluate(Filter, asset);
+            if (Subject != asset.GetType().Name)
+                return false;
+
+            return IFilterEvaluator.Instance.Evaluate(Filter, asset);
         }
     }
 }

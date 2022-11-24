@@ -29,6 +29,7 @@ namespace pwnwrk.svc
                     if (messages == null || !messages.Any())
                     {
                         PwnContext.Logger.Information($"queue is empty");
+                        Thread.Sleep(1000*60*5);
                         Environment.Exit(0);
                     }
 
@@ -58,6 +59,7 @@ namespace pwnwrk.svc
 
                         Process process = await ExecuteCommandAsync(queuedTask.Command, taskRecord.Definition, stoppingToken);
 
+                        // TODO: log stdout&stderr if ExitCode != 0
                         taskRecord.Finished(process.ExitCode);
                         
                         _context.Update(taskRecord);

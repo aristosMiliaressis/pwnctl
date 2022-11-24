@@ -1,9 +1,11 @@
-﻿using pwnwrk.domain.Assets.Attributes;
+﻿using System.Text.RegularExpressions;
+using pwnwrk.domain.Assets.Attributes;
 using pwnwrk.domain.Assets.BaseClasses;
 using pwnwrk.domain.Assets.DTO;
+using pwnwrk.domain.Assets.Enums;
 using pwnwrk.domain.Common.Entities;
-using pwnwrk.domain.Common.BaseClasses;
 using pwnwrk.domain.Targets.Entities;
+using pwnwrk.domain.Targets.Enums;
 
 namespace pwnwrk.domain.Assets.Entities
 {
@@ -71,7 +73,7 @@ namespace pwnwrk.domain.Assets.Entities
 
                 var _params = uri.GetComponents(UriComponents.Query, UriFormat.SafeUnescaped)
                     .Split("&")
-                    .Select(p => new Parameter(endpoint, p.Split("=")[0], Parameter.ParamType.Query, null))
+                    .Select(p => new Parameter(endpoint, p.Split("=")[0], ParamType.Query, null))
                     .Where(p => !string.IsNullOrEmpty(p.Name));
 
                 // Adds all subdirectories
@@ -97,7 +99,8 @@ namespace pwnwrk.domain.Assets.Entities
 
         internal override bool Matches(ScopeDefinition definition)
         {
-            return Service.Matches(definition);
+            return Service.Matches(definition)
+                || (definition.Type == ScopeType.UrlRegex && new Regex(definition.Pattern).Matches(Url).Count > 0);
         }
 
         public override AssetDTO ToDTO()

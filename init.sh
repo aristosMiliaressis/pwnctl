@@ -1,4 +1,6 @@
 #!/bin/bash
+# This script should be run right after depoying the cdk stack, 
+# to upload necesary files to EFS and seed the database
 
 functionUrl=$(aws ssm get-parameter --name /pwnctl/Api/BaseUrl | jq -r .Parameter.Value)
 
@@ -41,6 +43,9 @@ setupDb() {
 
      python3 -m awscurl --service lambda -X POST ${functionUrl}db/seed > /dev/null
 }
+
+./src/pwnwrk/pwnwrk.svc/scripts/get-psl.sh deployment/
+cp ./src/pwnwrk/pwnwrk.svc/entrypoint_hook.sh deployment/
 
 uploadDirectory ./deployment
 uploadDirectory ./src/core/pwnwrk.infra/Persistence/seed /seed

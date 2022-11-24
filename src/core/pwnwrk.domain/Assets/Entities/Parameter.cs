@@ -1,6 +1,7 @@
 using pwnwrk.domain.Assets.Attributes;
-using pwnwrk.domain.Assets.DTO;
 using pwnwrk.domain.Assets.BaseClasses;
+using pwnwrk.domain.Assets.DTO;
+using pwnwrk.domain.Assets.Enums;
 using pwnwrk.domain.Common.Entities;
 using pwnwrk.domain.Targets.Entities;
 
@@ -39,16 +40,7 @@ namespace pwnwrk.domain.Assets.Entities
         internal override bool Matches(ScopeDefinition definition)
         {
             return Endpoint.Matches(definition);
-        }
-
-        public enum ParamType
-        {
-            Query,
-            Body,
-            Path, // if segment is integer or guid or md5 or email
-            Cookie,
-            Header,
-        }
+        }       
 
         public override AssetDTO ToDTO()
         {

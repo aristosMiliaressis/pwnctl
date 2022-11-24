@@ -1,6 +1,8 @@
 using pwnwrk.domain.Common.BaseClasses;
 using pwnwrk.domain.Assets.BaseClasses;
 using pwnwrk.domain.Assets.Entities;
+using pwnwrk.domain.Tasks.Enums;
+using pwnwrk.domain.Tasks.Exceptions;
 
 namespace pwnwrk.domain.Tasks.Entities
 {
@@ -10,9 +12,10 @@ namespace pwnwrk.domain.Tasks.Entities
         public TaskDefinition Definition { get; private init; }
 
 		public int? ExitCode { get; private set; }
-		public DateTime QueuedAt { get; private init; }
+		public DateTime QueuedAt { get; private set; }
 		public DateTime StartedAt { get; private set; }
 		public DateTime FinishedAt { get; private set; }
+        public TaskState State { get; private set; }
         
         public Host Host { get; private init; }
         public string HostId { get; private init; }
@@ -44,23 +47,40 @@ namespace pwnwrk.domain.Tasks.Entities
 
         public TaskRecord(TaskDefinition definition, Asset asset)
         {
+            State = TaskState.PENDING;
             Discriminator = asset.GetType().Name;
 
             GetType().GetProperty(Discriminator).SetValue(this, asset);
             asset.Tasks.Add(this);
 
-            QueuedAt = DateTime.UtcNow;
             Definition = definition;
+        }
+
+        public void Queued()
+        {
+            if (State != TaskState.PENDING)
+                throw new TaskStateException("TaskRecord queued when not in PENDING state.");
+
+            State = TaskState.QUEUED;
+            QueuedAt = DateTime.UtcNow;
         }
 
         public void Started()
         {
+            if (State != TaskState.QUEUED)
+                throw new TaskStateException("TaskRecord started when not in QUEUED state.");
+
+            State = TaskState.RUNNING;
             StartedAt = DateTime.UtcNow;
         }
 
         public void Finished(int exitCode)
         {
+            if (State != TaskState.RUNNING)
+                throw new TaskStateException("TaskRecord finished when not in RUNNING state.");
+
             ExitCode = exitCode;
+            State = TaskState.FINISHED;
             FinishedAt = DateTime.UtcNow;
         }
 
@@ -77,7 +97,7 @@ namespace pwnwrk.domain.Tasks.Entities
                 {
                     var prop = assetType.GetProperty(param);
                     if (prop == null)
-                        throw new Exception($"Property {param} not found on type {Discriminator}");
+                        throw new CommandInterpolationException($"Property {param} not found on type {Discriminator}");
 
                     var arg = prop.GetValue(asset);
 

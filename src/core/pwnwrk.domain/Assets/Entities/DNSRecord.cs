@@ -1,7 +1,7 @@
 ﻿using pwnwrk.domain.Assets.Attributes;
 using pwnwrk.domain.Assets.BaseClasses;
 using pwnwrk.domain.Common.Entities;
-using pwnwrk.domain.Common.BaseClasses;
+using pwnwrk.domain.Assets.Enums;
 using pwnwrk.domain.Targets.Entities;
 using pwnwrk.domain.Assets.DTO;
 
@@ -10,7 +10,7 @@ namespace pwnwrk.domain.Assets.Entities
     public sealed class DNSRecord : Asset
     {
         [UniquenessAttribute]
-        public RecordType Type { get; init; }
+        public DnsRecordType Type { get; init; }
 
         [UniquenessAttribute]
         public string Key {get; init;}
@@ -24,7 +24,7 @@ namespace pwnwrk.domain.Assets.Entities
 
         public DNSRecord() {}
         
-        public DNSRecord(RecordType type, string key, string value)
+        public DNSRecord(DnsRecordType type, string key, string value)
         {
             Type = type;
             Key = key;
@@ -56,11 +56,11 @@ namespace pwnwrk.domain.Assets.Entities
             var parts = assetText.Split(" ");
 
             if (parts.Length >= 4 && parts[1] == "IN"
-            && Enum.GetNames(typeof(RecordType)).ToList().Contains(parts[2]))
+            && Enum.GetNames(typeof(DnsRecordType)).ToList().Contains(parts[2]))
             {
-                var record = new DNSRecord(Enum.Parse<RecordType>(parts[2]), parts[0], string.Join(" ", parts.Skip(3)));
+                var record = new DNSRecord(Enum.Parse<DnsRecordType>(parts[2]), parts[0], string.Join(" ", parts.Skip(3)));
                 record.AddTags(tags);
-                if (record.Type == RecordType.TXT && record.Value.Contains("spf"))
+                if (record.Type == DnsRecordType.TXT && record.Value.Contains("spf"))
                 {
                     var spfHosts = record.Value
                                         .Split(" ")
@@ -108,57 +108,6 @@ namespace pwnwrk.domain.Assets.Entities
             Tags.ForEach(t => dto.Tags.Add(t.Name, t.Value));
 
             return dto;
-        }
-
-        public enum RecordType
-        { 
-            A,
-            AAAA,
-            AFSDB,
-            APL,
-            AXFR,
-            CAA,
-            CDNSKEY,
-            CDS,
-            CERT,
-            CNAME,
-            CSYNC,
-            DHCID,
-            DNAME,
-            DNSKEY,
-            DS,
-            EUI48,
-            EUI64,
-            HINFO,
-            HIP,
-            HTTPS,
-            IPSECKEY,
-            IXFR,
-            KX,
-            LOC,
-            MX,
-            NAPTR,
-            NS,
-            NSEC,
-            NSEC3,
-            NSEC3PARAM,
-            OPENPGPKEY,
-            PTR,
-            RP,
-            RRSIG,
-            SMIMEA,
-            SOA,
-            SSHFP,
-            SVCB,
-            SRV,
-            TA,
-            TKEY,
-            TLSA,
-            TSIG,
-            TXT,
-            URI,
-            WKS,
-            ZONEMD
         }
     }
 }

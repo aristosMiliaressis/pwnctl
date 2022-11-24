@@ -48,6 +48,8 @@ namespace pwnwrk.infra.Utilities
                 }
 
                 var assets = (Asset[])parameters[2];
+                var foundBy = assets.FirstOrDefault(a => a.FoundBy != null)?.FoundBy;
+                assets.ToList().ForEach(a => a.FoundBy = foundBy);
                 assetTypes = assets.Select(a => a.GetType()).ToArray();
                 return assets;
             }

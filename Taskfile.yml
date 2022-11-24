@@ -2,7 +2,7 @@ version: '3'
 
 tasks:
   simple-setup: 
-    deps: [install-deps, build-svc-image, push-svc-image, bootstrap-aws, deploy-app, install-cli-src, upload-files]
+    deps: [install-deps, build-svc-image, push-svc-image, bootstrap-aws, deploy-app, install-cli-src, init-app]
 
   test:
     cmds:
@@ -54,11 +54,9 @@ tasks:
     cmds:
       - cdk deploy -o src/core/pwnwrk.infra.cdk/cdk.out
 
-  upload-files:
+  init-app:
     cmds:
-      - ./src/pwnwrk/pwnwrk.svc/scripts/get-psl.sh deployment/
-      - cp ./src/pwnwrk/pwnwrk.svc/entrypoint_hook.sh deployment/
-      - ./upload.sh
+      - ./init.sh
 
   clean-cdk:
     cmds:

@@ -12,7 +12,7 @@ namespace pwnwrk.infra.Repositories
     {
         private PwnctlDbContext _context = new();
 
-        public async Task<Asset> LoadReferences(Asset asset)
+        public async Task<Asset> LoadRelatedAssets(Asset asset)
         {
             await asset.GetType()
                 .GetProperties()
@@ -27,7 +27,7 @@ namespace pwnwrk.infra.Repositories
                     if (assetRef == null)
                         return;
 
-                    await _context.Entry(assetRef).LoadReferencesRecursivelyAsync();
+                    await _context.Entry(assetRef).LoadReferencesRecursivelyAsync((type) => type.IsAssignableTo(typeof(Asset)));
 
                     reference.SetValue(asset, assetRef);
                 });
@@ -55,7 +55,6 @@ namespace pwnwrk.infra.Repositories
 
                 _context.Entry(asset).State = EntityState.Added;
 
-                Console.WriteLine(asset.DomainIdentifier);
                 await _context.SaveChangesAsync();
 
                 return;
