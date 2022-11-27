@@ -114,7 +114,6 @@ public sealed class Tests
         bool res = AssetParser.TryParse("{\"asset\":\"https://whatever.tesla.com/.git\",\"tags\":{\"status\":403,\"location\":\"\",\"FoundBy\":\"dir_brute_common\"}}", out assetTypes, out assets);
         Assert.True(res);
         Assert.Contains(assetTypes, t => t == typeof(Endpoint));
-        Assert.Contains(assets, t => t.GetType() == typeof(Endpoint));
         Assert.Contains(assetTypes, t => t == typeof(Service));
         Assert.Contains(assets, t => t.GetType() == typeof(Service));
         Assert.Contains(assetTypes, t => t == typeof(Domain));
@@ -122,6 +121,7 @@ public sealed class Tests
         var tags = assets.First(a => a is Endpoint).Tags;
         Assert.Contains(tags, t => t.Name == "status" && t.Value == "403");
         Assert.Equal("dir_brute_common", assets.First(a => a is Endpoint).FoundBy);
+        Assert.True(assets.All(a => a.FoundBy == "dir_brute_common"));
 
         // TODO: SPF parsing test
         // TODO: test that tags overwrite model properties

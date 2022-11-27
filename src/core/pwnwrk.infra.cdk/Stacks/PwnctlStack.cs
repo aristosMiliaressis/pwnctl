@@ -1,4 +1,4 @@
-using System;
+using Constructs;
 using System.IO;
 using System.Text.Json;
 using System.Collections.Generic;
@@ -66,7 +66,7 @@ namespace pwnwrk.infra.cdk.Stacks
 
             var dbEngine = DatabaseClusterEngine.AuroraPostgres(new AuroraPostgresClusterEngineProps
             {
-                Version = AuroraPostgresEngineVersion.VER_13_6
+                Version = AuroraPostgresEngineVersion.VER_14_5
             });
 
             var dbCluster = new DatabaseCluster(this, AwsConstants.AuroraCluster, new DatabaseClusterProps

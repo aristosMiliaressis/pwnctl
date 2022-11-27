@@ -40,11 +40,11 @@ namespace pwnwrk.infra.Logging
         private static Logger CreateConsoleLogger()
         {
             return _baseConfig
-                    .WriteTo.Console(outputTemplate: _outputTemplate)
+                    .WriteTo.Console()
                     .CreateLogger();
         }
 
-        private static string _outputTemplate = $"[{{Timestamp:HH:mm:ss}} [{EnvironmentVariables.HOSTNAME}] {{Level:u3}}] {{Message:lj}}";
+        private static string _outputTemplate = $"[{{Timestamp:HH:mm:ss}} {EnvironmentVariables.HOSTNAME} {{Level:u3}}] {{Message:lj}}";
 
         private static readonly LoggerConfiguration _baseConfig = new LoggerConfiguration()
                     .MinimumLevel.Is(Enum.Parse<LogEventLevel>(PwnContext.Config.Logging.MinLevel ?? "Information"));
