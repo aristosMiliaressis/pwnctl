@@ -39,7 +39,7 @@ namespace pwnwrk.domain.Assets.BaseClasses
             }
         }
 
-        public void AddTags(List<Tag> tags)
+        protected void AddTags(List<Tag> tags)
         {
             if (tags == null)
                 return;
@@ -59,15 +59,6 @@ namespace pwnwrk.domain.Assets.BaseClasses
             InScope = program != null;
 
             return program;
-        }
-
-        public List<TaskDefinition> GetMatchingTaskDefinitions(List<TaskDefinition> definitions)
-        {
-            return definitions
-                    .Where(definition => definition.Subject == GetType().Name)
-                    .Where(definition => string.IsNullOrEmpty(definition.Filter)
-                                     || IFilterEvaluator.Instance.Evaluate(definition.Filter, this))
-                    .ToList();
         }
 
         // converts asset to the AssetDTO class and serializes it to JSON

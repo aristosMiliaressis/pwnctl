@@ -37,10 +37,5 @@ namespace pwnwrk.domain.Common.Entities
             Name = name.ToLower();
             Value = value;
         }
-
-        public void SetAsset(Asset asset)
-        {
-            GetType().GetProperty(asset.GetType().Name).SetValue(this, asset);
-        }
     }
 }

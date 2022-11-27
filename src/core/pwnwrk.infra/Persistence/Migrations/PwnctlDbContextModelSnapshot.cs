@@ -485,9 +485,6 @@ namespace pwnwrk.infra.Persistence.Migrations
                     b.Property<string>("Filter")
                         .HasColumnType("text");
 
-                    b.Property<string>("Severity")
-                        .HasColumnType("text");
-
                     b.Property<string>("ShortName")
                         .HasColumnType("text");
 
@@ -518,9 +515,6 @@ namespace pwnwrk.infra.Persistence.Migrations
 
                     b.Property<int?>("MaxAggressiveness")
                         .HasColumnType("integer");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
 
                     b.Property<string>("Whitelist")
                         .HasColumnType("text");

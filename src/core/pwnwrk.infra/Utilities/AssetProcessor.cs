@@ -93,7 +93,7 @@ namespace pwnwrk.infra.Utilities
                 _notificationSender.Send(asset, rule);
             }
 
-            var matchingTasks = program
+            var matchingTasks = program.Policy
                                     .GetAllowedTasks(_taskDefinitions)
                                     .Where(def => def.Matches(asset));
 
@@ -105,7 +105,8 @@ namespace pwnwrk.infra.Utilities
                     continue;
 
                 task = new TaskRecord(definition, asset);
-
+                task.Queued();
+                
                 _context.Entry(task).State = EntityState.Added;
                 await _context.SaveChangesAsync();
 

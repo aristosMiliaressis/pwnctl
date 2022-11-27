@@ -9,7 +9,6 @@ using pwnwrk.domain.Notifications.Entities;
 using pwnwrk.domain.Targets.Entities;
 using pwnwrk.domain.Tasks.Entities;
 using pwnwrk.domain.Assets.Entities;
-using pwnwrk.domain.Assets.BaseClasses;
 
 namespace pwnwrk.infra.Persistence
 {

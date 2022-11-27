@@ -4,7 +4,6 @@ using pwnwrk.infra.Persistence.Extensions;
 using pwnwrk.domain.Assets.BaseClasses;
 using pwnwrk.domain.Assets.Entities;
 using Microsoft.EntityFrameworkCore;
-using pwnwrk.domain.Common.BaseClasses;
 
 namespace pwnwrk.infra.Repositories
 {

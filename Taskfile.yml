@@ -47,7 +47,10 @@ tasks:
   
   bootstrap-aws:
     cmds:
-      - cdk bootstrap aws://${accountId}/${region}
+      - |
+        region=$(aws configure get region)
+        accountId=$(aws sts get-caller-identity --query "Account" --output text)
+        cdk bootstrap aws://${accountId}/${region}
 
   deploy-app:
     deps: [clean-cdk, build-api]

@@ -10,7 +10,6 @@ namespace pwnwrk.domain.Notifications.Entities
         public string Subject { get; private init; }
         public string Filter { get; private init; }
         public string Topic { get; private init; }
-        public string Severity { get; private init; }
 
         public NotificationRule() { }
 
