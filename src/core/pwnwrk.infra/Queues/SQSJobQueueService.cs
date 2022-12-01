@@ -52,6 +52,8 @@ namespace pwnwrk.infra.Queues
             };
 
             await _sqsClient.SendMessageAsync(request);
+
+            job.Queued();
         }
 
         public async Task<List<Message>> ReceiveAsync(CancellationToken ct)

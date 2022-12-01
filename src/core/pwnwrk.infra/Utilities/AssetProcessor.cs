@@ -18,7 +18,7 @@ namespace pwnwrk.infra.Utilities
     {
         private readonly AssetRepository _assetRepo = new();
         private readonly NotificationSender _notificationSender = new();
-        private static readonly IJobQueueService _jobQueueService = JobQueueFactory.Create();
+        public static IJobQueueService JobQueueService = JobQueueFactory.Create();
         private readonly PwnctlDbContext _context = new();
         private readonly List<TaskDefinition> _taskDefinitions;
         private readonly List<NotificationRule> _notificationRules;
@@ -105,13 +105,14 @@ namespace pwnwrk.infra.Utilities
                     continue;
 
                 task = new TaskRecord(definition, asset);
-                task.Queued();
                 
                 _context.Entry(task).State = EntityState.Added;
                 await _context.SaveChangesAsync();
 
-                await _jobQueueService.EnqueueAsync(task);
+                await JobQueueService.EnqueueAsync(task);
             }
+
+            await _context.SaveChangesAsync();
         }
     }
 }

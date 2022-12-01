@@ -30,6 +30,9 @@ namespace pwnwrk.infra.Queues
             }
 
             process.WaitForExit();
+
+            job.Queued();
+
             return Task.CompletedTask;
         }
     }

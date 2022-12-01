@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using pwnctl.dto.Assets.Commands;
+using pwnwrk.infra.Queues;
 
 namespace pwnctl.cli.ModeHandlers
 {
@@ -26,7 +27,13 @@ namespace pwnctl.cli.ModeHandlers
             };
 
             var client = new PwnctlApiClient();
-            await client.Send(command);
+            var queueService = JobQueueFactory.Create();
+
+            var pendingTasks = await client.Send(command);
+            foreach (var task in pendingTasks)
+            {
+                await queueService.EnqueueAsync(task);
+            }
         }
 
         public void PrintHelpSection()

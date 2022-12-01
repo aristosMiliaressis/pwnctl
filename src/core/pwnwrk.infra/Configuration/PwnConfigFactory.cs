@@ -13,7 +13,7 @@ namespace pwnwrk.infra.Configuration
                                         .AddIniFile("config.ini", optional: true, reloadOnChange: true)
                                         .AddEnvironmentVariables(prefix: "PWNCTL_");
          
-            if (!EnvironmentVariables.InVpc)
+            if (!EnvironmentVariables.InVpc && !EnvironmentVariables.IsTestRun)
             {
                 builder = builder
                             .AddSystemsManager("/pwnctl")

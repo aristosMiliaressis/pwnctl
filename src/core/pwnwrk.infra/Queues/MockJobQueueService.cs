@@ -11,16 +11,7 @@ namespace pwnwrk.infra.Queues
         /// <param name="command"></param>
         public Task EnqueueAsync(TaskRecord job)
         {
-            var psi = new ProcessStartInfo();
-            psi.FileName = "/bin/bash";
-            psi.Arguments = $"-c \"echo {job.Command} > mock-queue.txt";
-            psi.RedirectStandardOutput = true;
-            psi.UseShellExecute = false;
-            psi.CreateNoWindow = true;
-
-            using var process = Process.Start(psi);
-
-            process.WaitForExit();
+            //job.Queued();
 
             return Task.CompletedTask;
         }

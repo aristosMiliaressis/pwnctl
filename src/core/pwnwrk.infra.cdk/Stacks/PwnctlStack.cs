@@ -147,17 +147,6 @@ namespace pwnwrk.infra.cdk.Stacks
             pwnctlApiRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonRDSFullAccess"));
             queue.GrantSendMessages(pwnctlApiRole);
 
-            // Costs 7,20$ per month
-            var sqsEp = new InterfaceVpcEndpoint(this, AwsConstants.VpcSQSEndpoint, new InterfaceVpcEndpointProps
-            {
-                Vpc = vpc,
-                Service = InterfaceVpcEndpointAwsService.SQS,
-                Subnets = new SubnetSelection
-                {
-                    Subnets = vpc.IsolatedSubnets
-                }
-            });
-
             var function = new Function(this, AwsConstants.LambdaName, new FunctionProps
             {
                 Runtime = Runtime.DOTNET_6,
