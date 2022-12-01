@@ -283,3 +283,6 @@ Dockerfile
 # .env file contains default environment variables for docker
 .env
 .git/
+
+core/pwnwrk.infra.cdk/
+pwnctl/

@@ -36,15 +36,6 @@ namespace pwnwrk.infra.Repositories
 
         public async Task SaveAsync(Asset asset)
         {
-            foreach (var tag in asset.Tags)
-            {
-                var existingTag = _context.FindAssetTag(asset, tag);
-                if (existingTag == null)
-                {
-                    _context.Entry(tag).State = EntityState.Added;
-                }
-            }
-
             var existingAsset = _context.FindAsset(asset);
 
             // if asset doesn't exist add it
@@ -53,15 +44,19 @@ namespace pwnwrk.infra.Repositories
                 asset.FoundAt = DateTime.UtcNow;
 
                 _context.Entry(asset).State = EntityState.Added;
+                _context.AddRange(asset.Tags);
 
                 await _context.SaveChangesAsync();
 
                 return;
             }
 
-            // otherwise update the InScope flag
+            // otherwise add new tags & update the InScope flag
+            var newTags = asset.Tags.Where(tag => _context.FindAssetTag(asset, tag) == null);
+            _context.AddRange(newTags);
+
             existingAsset.InScope = asset.InScope;
-            _context.Entry(existingAsset).State = EntityState.Modified;
+            _context.Update(existingAsset);
 
             await _context.SaveChangesAsync();
         }

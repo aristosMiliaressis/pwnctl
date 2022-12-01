@@ -63,10 +63,21 @@ RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o awscliv2.
 
 # Setting up xvfb & chromium for headless browsing
 RUN apt-get update \
-    && apt-get install -y chromium-browser \
-        libgbm1 \
+    && apt-get install -y libgbm1 \
         libxkbcommon0 \
         xvfb
+
+# install chromium
+WORKDIR /opt/chromium
+RUN apt-get install -yq gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 \
+    libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 \
+    libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 \
+    libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 \
+    ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils wget
+
+RUN git clone https://github.com/scheib/chromium-latest-linux
+WORKDIR /opt/chromium/chromium-latest-linux
+RUN ./update.sh && ln -s /opt/chromium/chromium-latest-linux/latest/chrome /usr/bin/chromium
 
 # Installing recon tools
 RUN mkdir /opt/wordlists \
