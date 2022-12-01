@@ -50,7 +50,7 @@ tasks:
       - |
         region=$(aws configure get region)
         accountId=$(aws sts get-caller-identity --query "Account" --output text)
-        cdk bootstrap aws://${accountId}/${region}
+        cdk bootstrap aws://${accountId}/${region} -o src/core/pwnwrk.infra.cdk/cdk.out
 
   deploy-app:
     deps: [clean-cdk, build-api]
