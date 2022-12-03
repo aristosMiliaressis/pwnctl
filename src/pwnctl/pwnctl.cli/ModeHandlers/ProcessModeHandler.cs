@@ -30,9 +30,13 @@ namespace pwnctl.cli.ModeHandlers
             var queueService = JobQueueFactory.Create();
 
             var pendingTasks = await client.Send(command);
+            if (pendingTasks == null)
+                return;
+
             foreach (var task in pendingTasks)
             {
                 await queueService.EnqueueAsync(task);
+                Console.WriteLine($"Queued: {task.Command}");
             }
         }
 

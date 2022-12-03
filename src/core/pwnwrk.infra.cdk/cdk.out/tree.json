@@ -531,7 +531,7 @@
                       "includeSpace": false,
                       "secretStringTemplate": "{\"username\":\"pwnadmin\"}"
                     },
-                    "name": "/aws/secret/pwnctl/Db"
+                    "name": "/aws/secret/pwnctl/Db2"
                   }
                 },
                 "constructInfo": {
@@ -1306,124 +1306,6 @@
               "version": "2.51.1"
             }
           },
-          "PwnctlLambdaSQSEp": {
-            "id": "PwnctlLambdaSQSEp",
-            "path": "PwnctlStack/PwnctlLambdaSQSEp",
-            "children": {
-              "SecurityGroup": {
-                "id": "SecurityGroup",
-                "path": "PwnctlStack/PwnctlLambdaSQSEp/SecurityGroup",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "PwnctlStack/PwnctlLambdaSQSEp/SecurityGroup/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
-                      "aws:cdk:cloudformation:props": {
-                        "groupDescription": "PwnctlStack/PwnctlLambdaSQSEp/SecurityGroup",
-                        "securityGroupEgress": [
-                          {
-                            "cidrIp": "0.0.0.0/0",
-                            "description": "Allow all outbound traffic by default",
-                            "ipProtocol": "-1"
-                          }
-                        ],
-                        "securityGroupIngress": [
-                          {
-                            "cidrIp": {
-                              "Fn::GetAtt": [
-                                "PwnwrkVpcEA5D7932",
-                                "CidrBlock"
-                              ]
-                            },
-                            "ipProtocol": "tcp",
-                            "fromPort": 443,
-                            "toPort": 443,
-                            "description": {
-                              "Fn::Join": [
-                                "",
-                                [
-                                  "from ",
-                                  {
-                                    "Fn::GetAtt": [
-                                      "PwnwrkVpcEA5D7932",
-                                      "CidrBlock"
-                                    ]
-                                  },
-                                  ":443"
-                                ]
-                              ]
-                            }
-                          }
-                        ],
-                        "vpcId": {
-                          "Ref": "PwnwrkVpcEA5D7932"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
-                      "version": "2.51.1"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                  "version": "2.51.1"
-                }
-              },
-              "Resource": {
-                "id": "Resource",
-                "path": "PwnctlStack/PwnctlLambdaSQSEp/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EC2::VPCEndpoint",
-                  "aws:cdk:cloudformation:props": {
-                    "serviceName": {
-                      "Fn::Join": [
-                        "",
-                        [
-                          "com.amazonaws.",
-                          {
-                            "Ref": "AWS::Region"
-                          },
-                          ".sqs"
-                        ]
-                      ]
-                    },
-                    "vpcId": {
-                      "Ref": "PwnwrkVpcEA5D7932"
-                    },
-                    "privateDnsEnabled": true,
-                    "securityGroupIds": [
-                      {
-                        "Fn::GetAtt": [
-                          "PwnctlLambdaSQSEpSecurityGroupB5E10ABD",
-                          "GroupId"
-                        ]
-                      }
-                    ],
-                    "subnetIds": [
-                      {
-                        "Ref": "PwnwrkVpcPrivateSubnet1Subnet1Subnet3EE433F9"
-                      },
-                      {
-                        "Ref": "PwnwrkVpcPrivateSubnet1Subnet2Subnet1F43F2E2"
-                      }
-                    ],
-                    "vpcEndpointType": "Interface"
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPCEndpoint",
-                  "version": "2.51.1"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_ec2.InterfaceVpcEndpoint",
-              "version": "2.51.1"
-            }
-          },
           "PwnctlApi": {
             "id": "PwnctlApi",
             "path": "PwnctlStack/PwnctlApi",
@@ -1498,7 +1380,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "5664b6718b7fc61e54fa1590edf37b89a61131abf518646d07b02ef829242bc3.zip"
+                      "s3Key": "d2c6b0912461c306fdca9651c8bdc44e3a27c168704bee6ee72181ed8f8dfe59.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -1547,7 +1429,7 @@
                       }
                     ],
                     "handler": "pwnctl.api",
-                    "memorySize": 1024,
+                    "memorySize": 1536,
                     "runtime": "dotnet6",
                     "timeout": 60,
                     "vpcConfig": {

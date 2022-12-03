@@ -7,7 +7,7 @@ namespace pwnwrk.domain.Tasks.Entities
     public sealed class TaskDefinition : Entity<int>
     {
         public string ShortName { get; private init; }
-		public string CommandTemplate { get; private init; }
+		public string CommandTemplate { get; set; }
 		public bool IsActive { get; private init; }
 		public int Aggressiveness { get; private init; }
 		public string Subject { get; private init; }

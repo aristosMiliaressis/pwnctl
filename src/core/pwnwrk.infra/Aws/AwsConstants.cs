@@ -11,6 +11,7 @@ public static class AwsConstants
     public const string AuroraInstanceUsername = "pwnadmin";
     public const string DatabaseName = "pwnctl";
     public const string DatabaseCredSecret = $"{AuroraInstance}Creds";
+    public const string DatabaseCredSecretName = $"/aws/secret/pwnctl/Db";
     public const string QueueName = "pwnwrk.fifo";
     public const string DLQName = "pwnwrk-dlq.fifo";
     public const int QueueVisibilityTimeoutInSec = 3600;
@@ -28,7 +29,6 @@ public static class AwsConstants
     public const string EfsApId = $"{LambdaName}Fsap";
     public const string LambdaLogGroup = $"/aws/lambda/{LambdaName}";
     public const string EcsLogGroupName = "/aws/ecs/pwnwrk";
-    public const string DatabaseCredSecretName = $"/aws/secret/pwnctl/Db";
     public const string ApiUrlParamId = "PwnctlApiUrlParam";
     public const string ApiUrlParam = "/pwnctl/Api/BaseUrl";
     public const string ScaleInPolicy = "ScaleInPolicy";

@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/75391c51b8d0585228f35d7352089b74778059c6ce355a016baa867a10dccca8.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f034178d9587aa532ff9d7a434356b0f64a31d7aafab0e438c7e4a0f72090b89.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -247,18 +247,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "PwnctlApiRoleDefaultPolicy09D24CEA"
-          }
-        ],
-        "/PwnctlStack/PwnctlLambdaSQSEp/SecurityGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PwnctlLambdaSQSEpSecurityGroupB5E10ABD"
-          }
-        ],
-        "/PwnctlStack/PwnctlLambdaSQSEp/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PwnctlLambdaSQSEp00344CBA"
           }
         ],
         "/PwnctlStack/PwnctlApi/SecurityGroup/Resource": [

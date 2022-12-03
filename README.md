@@ -4,7 +4,7 @@
 ![pwnctl-ci: tag](https://github.com/aristosMiliaressis/pwnctl/actions/workflows/pwnctl-ci.yml/badge.svg)
 ![pwnwrk-ci: tag](https://github.com/aristosMiliaressis/pwnctl/actions/workflows/pwnwrk-ci.yml/badge.svg)
 
-recursive configuration based engine for external recon.
+serverless recursive configuration based engine for external recon.
 
 ### Overview
 
@@ -63,7 +63,8 @@ Scope:
 
 ### Task Configuration
 
-tasks are configured per asset class and can be filtered trough C# script in the `Filter` field. 
+- tasks are configured per asset class and can be filtered trough C# script in the `Filter` field. 
+- task stdout is piped into the `pwnwrk` cli for processing leading to tasks being queued causing a recursive loop.
 
 ### Asset Tagging
 

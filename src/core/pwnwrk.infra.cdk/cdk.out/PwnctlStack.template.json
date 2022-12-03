@@ -355,7 +355,7 @@
      "IncludeSpace": false,
      "SecretStringTemplate": "{\"username\":\"pwnadmin\"}"
     },
-    "Name": "/aws/secret/pwnctl/Db"
+    "Name": "/aws/secret/pwnctl/Db2"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete",
@@ -922,94 +922,6 @@
     "aws:cdk:path": "PwnctlStack/PwnctlApiRole/DefaultPolicy/Resource"
    }
   },
-  "PwnctlLambdaSQSEpSecurityGroupB5E10ABD": {
-   "Type": "AWS::EC2::SecurityGroup",
-   "Properties": {
-    "GroupDescription": "PwnctlStack/PwnctlLambdaSQSEp/SecurityGroup",
-    "SecurityGroupEgress": [
-     {
-      "CidrIp": "0.0.0.0/0",
-      "Description": "Allow all outbound traffic by default",
-      "IpProtocol": "-1"
-     }
-    ],
-    "SecurityGroupIngress": [
-     {
-      "CidrIp": {
-       "Fn::GetAtt": [
-        "PwnwrkVpcEA5D7932",
-        "CidrBlock"
-       ]
-      },
-      "Description": {
-       "Fn::Join": [
-        "",
-        [
-         "from ",
-         {
-          "Fn::GetAtt": [
-           "PwnwrkVpcEA5D7932",
-           "CidrBlock"
-          ]
-         },
-         ":443"
-        ]
-       ]
-      },
-      "FromPort": 443,
-      "IpProtocol": "tcp",
-      "ToPort": 443
-     }
-    ],
-    "VpcId": {
-     "Ref": "PwnwrkVpcEA5D7932"
-    }
-   },
-   "Metadata": {
-    "aws:cdk:path": "PwnctlStack/PwnctlLambdaSQSEp/SecurityGroup/Resource"
-   }
-  },
-  "PwnctlLambdaSQSEp00344CBA": {
-   "Type": "AWS::EC2::VPCEndpoint",
-   "Properties": {
-    "ServiceName": {
-     "Fn::Join": [
-      "",
-      [
-       "com.amazonaws.",
-       {
-        "Ref": "AWS::Region"
-       },
-       ".sqs"
-      ]
-     ]
-    },
-    "VpcId": {
-     "Ref": "PwnwrkVpcEA5D7932"
-    },
-    "PrivateDnsEnabled": true,
-    "SecurityGroupIds": [
-     {
-      "Fn::GetAtt": [
-       "PwnctlLambdaSQSEpSecurityGroupB5E10ABD",
-       "GroupId"
-      ]
-     }
-    ],
-    "SubnetIds": [
-     {
-      "Ref": "PwnwrkVpcPrivateSubnet1Subnet1Subnet3EE433F9"
-     },
-     {
-      "Ref": "PwnwrkVpcPrivateSubnet1Subnet2Subnet1F43F2E2"
-     }
-    ],
-    "VpcEndpointType": "Interface"
-   },
-   "Metadata": {
-    "aws:cdk:path": "PwnctlStack/PwnctlLambdaSQSEp/Resource"
-   }
-  },
   "PwnctlApiSecurityGroupE5FA2DDE": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
@@ -1042,7 +954,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "5664b6718b7fc61e54fa1590edf37b89a61131abf518646d07b02ef829242bc3.zip"
+     "S3Key": "d2c6b0912461c306fdca9651c8bdc44e3a27c168704bee6ee72181ed8f8dfe59.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -1091,7 +1003,7 @@
      }
     ],
     "Handler": "pwnctl.api",
-    "MemorySize": 1024,
+    "MemorySize": 1536,
     "Runtime": "dotnet6",
     "Timeout": 60,
     "VpcConfig": {
@@ -1124,7 +1036,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "PwnctlStack/PwnctlApi/Resource",
-    "aws:asset:path": "asset.5664b6718b7fc61e54fa1590edf37b89a61131abf518646d07b02ef829242bc3.0",
+    "aws:asset:path": "asset.d2c6b0912461c306fdca9651c8bdc44e3a27c168704bee6ee72181ed8f8dfe59.0",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
@@ -1842,7 +1754,7 @@
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/31Ty27bMBD8ltxpuk7Q3HqQ7TQw0Aaq5eYarKi1wloiVT5sGIb+vUvqZSdAoQNnh6vl7Cx5z78u+OIOTnYmisOskjm/ZA7EgRH1dkFxzy+vjWCrvXpNVyz1eSVF5nOFLnAT2mrvcAd5hRM/cYm1WkhwUqsxmaVGHsHhVGOjHBrCz8Se4Nwf2keJI1nvNSrHMhTeSHd+Nto38bj/EhtVGrSWxfJ7EEgNPami0VK5/owhbJlFYdDZGhSUaMiMGPc1A+qWHZgS3ZWmMeHjTstMYfllDQ5ysLiqvCUZrOt6FLxefiKGzBhslHWgBJLAv1Ttl0cfjY6gZbgn8rusMDvTP3XYuY1+aq96aSwRguxIh/avwpZJqPllq7spxjXVNPE4iw61rII6L4DO80oMEx3xAH6bKvC0kOSHN7CWXOVJWCjmSy8O6JZkCKt0SeJ/6HKLjvwKRSgYjRjxFq32RuAk6Jahc2wdbq+RqkzBQI29fWNARolgFPkA4Wbawxr3Usmhi4+MVg6kQnPNTVMZYF8uQ3OUorv+PcwEVOH6h7qrMIGWQdOQ2PgSwDttKYPkkuwxNc4oFLllModN1mX3DlwxyTiIm5SWiUr74gROvPNLUoGJlyGCth0dZXEs9OxL+vPa2NilVkVsvWVr7V7QzR/5F/445y9Pu5U2mDTN7BWNpYxvxwe+mC9om767P1bKmaGmZY18263/ABKC4LNvBAAA"
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/31TTY/aMBD9LXs3puyqe+shQLtCalcpoVxXEzNkXRI79QcIRfnvHTtfsJUqDn7zPBm/eTM88s8LvniAi52Jw2lWypw3mQNxYkS9NSgeebOvBVsd1T5dsdTnpRSZzxW6wE1oq73DHeQlTvzEJdZqIcFJrcZklhp5BodTjY1yaAi/EHuBa/9oHyWOZL1XqBzLUHgj3fXFaF/H5/5LbFRh0NqWWRQGna1AQYGGGo1xnx9Qd+zAFOhu3hsTPt60zBwsb9bgIAeLq9Jb6oB1HY1i1st/iCEzBhtlHSiBJPAPVfvp0UcTI2gZHon8JkvMrvRNFW7uox/aq14aS4SgVlMtO9k3YcskVLzZ6m5C8Uw1TTP63KGWlVDlB6D3vBLDtEY8gF+mDDwdJPnpDawlV3kSDor50osTuiUZwkpdkPjvutiiI79CEQpGI0a8Rau9ETgJumfoHVuFzTRSFSkYqLC3bwzIKBGMIh8gbJ09rfEolRy6+Mho5UAqNLfcNJUB9uUyNGcputXuYSagDKsd6q7CBFoGdU1i45aDd9pSBskl2WNqnFEocs9kDuusy+4duGGScRB3KS0TpfaHCzjxzpukBBOXIYK2HR1lcSz0ly7oy1tjY5daHWLrLVtr94pu/sw/8ec5f/26W2mDSV3P9mgsZXw5P/HFfEHX9Hv4baWcGWpaVsi33fkXdbGm3ksEAAA="
    },
    "Metadata": {
     "aws:cdk:path": "PwnctlStack/CDKMetadata/Default"

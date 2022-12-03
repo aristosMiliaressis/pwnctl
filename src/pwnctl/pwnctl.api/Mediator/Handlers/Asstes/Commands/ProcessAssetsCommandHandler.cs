@@ -30,6 +30,15 @@ namespace pwnctl.api.Mediator.Handlers.Assets.Commands
             }
 
             var pendingTasks = await context.TaskRecords
+                    .Include(r => r.Definition)
+                    .Include(r => r.Domain)
+                    .Include(r => r.Host)
+                    .Include(r => r.NetRange)
+                    .Include(r => r.DNSRecord)
+                    .Include(r => r.Endpoint)
+                    .Include(r => r.Service)
+                    .Include(r => r.Keyword)
+                    .Include(r => r.CloudService)
                     .Where(r => r.State == TaskState.PENDING)
                     .ToListAsync(cancellationToken);
 

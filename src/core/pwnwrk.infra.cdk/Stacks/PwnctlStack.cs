@@ -55,6 +55,7 @@ namespace pwnwrk.infra.cdk.Stacks
             var dbSecret = new SecretsManager.Secret(this, AwsConstants.DatabaseCredSecret, new SecretProps
             {
                 SecretName = AwsConstants.DatabaseCredSecretName,
+                RemovalPolicy = RemovalPolicy.DESTROY,
                 GenerateSecretString = new SecretStringGenerator
                 {
                     SecretStringTemplate = JsonSerializer.Serialize(new { username = AwsConstants.AuroraInstanceUsername }),
@@ -150,7 +151,7 @@ namespace pwnwrk.infra.cdk.Stacks
             var function = new Function(this, AwsConstants.LambdaName, new FunctionProps
             {
                 Runtime = Runtime.DOTNET_6,
-                MemorySize = 1024,
+                MemorySize = 1536,
                 Timeout = Duration.Seconds(60),
                 Code = Code.FromAsset(Path.Join("src", "pwnctl", "pwnctl.api", "bin", "Release", "net6.0")),
                 Handler = "pwnctl.api",

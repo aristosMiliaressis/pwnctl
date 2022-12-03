@@ -1,6 +1,5 @@
 ﻿using pwnwrk.domain.Assets.Attributes;
 using pwnwrk.domain.Assets.DTO;
-using pwnwrk.domain.Assets.Interfaces;
 using pwnwrk.domain.Targets.Entities;
 using pwnwrk.domain.Tasks.Entities;
 using pwnwrk.domain.Common.BaseClasses;
