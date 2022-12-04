@@ -29,7 +29,8 @@ namespace pwnctl.cli.ModeHandlers
             var client = new PwnctlApiClient();
             var result = await client.Send(command);
 
-            Console.WriteLine(PwnContext.Serializer.Serialize(result));
+            if (result != null)
+                Console.WriteLine(PwnContext.Serializer.Serialize(result));
         }
 
         public void PrintHelpSection()

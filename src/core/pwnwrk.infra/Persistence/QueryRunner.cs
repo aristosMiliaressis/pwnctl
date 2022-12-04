@@ -11,20 +11,14 @@ namespace pwnwrk.infra.Persistence
             using (var connection = new NpgsqlConnection(PwnContext.Config.Db.ConnectionString))
             {
                 var command = new NpgsqlCommand(sql, connection);
-                try
-                {
-                    await connection.OpenAsync();
-                    NpgsqlDataReader reader = await command.ExecuteReaderAsync();
-                    var rows = Serialize(reader);
-                    var json = PwnContext.Serializer.Serialize(rows);
-                    await reader.CloseAsync();
-                    return json;
-                }
-                catch (Exception ex)
-                {
-                    PwnContext.Logger.Error(ex.ToRecursiveExInfo());
-                    return null;
-                }
+
+                await connection.OpenAsync();
+                NpgsqlDataReader reader = await command.ExecuteReaderAsync();
+                var rows = Serialize(reader);
+                var json = PwnContext.Serializer.Serialize(rows);
+                await reader.CloseAsync();
+                
+                return json;
             }
         }
         

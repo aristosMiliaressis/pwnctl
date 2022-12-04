@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 using pwnctl.dto.Assets.Commands;
 using pwnwrk.infra.Queues;
+using pwnwrk.infra.Logging;
 
 namespace pwnctl.cli.ModeHandlers
 {
@@ -35,8 +36,17 @@ namespace pwnctl.cli.ModeHandlers
 
             foreach (var task in pendingTasks)
             {
-                await queueService.EnqueueAsync(task);
-                Console.WriteLine($"Queued: {task.Command}");
+                try
+                {
+                    await queueService.EnqueueAsync(task);
+                    Console.WriteLine($"Queued: {task.Command}");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToRecursiveExInfo());
+                    Console.WriteLine(task.Definition.CommandTemplate);
+                    Console.WriteLine(task.Discriminator);
+                }
             }
         }
 

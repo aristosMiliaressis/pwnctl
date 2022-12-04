@@ -14,8 +14,7 @@ namespace pwnwrk.domain.Common.BaseClasses
         {
         }
 
-        [JsonIgnore]
-        public TPKey Id { get; protected set; }
+        public TPKey Id { get; set; }
 
         public override bool Equals(object obj)
         {

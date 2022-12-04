@@ -14,7 +14,7 @@ public class MediatedResponse
 
     public MediatedResponse() {}
 
-    protected MediatedResponse(params MediatorError[] errors)
+    private MediatedResponse(params MediatorError[] errors)
     {
         Errors = errors.ToList();
     }
@@ -66,9 +66,14 @@ public sealed class MediatedResponse<TResult> : MediatedResponse
         Result = result;
     }
 
+    private MediatedResponse(params MediatorError[] errors)
+    {
+        Errors = errors.ToList();
+    }
+
     public new static MediatedResponse<TResult> Error(string template, params string[] args)
     {
-        return (MediatedResponse<TResult>) MediatedResponse.Error(string.Format(template, args));
+        return new(MediatorError.GenericClientError(string.Format(template, args)));
     }
 
     public static MediatedResponse<TResult> Success(TResult result)
@@ -78,6 +83,6 @@ public sealed class MediatedResponse<TResult> : MediatedResponse
 
     public new static MediatedResponse Success()
     {
-        return new MediatedResponse<TResult>(default);
+        return new MediatedResponse<TResult>(default(TResult));
     }
 }

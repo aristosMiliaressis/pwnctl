@@ -49,12 +49,11 @@ namespace pwnwrk.domain.Tasks.Entities
         public TaskRecord(TaskDefinition definition, Asset asset)
         {
             State = TaskState.PENDING;
-            Discriminator = asset.GetType().Name;
+            Definition = definition;
 
+            Discriminator = asset.GetType().Name;
             GetType().GetProperty(Discriminator).SetValue(this, asset);
             asset.Tasks.Add(this);
-
-            Definition = definition;
         }
 
         public void Queued()

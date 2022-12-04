@@ -86,6 +86,8 @@ namespace pwnwrk.infra.Queues
 
         public async Task ChangeBatchVisibility(List<Message> messages, CancellationToken ct)
         {
+            PwnContext.Logger.Debug($"ChangeBatchVisibility");
+
             // TODO: what if timeout exhedded more than once?
 
             var request = new ChangeMessageVisibilityBatchRequest
