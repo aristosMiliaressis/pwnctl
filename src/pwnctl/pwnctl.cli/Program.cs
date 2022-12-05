@@ -1,4 +1,4 @@
-﻿using pwnctl.cli.ModeHandlers;
+﻿using pwnctl.cli.Interfaces;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 internal sealed class Program
 {
-    static Dictionary<string, IModeHandler> _modeProviders = 
+    static Dictionary<string, ModeHandler> _modeProviders = 
             AppDomain.CurrentDomain.GetAssemblies()
                     .SelectMany(s => s.GetTypes())
-                    .Where(t => !t.IsInterface && typeof(IModeHandler).IsAssignableFrom(t))
-                    .Select(t => (IModeHandler)Activator.CreateInstance(t)) 
+                    .Where(t => !t.IsInterface && typeof(ModeHandler).IsAssignableFrom(t))
+                    .Select(t => (ModeHandler)Activator.CreateInstance(t)) 
                     .ToDictionary(p => p.ModeName, p => p);
 
     static async Task Main(string[] args)

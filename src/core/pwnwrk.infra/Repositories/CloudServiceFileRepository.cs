@@ -2,16 +2,16 @@ using pwnwrk.domain.Assets.Entities;
 
 namespace pwnwrk.infra.Repositories
 {
-    public sealed class CloudServiceRepository
+    public sealed class CloudServiceFileRepository
     {
-        private static CloudServiceRepository _singleton;
+        private static CloudServiceFileRepository _singleton;
         
-        public static CloudServiceRepository Singleton
+        public static CloudServiceFileRepository Singleton
         {
             get
             {
                 if (_singleton == null)
-                    _singleton = new CloudServiceRepository();
+                    _singleton = new CloudServiceFileRepository();
 
                 return _singleton;
             }

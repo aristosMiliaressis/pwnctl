@@ -7,10 +7,11 @@ using System.Threading.Tasks;
 using pwnctl.dto.Assets.Queries;
 using pwnwrk.domain.Assets.BaseClasses;
 using pwnwrk.infra;
+using pwnctl.cli.Interfaces;
 
 namespace pwnctl.cli.ModeHandlers
 {
-    public sealed class ExportModeHandler : IModeHandler
+    public sealed class ExportModeHandler : ModeHandler
     {
         public string ModeName => "export";
         

@@ -2,10 +2,11 @@ using System;
 using System.Threading.Tasks;
 
 using pwnctl.dto.Db.Queries;
+using pwnctl.cli.Interfaces;
 
 namespace pwnctl.cli.ModeHandlers
 {
-    public sealed class SummaryModeHandler : IModeHandler
+    public sealed class SummaryModeHandler : ModeHandler
     {
         public string ModeName => "summary";
         

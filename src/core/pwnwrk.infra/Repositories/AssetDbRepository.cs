@@ -3,11 +3,12 @@ using pwnwrk.infra.Persistence;
 using pwnwrk.infra.Persistence.Extensions;
 using pwnwrk.domain.Assets.BaseClasses;
 using pwnwrk.domain.Assets.Entities;
+using pwnwrk.domain.Assets.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace pwnwrk.infra.Repositories
 {
-    public sealed class AssetRepository : IAssetRepository
+    public sealed class AssetDbRepository : AssetRepository
     {
         private PwnctlDbContext _context = new();
 

@@ -3,11 +3,11 @@ using Amazon.SQS;
 using Amazon.SQS.Model;
 using System.Text.Json.Serialization;
 using pwnwrk.domain.Tasks.Entities;
-using pwnwrk.infra;
+using pwnwrk.domain.Common.Interfaces;
 
 namespace pwnwrk.infra.Queues
 {
-    public sealed class SQSJobQueueService : IJobQueueService
+    public sealed class SQSJobQueueService : JobQueueService
     {
         private readonly AmazonSQSClient _sqsClient = new();
 

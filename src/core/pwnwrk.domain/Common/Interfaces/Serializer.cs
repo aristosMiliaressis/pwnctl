@@ -1,9 +1,11 @@
-namespace pwnwrk.infra.Serialization;
+namespace pwnwrk.domain.Common.Interfaces;
 
 using System.Text.Json;
 
-public interface ISerializer
-{   
+public interface Serializer
+{
+    static Serializer Instance { get; set; }
+
     T Deserialize<T>(string json);
     T Deserialize<T>(JsonElement element);
     object Deserialize(string json, Type type);

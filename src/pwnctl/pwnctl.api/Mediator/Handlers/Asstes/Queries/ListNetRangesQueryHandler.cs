@@ -14,7 +14,7 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Queries
 
         public async Task<MediatedResponse<NetRangeListViewModel>> Handle(ListNetRangesQuery command, CancellationToken cancellationToken)
         {
-            AssetRepository repository = new();
+            AssetDbRepository repository = new();
 
             var netRanges = await repository.ListNetRangesAsync();
 

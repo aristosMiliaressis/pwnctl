@@ -1,4 +1,4 @@
-namespace pwnwrk.infra.Exceptions;
+namespace pwnwrk.domain.Assets.Exceptions;
 
 using System;
 

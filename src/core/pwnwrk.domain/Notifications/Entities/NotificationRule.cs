@@ -1,6 +1,6 @@
 using pwnwrk.domain.Assets.BaseClasses;
 using pwnwrk.domain.Common.BaseClasses;
-using pwnwrk.domain.Assets.Interfaces;
+using pwnwrk.domain.Common.Interfaces;
 
 namespace pwnwrk.domain.Notifications.Entities
 {
@@ -18,7 +18,7 @@ namespace pwnwrk.domain.Notifications.Entities
             if (Subject != asset.GetType().Name)
                 return false;
 
-            return IFilterEvaluator.Instance.Evaluate(Filter, asset);
+            return FilterEvaluator.Instance.Evaluate(Filter, asset);
         }
     }
 }

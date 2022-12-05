@@ -1,9 +1,9 @@
-using System.Diagnostics;
+using pwnwrk.domain.Common.Interfaces;
 using pwnwrk.domain.Tasks.Entities;
 
 namespace pwnwrk.infra.Queues
 {
-    public sealed class MockJobQueueService : IJobQueueService
+    public sealed class MockJobQueueService : JobQueueService
     {
         /// <summary>
         /// pushes a job to the pending queue.

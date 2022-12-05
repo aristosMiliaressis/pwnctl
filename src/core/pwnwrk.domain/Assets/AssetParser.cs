@@ -1,7 +1,9 @@
 using pwnwrk.domain.Assets.BaseClasses;
 using pwnwrk.domain.Common.Entities;
 using pwnwrk.domain.Assets.DTO;
-using pwnwrk.infra.Exceptions;
+using pwnwrk.domain.Assets.Exceptions;
+using pwnwrk.domain.Common.Interfaces;
+
 using System.Reflection;
 
 namespace pwnwrk.infra.Utilities
@@ -64,7 +66,7 @@ namespace pwnwrk.infra.Utilities
             if (!assetText.StartsWith("{"))
                 return;
 
-            var entry = PwnContext.Serializer.Deserialize<AssetDTO>(assetText);
+            var entry = Serializer.Instance.Deserialize<AssetDTO>(assetText);
 
             assetText = entry.Asset;
             tags = entry.Tags

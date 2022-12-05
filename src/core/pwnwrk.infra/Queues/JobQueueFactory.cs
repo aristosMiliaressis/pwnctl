@@ -1,9 +1,10 @@
+using pwnwrk.domain.Common.Interfaces;
 
 namespace pwnwrk.infra.Queues
 {
     public static class JobQueueFactory
     {
-        public static IJobQueueService Create()
+        public static JobQueueService Create()
         {
             if (PwnContext.Config.IsTestRun)
             {

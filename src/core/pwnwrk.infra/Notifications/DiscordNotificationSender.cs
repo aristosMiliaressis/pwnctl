@@ -1,10 +1,11 @@
 using pwnwrk.domain.Assets.BaseClasses;
 using pwnwrk.domain.Notifications.Entities;
+using pwnwrk.domain.Notifications.Interfaces;
 using System.Diagnostics;
 
 namespace pwnwrk.infra.Notifications
 {
-    public sealed class NotificationSender
+    public sealed class DiscordNotificationSender : NotificationSender
     {
         public void Send(Asset asset, NotificationRule rule)
         {

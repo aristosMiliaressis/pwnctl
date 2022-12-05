@@ -3,10 +3,11 @@ using pwnwrk.infra;
 using System.Threading.Tasks;
 
 using pwnctl.dto.Targets.Commands;
+using pwnctl.cli.Interfaces;
 
 namespace pwnctl.cli.ModeHandlers
 {
-    public sealed class OnboardTargetModeHandler : IModeHandler
+    public sealed class OnboardTargetModeHandler : ModeHandler
     {
         public string ModeName => "onboard";
 

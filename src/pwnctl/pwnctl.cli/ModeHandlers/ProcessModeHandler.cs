@@ -5,10 +5,11 @@ using System.Threading.Tasks;
 using pwnctl.dto.Assets.Commands;
 using pwnwrk.infra.Queues;
 using pwnwrk.infra.Logging;
+using pwnctl.cli.Interfaces;
 
 namespace pwnctl.cli.ModeHandlers
 {
-    public sealed class ProcessModeHandler : IModeHandler
+    public sealed class ProcessModeHandler : ModeHandler
     {
         public string ModeName => "process";
 

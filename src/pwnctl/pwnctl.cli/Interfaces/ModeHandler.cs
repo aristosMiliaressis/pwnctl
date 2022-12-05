@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
 
-namespace pwnctl.cli.ModeHandlers
+namespace pwnctl.cli.Interfaces
 {
-    public interface IModeHandler
+    public interface ModeHandler
     {
         public string ModeName { get; }
         public Task Handle(string[] args);

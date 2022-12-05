@@ -16,13 +16,14 @@ namespace pwnctl.api.Mediator.Handlers.Assets.Commands
         public async Task<MediatedResponse<List<TaskRecord>>> Handle(ProcessAssetsCommand command, CancellationToken cancellationToken)
         {
             var context = new PwnctlDbContext();
-            var processor = new AssetProcessor();
 
             // swapping the JobQueueService with a mock that does not queue 
             // anywhere & leaves TakRecords in a PENDING state inorder to 
             // return the tasks to the client for queueing, that way we 
             // eliminate the need for a VpcEndpoint to access the SQS API
-            AssetProcessor.JobQueueService = new MockJobQueueService();
+            var queueService = new MockJobQueueService();
+            
+            var processor = new AssetProcessor(queueService);
 
             foreach (var asset in command.Assets)
             {

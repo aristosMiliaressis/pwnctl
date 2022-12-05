@@ -14,7 +14,7 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Queries
 
         public async Task<MediatedResponse<EndpointListViewModel>> Handle(ListEndpointsQuery command, CancellationToken cancellationToken)
         {
-            AssetRepository repository = new();
+            AssetDbRepository repository = new();
 
             var endpoints = await repository.ListEndpointsAsync();
 

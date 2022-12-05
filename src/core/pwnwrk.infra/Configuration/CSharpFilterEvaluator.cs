@@ -1,12 +1,12 @@
 using pwnwrk.domain.Assets.BaseClasses;
-using pwnwrk.domain.Assets.Interfaces;
+using pwnwrk.domain.Common.Interfaces;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using System.Reflection;
 
 namespace pwnwrk.infra.Configuration
 {
-    public class CSharpFilterEvaluator : IFilterEvaluator
+    public class CSharpFilterEvaluator : FilterEvaluator
     {
         /// <summary>
         /// constructs and evaluates a CSharpScript expression by prefixing the `script` parameter

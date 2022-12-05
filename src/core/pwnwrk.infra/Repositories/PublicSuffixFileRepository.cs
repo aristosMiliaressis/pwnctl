@@ -4,7 +4,7 @@ using pwnwrk.infra.Configuration;
 
 namespace pwnwrk.infra.Repositories
 {
-    public sealed class PublicSuffixRepository : IPublicSuffixRepository
+    public sealed class PublicSuffixFileRepository : PublicSuffixRepository
     {
         private static string _publicSuffixDataFile = $"{EnvironmentVariables.InstallPath}/public_suffix_list.dat";
 

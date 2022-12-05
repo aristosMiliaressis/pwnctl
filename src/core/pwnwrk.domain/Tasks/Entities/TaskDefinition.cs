@@ -1,6 +1,6 @@
-using pwnwrk.domain.Assets.Interfaces;
 using pwnwrk.domain.Assets.BaseClasses;
 using pwnwrk.domain.Common.BaseClasses;
+using pwnwrk.domain.Common.Interfaces;
 
 namespace pwnwrk.domain.Tasks.Entities
 {
@@ -23,7 +23,7 @@ namespace pwnwrk.domain.Tasks.Entities
             if (string.IsNullOrEmpty(Filter))
                 return true;
 
-            return IFilterEvaluator.Instance.Evaluate(Filter, asset);
+            return FilterEvaluator.Instance.Evaluate(Filter, asset);
         }
 
         // Extrapolate list of parameter names from CommandTemplate

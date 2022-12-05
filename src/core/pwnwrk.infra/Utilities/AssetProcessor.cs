@@ -1,31 +1,33 @@
-﻿using pwnwrk.infra.Exceptions;
-using pwnwrk.infra.Queues;
-using pwnwrk.infra.Repositories;
+﻿using pwnwrk.infra.Repositories;
 using pwnwrk.infra.Extensions;
 using pwnwrk.infra.Persistence;
 using pwnwrk.infra.Persistence.Extensions;
 using pwnwrk.infra.Logging;
-using pwnwrk.infra.Notifications;
 using pwnwrk.domain.Notifications.Entities;
 using pwnwrk.domain.Targets.Entities;
 using pwnwrk.domain.Tasks.Entities;
 using pwnwrk.domain.Assets.BaseClasses;
+using pwnwrk.domain.Assets.Exceptions;
+using pwnwrk.domain.Assets.Interfaces;
+using pwnwrk.domain.Common.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using pwnwrk.domain.Notifications.Interfaces;
 
 namespace pwnwrk.infra.Utilities
 {
     public sealed class AssetProcessor
     {
-        private readonly AssetRepository _assetRepo = new();
-        private readonly NotificationSender _notificationSender = new();
-        public static IJobQueueService JobQueueService = JobQueueFactory.Create();
+        private readonly AssetRepository _assetRepo = new AssetDbRepository();
+        private readonly JobQueueService _jobQueueService;
         private readonly PwnctlDbContext _context = new();
         private readonly List<TaskDefinition> _taskDefinitions;
         private readonly List<NotificationRule> _notificationRules;
         private readonly List<Program> _programs;
 
-        public AssetProcessor()
+        public AssetProcessor(JobQueueService jobQueueService)
         {
+            _jobQueueService = jobQueueService;
+
             _programs = _context.ListPrograms();
 
             _taskDefinitions = _context.TaskDefinitions.ToList();
@@ -90,7 +92,7 @@ namespace pwnwrk.infra.Utilities
 
             foreach (var rule in _notificationRules.Where(rule => rule.Check(asset)))
             {
-                _notificationSender.Send(asset, rule);
+                NotificationSender.Instance.Send(asset, rule);
             }
 
             var matchingTasks = program.Policy
@@ -109,7 +111,7 @@ namespace pwnwrk.infra.Utilities
                 _context.Entry(task).State = EntityState.Added;
                 await _context.SaveChangesAsync();
 
-                await JobQueueService.EnqueueAsync(task);
+                await _jobQueueService.EnqueueAsync(task);
             }
 
             await _context.SaveChangesAsync();

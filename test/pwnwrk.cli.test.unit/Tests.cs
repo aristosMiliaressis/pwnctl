@@ -2,6 +2,7 @@ namespace pwnwrk.test.unit;
 
 using pwnwrk.infra;
 using pwnwrk.infra.Utilities;
+using pwnwrk.infra.Queues;
 using pwnwrk.infra.Persistence;
 using pwnwrk.infra.Persistence.Extensions;
 using pwnwrk.infra.Repositories;
@@ -135,8 +136,8 @@ public sealed class Tests
         var programs = context.ListPrograms();
 
         // net range
-        Assert.NotNull(new NetRange("172.16.17.0", 24).GetOwningProgram(programs));
-        Assert.Null(new NetRange("172.16.16.0", 24).GetOwningProgram(programs));
+        Assert.NotNull(new NetRange(System.Net.IPAddress.Parse("172.16.17.0"), 24).GetOwningProgram(programs));
+        Assert.Null(new NetRange(System.Net.IPAddress.Parse("172.16.16.0"), 24).GetOwningProgram(programs));
 
         // host in netrange
         Assert.NotNull(new Host("172.16.17.4").GetOwningProgram(programs));
@@ -169,7 +170,7 @@ public sealed class Tests
         Assert.Null(new DNSRecord(DnsRecordType.A, "example.com", "172.16.16.15").GetOwningProgram(programs));
 
         // test for inscope host from domain relationship
-        AssetProcessor processor = new();
+        AssetProcessor processor = new(new MockJobQueueService());
         await processor.ProcessAsync("xyz.tesla.com IN A 1.3.3.7");
         var host = context.Hosts.First(h => h.IP == "1.3.3.7");
         Assert.True(host.InScope);
@@ -179,7 +180,7 @@ public sealed class Tests
     public async System.Threading.Tasks.Task TaskFiltering_Tests()
     {
         PwnctlDbContext context = new();
-        AssetProcessor processor = new();
+        AssetProcessor processor = new(new MockJobQueueService());
 
         // blacklist test
         await processor.ProcessAsync("172.16.17.0/24");
@@ -240,7 +241,7 @@ public sealed class Tests
     [Fact]
     public async System.Threading.Tasks.Task AssetRepository_Tests()
     {
-        AssetRepository repository = new();
+        AssetDbRepository repository = new();
         PwnctlDbContext context = new();
 
         var inScopeDomain = new Domain("tesla.com");
@@ -264,7 +265,7 @@ public sealed class Tests
         await repository.SaveAsync(record2);
         Assert.NotNull(context.FindAsset(record2));
 
-        var netRange = new NetRange("10.1.101.0", 24);
+        var netRange = new NetRange(System.Net.IPAddress.Parse("10.1.101.0"), 24);
         Assert.Null(context.FindAsset(netRange));
         await repository.SaveAsync(netRange);
         Assert.NotNull(context.FindAsset(netRange));
@@ -278,7 +279,7 @@ public sealed class Tests
     [Fact]
     public async System.Threading.Tasks.Task AssetProcessor_Tests()
     {
-        AssetProcessor processor = new();
+        AssetProcessor processor = new(new MockJobQueueService());
         PwnctlDbContext context = new();
 
         var programs = context.ListPrograms();
@@ -317,7 +318,7 @@ public sealed class Tests
     [Fact]
     public async System.Threading.Tasks.Task Tagging_Tests()
     {
-        AssetProcessor processor = new();
+        AssetProcessor processor = new(new MockJobQueueService());
         PwnctlDbContext context = new();
 
         var exampleUrl = new {

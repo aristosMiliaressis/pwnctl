@@ -1,8 +1,9 @@
 namespace pwnwrk.infra.Serialization;
 
 using System.Text.Json;
+using pwnwrk.domain.Common.Interfaces;
 
-public class AppJsonSerializer : ISerializer
+public class AppJsonSerializer : Serializer
 {
     private static JsonSerializerOptions _options = JsonSerializerOptionsFactory.Create();
 

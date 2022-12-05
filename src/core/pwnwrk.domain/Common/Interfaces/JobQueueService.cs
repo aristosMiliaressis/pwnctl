@@ -1,8 +1,8 @@
 using pwnwrk.domain.Tasks.Entities;
 
-namespace pwnwrk.infra.Queues
+namespace pwnwrk.domain.Common.Interfaces
 {
-    public interface IJobQueueService
+    public interface JobQueueService
     {
         /// <summary>
         /// pushes a job to the pending queue.

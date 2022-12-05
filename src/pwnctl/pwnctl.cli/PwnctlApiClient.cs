@@ -25,7 +25,7 @@ public sealed class PwnctlApiClient
         _httpClient.BaseAddress = new Uri(PwnContext.Config.Api.BaseUrl);
     }
 
-    public async Task<TResult> Send<TResult>(IMediatedRequest<TResult> request)
+    public async Task<TResult> Send<TResult>(MediatedRequest<TResult> request)
     {
         var apiResponse = await _send(request);
         if (apiResponse.Result == null)
@@ -34,14 +34,14 @@ public sealed class PwnctlApiClient
         return PwnContext.Serializer.Deserialize<TResult>((JsonElement)apiResponse.Result);
     }
 
-    public async Task Send(IMediatedRequest request)
+    public async Task Send(MediatedRequest request)
     {
         var apiResponse = await _send(request);
 
         return;
     }
 
-    private async Task<MediatedResponse> _send(IBaseMediatedRequest request)
+    private async Task<MediatedResponse> _send(Request request)
     {
         var concreteRequestType = request.GetType();
 

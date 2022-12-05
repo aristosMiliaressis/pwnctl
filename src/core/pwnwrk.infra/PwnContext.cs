@@ -11,12 +11,14 @@ namespace pwnwrk.infra
     {
         static PwnContext()
         {
-            IFilterEvaluator.Instance = new CSharpFilterEvaluator();
-            IPublicSuffixRepository.Instance = new PublicSuffixRepository();
+            FilterEvaluator.Instance = new CSharpFilterEvaluator();
+            NotificationSender.Instance = new DiscordNotificationSender();
+            PublicSuffixRepository.Instance = new PublicSuffixFileRepository();
+            Serializer.Instance = new AppJsonSerializer();
         }
 
         public static AppConfig Config { get; private set; } = PwnConfigFactory.Create();
         public static ILogger Logger { get; private set; } = PwnLoggerFactory.Create();
-        public static ISerializer Serializer { get; private set; } = new AppJsonSerializer();
+        public static Serializer Serializer { get; private set; } = new AppJsonSerializer();
     }
 }

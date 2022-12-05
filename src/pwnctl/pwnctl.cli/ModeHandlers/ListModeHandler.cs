@@ -4,10 +4,11 @@ using System.Threading.Tasks;
 using pwnctl.dto.Assets.Queries;
 using pwnctl.dto.Targets.Queries;
 using pwnwrk.infra;
+using pwnctl.cli.Interfaces;
 
 namespace pwnctl.cli.ModeHandlers
 {
-    public sealed class ListModeHandler : IModeHandler
+    public sealed class ListModeHandler : ModeHandler
     {
         public string ModeName => "list";
         

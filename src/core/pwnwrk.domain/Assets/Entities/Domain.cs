@@ -100,7 +100,7 @@ namespace pwnwrk.domain.Assets.Entities
 
         public PublicSuffix GetPublicSuffix()
         {
-            return IPublicSuffixRepository.Instance.List()
+            return PublicSuffixRepository.Instance.List()
                          .Where(suffix => Name.EndsWith($".{suffix.Suffix}"))
                          .OrderByDescending(s => s.Suffix.Length)
                          .FirstOrDefault();

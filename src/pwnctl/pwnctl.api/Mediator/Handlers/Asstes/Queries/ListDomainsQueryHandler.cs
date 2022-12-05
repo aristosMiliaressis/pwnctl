@@ -14,7 +14,7 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Queries
 
         public async Task<MediatedResponse<DomainListViewModel>> Handle(ListDomainsQuery command, CancellationToken cancellationToken)
         {
-            AssetRepository repository = new();
+            AssetDbRepository repository = new();
 
             var domains = await repository.ListDomainsAsync();
 

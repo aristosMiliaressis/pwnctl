@@ -1,9 +1,10 @@
 ﻿using System.Diagnostics;
 using pwnwrk.domain.Tasks.Entities;
+using pwnwrk.domain.Common.Interfaces;
 
 namespace pwnwrk.infra.Queues
 {
-    public sealed class BashJobQueueService : IJobQueueService
+    public sealed class BashJobQueueService : JobQueueService
     {
         private static readonly string _queueDirectory = Path.Combine(PwnContext.Config.InstallPath , "queue/");
 

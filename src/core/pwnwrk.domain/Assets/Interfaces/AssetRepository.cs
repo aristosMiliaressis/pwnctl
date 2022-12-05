@@ -1,8 +1,8 @@
 using pwnwrk.domain.Assets.BaseClasses;
 
-namespace pwnwrk.infra.Repositories
+namespace pwnwrk.domain.Assets.Interfaces
 {
-    public interface IAssetRepository
+    public interface AssetRepository
     {
         Task<Asset> LoadRelatedAssets(Asset asset);
         Task SaveAsync(Asset asset);

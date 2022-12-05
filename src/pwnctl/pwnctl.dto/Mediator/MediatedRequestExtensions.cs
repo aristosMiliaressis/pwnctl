@@ -2,7 +2,7 @@ namespace pwnctl.dto.Mediator;
 
 public static class MediatedRequestExtensions
 {
-    public static string GetInterpolatedRoute(this IBaseMediatedRequest request)
+    public static string GetInterpolatedRoute(this Request request)
     {
         string route = MediatedRequestTypeHelper.GetRoute(request.GetType());
 

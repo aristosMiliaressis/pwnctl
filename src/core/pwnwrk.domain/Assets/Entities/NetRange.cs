@@ -19,9 +19,9 @@ namespace pwnwrk.domain.Assets.Entities
 
         public NetRange() {}
         
-        public NetRange(string firstAddress, ushort netPrefix)
+        public NetRange(IPAddress firstAddress, ushort netPrefix)
         {
-            FirstAddress = firstAddress;
+            FirstAddress = firstAddress.ToString();
             NetPrefixBits = netPrefix;
         }
 
@@ -29,7 +29,7 @@ namespace pwnwrk.domain.Assets.Entities
         {
             try
             {
-                var firstAddress = assetText.Split("/")[0];
+                var firstAddress = IPAddress.Parse(assetText.Split("/")[0]);
                 var netPrefixBits = ushort.Parse(assetText.Split("/")[1]);
                 var netRange = new NetRange(firstAddress, netPrefixBits);
                 netRange.AddTags(tags);

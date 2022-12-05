@@ -21,7 +21,7 @@ public static class WebApplicationExtensions
 
         var assemblies = requestAssemblyMarkerTypes.Select(type => Assembly.GetAssembly(type));
 
-        var requestInterfaceType = typeof(IBaseMediatedRequest);
+        var requestInterfaceType = typeof(Request);
 
         var requestTypes = assemblies
                             .SelectMany(assembly => assembly

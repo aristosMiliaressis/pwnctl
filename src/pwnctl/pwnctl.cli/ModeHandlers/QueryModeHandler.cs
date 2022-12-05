@@ -4,10 +4,11 @@ using System.Threading.Tasks;
 using pwnwrk.infra;
 using pwnwrk.infra.Persistence;
 using pwnctl.dto.Db.Commands;
+using pwnctl.cli.Interfaces;
 
 namespace pwnctl.cli.ModeHandlers
 {
-    public sealed class QueryModeHandler : IModeHandler
+    public sealed class QueryModeHandler : ModeHandler
     {
         public string ModeName => "query";
         
