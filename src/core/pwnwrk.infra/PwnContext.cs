@@ -1,9 +1,12 @@
 using pwnwrk.domain.Assets.Interfaces;
+using pwnwrk.domain.Common.Interfaces;
+using pwnwrk.domain.Notifications.Interfaces;
 using pwnwrk.infra.Configuration;
 using pwnwrk.infra.Repositories;
 using pwnwrk.infra.Logging;
 using pwnwrk.infra.Serialization;
 using Serilog;
+using pwnwrk.infra.Notifications;
 
 namespace pwnwrk.infra
 {
