@@ -16,6 +16,10 @@ namespace pwnwrk.svc
         private readonly SQSJobQueueService _queueService = new();
         private readonly PwnctlDbContext _context = new();
         private List<Message> _unprocessedMessages = new List<Message>();
+        private readonly IHostApplicationLifetime _hostApplicationLifetime;
+        
+        public JobConsumerService(IHostApplicationLifetime hostApplicationLifetime)
+            => _hostApplicationLifetime = hostApplicationLifetime;
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -29,8 +33,7 @@ namespace pwnwrk.svc
                     if (messages == null || !messages.Any())
                     {
                         PwnContext.Logger.Information($"queue is empty");
-                        Thread.Sleep(1000*60*5);
-                        Environment.Exit(0);
+                        break;
                     }
 
                     _unprocessedMessages = new(messages);
@@ -74,6 +77,10 @@ namespace pwnwrk.svc
             catch (Exception ex)
             {
                 PwnContext.Logger.Error(ex.ToRecursiveExInfo());
+            }
+            finally
+            {
+                _hostApplicationLifetime.StopApplication();
             }
         }
 

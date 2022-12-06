@@ -133,7 +133,7 @@
   IsActive: true
   Aggressiveness: 5
   Subject: Endpoint
-  Filter: Endpoint["Content-Type"].Contains("/json") || Endpoint["Content-Type"].Contains("/xml")
+  Filter: Endpoint.Path == "/" || Endpoint["Content-Type"].Contains("/json") || Endpoint["Content-Type"].Contains("/xml")
 
 - ShortName: shortname_scanning
   CommandTemplate: shortname-check.sh {{Url}}
