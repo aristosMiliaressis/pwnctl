@@ -80,7 +80,7 @@ WORKDIR /opt/chromium/chromium-latest-linux
 RUN ./update.sh && ln -s /opt/chromium/chromium-latest-linux/latest/chrome /usr/bin/chromium
 
 # Installing recon tools
-RUN mkdir /opt/wordlists \
+RUN mkdir -p /opt/wordlists/dns/ \
  && mkdir /opt/scripts \
  && mkdir /opt/tools
 
