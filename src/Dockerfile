@@ -137,11 +137,6 @@ RUN git clone https://github.com/initstring/cloud_enum.git \
 RUN git clone https://github.com/xnl-h4ck3r/xnLinkFinder.git \
     && cd xnLinkFinder \
     && python3 setup.py install
-RUN curl https://github.com/urbanadventurer/WhatWeb/archive/refs/tags/v0.5.5.zip -L -o whatweb.zip \
-    && unzip whatweb.zip \
-    && rm whatweb.zip \
-    && cd WhatWeb* \
-    && make install
 RUN git clone https://github.com/EnableSecurity/wafw00f.git \
     && cd wafw00f && python3 setup.py install
 RUN go install github.com/rverton/webanalyze/cmd/webanalyze@latest \
