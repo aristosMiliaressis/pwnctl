@@ -5,6 +5,7 @@ using pwnctl.infra.Repositories;
 using pwnctl.infra.Logging;
 using pwnctl.infra.Serialization;
 using pwnctl.infra.Notifications;
+using Serilog;
 
 namespace pwnctl.infra
 {
