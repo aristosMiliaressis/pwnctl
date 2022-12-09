@@ -1,0 +1,406 @@
+{
+  "version": "21.0.0",
+  "artifacts": {
+    "PwnctlStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "PwnctlStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "PwnctlStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "PwnctlStack.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2ac06ce27577c2a88cbe71d2f7b70b84926d8a45c7d5e67fe055ad1c73cce7b6.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "PwnctlStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "PwnctlStack.assets"
+      ],
+      "metadata": {
+        "/PwnctlStack/PwnwrkVpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnwrkVpcEA5D7932"
+          }
+        ],
+        "/PwnctlStack/PwnwrkVpc/PublicSubnet1Subnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnwrkVpcPublicSubnet1Subnet1SubnetE695BBDB"
+          }
+        ],
+        "/PwnctlStack/PwnwrkVpc/PublicSubnet1Subnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnwrkVpcPublicSubnet1Subnet1RouteTable9A96482C"
+          }
+        ],
+        "/PwnctlStack/PwnwrkVpc/PublicSubnet1Subnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnwrkVpcPublicSubnet1Subnet1RouteTableAssociationE9EDFA70"
+          }
+        ],
+        "/PwnctlStack/PwnwrkVpc/PublicSubnet1Subnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnwrkVpcPublicSubnet1Subnet1DefaultRouteC69801A5"
+          }
+        ],
+        "/PwnctlStack/PwnwrkVpc/PublicSubnet1Subnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnwrkVpcPublicSubnet1Subnet2Subnet42578822"
+          }
+        ],
+        "/PwnctlStack/PwnwrkVpc/PublicSubnet1Subnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnwrkVpcPublicSubnet1Subnet2RouteTable7648C85F"
+          }
+        ],
+        "/PwnctlStack/PwnwrkVpc/PublicSubnet1Subnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnwrkVpcPublicSubnet1Subnet2RouteTableAssociation14BB9888"
+          }
+        ],
+        "/PwnctlStack/PwnwrkVpc/PublicSubnet1Subnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnwrkVpcPublicSubnet1Subnet2DefaultRoute786216C5"
+          }
+        ],
+        "/PwnctlStack/PwnwrkVpc/PrivateSubnet1Subnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnwrkVpcPrivateSubnet1Subnet1Subnet3EE433F9"
+          }
+        ],
+        "/PwnctlStack/PwnwrkVpc/PrivateSubnet1Subnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnwrkVpcPrivateSubnet1Subnet1RouteTable3D8CFB57"
+          }
+        ],
+        "/PwnctlStack/PwnwrkVpc/PrivateSubnet1Subnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnwrkVpcPrivateSubnet1Subnet1RouteTableAssociationCF30E7C7"
+          }
+        ],
+        "/PwnctlStack/PwnwrkVpc/PrivateSubnet1Subnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnwrkVpcPrivateSubnet1Subnet2Subnet1F43F2E2"
+          }
+        ],
+        "/PwnctlStack/PwnwrkVpc/PrivateSubnet1Subnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnwrkVpcPrivateSubnet1Subnet2RouteTable92CF94E6"
+          }
+        ],
+        "/PwnctlStack/PwnwrkVpc/PrivateSubnet1Subnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnwrkVpcPrivateSubnet1Subnet2RouteTableAssociationCC1076A4"
+          }
+        ],
+        "/PwnctlStack/PwnwrkVpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnwrkVpcIGW67C300FC"
+          }
+        ],
+        "/PwnctlStack/PwnwrkVpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnwrkVpcVPCGW78554B87"
+          }
+        ],
+        "/PwnctlStack/PwnctlAuroraPostgreSqlInstanceCreds/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnctlAuroraPostgreSqlInstanceCredsDEF288A5"
+          }
+        ],
+        "/PwnctlStack/PwnctlAuroraPostgreSqlInstanceCreds/Attachment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnctlAuroraPostgreSqlInstanceCredsAttachment8F8DFBBE"
+          }
+        ],
+        "/PwnctlStack/PwnctlAuroraPostgreSqlInstance/SubnetGroup/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnctlAuroraPostgreSqlInstanceSubnetGroup25749B95"
+          }
+        ],
+        "/PwnctlStack/PwnctlAuroraPostgreSqlInstance/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnctlAuroraPostgreSqlInstanceSecurityGroup99E48CA4"
+          }
+        ],
+        "/PwnctlStack/PwnctlAuroraPostgreSqlInstance/SecurityGroup/from PwnctlStackPwnctlApiSecurityGroup4CD6FE49:{IndirectPort}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnctlAuroraPostgreSqlInstanceSecurityGroupfromPwnctlStackPwnctlApiSecurityGroup4CD6FE49IndirectPortCE1C1EE0"
+          }
+        ],
+        "/PwnctlStack/PwnctlAuroraPostgreSqlInstance/SecurityGroup/from PwnctlStackPwnwrkSvcSecurityGroup36899230:{IndirectPort}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnctlAuroraPostgreSqlInstanceSecurityGroupfromPwnctlStackPwnwrkSvcSecurityGroup36899230IndirectPortFF45D8A7"
+          }
+        ],
+        "/PwnctlStack/PwnctlAuroraPostgreSqlInstance/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnctlAuroraPostgreSqlInstance82DC6193"
+          }
+        ],
+        "/PwnctlStack/pwnwrk-dlq.fifo/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "pwnwrkdlqfifoA60405CB"
+          }
+        ],
+        "/PwnctlStack/pwnctl.fifo/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "pwnwrkfifo043C4E87"
+          }
+        ],
+        "/PwnctlStack/PwnwrkFs/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnwrkFs38CFD1B2"
+          }
+        ],
+        "/PwnctlStack/PwnwrkFs/EfsSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnwrkFsEfsSecurityGroup9706A235"
+          }
+        ],
+        "/PwnctlStack/PwnwrkFs/EfsSecurityGroup/from PwnctlStackPwnctlApiSecurityGroup4CD6FE49:2049": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnwrkFsEfsSecurityGroupfromPwnctlStackPwnctlApiSecurityGroup4CD6FE492049A0DD6951"
+          }
+        ],
+        "/PwnctlStack/PwnwrkFs/EfsSecurityGroup/from PwnctlStackPwnwrkSvcSecurityGroup36899230:2049": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnwrkFsEfsSecurityGroupfromPwnctlStackPwnwrkSvcSecurityGroup368992302049D366052D"
+          }
+        ],
+        "/PwnctlStack/PwnwrkFs/EfsMountTarget1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnwrkFsEfsMountTarget1F17EAFD8"
+          }
+        ],
+        "/PwnctlStack/PwnwrkFs/EfsMountTarget2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnwrkFsEfsMountTarget2D74F929D"
+          }
+        ],
+        "/PwnctlStack/PwnwrkFs/PwnctlApiFsap/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnwrkFsPwnctlApiFsapA45B1F35"
+          }
+        ],
+        "/PwnctlStack/PwnctlApiRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnctlApiRole0647AFDD"
+          }
+        ],
+        "/PwnctlStack/PwnctlApiRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnctlApiRoleDefaultPolicy09D24CEA"
+          }
+        ],
+        "/PwnctlStack/PwnctlApi/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnctlApiSecurityGroupE5FA2DDE"
+          }
+        ],
+        "/PwnctlStack/PwnctlApi/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnctlApiB48EE417"
+          }
+        ],
+        "/PwnctlStack/PwnctlApi/LogRetention/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnctlApiLogRetentionB71D339E"
+          }
+        ],
+        "/PwnctlStack/PwnctlApi/FunctionUrl/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnctlApiFunctionUrl4D6F2F30"
+          }
+        ],
+        "/PwnctlStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+          }
+        ],
+        "/PwnctlStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB"
+          }
+        ],
+        "/PwnctlStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A"
+          }
+        ],
+        "/PwnctlStack/PwnctlApiUrlParam/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnctlApiUrlParam08F4F643"
+          }
+        ],
+        "/PwnctlStack/PwnwrkRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnwrkRoleE2D9DEE5"
+          }
+        ],
+        "/PwnctlStack/PwnwrkRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnwrkRoleDefaultPolicyD6466EDD"
+          }
+        ],
+        "/PwnctlStack/PwnwrkDef/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnwrkDefB1160240"
+          }
+        ],
+        "/PwnctlStack/PwnwrkLogs/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnwrkLogs49C21403"
+          }
+        ],
+        "/PwnctlStack/PwnwrkLogs/Policy/ResourcePolicy": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnwrkLogsPolicyResourcePolicyBD6246FA"
+          }
+        ],
+        "/PwnctlStack/PwnwrkCluster/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnwrkCluster246B6C82"
+          }
+        ],
+        "/PwnctlStack/PwnwrkSvc/Service": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnwrkSvcServiceD0F1546B"
+          }
+        ],
+        "/PwnctlStack/PwnwrkSvc/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnwrkSvcSecurityGroup5C9E8490"
+          }
+        ],
+        "/PwnctlStack/PwnwrkSvc/TaskCount/Target/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnwrkSvcTaskCountTargetD25175FE"
+          }
+        ],
+        "/PwnctlStack/PwnwrkSvc/TaskCount/Target/ScaleInPolicy/LowerPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnwrkSvcTaskCountTargetScaleInPolicyLowerPolicyD00CFAFA"
+          }
+        ],
+        "/PwnctlStack/PwnwrkSvc/TaskCount/Target/ScaleInPolicy/LowerAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnwrkSvcTaskCountTargetScaleInPolicyLowerAlarmDEE8CE10"
+          }
+        ],
+        "/PwnctlStack/PwnwrkSvc/TaskCount/Target/ScaleOutPolicy/UpperPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnwrkSvcTaskCountTargetScaleOutPolicyUpperPolicy34F9E62D"
+          }
+        ],
+        "/PwnctlStack/PwnwrkSvc/TaskCount/Target/ScaleOutPolicy/UpperAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnwrkSvcTaskCountTargetScaleOutPolicyUpperAlarm9D2DFCAA"
+          }
+        ],
+        "/PwnctlStack/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/PwnctlStack/CDKMetadata/Condition": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadataAvailable"
+          }
+        ],
+        "/PwnctlStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/PwnctlStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "PwnctlStack"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

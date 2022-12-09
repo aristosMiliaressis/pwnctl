@@ -1,0 +1,139 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+
+  workflow_dispatch:
+
+jobs:
+  build-cli:
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/dotnet/sdk:6.0
+    steps:
+      - name: Checkout subject branch
+        uses: actions/checkout@v3
+
+      - name: Cache Nuget packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: nuget
+
+      - name: build cli
+        run: dotnet publish "src/pwnctl.cli/pwnctl.cli.csproj" -c Release -o ./pwnctl
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: pwnctl-cli
+          path: ./pwnctl/pwnctl
+          retention-days: 1
+
+  release-cli:
+    needs: build-cli
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: pwnctl-cli
+
+      - name: get datetime stamp
+        run: echo "STAMP=$(date +%y%m%d%H%M%S)" >> $GITHUB_OUTPUT
+        id: datetime
+
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.run_number }}.${{ steps.datetime.outputs.STAMP }}
+          release_name: Release ${{ github.run_number }}.${{ steps.datetime.outputs.STAMP }}
+
+      - name: Upload relase assets
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_name: pwnctl
+          asset_path: ./pwnctl
+          asset_content_type: application/x-elf
+
+  build-api:
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/dotnet/sdk:6.0
+    steps:
+      - name: Checkout subject branch
+        uses: actions/checkout@v3
+
+      - name: Cache Nuget packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: nuget
+
+      - name: build api
+        run: dotnet build src/pwnctl.api/pwnctl.api.csproj
+  
+  test-cli:
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/dotnet/sdk:6.0
+    steps:
+      - name: Checkout subject branch
+        uses: actions/checkout@v3
+
+      - name: Cache Nuget packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: nuget
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: test cli
+        run: dotnet test
+
+  build-and-push-worker:
+    needs: test-cli
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Checkout subject branch
+        uses: actions/checkout@v3
+
+      - name: Login to Public ECR
+        uses: docker/login-action@v2
+        with:
+          registry: public.ecr.aws
+          username: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        env:
+          AWS_REGION: us-east-1
+
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          tags: public.ecr.aws/i0m2p7r6/pwnwrk:latest
+          context: src/core/
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+

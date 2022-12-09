@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <LangVersion>preview</LangVersion>
+    <EnablePreviewFeatures>True</EnablePreviewFeatures>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <NoWarn>8618</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MediatR" Version="11.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\core\pwnctl.domain\pwnctl.domain.csproj" />
+    <ProjectReference Include="..\core\pwnctl.app\pwnctl.app.csproj" />
+    <ProjectReference Include="..\core\pwnctl.infra\pwnctl.infra.csproj" />
+  </ItemGroup>
+
+</Project>

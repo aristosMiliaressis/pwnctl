@@ -10,23 +10,19 @@ tasks:
   
   build-api:
     cmds:
-      - dotnet build src/pwnctl/pwnctl.api/pwnctl.api.csproj -c Release
+      - dotnet build src/pwnctl.api/pwnctl.api.csproj -c Release
   
   build-pwnctl-cli:
     cmds:
-      - dotnet publish src/pwnctl/pwnctl.cli/pwnctl.cli.csproj -c Release
+      - dotnet publish src/pwnctl.cli/pwnctl.cli.csproj -c Release
   
-  build-pwnwrk-cli:
-    cmds:
-      - dotnet publish src/pwnwrk/pwnwrk.cli/pwnwrk.cli.csproj -c Release
-
   build-svc:
     cmds:
-      - dotnet publish src/pwnwrk/pwnwrk.svc/pwnwrk.svc.csproj -c Release
+      - dotnet publish src/core/pwnctl.svc/pwnctl.svc.csproj -c Release
 
   build-svc-image:
     cmds:
-      - docker build src/ -t public.ecr.aws/i0m2p7r6/pwnwrk:latest
+      - docker build src/core/ -t public.ecr.aws/i0m2p7r6/pwnwrk:latest
 
   push-svc-image:
     cmds:
@@ -41,21 +37,21 @@ tasks:
   install-cli-src:
     deps: [build-pwnctl-cli]
     cmds:
-      - chmod +x src/pwnctl/pwnctl.cli/bin/Release/net6.0/linux-x64/publish/pwnctl
-      - sudo mv src/pwnctl/pwnctl.cli/bin/Release/net6.0/linux-x64/publish/pwnctl /usr/local/bin
-      - sudo mv src/pwnctl/pwnctl.cli/bin/Release/net6.0/linux-x64/publish/config.ini /etc/pwnctl/
+      - chmod +x src/pwnctl.cli/bin/Release/net6.0/linux-x64/publish/pwnctl
+      - sudo mv src/pwnctl.cli/bin/Release/net6.0/linux-x64/publish/pwnctl /usr/local/bin
+      - sudo mv src/pwnctl.cli/bin/Release/net6.0/linux-x64/publish/config.ini /etc/pwnctl/
   
   bootstrap-aws:
     cmds:
       - |
         region=$(aws configure get region)
         accountId=$(aws sts get-caller-identity --query "Account" --output text)
-        cdk bootstrap aws://${accountId}/${region} -o src/core/pwnwrk.infra.cdk/cdk.out
+        cdk bootstrap aws://${accountId}/${region} -o src/core/pwnctl.infra.cdk/cdk.out
 
   deploy-app:
     deps: [clean-cdk, build-api]
     cmds:
-      - cdk deploy -o src/core/pwnwrk.infra.cdk/cdk.out
+      - cdk deploy -o src/core/pwnctl.infra.cdk/cdk.out
 
   init-app:
     cmds:
@@ -63,11 +59,11 @@ tasks:
 
   clean-cdk:
     cmds:
-      - rm -rf src/core/pwnwrk.infra.cdk/cdk.out
+      - rm -rf src/core/pwnctl.infra.cdk/cdk.out
 
   destroy:
     cmds:
-      - cdk destroy -o src/core/pwnwrk.infra.cdk/cdk.out
+      - cdk destroy -o src/core/pwnctl.infra.cdk/cdk.out
 
   install-deps:
     cmds:

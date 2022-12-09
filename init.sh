@@ -44,10 +44,10 @@ setupDb() {
      python3 -m awscurl --service lambda -X POST ${functionUrl}db/seed > /dev/null
 }
 
-./src/pwnwrk/pwnwrk.svc/scripts/get-psl.sh deployment/
-cp ./src/pwnwrk/pwnwrk.svc/entrypoint_hook.sh deployment/
+./src/core/pwnctl.svc/scripts/get-psl.sh deployment/
+cp ./src/core/pwnctl.svc/entrypoint_hook.sh deployment/
 
 uploadDirectory ./deployment
-uploadDirectory ./src/core/pwnwrk.infra/Persistence/seed /seed
+uploadDirectory ./src/core/pwnctl.infra/Persistence/seed /seed
 
 setupDb

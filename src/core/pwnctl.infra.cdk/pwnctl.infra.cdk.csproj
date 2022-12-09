@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\pwnctl.infra\pwnctl.infra.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Constructs" Version="10.1.172" />
+    <PackageReference Include="Amazon.CDK.Lib" Version="2.51.1" />
+  </ItemGroup>
+</Project>

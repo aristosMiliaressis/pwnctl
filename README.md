@@ -1,8 +1,7 @@
 
 ## PWNCTL
 
-![pwnctl-ci: tag](https://github.com/aristosMiliaressis/pwnctl/actions/workflows/pwnctl-ci.yml/badge.svg)
-![pwnwrk-ci: tag](https://github.com/aristosMiliaressis/pwnctl/actions/workflows/pwnwrk-ci.yml/badge.svg)
+![ci: tag](https://github.com/aristosMiliaressis/pwnctl/actions/workflows/ci.yml/badge.svg)
 
 serverless recursive configuration based engine for external recon.
 
@@ -227,7 +226,7 @@ tags are a way to store arbitary metadata relating to an asset, they can be used
   CommandTemplate: ldns-walk {{Key}} | tail -n +2 | cut -d ' ' -f 1
   IsActive: true
   Aggressiveness: 1
-  Filter: DNSRecord.Type == pwnwrk.domain.Assets.Entities.DNSRecord.RecordType.NSEC
+  Filter: DNSRecord.Type == pwnctl.domain.Enums.DnsRecordType.NSEC
   Subject: DNSRecord
 
 - ShortName: cloud_enum
@@ -285,7 +284,7 @@ prints a summary about queued tasks and found assets
 
 ## Setup
 
-1. create an iam user with the policy provided in `src/core/pwnwrk.infra.cdk/pwnctl-cdk-policy.json`
+1. create an iam user with the policy provided in `src/core/pwnctl.infra.cdk/pwnctl-cdk-policy.json`
 2. put all configuration/seed/script files in the `deployment/` folder
 3. install `task`
 > sudo sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin
