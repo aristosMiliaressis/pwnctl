@@ -29,7 +29,7 @@ namespace pwnctl.domain.Entities
             UrlEncodedCsValues = urlEncodedCsValues;
         }
 
-        public static bool Parse(string assetText, out Asset[] assets)
+        public static bool TryParse(string assetText, out Asset[] assets)
         {
             throw new NotImplementedException();
         }

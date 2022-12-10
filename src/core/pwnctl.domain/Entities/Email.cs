@@ -20,7 +20,7 @@ namespace pwnctl.domain.Entities
             Domain = domain;
         }
 
-        public static bool Parse(string assetText, out Asset[] assets)
+        public static bool TryParse(string assetText, out Asset[] assets)
         {
             assets = null;
 

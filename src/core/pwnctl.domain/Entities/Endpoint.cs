@@ -47,13 +47,13 @@ namespace pwnctl.domain.Entities
             Url = $"{Service.Origin.Replace("tcp", scheme)}{path}" + (path.EndsWith("/") ? "" : "/");
         }
 
-        public static bool Parse(string assetText, out Asset[] assets)
+        public static bool TryParse(string assetText, out Asset[] assets)
         {
             var _assets = new List<Asset>();
 
             var uri = new Uri(assetText);
 
-            var origin = Host.Parse(uri.Host, out Asset[] hostAssets)
+            var origin = Host.TryParse(uri.Host, out Asset[] hostAssets)
                     ? new Service((Host)hostAssets[0], (ushort)uri.Port)
                     : new Service(new Domain(uri.Host), (ushort)uri.Port);
 

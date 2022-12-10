@@ -27,26 +27,26 @@ namespace pwnctl.domain.Entities
             Key = key;
             Value = value;
 
-            if (Host.Parse(key, out Asset[] hosts))
+            if (Host.TryParse(key, out Asset[] hosts))
             {
                 Host = (Host)hosts[0];
             }
-            else if (Domain.Parse(key, out Asset[] domains))
+            else if (Domain.TryParse(key, out Asset[] domains))
             {
                 Domain = (Domain)domains[0];
             }
 
-            if (Host.Parse(value, out hosts))
+            if (Host.TryParse(value, out hosts))
             {
                 Host = (Host)hosts[0];
             }
-            else if (Domain.Parse(value, out Asset[] domains))
+            else if (Domain.TryParse(value, out Asset[] domains))
             {
                 Domain = (Domain)domains[0];
             }
         }
 
-        public static bool Parse(string assetText, out Asset[] assets)
+        public static bool TryParse(string assetText, out Asset[] assets)
         {
             var _assets = new List<Asset>();
             assetText = assetText.Replace("\t", " ");

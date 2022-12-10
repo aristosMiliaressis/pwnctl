@@ -22,7 +22,7 @@ namespace pwnctl.app
             ParseTags(ref assetText, out List<Tag> tags);
 
             object[] parameters = new object[] { assetText, null };
-            foreach (var parseMethod in _parseMethod)
+            foreach (var parseMethod in _tryParseMethod)
             {
                 try
                 {
@@ -67,9 +67,9 @@ namespace pwnctl.app
                     .ToList();
         }
 
-        private static readonly IEnumerable<MethodInfo> _parseMethod = Assembly.GetAssembly(typeof(Asset))
+        private static readonly IEnumerable<MethodInfo> _tryParseMethod = Assembly.GetAssembly(typeof(Asset))
                                                 .GetTypes()
                                                 .Where(t => !t.IsAbstract && typeof(Asset).IsAssignableFrom(t))
-                                                .Select(t => t.GetMethod("Parse"));
+                                                .Select(t => t.GetMethod("TryParse"));
     }
 }

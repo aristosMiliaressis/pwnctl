@@ -30,7 +30,7 @@ namespace pwnctl.domain.Entities
             Version = version;
         }
 
-        public static bool Parse(string assetText, out Asset[] assets)
+        public static bool TryParse(string assetText, out Asset[] assets)
         {
             if (IPAddress.TryParse(assetText, out IPAddress address))
             {

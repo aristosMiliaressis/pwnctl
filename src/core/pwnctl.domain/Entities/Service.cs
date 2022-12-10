@@ -39,7 +39,7 @@ namespace pwnctl.domain.Entities
             Origin = l4Proto.ToString().ToLower() + "://" + host.IP + ":" + port;
         }
 
-        public static bool Parse(string assetText, out Asset[] assets)
+        public static bool TryParse(string assetText, out Asset[] assets)
         {
             var _assets = new List<Asset>();
 
@@ -60,7 +60,7 @@ namespace pwnctl.domain.Entities
 
             var port = ushort.Parse(strPort);
 
-            if (Host.Parse(assetText, out Asset[] hostAssets))
+            if (Host.TryParse(assetText, out Asset[] hostAssets))
             {
                 var service = new Service((Host)hostAssets[0], port, protocol);
                 _assets.Add(service);
@@ -68,7 +68,7 @@ namespace pwnctl.domain.Entities
                 assets = _assets.ToArray();
                 return true;
             }
-            else if (Domain.Parse(assetText, out Asset[] domains))
+            else if (Domain.TryParse(assetText, out Asset[] domains))
             {
                 var service = new Service((Domain)domains[0], port, protocol);
                 _assets.Add(service);

@@ -19,7 +19,7 @@ namespace pwnctl.domain.Entities
             NetPrefixBits = netPrefix;
         }
 
-        public static bool Parse(string assetText, out Asset[] assets)
+        public static bool TryParse(string assetText, out Asset[] assets)
         {
             var firstAddress = IPAddress.Parse(assetText.Split("/")[0]);
             var netPrefixBits = ushort.Parse(assetText.Split("/")[1]);
