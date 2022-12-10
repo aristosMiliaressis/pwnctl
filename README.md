@@ -1,7 +1,5 @@
-
-## PWNCTL
-
-![ci: tag](https://github.com/aristosMiliaressis/pwnctl/actions/workflows/ci.yml/badge.svg)
+PWNCTL ![ci: tag](https://github.com/aristosMiliaressis/pwnctl/actions/workflows/ci.yml/badge.svg)
+==
 
 serverless recursive configuration based engine for external recon.
 
