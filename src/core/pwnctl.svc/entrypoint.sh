@@ -26,8 +26,8 @@ else
     cp /mnt/efs/resolvers_top25.txt /opt/wordlists/dns/resolvers_top25.txt
 fi
 
-echo "pwnwrk service started on $HOSTNAME" | notify -provider discord -id status
+echo "pwnctl service started on $HOSTNAME" | notify -provider discord -id status
 
-/opt/pwnwrk-svc/pwnwrk
+/opt/pwnctl-svc/pwnsvc
 
-echo "pwnwrk service stoped on $HOSTNAME" | notify -provider discord -id status
+echo "pwnctl service stoped on $HOSTNAME" | notify -provider discord -id status

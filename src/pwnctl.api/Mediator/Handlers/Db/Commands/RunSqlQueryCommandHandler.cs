@@ -3,6 +3,7 @@ using pwnctl.dto.Db.Commands;
 using pwnctl.infra.Persistence;
 using pwnctl.infra.Logging;
 using pwnctl.infra;
+using pwnctl.app.Interfaces;
 
 using MediatR;
 
@@ -18,7 +19,7 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Commands
             {
                 var json = await queryRunner.RunAsync(command.Query);
 
-                var result = PwnContext.Serializer.Deserialize<List<object>>(json);
+                var result = Serializer.Instance.Deserialize<List<object>>(json);
 
                 return MediatedResponse<List<object>>.Success(result);
             }

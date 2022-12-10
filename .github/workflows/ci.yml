@@ -84,7 +84,7 @@ jobs:
       - name: build api
         run: dotnet build src/pwnctl.api/pwnctl.api.csproj
   
-  test-cli:
+  test-app:
     runs-on: ubuntu-latest
     container:
       image: mcr.microsoft.com/dotnet/sdk:6.0
@@ -110,7 +110,7 @@ jobs:
         run: dotnet test
 
   build-and-push-worker:
-    needs: test-cli
+    needs: test-app
     runs-on: ubuntu-latest
     steps:
       - name: Set up Docker Buildx
@@ -132,7 +132,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: public.ecr.aws/i0m2p7r6/pwnwrk:latest
+          tags: public.ecr.aws/i0m2p7r6/pwnctl:latest
           context: src/core/
           cache-from: type=gha
           cache-to: type=gha,mode=max

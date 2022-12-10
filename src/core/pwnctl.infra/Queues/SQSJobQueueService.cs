@@ -48,7 +48,7 @@ namespace pwnctl.infra.Queues
             {
                 MessageGroupId = Guid.NewGuid().ToString(),
                 QueueUrl = this[AwsConstants.QueueName],
-                MessageBody = PwnContext.Serializer.Serialize(task)
+                MessageBody = Serializer.Instance.Serialize(task)
             };
 
             await _sqsClient.SendMessageAsync(request);
@@ -67,7 +67,7 @@ namespace pwnctl.infra.Queues
             var messageResponse = await _sqsClient.ReceiveMessageAsync(receiveRequest, ct);
             if (messageResponse.HttpStatusCode != System.Net.HttpStatusCode.OK)
             {
-                PwnContext.Logger.Warning(PwnContext.Serializer.Serialize(messageResponse));
+                PwnContext.Logger.Warning(Serializer.Instance.Serialize(messageResponse));
                 PwnContext.Logger.Warning($"HttpStatusCode: {messageResponse.HttpStatusCode}");
                 // TODO: error handling
             }
@@ -81,7 +81,7 @@ namespace pwnctl.infra.Queues
 
             var response = await _sqsClient.DeleteMessageAsync(this[AwsConstants.QueueName], message.ReceiptHandle, ct);
             if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
-                PwnContext.Logger.Debug("DeleteMessage: " + PwnContext.Serializer.Serialize(response));
+                PwnContext.Logger.Debug("DeleteMessage: " + Serializer.Instance.Serialize(response));
         }
 
         public async Task ChangeBatchVisibility(List<Message> messages, CancellationToken ct)
@@ -103,7 +103,7 @@ namespace pwnctl.infra.Queues
 
             var response = await _sqsClient.ChangeMessageVisibilityBatchAsync(request, ct);
             if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
-                PwnContext.Logger.Debug("ChangeMessageVisibility: " + PwnContext.Serializer.Serialize(response));
+                PwnContext.Logger.Debug("ChangeMessageVisibility: " + Serializer.Instance.Serialize(response));
         }
     }
 

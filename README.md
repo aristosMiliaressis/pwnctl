@@ -63,7 +63,7 @@ Scope:
 ### Task Configuration
 
 - tasks are configured per asset class and can be filtered trough C# script in the `Filter` field. 
-- task stdout is piped into the `pwnwrk` cli for processing leading to tasks being queued causing a recursive loop.
+- task stdout is read and processed leading to tasks being queued causing a recursive loop.
 
 ### Asset Tagging
 

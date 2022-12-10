@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using pwnctl.dto.Mediator;
+using pwnctl.app.Interfaces;
 using pwnctl.infra;
 using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
@@ -31,7 +32,7 @@ public sealed class PwnctlApiClient
         if (apiResponse.Result == null)
             return default;
 
-        return PwnContext.Serializer.Deserialize<TResult>((JsonElement)apiResponse.Result);
+        return Serializer.Instance.Deserialize<TResult>((JsonElement)apiResponse.Result);
     }
 
     public async Task Send(MediatedRequest request)
@@ -45,7 +46,7 @@ public sealed class PwnctlApiClient
     {
         var concreteRequestType = request.GetType();
 
-        var json = PwnContext.Serializer.Serialize(request, concreteRequestType);
+        var json = Serializer.Instance.Serialize(request, concreteRequestType);
         var route = request.GetInterpolatedRoute();
 
         var httpRequest = new HttpRequestMessage {

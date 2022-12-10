@@ -3,6 +3,7 @@ using Serilog.Core;
 using Serilog.Events;
 using AWS.Logger.SeriLog;
 using AWS.Logger;
+using pwnctl.infra.Aws;
 using pwnctl.infra.Configuration;
 
 namespace pwnctl.infra.Logging
@@ -22,7 +23,7 @@ namespace pwnctl.infra.Logging
 
         private static Logger CreateCloudWatchLogger()
         {
-            var configuration = new AWSLoggerConfig(PwnContext.Config.Logging.LogGroup ?? "/aws/ecs/pwnwrk");
+            var configuration = new AWSLoggerConfig(PwnContext.Config.Logging.LogGroup ?? AwsConstants.EcsLogGroupName);
 
             return _baseConfig
                     .WriteTo.AWSSeriLog(configuration)

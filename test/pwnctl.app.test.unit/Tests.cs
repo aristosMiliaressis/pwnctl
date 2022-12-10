@@ -10,6 +10,7 @@ using pwnctl.domain.BaseClasses;
 using Microsoft.EntityFrameworkCore;
 using pwnctl.domain.Enums;
 using pwnctl.app;
+using pwnctl.app.Interfaces;
 
 public sealed class Tests
 {
@@ -192,7 +193,7 @@ public sealed class Tests
         };
 
         // TaskDefinition.Filter fail test
-        await processor.ProcessAsync(PwnContext.Serializer.Serialize(exampleUrl));
+        await processor.ProcessAsync(Serializer.Instance.Serialize(exampleUrl));
 
         // aggresivness test
         Assert.True(context.JoinedTaskRecordQueryable().Any(t => t.Definition.ShortName == "hakrawler"));
@@ -323,7 +324,7 @@ public sealed class Tests
             }
         };
 
-        Asset[] assets = AssetParser.Parse(PwnContext.Serializer.Serialize(exampleUrl), out Type[] assetTypes);
+        Asset[] assets = AssetParser.Parse(Serializer.Instance.Serialize(exampleUrl), out Type[] assetTypes);
 
         var endpoint = (Endpoint) assets.First(a => a.GetType() == typeof(Endpoint));
         Assert.NotNull(endpoint.Tags);
@@ -338,7 +339,7 @@ public sealed class Tests
         var srvTag = endpoint.Tags.First(t => t.Name == "server");
         Assert.Equal("IIS", srvTag.Value);
 
-        await processor.ProcessAsync(PwnContext.Serializer.Serialize(exampleUrl));
+        await processor.ProcessAsync(Serializer.Instance.Serialize(exampleUrl));
 
         endpoint = context.Endpoints.Include(e => e.Tags).Where(ep => ep.Url == "https://example.com:443/").First();
         ctTag = endpoint.Tags.First(t => t.Name == "content-type");
@@ -350,7 +351,7 @@ public sealed class Tests
         srvTag = endpoint.Tags.First(t => t.Name == "server");
         Assert.Equal("IIS", srvTag.Value);
 
-        await processor.ProcessAsync(PwnContext.Serializer.Serialize(exampleUrl));
+        await processor.ProcessAsync(Serializer.Instance.Serialize(exampleUrl));
 
         var teslaUrl = new
         {
@@ -363,7 +364,7 @@ public sealed class Tests
         };
 
         // process same asset twice and make sure tasks are only assigned once
-        await processor.ProcessAsync(PwnContext.Serializer.Serialize(teslaUrl));
+        await processor.ProcessAsync(Serializer.Instance.Serialize(teslaUrl));
         endpoint = (Endpoint) context.Endpoints.Include(e => e.Tags).Where(ep => ep.Url == "https://iis.tesla.com:443/").First();
         var tasks = context.JoinedTaskRecordQueryable().Where(t => t.EndpointId == endpoint.Id).ToList();
         Assert.True(!tasks.GroupBy(t => t.DefinitionId).Any(g => g.Count() > 1));
@@ -382,7 +383,7 @@ public sealed class Tests
         };
 
         // test Tag filter
-        await processor.ProcessAsync(PwnContext.Serializer.Serialize(apacheTeslaUrl));
+        await processor.ProcessAsync(Serializer.Instance.Serialize(apacheTeslaUrl));
         endpoint = context.Endpoints.Include(e => e.Tags).Where(ep => ep.Url == "https://apache.tesla.com:443/").First();
         tasks = context.JoinedTaskRecordQueryable().Where(t => t.EndpointId == endpoint.Id).ToList();
         Assert.DoesNotContain(tasks, t => t.Definition.ShortName == "shortname_scanner");
@@ -395,7 +396,7 @@ public sealed class Tests
             }
         };
 
-        await processor.ProcessAsync(PwnContext.Serializer.Serialize(sshService));
+        await processor.ProcessAsync(Serializer.Instance.Serialize(sshService));
         var service = context.Services.Where(ep => ep.Origin == "tcp://1.3.3.7:22").First();
         Assert.Equal("ssh", service.ApplicationProtocol);
     }

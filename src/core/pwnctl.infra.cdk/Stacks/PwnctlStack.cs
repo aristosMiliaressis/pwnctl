@@ -257,7 +257,7 @@ namespace pwnctl.infra.cdk.Stacks
                 ContainerName = AwsConstants.ContainerName,
                 Cpu = 512,
                 MemoryLimitMiB = 2048,
-                Image = ContainerImage.FromRegistry("public.ecr.aws/i0m2p7r6/pwnwrk:latest"),
+                Image = ContainerImage.FromRegistry("public.ecr.aws/i0m2p7r6/pwnctl:latest"),
                 Logging = LogDriver.AwsLogs(new AwsLogDriverProps
                 {
                     StreamPrefix = "/aws/ecs",

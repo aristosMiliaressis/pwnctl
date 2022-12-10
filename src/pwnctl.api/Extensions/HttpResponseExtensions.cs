@@ -2,6 +2,7 @@ namespace pwnctl.api.Extensions;
 
 using pwnctl.dto.Mediator;
 using pwnctl.infra;
+using pwnctl.app.Interfaces;
 using System.Net;
 
 public static class HttpResponseExtensions
@@ -12,7 +13,7 @@ public static class HttpResponseExtensions
                             ? (int)HttpStatusCode.OK
                             : result.Errors.MaxBy(err => err.Type).ToStatusCode();
                             
-        var json = PwnContext.Serializer.Serialize(result);
+        var json = Serializer.Instance.Serialize(result);
         
         await response.WriteAsync(json);
     }
@@ -23,7 +24,7 @@ public static class HttpResponseExtensions
 
         var result = MediatedResponse.Create(status);
 
-        var json = PwnContext.Serializer.Serialize(result);
+        var json = Serializer.Instance.Serialize(result);
 
         await response.WriteAsync(json);
     }

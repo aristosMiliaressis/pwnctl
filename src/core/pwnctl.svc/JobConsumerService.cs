@@ -1,4 +1,5 @@
 using pwnctl.app.Entities;
+using pwnctl.app.Interfaces;
 using pwnctl.infra;
 using pwnctl.infra.Aws;
 using pwnctl.infra.Queues;
@@ -45,7 +46,7 @@ namespace pwnctl.svc
 
                     foreach (var message in messages)
                     {
-                        var queuedTask = PwnContext.Serializer.Deserialize<TaskEntity>(message.Body);
+                        var queuedTask = Serializer.Instance.Deserialize<TaskEntity>(message.Body);
 
                         var taskRecord = await _context
                                             .JoinedTaskRecordQueryable()
@@ -110,7 +111,7 @@ do
     else 
         echo '{{""asset"":""'$assetLine'"", ""tags"":{{""FoundBy"":""{definition.ShortName}""}}}}'; 
     fi; 
-done | pwnwrk".Replace("\r\n", "").Replace("\n", ""));
+done".Replace("\r\n", "").Replace("\n", ""));
                     sr.Flush();
                     sr.Close();
                 }

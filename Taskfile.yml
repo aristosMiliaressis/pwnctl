@@ -22,14 +22,14 @@ tasks:
 
   build-svc-image:
     cmds:
-      - docker build src/core/ -t public.ecr.aws/i0m2p7r6/pwnwrk:latest
+      - docker build src/core/ -t public.ecr.aws/i0m2p7r6/pwnctl:latest
 
   push-svc-image:
     cmds:
       - |
         region=$(aws configure get region)
         aws ecr-public get-login-password --region $region | docker login --username AWS --password-stdin public.ecr.aws/i0m2p7r6
-        docker push public.ecr.aws/i0m2p7r6/pwnwrk:latest
+        docker push public.ecr.aws/i0m2p7r6/pwnctl:latest
         
   build-all: 
     deps: [build-pwnctl-cli, build-api, build-svc-image]

@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-using pwnctl.infra;
+using pwnctl.app.Interfaces;
 using pwnctl.infra.Persistence;
 using pwnctl.dto.Db.Commands;
 using pwnctl.cli.Interfaces;
@@ -31,7 +31,7 @@ namespace pwnctl.cli.ModeHandlers
             var result = await client.Send(command);
 
             if (result != null)
-                Console.WriteLine(PwnContext.Serializer.Serialize(result));
+                Console.WriteLine(Serializer.Instance.Serialize(result));
         }
 
         public void PrintHelpSection()

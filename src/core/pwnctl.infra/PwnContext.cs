@@ -21,6 +21,5 @@ namespace pwnctl.infra
 
         public static AppConfig Config { get; private set; } = PwnConfigFactory.Create();
         public static ILogger Logger { get; private set; } = PwnLoggerFactory.Create();
-        public static Serializer Serializer { get; private set; } = new AppJsonSerializer();
     }
 }

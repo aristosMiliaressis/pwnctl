@@ -1,4 +1,5 @@
 using Npgsql;
+using pwnctl.app.Interfaces;
 
 namespace pwnctl.infra.Persistence
 {
@@ -13,7 +14,7 @@ namespace pwnctl.infra.Persistence
                 await connection.OpenAsync();
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
                 var rows = Serialize(reader);
-                var json = PwnContext.Serializer.Serialize(rows);
+                var json = Serializer.Instance.Serialize(rows);
                 await reader.CloseAsync();
                 
                 return json;
