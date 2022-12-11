@@ -45,7 +45,6 @@ setupDb() {
 }
 
 ./src/core/pwnctl.svc/scripts/get-psl.sh deployment/
-cp ./src/core/pwnctl.svc/entrypoint_hook.sh deployment/
 
 uploadDirectory ./deployment
 uploadDirectory ./src/core/pwnctl.infra/Persistence/seed /seed

@@ -27,26 +27,26 @@ namespace pwnctl.domain.Entities
             Key = key;
             Value = value;
 
-            if (Host.TryParse(key, out Asset[] hosts))
+            if (Host.TryParse(key, out Asset host, out Asset[] assets))
             {
-                Host = (Host)hosts[0];
+                Host = (Host)host;
             }
-            else if (Domain.TryParse(key, out Asset[] domains))
+            else if (Domain.TryParse(key, out Asset domain, out assets))
             {
-                Domain = (Domain)domains[0];
+                Domain = (Domain)domain;
             }
 
-            if (Host.TryParse(value, out hosts))
+            if (Host.TryParse(value, out host, out assets))
             {
-                Host = (Host)hosts[0];
+                Host = (Host)host;
             }
-            else if (Domain.TryParse(value, out Asset[] domains))
+            else if (Domain.TryParse(value, out Asset domain, out assets))
             {
-                Domain = (Domain)domains[0];
+                Domain = (Domain)domain;
             }
         }
 
-        public static bool TryParse(string assetText, out Asset[] assets)
+        public static bool TryParse(string assetText, out Asset mainAsset, out Asset[] relatedAssets)
         {
             var _assets = new List<Asset>();
             assetText = assetText.Replace("\t", " ");
@@ -56,7 +56,7 @@ namespace pwnctl.domain.Entities
             && Enum.GetNames(typeof(DnsRecordType)).ToList().Contains(parts[2]))
             {
                 var record = new DNSRecord(Enum.Parse<DnsRecordType>(parts[2]), parts[0], string.Join(" ", parts.Skip(3)));
-                _assets.Add(record);
+                mainAsset = record;
 
                 if (record.Type == DnsRecordType.TXT && record.Value.Contains("spf"))
                 {
@@ -69,11 +69,12 @@ namespace pwnctl.domain.Entities
 
                 if (record.Host != null) _assets.Add(record.Host);
                 if (record.Domain != null) _assets.Add(record.Domain);
-                assets = _assets.ToArray();
+                relatedAssets = _assets.ToArray();
                 return true;
             }
-
-            assets = null;
+            
+            mainAsset = null;
+            relatedAssets = null;
             return false;
         }
 

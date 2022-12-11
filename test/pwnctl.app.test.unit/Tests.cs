@@ -124,6 +124,14 @@ public sealed class Tests
         Assert.True(assets.All(a => a.FoundBy == "dir_brute_common"));
 
         // TODO: SPF parsing test
+        // TODO: FQDN parsing test
+        // TODO: foundBy tags on main & related assets
+        // TODO: existing tags not being updated
+        // TODO: existing assets being updated with new tags
+        // TODO: null or empty tags not being added
+        // TODO: validate task-definitions.yml/notification-rules.yml (deserialization/Filter/Template Interpolation)
+        // entrypoint.sh ??
+        // task scripts??
     }
 
     [Fact]
@@ -400,25 +408,4 @@ public sealed class Tests
         var service = context.Services.Where(ep => ep.Origin == "tcp://1.3.3.7:22").First();
         Assert.Equal("ssh", service.ApplicationProtocol);
     }
-
-    // [Fact]
-    // public void QueryRunner_Tests()
-    // {
-    //     var queryRunner = new QueryRunner();
-
-    //     try
-    //     {
-    //         queryRunner.Run("SELECT \"ShortName\" FROM \"Tasks\" JOIN \"TaskDefinitions\" ON \"Tasks\".\"DefinitionId\" = \"TaskDefinitions\".\"Id\"");
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         Console.WriteLine(ex.ToRecursiveExInfo());
-    //     }
-    // }
-
-    //[Fact]
-    // public void NotificationRuleChecker_Tests()
-    // {
-    //     // TODO: NotificationRuleChecker_Tests
-    // }
 }

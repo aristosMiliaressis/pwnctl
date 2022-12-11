@@ -19,7 +19,7 @@ namespace pwnctl.domain.Entities
 
         public Domain(string domain)
         {
-            // support FQDNs ending with a dot.
+            // support FQDN notation ending with a dot.
             domain = domain.EndsWith(".") ? domain.Substring(0, domain.Length - 1) : domain;
 
             Name = domain;
@@ -31,11 +31,12 @@ namespace pwnctl.domain.Entities
             }
         }
 
-        public static bool TryParse(string assetText, out Asset[] assets)
+        public static bool TryParse(string assetText, out Asset mainAsset, out Asset[] relatedAssets)
         {
-            assets = null;
+            relatedAssets = new Asset[] {};
+            mainAsset = null;
 
-            if (assetText.Trim().Contains(" ") 
+            if (assetText.Trim().Contains(" ")
                 || assetText.Contains("/")
                 || assetText.Contains("*")
                 || assetText.Contains("@"))
@@ -46,7 +47,7 @@ namespace pwnctl.domain.Entities
 
             var domain = new Domain(assetText);
 
-            assets = new Asset[] { domain };
+            mainAsset = domain;
             if (domain.RegistrationDomain != null)
             {
                 var parentDomain = domain.RegistrationDomain.Name;
@@ -58,15 +59,15 @@ namespace pwnctl.domain.Entities
                 foreach (var sub in subs)
                 {
                     parentDomain = sub + "." + parentDomain;
-                    assets = assets.Append(new Domain(parentDomain)).ToArray();
+                    relatedAssets = relatedAssets.Append(new Domain(parentDomain)).ToArray();
                 }
-                assets = assets.Append(domain.RegistrationDomain).ToArray();
+                relatedAssets = relatedAssets.Append(domain.RegistrationDomain).ToArray();
             }
 
             var regDomain = domain.GetRegistrationDomain();
             var pubSuffix = domain.GetPublicSuffix();
             var word = regDomain.Substring(0, regDomain.Length - pubSuffix.Suffix.Length - 1);
-            assets = assets.Append(new Keyword(domain.IsRegistrationDomain ? domain : domain.RegistrationDomain, word)).ToArray();
+            relatedAssets = relatedAssets.Append(new Keyword(domain.IsRegistrationDomain ? domain : domain.RegistrationDomain, word)).ToArray();
 
             return true;
        }

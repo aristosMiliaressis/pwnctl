@@ -39,10 +39,8 @@ namespace pwnctl.domain.Entities
             Origin = l4Proto.ToString().ToLower() + "://" + host.IP + ":" + port;
         }
 
-        public static bool TryParse(string assetText, out Asset[] assets)
+        public static bool TryParse(string assetText, out Asset mainAsset, out Asset[] relatedAssets)
         {
-            var _assets = new List<Asset>();
-
             string strPort = assetText.Split(':').Last();
             
             assetText = assetText.Substring(0, assetText.Length - strPort.Length - 1);
@@ -60,25 +58,24 @@ namespace pwnctl.domain.Entities
 
             var port = ushort.Parse(strPort);
 
-            if (Host.TryParse(assetText, out Asset[] hostAssets))
+            if (Host.TryParse(assetText, out Asset host, out Asset[] assets))
             {
-                var service = new Service((Host)hostAssets[0], port, protocol);
-                _assets.Add(service);
-                _assets.Add((Host)hostAssets[0]);
-                assets = _assets.ToArray();
+                var service = new Service((Host)host, port, protocol);
+
+                mainAsset = service;
+                relatedAssets = new Asset[] { host };
                 return true;
             }
-            else if (Domain.TryParse(assetText, out Asset[] domains))
+            else if (Domain.TryParse(assetText, out Asset domain, out assets))
             {
-                var service = new Service((Domain)domains[0], port, protocol);
-                _assets.Add(service);
-                _assets.Add((Domain)domains[0]);
-                assets = _assets.ToArray();
+                var service = new Service((Domain)domain, port, protocol);
+                mainAsset = service;
+                relatedAssets = new Asset[] { domain };
                 return true;
             }
 
-            assets = null;
-            port = 0;
+            mainAsset = null;
+            relatedAssets = null;
             return false;
         }
 

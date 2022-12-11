@@ -47,14 +47,14 @@ namespace pwnctl.domain.Entities
             Url = $"{Service.Origin.Replace("tcp", scheme)}{path}" + (path.EndsWith("/") ? "" : "/");
         }
 
-        public static bool TryParse(string assetText, out Asset[] assets)
+        public static bool TryParse(string assetText, out Asset mainAsset, out Asset[] relatedAssets)
         {
             var _assets = new List<Asset>();
 
             var uri = new Uri(assetText);
 
-            var origin = Host.TryParse(uri.Host, out Asset[] hostAssets)
-                    ? new Service((Host)hostAssets[0], (ushort)uri.Port)
+            var origin = Host.TryParse(uri.Host, out Asset host, out Asset[] assets)
+                    ? new Service((Host)host, (ushort)uri.Port)
                     : new Service(new Domain(uri.Host), (ushort)uri.Port);
 
             var endpoint = new Endpoint(uri.Scheme, origin, uri.AbsolutePath);
@@ -75,12 +75,13 @@ namespace pwnctl.domain.Entities
             {
                 path = string.Join("/", path.Split("/").Reverse().Skip(1).Reverse());
                 _assets.Add(new Endpoint(endpoint.Scheme, endpoint.Service, path));
-            } while(path.Length > 1);
+            } while (path.Length > 1);
 
             if (_params.Any())
                 _assets.AddRange(_params);
 
-            assets = _assets.ToArray();
+            mainAsset = endpoint;
+            relatedAssets = _assets.ToArray();
             return true;
         }
 

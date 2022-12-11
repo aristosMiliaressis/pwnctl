@@ -19,13 +19,14 @@ namespace pwnctl.domain.Entities
             NetPrefixBits = netPrefix;
         }
 
-        public static bool TryParse(string assetText, out Asset[] assets)
+        public static bool TryParse(string assetText, out Asset mainAsset, out Asset[] relatedAssets)
         {
             var firstAddress = IPAddress.Parse(assetText.Split("/")[0]);
             var netPrefixBits = ushort.Parse(assetText.Split("/")[1]);
             var netRange = new NetRange(firstAddress, netPrefixBits);
 
-            assets = new Asset[] { netRange };
+            relatedAssets = null;
+            mainAsset = netRange;
             return true;
         }
 

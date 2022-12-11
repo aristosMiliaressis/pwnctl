@@ -30,16 +30,18 @@ namespace pwnctl.domain.Entities
             Version = version;
         }
 
-        public static bool TryParse(string assetText, out Asset[] assets)
+        public static bool TryParse(string assetText, out Asset mainAsset, out Asset[] relatedAssets)
         {
+            mainAsset = null;
+            relatedAssets = null;
+
             if (IPAddress.TryParse(assetText, out IPAddress address))
             {
                 var host = new Host(assetText, address.AddressFamily);
-                assets = new Asset[] { host };
+                mainAsset = host;
                 return true;
             }
 
-            assets = null;
             return false;
         }
 

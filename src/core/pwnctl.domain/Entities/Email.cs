@@ -20,9 +20,10 @@ namespace pwnctl.domain.Entities
             Domain = domain;
         }
 
-        public static bool TryParse(string assetText, out Asset[] assets)
+        public static bool TryParse(string assetText, out Asset mainAsset, out Asset[] relatedAssets)
         {
-            assets = null;
+            mainAsset = null;
+            relatedAssets = null;
 
             assetText = assetText.StartsWith("mailto:")
                     ? assetText.Substring(7)
@@ -37,9 +38,9 @@ namespace pwnctl.domain.Entities
 
             var domain = new Domain(address.Domain);
 
-            assets = new Asset[] 
+            mainAsset = new Email(domain, address.Address);
+            relatedAssets = new Asset[] 
             {
-                new Email(domain, address.Address),
                 domain
             };
             

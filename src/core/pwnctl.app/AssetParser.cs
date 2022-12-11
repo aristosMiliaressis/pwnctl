@@ -21,7 +21,7 @@ namespace pwnctl.app
 
             ParseTags(ref assetText, out List<Tag> tags);
 
-            object[] parameters = new object[] { assetText, null };
+            object[] parameters = new object[] { assetText, null, null };
             foreach (var parseMethod in _tryParseMethod)
             {
                 try
@@ -30,12 +30,12 @@ namespace pwnctl.app
                     if (!parsed)
                         continue;
 
-                    assets = (Asset[])parameters[1];
-                    var asset = assets[0];
-                    
-                    tags.ForEach(t => asset[t.Name] = t.Value);
-                    var foundBy = assets.FirstOrDefault(a => a.FoundBy != null)?.FoundBy;
-                    assets.ToList().ForEach(a => a.FoundBy = foundBy);
+                    var mainAsset = (Asset)parameters[1];
+                    tags.ForEach(t => mainAsset[t.Name] = t.Value);
+
+                    assets = (Asset[])parameters[2] ?? new Asset[] {};
+                    assets.ToList().ForEach(a => a.FoundBy = mainAsset.FoundBy);
+                    assets = assets.Prepend(mainAsset).ToArray();
                 }
                 catch //(Exception ex)
                 {
