@@ -11,6 +11,8 @@ using Microsoft.EntityFrameworkCore;
 using pwnctl.domain.Enums;
 using pwnctl.app;
 using pwnctl.app.Interfaces;
+using System.Net;
+using pwnctl.app.DTO;
 
 public sealed class Tests
 {
@@ -123,19 +125,23 @@ public sealed class Tests
         Assert.Contains(asset.Tags, t => t.Name == "status" && t.Value == "403");
         Assert.True(assets.All(a => a.FoundBy == "dir_brute_common"));
 
-        // TODO: SPF parsing test
-        // TODO: FQDN parsing test
-        // TODO: foundBy tags on main & related assets
-        // TODO: existing tags not being updated
-        // TODO: existing assets being updated with new tags
-        // TODO: null or empty tags not being added
-        // TODO: validate task-definitions.yml/notification-rules.yml (deserialization/Filter/Template Interpolation)
-        // entrypoint.sh ??
-        // task scripts??
+        var spfRecord = "tesla.com IN TXT \"v = spf1 ip4:2.2.2.2 ipv4: 3.3.3.3 ipv6:FD00:DEAD:BEEF:64:34::2 include: spf.protection.outlook.com include:servers.mcsv.net - all\"";
+        assets = AssetParser.Parse(spfRecord, out assetTypes);
+        Console.WriteLine(assetTypes.Select(a => a.Name));
+        Assert.Equal(4, assets.Count());
+        Assert.Contains(assetTypes, t => t == typeof(Domain));
+        Assert.Contains(assetTypes, t => t == typeof(DNSRecord));
+        Assert.Contains(assetTypes, t => t == typeof(Host));
+
+        //assets = AssetParser.Parse("FD00:DEAD:BEEF:64:35::2", out assetTypes);
+
+        // TODO: ipv6 parsing (Host, Service,NetRange, SPF)
+        //NetRagne.RouteTo/mailto:
+        //Parameters/VirtualHosts/CloudServices
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task ScopeChecking_Tests()
+    public async Task ScopeChecking_Tests()
     {
         PwnctlDbContext context = new();
 
@@ -146,12 +152,12 @@ public sealed class Tests
         Assert.Null(programs.FirstOrDefault(program => program.Scope.Any(scope => scope.Matches(new NetRange(System.Net.IPAddress.Parse("172.16.16.0"), 24)))));
 
         // host in netrange
-        Assert.NotNull(programs.FirstOrDefault(program => program.Scope.Any(scope => scope.Matches(new Host("172.16.17.4")))));
-        Assert.Null(programs.FirstOrDefault(program => program.Scope.Any(scope => scope.Matches(new Host("172.16.16.5")))));
+        Assert.NotNull(programs.FirstOrDefault(program => program.Scope.Any(scope => scope.Matches(new Host(IPAddress.Parse("172.16.17.4"))))));
+        Assert.Null(programs.FirstOrDefault(program => program.Scope.Any(scope => scope.Matches(new Host(IPAddress.Parse("172.16.16.5"))))));
 
         // endpoint in net range
-        Assert.NotNull(programs.FirstOrDefault(program => program.Scope.Any(scope => scope.Matches(new Endpoint("https", new Service(new Host("172.16.17.15"), 443), "/api/token")))));
-        Assert.Null(programs.FirstOrDefault(program => program.Scope.Any(scope => scope.Matches(new Endpoint("https", new Service(new Host("172.16.16.15"), 443), "/api/token")))));
+        Assert.NotNull(programs.FirstOrDefault(program => program.Scope.Any(scope => scope.Matches(new Endpoint("https", new Service(new Host(IPAddress.Parse("172.16.17.15")), 443), "/api/token")))));
+        Assert.Null(programs.FirstOrDefault(program => program.Scope.Any(scope => scope.Matches(new Endpoint("https", new Service(new Host(IPAddress.Parse("172.16.16.15")), 443), "/api/token")))));
 
         // domain
         Assert.NotNull(programs.FirstOrDefault(program => program.Scope.Any(scope => scope.Matches(new Domain("tesla.com")))));
@@ -182,7 +188,7 @@ public sealed class Tests
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task TaskFiltering_Tests()
+    public async Task TaskFiltering_Tests()
     {
         PwnctlDbContext context = new();
         var processor = AssetProcessorFactory.Create(new MockJobQueueService());
@@ -244,7 +250,7 @@ public sealed class Tests
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task AssetRepository_Tests()
+    public async Task AssetRepository_Tests()
     {
         AssetDbRepository repository = new();
         PwnctlDbContext context = new();
@@ -282,7 +288,7 @@ public sealed class Tests
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task AssetProcessor_Tests()
+    public async Task AssetProcessor_Tests()
     {
         var processor = AssetProcessorFactory.Create(new MockJobQueueService());
         PwnctlDbContext context = new();
@@ -318,14 +324,14 @@ public sealed class Tests
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task Tagging_Tests()
+    public async Task Tagging_Tests()
     {
         var processor = AssetProcessorFactory.Create(new MockJobQueueService());
         PwnctlDbContext context = new();
 
-        var exampleUrl = new {
-            asset = "https://example.com",
-            tags = new Dictionary<string,string>{
+        var exampleUrl = new AssetDTO {
+            Asset = "https://example.com",
+            Tags = new Dictionary<string,object>{
                {"Content-Type", "text/html"},
                {"Status", "200"},
                {"Server", "IIS"}
@@ -333,10 +339,9 @@ public sealed class Tests
         };
 
         Asset[] assets = AssetParser.Parse(Serializer.Instance.Serialize(exampleUrl), out Type[] assetTypes);
+        await processor.ProcessAsync(Serializer.Instance.Serialize(exampleUrl));
 
-        var endpoint = (Endpoint) assets.First(a => a.GetType() == typeof(Endpoint));
-        Assert.NotNull(endpoint.Tags);
-        var tags = assets.First(a => a is Endpoint).Tags;
+        var endpoint = (Endpoint)assets.First(a => a.GetType() == typeof(Endpoint));
 
         var ctTag = endpoint.Tags.First(t => t.Name == "content-type");
         Assert.Equal("text/html", ctTag.Value);
@@ -347,19 +352,29 @@ public sealed class Tests
         var srvTag = endpoint.Tags.First(t => t.Name == "server");
         Assert.Equal("IIS", srvTag.Value);
 
+        exampleUrl.Tags = new Dictionary<string, object> {
+            {"Server", "apache"},   // testing that existing tags don't get updated
+            {"newTag", "whatever"}, // testing that new tags are added to existing assets
+            {"emptyTag", ""}        // testing that empty tags are not added
+        };
+
         await processor.ProcessAsync(Serializer.Instance.Serialize(exampleUrl));
 
-        endpoint = context.Endpoints.Include(e => e.Tags).Where(ep => ep.Url == "https://example.com:443/").First();
+        endpoint = context.Endpoints.Include(e => e.Tags).Where(t => t.Url == "https://example.com:443/").First();
+
+        srvTag = endpoint.Tags.First(t => t.Name == "server");
+        Assert.Equal("IIS", srvTag.Value);
+
+        var newTag = endpoint.Tags.First(t => t.Name == "newtag");
+        Assert.Equal("whatever", newTag.Value);
+
+        Assert.Null(endpoint.Tags.FirstOrDefault(t => t.Name == "emptytag"));
+
         ctTag = endpoint.Tags.First(t => t.Name == "content-type");
         Assert.Equal("text/html", ctTag.Value);
 
         stTag = endpoint.Tags.First(t => t.Name == "status");
         Assert.Equal("200", stTag.Value);
-
-        srvTag = endpoint.Tags.First(t => t.Name == "server");
-        Assert.Equal("IIS", srvTag.Value);
-
-        await processor.ProcessAsync(Serializer.Instance.Serialize(exampleUrl));
 
         var teslaUrl = new
         {
@@ -407,5 +422,12 @@ public sealed class Tests
         await processor.ProcessAsync(Serializer.Instance.Serialize(sshService));
         var service = context.Services.Where(ep => ep.Origin == "tcp://1.3.3.7:22").First();
         Assert.Equal("ssh", service.ApplicationProtocol);
+    }
+
+    [Fact]
+    public Task TaskDefinition_Tests()
+    {
+        // TODO: validate task-definitions.yml/notification-rules.yml (deserialization/Filter/Template Interpolation)
+        return Task.CompletedTask;
     }
 }

@@ -37,14 +37,6 @@ namespace pwnctl.domain.BaseClasses
             }
         }
 
-        protected void AddTags(List<Tag> tags)
-        {
-            if (tags == null)
-                return;
-
-            tags.ForEach(t => this[t.Name] = t.Value);
-        }
-
         public abstract override string ToString();
     }
 }

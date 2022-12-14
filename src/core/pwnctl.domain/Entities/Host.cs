@@ -15,19 +15,10 @@ namespace pwnctl.domain.Entities
 
         public Host() {}
 
-        public Host(string ip)
+        public Host(IPAddress address)
         {
-            if (!IPAddress.TryParse(ip, out IPAddress address))
-                throw new ArgumentException($"{ip} not a valid ip", nameof(ip));
-
-            IP = ip;
+            IP = address.ToString();
             Version = address.AddressFamily;
-        }
-
-        public Host(string ip, AddressFamily version = AddressFamily.InterNetwork)
-        {
-            IP = ip;
-            Version = version;
         }
 
         public static bool TryParse(string assetText, out Asset mainAsset, out Asset[] relatedAssets)
@@ -37,7 +28,7 @@ namespace pwnctl.domain.Entities
 
             if (IPAddress.TryParse(assetText, out IPAddress address))
             {
-                var host = new Host(assetText, address.AddressFamily);
+                var host = new Host(address);
                 mainAsset = host;
                 return true;
             }

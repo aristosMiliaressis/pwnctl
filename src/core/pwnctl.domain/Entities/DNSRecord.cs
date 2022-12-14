@@ -1,4 +1,5 @@
-﻿using pwnctl.domain.Attributes;
+﻿using System.Net;
+using pwnctl.domain.Attributes;
 using pwnctl.domain.BaseClasses;
 using pwnctl.domain.Enums;
 
@@ -61,9 +62,12 @@ namespace pwnctl.domain.Entities
                 if (record.Type == DnsRecordType.TXT && record.Value.Contains("spf"))
                 {
                     var spfHosts = record.Value
-                                        .Split(" ")
-                                        .Where(p => p.StartsWith("ip"))
-                                        .Select(p => new Host(p.Split(":")[1]));
+                                        .Split("ip")
+                                        .Skip(1)
+                                        .Select(p => p.Split(":")[1].Trim().Split(" ")[0])
+                                        .Where(ip => IPAddress.TryParse(ip, out IPAddress address))
+                                        .Select(ip => new Host(IPAddress.Parse(ip)));
+
                     _assets.AddRange(spfHosts);
                 }
 

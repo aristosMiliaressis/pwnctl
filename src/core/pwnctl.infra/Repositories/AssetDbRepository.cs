@@ -48,17 +48,17 @@ namespace pwnctl.infra.Repositories
             await SaveAsync(new AssetRecord(asset));
         }
 
-        public async Task SaveAsync(AssetRecord asset)
+        public async Task SaveAsync(AssetRecord record)
         {
-            var existingAsset = _context.FindAsset(asset.Asset);
+            var existingAsset = _context.FindAsset(record.Asset);
 
             // if asset doesn't exist add it
             if (existingAsset == null)
             {
-                asset.Asset.FoundAt = DateTime.UtcNow;
+                record.Asset.FoundAt = DateTime.UtcNow;
 
-                _context.Entry(asset.Asset).State = EntityState.Added;
-                _context.AddRange(asset.Asset.Tags);
+                _context.Entry(record.Asset).State = EntityState.Added;
+                _context.AddRange(record.Asset.Tags);
 
                 await _context.SaveChangesAsync();
 
@@ -66,14 +66,16 @@ namespace pwnctl.infra.Repositories
             }
 
             // otherwise add new tags/tasks & update the InScope flag
-            var newTags = asset.Asset.Tags.Where(tag => _context.FindAssetTag(asset.Asset, tag) == null);
-            _context.AddRange(newTags);
+            var newTags = record.Asset.Tags.Where(tag => _context.FindAssetTag(existingAsset, tag) == null);
+            newTags.ToList().ForEach(t => t.SetAsset(existingAsset));
+            foreach (var tag in newTags)
+                _context.Entry(tag).State = EntityState.Added;
 
-            var newTasks = asset.Tasks.Where(t => t.Id == default);
+            var newTasks = record.Tasks.Where(t => t.Id == default);
             foreach (var task in newTasks) 
                 _context.Entry(task).State = EntityState.Added;
 
-            existingAsset.InScope = asset.Asset.InScope;
+            existingAsset.InScope = record.Asset.InScope;
             _context.Update(existingAsset);
 
             await _context.SaveChangesAsync();

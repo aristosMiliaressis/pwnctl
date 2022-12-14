@@ -37,9 +37,8 @@ namespace pwnctl.app
                     assets.ToList().ForEach(a => a.FoundBy = mainAsset.FoundBy);
                     assets = assets.Prepend(mainAsset).ToArray();
                 }
-                catch //(Exception ex)
+                catch
                 {
-                    //Console.WriteLine(ex.Message + "\n" + ex.StackTrace);
                     continue;
                 }
 

@@ -35,5 +35,10 @@ namespace pwnctl.domain.Entities
             Name = name.ToLower();
             Value = value;
         }
+
+        public void SetAsset(Asset asset)
+        {
+            GetType().GetProperty(asset.GetType().Name+"Id").SetValue(this, asset.Id);
+        }
     }
 }
