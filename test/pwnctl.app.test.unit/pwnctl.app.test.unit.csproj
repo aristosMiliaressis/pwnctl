@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\core\pwnctl.kernel\pwnctl.kernel.csproj" />
     <ProjectReference Include="..\..\src\core\pwnctl.domain\pwnctl.domain.csproj" />
     <ProjectReference Include="..\..\src\core\pwnctl.app\pwnctl.app.csproj" />
     <ProjectReference Include="..\..\src\core\pwnctl.infra\pwnctl.infra.csproj" />

@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <ProjectReference Include="..\pwnctl.kernel\pwnctl.kernel.csproj" />
     <ProjectReference Include="..\pwnctl.domain\pwnctl.domain.csproj" />
     <ProjectReference Include="..\pwnctl.app\pwnctl.app.csproj" />
   </ItemGroup>

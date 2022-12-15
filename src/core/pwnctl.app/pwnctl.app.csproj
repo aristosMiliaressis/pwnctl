@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\pwnctl.domain\pwnctl.domain.csproj" />
+    <ProjectReference Include="..\pwnctl.kernel\pwnctl.kernel.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

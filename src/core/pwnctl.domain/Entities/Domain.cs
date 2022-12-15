@@ -1,4 +1,4 @@
-﻿using pwnctl.domain.Attributes;
+﻿using pwnctl.kernel.Attributes;
 using pwnctl.domain.BaseClasses;
 using pwnctl.domain.Interfaces;
 using pwnctl.domain.ValueObjects;
@@ -8,7 +8,7 @@ namespace pwnctl.domain.Entities
 {
     public sealed class Domain : Asset
     {
-        [UniquenessAttribute]
+        [EqualityComponent]
         public string Name { get; init; }
         public bool IsRegistrationDomain { get; init; }
         public string RegistrationDomainId { get; private init; }

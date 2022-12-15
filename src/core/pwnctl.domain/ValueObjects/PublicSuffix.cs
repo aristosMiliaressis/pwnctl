@@ -1,6 +1,6 @@
 namespace pwnctl.domain.ValueObjects;
 
-using pwnctl.domain.BaseClasses;
+using pwnctl.kernel.BaseClasses;
 
 public sealed class PublicSuffix : ValueObject
 {

@@ -1,4 +1,4 @@
-﻿using pwnctl.domain.Attributes;
+﻿using pwnctl.kernel.Attributes;
 using pwnctl.domain.BaseClasses;
 using pwnctl.domain.Enums;
 
@@ -8,7 +8,7 @@ namespace pwnctl.domain.Entities
     {
         public ushort Port { get; init; }
 
-        [UniquenessAttribute]
+        [EqualityComponent]
         public string Origin { get; init; }
 
         public TransportProtocol TransportProtocol { get; init; }

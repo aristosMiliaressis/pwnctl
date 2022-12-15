@@ -7,6 +7,7 @@ using pwnctl.app.Assets.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using pwnctl.app.Tasks.Entities;
 using pwnctl.app.Assets.Aggregates;
+using pwnctl.kernel.Extensions;
 
 namespace pwnctl.infra.Repositories
 {

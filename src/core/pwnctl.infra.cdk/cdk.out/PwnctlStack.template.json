@@ -355,7 +355,7 @@
      "IncludeSpace": false,
      "SecretStringTemplate": "{\"username\":\"pwnadmin\"}"
     },
-    "Name": "/aws/secret/pwnctl/Db"
+    "Name": "/aws/secret/pwnctl/Db2"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete",
@@ -932,7 +932,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "121ed83bde633fc84713e598f435b576484da2f5921e6ec424261b6b402dce17.zip"
+     "S3Key": "5ac660da8481876beedfba4a0f3290f881581f9712737fd4f69b340b872e2395.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -1014,7 +1014,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "PwnctlStack/PwnctlApi/Resource",
-    "aws:asset:path": "asset.121ed83bde633fc84713e598f435b576484da2f5921e6ec424261b6b402dce17.0",
+    "aws:asset:path": "asset.5ac660da8481876beedfba4a0f3290f881581f9712737fd4f69b340b872e2395.0",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }

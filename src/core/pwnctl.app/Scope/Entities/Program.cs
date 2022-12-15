@@ -1,5 +1,5 @@
 using System.Text.Json.Serialization;
-using pwnctl.domain.BaseClasses;
+using pwnctl.kernel.BaseClasses;
 
 namespace pwnctl.app.Scope.Entities
 {

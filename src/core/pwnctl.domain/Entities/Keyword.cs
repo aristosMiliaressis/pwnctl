@@ -1,11 +1,11 @@
-using pwnctl.domain.Attributes;
+using pwnctl.kernel.Attributes;
 using pwnctl.domain.BaseClasses;
 
 namespace pwnctl.domain.Entities
 {
     public sealed class Keyword : Asset
     {
-        [UniquenessAttribute]
+        [EqualityComponent]
         public string Word { get; init; }
 
         public Domain Domain { get; private init; }

@@ -158,6 +158,8 @@ RUN go install github.com/detectify/page-fetch@latest
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 
 # building worker service & cli
+COPY ["/pwnctl.kernel/pwnctl.kernel.csproj", "/src/pwnctl.kernel/"]
+RUN dotnet restore "/src/pwnctl.kernel/pwnctl.kernel.csproj"
 COPY ["/pwnctl.domain/pwnctl.domain.csproj", "/src/pwnctl.domain/"]
 RUN dotnet restore "/src/pwnctl.domain/pwnctl.domain.csproj"
 COPY ["/pwnctl.app/pwnctl.app.csproj", "/src/pwnctl.app/"]

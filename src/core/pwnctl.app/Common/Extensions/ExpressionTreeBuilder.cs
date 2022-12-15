@@ -1,11 +1,11 @@
-using pwnctl.domain.Attributes;
+using pwnctl.kernel.Attributes;
 using pwnctl.domain.BaseClasses;
 using pwnctl.app.Tasks.Entities;
 using System.Reflection;
 using System.Linq.Expressions;
 using pwnctl.domain.Entities;
 
-namespace pwnctl.infra.Persistence.Extensions
+namespace pwnctl.app.Common.Extensions
 {
     public static class ExpressionTreeBuilder
     {
@@ -16,7 +16,7 @@ namespace pwnctl.infra.Persistence.Extensions
         {
             var type = asset.GetType();
 
-            var uniqnessProperties = type.GetProperties().Where(p => p.GetCustomAttribute(typeof(UniquenessAttribute)) != null);
+            var uniqnessProperties = type.GetProperties().Where(p => p.GetCustomAttribute(typeof(EqualityComponentAttribute)) != null);
 
             var _param = Expression.Parameter(type, "e");
 

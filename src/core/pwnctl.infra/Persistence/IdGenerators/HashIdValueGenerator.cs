@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Security.Cryptography;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
-using pwnctl.domain.Attributes;
+using pwnctl.kernel.Attributes;
 using pwnctl.domain.BaseClasses;
 using pwnctl.app.Common.Interfaces;
 
@@ -18,7 +18,7 @@ namespace pwnctl.infra.Persistence.IdGenerators
         {
             var uniqnessValues = asset.GetType()
                         .GetProperties()
-                        .Where(p => p.GetCustomAttribute(typeof(UniquenessAttribute)) != null)
+                        .Where(p => p.GetCustomAttribute(typeof(EqualityComponentAttribute)) != null)
                         .OrderBy(p => p.Name)
                         .Select(p => p.GetValue(asset));
             var json = Serializer.Instance.Serialize(uniqnessValues);

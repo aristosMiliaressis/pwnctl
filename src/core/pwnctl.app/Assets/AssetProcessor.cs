@@ -5,7 +5,7 @@ using pwnctl.app.Tasks.Interfaces;
 using pwnctl.app.Tasks.Entities;
 using pwnctl.app.Scope.Entities;
 using pwnctl.app.Notifications.Entities;
-using pwnctl.app.Common.Extensions;
+using pwnctl.kernel.Extensions;
 
 namespace pwnctl.app.Assets
 {

@@ -1,4 +1,4 @@
-using pwnctl.domain.BaseClasses;
+using pwnctl.kernel.BaseClasses;
 using pwnctl.app.Tasks.Entities;
 
 namespace pwnctl.app.Scope.Entities

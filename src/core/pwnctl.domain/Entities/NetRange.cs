@@ -1,4 +1,4 @@
-﻿using pwnctl.domain.Attributes;
+﻿using pwnctl.kernel.Attributes;
 using pwnctl.domain.BaseClasses;
 using System.Net;
 
@@ -6,9 +6,9 @@ namespace pwnctl.domain.Entities
 {
     public sealed class NetRange : Asset
     {
-        [UniquenessAttribute]
+        [EqualityComponent]
         public string FirstAddress { get; init; }
-        [UniquenessAttribute]
+        [EqualityComponent]
         public ushort NetPrefixBits { get; init; }
 
         public NetRange() {}

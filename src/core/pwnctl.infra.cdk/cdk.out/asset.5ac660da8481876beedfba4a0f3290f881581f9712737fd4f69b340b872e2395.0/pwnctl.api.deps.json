@@ -15,7 +15,8 @@
           "pwnctl.app": "1.0.0",
           "pwnctl.domain": "1.0.0",
           "pwnctl.dto": "1.0.0",
-          "pwnctl.infra": "1.0.0"
+          "pwnctl.infra": "1.0.0",
+          "pwnctl.kernel": "1.0.0"
         },
         "runtime": {
           "pwnctl.api.dll": {}
@@ -2416,7 +2417,8 @@
       },
       "pwnctl.app/1.0.0": {
         "dependencies": {
-          "pwnctl.domain": "1.0.0"
+          "pwnctl.domain": "1.0.0",
+          "pwnctl.kernel": "1.0.0"
         },
         "runtime": {
           "pwnctl.app.dll": {}
@@ -2424,7 +2426,8 @@
       },
       "pwnctl.domain/1.0.0": {
         "dependencies": {
-          "MimeKitLite": "3.4.1"
+          "MimeKitLite": "3.4.1",
+          "pwnctl.kernel": "1.0.0"
         },
         "runtime": {
           "pwnctl.domain.dll": {}
@@ -2435,7 +2438,8 @@
           "MediatR": "11.0.0",
           "pwnctl.app": "1.0.0",
           "pwnctl.domain": "1.0.0",
-          "pwnctl.infra": "1.0.0"
+          "pwnctl.infra": "1.0.0",
+          "pwnctl.kernel": "1.0.0"
         },
         "runtime": {
           "pwnctl.dto.dll": {}
@@ -2471,10 +2475,16 @@
           "System.Data.SqlClient": "4.8.3",
           "YamlDotNet": "12.0.0",
           "pwnctl.app": "1.0.0",
-          "pwnctl.domain": "1.0.0"
+          "pwnctl.domain": "1.0.0",
+          "pwnctl.kernel": "1.0.0"
         },
         "runtime": {
           "pwnctl.infra.dll": {}
+        }
+      },
+      "pwnctl.kernel/1.0.0": {
+        "runtime": {
+          "pwnctl.kernel.dll": {}
         }
       }
     }
@@ -3943,6 +3953,11 @@
       "sha512": ""
     },
     "pwnctl.infra/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "pwnctl.kernel/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

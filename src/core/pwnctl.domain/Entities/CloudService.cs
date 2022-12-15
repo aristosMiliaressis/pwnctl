@@ -1,11 +1,11 @@
-using pwnctl.domain.Attributes;
+using pwnctl.kernel.Attributes;
 using pwnctl.domain.BaseClasses;
 
 namespace pwnctl.domain.Entities
 {
     public sealed class CloudService : Asset
     {
-        [UniquenessAttribute]
+        [EqualityComponent]
         public string Hostname { get; set; }
         public string Service { get; set; }
         public string Provider { get; set; }

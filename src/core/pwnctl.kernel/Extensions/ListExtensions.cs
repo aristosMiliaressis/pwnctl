@@ -1,4 +1,4 @@
-namespace pwnctl.app.Common.Extensions;
+namespace pwnctl.kernel.Extensions;
 
 public static class ListExtensions
 {

@@ -1,4 +1,4 @@
-using pwnctl.domain.Attributes;
+using pwnctl.kernel.Attributes;
 using pwnctl.domain.BaseClasses;
 using MimeKit;
 
@@ -6,7 +6,7 @@ namespace pwnctl.domain.Entities
 {
     public sealed class Email : Asset
     {
-        [UniquenessAttribute]
+        [EqualityComponent]
         public string Address { get; init; }
         public string Hostname  => Address.Split("@").Last();
         public Domain Domain { get; private init; }

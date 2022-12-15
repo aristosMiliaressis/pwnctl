@@ -8,12 +8,4 @@
     <DebugType>embedded</DebugType>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\pwnctl.kernel\pwnctl.kernel.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="MimeKitLite" Version="3.4.1" />
-  </ItemGroup>
-
 </Project>

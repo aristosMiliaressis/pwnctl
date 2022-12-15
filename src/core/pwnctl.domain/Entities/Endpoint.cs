@@ -1,4 +1,4 @@
-﻿using pwnctl.domain.Attributes;
+﻿using pwnctl.kernel.Attributes;
 using pwnctl.domain.BaseClasses;
 using pwnctl.domain.Enums;
 
@@ -6,7 +6,7 @@ namespace pwnctl.domain.Entities
 {
     public sealed class Endpoint : Asset
     {
-        [UniquenessAttribute]
+        [EqualityComponent]
         public string Url { get; init; }
 
         public string ServiceId { get; private init; }

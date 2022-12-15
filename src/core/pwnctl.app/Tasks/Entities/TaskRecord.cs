@@ -1,7 +1,7 @@
 using pwnctl.app.Assets.Aggregates;
 using pwnctl.app.Tasks.Enums;
 using pwnctl.app.Tasks.Exceptions;
-using pwnctl.domain.BaseClasses;
+using pwnctl.kernel.BaseClasses;
 using pwnctl.domain.Entities;
 using System.Text.Json.Serialization;
 
@@ -59,7 +59,7 @@ namespace pwnctl.app.Tasks.Entities
         public void Queued()
         {
             if (State != TaskState.PENDING)
-                throw new TaskStateException("TaskRecord queued when not in PENDING state.");
+                throw new TaskStateException(State, TaskState.QUEUED);
 
             State = TaskState.QUEUED;
             QueuedAt = DateTime.UtcNow;
@@ -68,7 +68,7 @@ namespace pwnctl.app.Tasks.Entities
         public void Started()
         {
             if (State != TaskState.QUEUED && State != TaskState.RUNNING)
-                throw new TaskStateException("TaskRecord started when not in QUEUED state.");
+                throw new TaskStateException(State, TaskState.RUNNING);
 
             State = TaskState.RUNNING;
             StartedAt = DateTime.UtcNow;
@@ -77,7 +77,7 @@ namespace pwnctl.app.Tasks.Entities
         public void Finished(int exitCode)
         {
             if (State != TaskState.RUNNING)
-                throw new TaskStateException("TaskRecord finished when not in RUNNING state.");
+                throw new TaskStateException(State, TaskState.FINISHED);
 
             ExitCode = exitCode;
             State = TaskState.FINISHED;

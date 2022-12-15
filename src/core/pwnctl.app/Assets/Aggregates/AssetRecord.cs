@@ -2,6 +2,7 @@ using pwnctl.app.Assets.DTO;
 using pwnctl.app.Tasks.Entities;
 using pwnctl.app.Common.Interfaces;
 using pwnctl.domain.BaseClasses;
+using pwnctl.kernel.BaseClasses;
 
 namespace pwnctl.app.Assets.Aggregates;
 

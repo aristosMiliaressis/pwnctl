@@ -1,5 +1,6 @@
 using pwnctl.app.Common.Interfaces;
 using pwnctl.domain.BaseClasses;
+using pwnctl.kernel.BaseClasses;
 
 namespace pwnctl.app.Tasks.Entities
 {

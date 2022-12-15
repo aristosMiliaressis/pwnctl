@@ -531,7 +531,7 @@
                       "includeSpace": false,
                       "secretStringTemplate": "{\"username\":\"pwnadmin\"}"
                     },
-                    "name": "/aws/secret/pwnctl/Db"
+                    "name": "/aws/secret/pwnctl/Db2"
                   }
                 },
                 "constructInfo": {
@@ -1351,7 +1351,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "121ed83bde633fc84713e598f435b576484da2f5921e6ec424261b6b402dce17.zip"
+                      "s3Key": "5ac660da8481876beedfba4a0f3290f881581f9712737fd4f69b340b872e2395.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [

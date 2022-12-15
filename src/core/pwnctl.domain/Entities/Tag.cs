@@ -1,4 +1,5 @@
 using pwnctl.domain.BaseClasses;
+using pwnctl.kernel.BaseClasses;
 
 namespace pwnctl.domain.Entities
 {

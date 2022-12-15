@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\core\pwnctl.kernel\pwnctl.kernel.csproj" />
     <ProjectReference Include="..\core\pwnctl.domain\pwnctl.domain.csproj" />
     <ProjectReference Include="..\core\pwnctl.app\pwnctl.app.csproj" />
     <ProjectReference Include="..\core\pwnctl.infra\pwnctl.infra.csproj" />

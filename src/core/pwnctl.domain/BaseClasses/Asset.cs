@@ -1,4 +1,5 @@
-﻿using pwnctl.domain.Attributes;
+﻿using pwnctl.kernel.Attributes;
+using pwnctl.kernel.BaseClasses;
 using pwnctl.domain.Entities;
 using System.Reflection;
 using System.Text.Json.Serialization;
@@ -12,7 +13,7 @@ namespace pwnctl.domain.BaseClasses
         public bool InScope { get; set; }
 
         [JsonIgnore]
-        public string DomainIdentifier => string.Join(",", GetType().GetProperties().Where(p => p.GetCustomAttribute(typeof(UniquenessAttribute)) != null).Select(p => p.GetValue(this).ToString()));
+        public string DomainIdentifier => string.Join(",", GetType().GetProperties().Where(p => p.GetCustomAttribute(typeof(EqualityComponentAttribute)) != null).Select(p => p.GetValue(this).ToString()));
 
         public List<Tag> Tags { get; set; } = new List<Tag>();
 

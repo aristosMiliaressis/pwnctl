@@ -5,6 +5,8 @@ using pwnctl.app.Scope.Entities;
 using System.Reflection;
 using System.Linq.Expressions;
 using pwnctl.domain.Entities;
+using pwnctl.app.Common.Extensions;
+using pwnctl.kernel.BaseClasses;
 
 namespace pwnctl.infra.Persistence.Extensions
 {

@@ -1,5 +1,5 @@
 ﻿using System.Net;
-using pwnctl.domain.Attributes;
+using pwnctl.kernel.Attributes;
 using pwnctl.domain.BaseClasses;
 using pwnctl.domain.Enums;
 
@@ -7,10 +7,10 @@ namespace pwnctl.domain.Entities
 {
     public sealed class DNSRecord : Asset
     {
-        [UniquenessAttribute]
+        [EqualityComponent]
         public DnsRecordType Type { get; init; }
 
-        [UniquenessAttribute]
+        [EqualityComponent]
         public string Key {get; init;}
         public string Value { get; init; }
 

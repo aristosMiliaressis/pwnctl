@@ -14,6 +14,11 @@ namespace pwnctl.infra
     {
         static PwnContext()
         {
+            Setup();
+        }
+
+        public static void Setup()
+        {
             FilterEvaluator.Instance = new CSharpFilterEvaluator();
             NotificationSender.Instance = new DiscordNotificationSender();
             PublicSuffixRepository.Instance = new PublicSuffixFileRepository();

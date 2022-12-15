@@ -4,6 +4,7 @@ using pwnctl.api.Mediator.Pipelines;
 using pwnctl.dto;
 using MediatR;
 using FluentValidation;
+using pwnctl.infra;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,5 +31,7 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.MapMediatedEndpoints(typeof(PwnctlDtoAssemblyMarker));
 
 app.MapControllers();
+
+PwnContext.Setup();
 
 app.Run();

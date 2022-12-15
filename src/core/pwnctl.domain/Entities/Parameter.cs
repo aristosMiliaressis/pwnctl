@@ -1,4 +1,4 @@
-using pwnctl.domain.Attributes;
+using pwnctl.kernel.Attributes;
 using pwnctl.domain.BaseClasses;
 using pwnctl.domain.Enums;
 
@@ -8,12 +8,12 @@ namespace pwnctl.domain.Entities
     {
         public Endpoint Endpoint { get; private init; }
         public string EndpointId { get; private init; }
-        [UniquenessAttribute]
+        [EqualityComponent]
         public string Url { get; init; }
 
-        [UniquenessAttribute]
+        [EqualityComponent]
         public string Name { get; init; }
-        [UniquenessAttribute]
+        [EqualityComponent]
         public ParamType Type { get; init; }
 
         public string UrlEncodedCsValues { get; private init; }

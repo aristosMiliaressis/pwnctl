@@ -1,4 +1,4 @@
-﻿using pwnctl.domain.Attributes;
+﻿using pwnctl.kernel.Attributes;
 using pwnctl.domain.BaseClasses;
 using System.Net.Sockets;
 using System.Net;
@@ -7,7 +7,7 @@ namespace pwnctl.domain.Entities
 {
     public sealed class Host : Asset
     {
-        [UniquenessAttribute]
+        [EqualityComponent]
         public string IP { get; init; }
         public AddressFamily Version { get; init; }
 
