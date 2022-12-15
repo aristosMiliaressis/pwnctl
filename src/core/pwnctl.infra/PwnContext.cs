@@ -1,5 +1,6 @@
 using pwnctl.domain.Interfaces;
-using pwnctl.app.Interfaces;
+using pwnctl.app.Common.Interfaces;
+using pwnctl.app.Notifications.Interfaces;
 using pwnctl.infra.Configuration;
 using pwnctl.infra.Repositories;
 using pwnctl.infra.Logging;

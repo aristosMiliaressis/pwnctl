@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using pwnctl.domain.BaseClasses;
-using pwnctl.app.Entities;
+using pwnctl.app.Tasks.Entities;
+using pwnctl.app.Scope.Entities;
 using System.Reflection;
 using System.Linq.Expressions;
 using pwnctl.domain.Entities;

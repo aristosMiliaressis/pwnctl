@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using pwnctl.app.Entities;
+using pwnctl.app.Tasks.Entities;
+using pwnctl.app.Scope.Entities;
+using pwnctl.app.Notifications.Entities;
 using Microsoft.Extensions.FileSystemGlobbing;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;

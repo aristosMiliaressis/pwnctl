@@ -4,12 +4,12 @@ using pwnctl.infra.Persistence;
 using pwnctl.infra.Repositories;
 using pwnctl.infra.Persistence.Extensions;
 using Microsoft.EntityFrameworkCore;
-using pwnctl.app.Interfaces;
-using pwnctl.app;
+using pwnctl.app.Assets;
+using pwnctl.app.Tasks.Interfaces;
 
 public static class AssetProcessorFactory
 {
-    public static AssetProcessor Create(JobQueueService queueService)
+    public static AssetProcessor Create(TaskQueueService queueService)
     {
         var context = new PwnctlDbContext();
 

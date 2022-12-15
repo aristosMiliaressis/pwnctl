@@ -1,7 +1,7 @@
 namespace pwnctl.infra.Serialization;
 
 using System.Text.Json;
-using pwnctl.app.Interfaces;
+using pwnctl.app.Common.Interfaces;
 
 public class AppJsonSerializer : Serializer
 {

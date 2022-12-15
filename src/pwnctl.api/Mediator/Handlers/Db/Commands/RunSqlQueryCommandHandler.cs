@@ -3,7 +3,7 @@ using pwnctl.dto.Db.Commands;
 using pwnctl.infra.Persistence;
 using pwnctl.infra.Logging;
 using pwnctl.infra;
-using pwnctl.app.Interfaces;
+using pwnctl.app.Common.Interfaces;
 
 using MediatR;
 

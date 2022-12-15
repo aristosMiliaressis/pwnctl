@@ -1,4 +1,4 @@
-using pwnctl.app.Entities;
+using pwnctl.app.Tasks.Entities;
 using pwnctl.infra.Queues;
 using pwnctl.infra.Persistence;
 using pwnctl.infra;
@@ -8,7 +8,7 @@ using pwnctl.dto.Mediator;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using pwnctl.infra.Logging;
-using pwnctl.app.Enums;
+using pwnctl.app.Tasks.Enums;
 
 namespace pwnctl.api.Mediator.Handlers.Assets.Commands
 {
@@ -18,11 +18,11 @@ namespace pwnctl.api.Mediator.Handlers.Assets.Commands
         {
             var context = new PwnctlDbContext();
 
-            // swapping the JobQueueService with a mock that does not queue 
+            // swapping the TaskQueueService with a mock that does not queue 
             // anywhere & leaves TakRecords in a PENDING state inorder to 
             // return the tasks to the client for queueing, that way we 
             // eliminate the need for a VpcEndpoint to access the SQS API
-            var queueService = new MockJobQueueService();
+            var queueService = new MockTaskQueueService();
 
             var processor = AssetProcessorFactory.Create(queueService);
 

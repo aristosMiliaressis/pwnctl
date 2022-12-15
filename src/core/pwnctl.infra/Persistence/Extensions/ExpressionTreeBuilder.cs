@@ -1,6 +1,6 @@
 using pwnctl.domain.Attributes;
 using pwnctl.domain.BaseClasses;
-using pwnctl.app.Entities;
+using pwnctl.app.Tasks.Entities;
 using System.Reflection;
 using System.Linq.Expressions;
 using pwnctl.domain.Entities;

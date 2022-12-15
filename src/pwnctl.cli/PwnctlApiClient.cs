@@ -7,7 +7,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using pwnctl.dto.Mediator;
-using pwnctl.app.Interfaces;
+using pwnctl.app.Common.Interfaces;
 using pwnctl.infra;
 using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;

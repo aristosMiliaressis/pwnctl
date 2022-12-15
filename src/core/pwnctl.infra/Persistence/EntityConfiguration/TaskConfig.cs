@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using pwnctl.app.Entities;
+using pwnctl.app.Tasks.Entities;
 
 namespace pwnctl.infra.Persistence.EntityConfiguration
 {

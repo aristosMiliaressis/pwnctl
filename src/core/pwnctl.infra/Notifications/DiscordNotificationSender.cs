@@ -1,6 +1,6 @@
 using pwnctl.domain.BaseClasses;
-using pwnctl.app.Entities;
-using pwnctl.app.Interfaces;
+using pwnctl.app.Notifications.Entities;
+using pwnctl.app.Notifications.Interfaces;
 using System.Diagnostics;
 
 namespace pwnctl.infra.Notifications

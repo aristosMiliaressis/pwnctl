@@ -3,8 +3,7 @@ namespace pwnctl.api.Extensions;
 using System.Reflection;
 using MediatR;
 using pwnctl.dto.Mediator;
-using pwnctl.app.Interfaces;
-using pwnctl.infra;
+using pwnctl.app.Common.Interfaces;
 
 public static class WebApplicationExtensions
 {

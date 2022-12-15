@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using pwnctl.app.Entities;
+using pwnctl.app.Scope.Entities;
+using pwnctl.app.Notifications.Entities;
 
 namespace pwnctl.infra.Persistence.EntityConfiguration
 {

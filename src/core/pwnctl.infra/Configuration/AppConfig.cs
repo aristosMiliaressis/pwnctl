@@ -8,7 +8,7 @@ namespace pwnctl.infra.Configuration
         public string InstallPath { get; set; }
         public bool IsTestRun { get; set; }
         public DbSettings Db { get; set; } = new DbSettings();
-        public JobQueueSettings JobQueue { get; set; } = new JobQueueSettings();
+        public TaskQueueSettings TaskQueue { get; set; } = new TaskQueueSettings();
         public LogSettings Logging { get; set; } = new LogSettings();
         public AwsSettings Aws { get; set; } = new AwsSettings();
         public ApiSettings Api { get; set; } = new ApiSettings();
@@ -34,7 +34,7 @@ namespace pwnctl.infra.Configuration
                                            + $"Password={Password};Timeout=30";
         }
 
-        public sealed class JobQueueSettings
+        public sealed class TaskQueueSettings
         {
             public bool UseBash { get; set; }
             public int WorkerCount { get; set; }

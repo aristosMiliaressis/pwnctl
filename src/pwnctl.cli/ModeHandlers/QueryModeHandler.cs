@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-using pwnctl.app.Interfaces;
+using pwnctl.app.Common.Interfaces;
 using pwnctl.infra.Persistence;
 using pwnctl.dto.Db.Commands;
 using pwnctl.cli.Interfaces;

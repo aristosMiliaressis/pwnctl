@@ -1,6 +1,6 @@
 namespace pwnctl.dto.Assets.Commands;
 
-using pwnctl.app.Entities;
+using pwnctl.app.Tasks.Entities;
 using pwnctl.dto.Mediator;
 
 public sealed class ProcessAssetsCommand : MediatedRequest<List<TaskRecord>>

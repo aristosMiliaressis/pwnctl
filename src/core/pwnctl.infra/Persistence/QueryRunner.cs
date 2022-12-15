@@ -1,5 +1,5 @@
 using Npgsql;
-using pwnctl.app.Interfaces;
+using pwnctl.app.Common.Interfaces;
 
 namespace pwnctl.infra.Persistence
 {

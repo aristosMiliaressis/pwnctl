@@ -29,7 +29,7 @@ namespace pwnctl.cli.ModeHandlers
             };
 
             var client = new PwnctlApiClient();
-            var queueService = new SQSJobQueueService();
+            var queueService = new SQSTaskQueueService();
 
             var pendingTasks = await client.Send(command);
             if (pendingTasks == null)

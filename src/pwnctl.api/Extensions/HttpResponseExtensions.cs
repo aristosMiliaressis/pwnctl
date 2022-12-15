@@ -1,8 +1,7 @@
 namespace pwnctl.api.Extensions;
 
 using pwnctl.dto.Mediator;
-using pwnctl.infra;
-using pwnctl.app.Interfaces;
+using pwnctl.app.Common.Interfaces;
 using System.Net;
 
 public static class HttpResponseExtensions

@@ -5,7 +5,7 @@ serverless recursive configuration based engine for external recon.
 
 ### Overview
 
-the target scope is onboarded trough the cli or api, than it is recursivly scanned by pushing jobs to the SQS queue that trigger serverless ECS instances to spin up and consume those jobs, collecting assets into an Aurora postgreSQL database, sending discord notifications according to `NotificationRules` and queueing further jobs according to `TaskDefinitions`, all infrastructure is provisioned as code trough CDK.
+the target scope is onboarded trough the cli or api, than it is recursivly scanned by pushing tasks to the SQS queue that trigger serverless ECS instances to spin up and consume those tasks, collecting assets into an Aurora postgreSQL database, sending discord notifications according to `NotificationRules` and queueing further tasks according to `TaskDefinitions`, all infrastructure is provisioned as code trough CDK.
 
 <p align="center">
   <img src="https://github.com/aristosMiliaressis/pwnctl/blob/master/img/arch-phase1.png?raw=true">

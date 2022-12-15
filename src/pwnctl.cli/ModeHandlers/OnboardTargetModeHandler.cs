@@ -1,5 +1,5 @@
 using System;
-using pwnctl.app.Interfaces;
+using pwnctl.app.Common.Interfaces;
 using System.Threading.Tasks;
 
 using pwnctl.dto.Targets.Commands;

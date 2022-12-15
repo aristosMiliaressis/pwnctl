@@ -1,6 +1,6 @@
 namespace pwnctl.dto.Targets.Commands;
 
-using pwnctl.app.Entities;
+using pwnctl.app.Scope.Entities;
 using pwnctl.dto.Mediator;
 
 public sealed class DeleteTargetCommand : Program, MediatedRequest

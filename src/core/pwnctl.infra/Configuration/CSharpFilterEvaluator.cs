@@ -1,5 +1,5 @@
 using pwnctl.domain.BaseClasses;
-using pwnctl.app.Interfaces;
+using pwnctl.app.Common.Interfaces;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using System.Reflection;

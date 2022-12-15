@@ -9,10 +9,10 @@ using pwnctl.domain.Entities;
 using pwnctl.domain.BaseClasses;
 using Microsoft.EntityFrameworkCore;
 using pwnctl.domain.Enums;
-using pwnctl.app;
-using pwnctl.app.Interfaces;
 using System.Net;
-using pwnctl.app.DTO;
+using pwnctl.app.Assets;
+using pwnctl.app.Common.Interfaces;
+using pwnctl.app.Assets.DTO;
 
 public sealed class Tests
 {
@@ -181,7 +181,7 @@ public sealed class Tests
         Assert.Null(programs.FirstOrDefault(program => program.Scope.Any(scope => scope.Matches(new DNSRecord(DnsRecordType.A, "example.com", "172.16.16.15")))));
 
         // test for inscope host from domain relationship
-        var processor = AssetProcessorFactory.Create(new MockJobQueueService());
+        var processor = AssetProcessorFactory.Create(new MockTaskQueueService());
         await processor.ProcessAsync("xyz.tesla.com IN A 1.3.3.7");
         var host = context.Hosts.First(h => h.IP == "1.3.3.7");
         Assert.True(host.InScope);
@@ -191,7 +191,7 @@ public sealed class Tests
     public async Task TaskFiltering_Tests()
     {
         PwnctlDbContext context = new();
-        var processor = AssetProcessorFactory.Create(new MockJobQueueService());
+        var processor = AssetProcessorFactory.Create(new MockTaskQueueService());
 
         // blacklist test
         await processor.ProcessAsync("172.16.17.0/24");
@@ -290,7 +290,7 @@ public sealed class Tests
     [Fact]
     public async Task AssetProcessor_Tests()
     {
-        var processor = AssetProcessorFactory.Create(new MockJobQueueService());
+        var processor = AssetProcessorFactory.Create(new MockTaskQueueService());
         PwnctlDbContext context = new();
 
         var programs = context.ListPrograms();
@@ -326,7 +326,7 @@ public sealed class Tests
     [Fact]
     public async Task Tagging_Tests()
     {
-        var processor = AssetProcessorFactory.Create(new MockJobQueueService());
+        var processor = AssetProcessorFactory.Create(new MockTaskQueueService());
         PwnctlDbContext context = new();
 
         var exampleUrl = new AssetDTO {

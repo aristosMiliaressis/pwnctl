@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 using pwnctl.dto.Assets.Queries;
 using pwnctl.dto.Targets.Queries;
-using pwnctl.app.Interfaces;
+using pwnctl.app.Common.Interfaces;
 using pwnctl.cli.Interfaces;
 
 namespace pwnctl.cli.ModeHandlers

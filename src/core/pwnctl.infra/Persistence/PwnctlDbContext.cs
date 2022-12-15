@@ -4,7 +4,9 @@ using Microsoft.Extensions.Logging;
 using System.Reflection;
 using pwnctl.infra.Persistence.Extensions;
 using pwnctl.infra.Persistence.IdGenerators;
-using pwnctl.app.Entities;
+using pwnctl.app.Tasks.Entities;
+using pwnctl.app.Scope.Entities;
+using pwnctl.app.Notifications.Entities;
 using pwnctl.domain.Entities;
 
 namespace pwnctl.infra.Persistence

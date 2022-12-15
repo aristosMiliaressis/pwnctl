@@ -8,7 +8,7 @@ using pwnctl.dto.Assets.Queries;
 using pwnctl.domain.BaseClasses;
 using pwnctl.infra;
 using pwnctl.cli.Interfaces;
-using pwnctl.app.Aggregates;
+using pwnctl.app.Assets.Aggregates;
 
 namespace pwnctl.cli.ModeHandlers
 {

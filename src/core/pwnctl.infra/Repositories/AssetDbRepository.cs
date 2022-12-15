@@ -1,12 +1,12 @@
-using pwnctl.app.Extensions;
+using pwnctl.app.Common.Extensions;
 using pwnctl.infra.Persistence;
 using pwnctl.infra.Persistence.Extensions;
 using pwnctl.domain.BaseClasses;
 using pwnctl.domain.Entities;
-using pwnctl.app.Interfaces;
+using pwnctl.app.Assets.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using pwnctl.app.Entities;
-using pwnctl.app.Aggregates;
+using pwnctl.app.Tasks.Entities;
+using pwnctl.app.Assets.Aggregates;
 
 namespace pwnctl.infra.Repositories
 {

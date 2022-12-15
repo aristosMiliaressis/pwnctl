@@ -2,7 +2,7 @@
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddHostedService<JobConsumerService>();
+builder.Services.AddHostedService<TaskConsumerService>();
 
 var app = builder.Build();
 

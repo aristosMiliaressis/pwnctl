@@ -178,9 +178,9 @@ namespace pwnctl.infra.cdk.Stacks
                 Environment = new Dictionary<string, string>()
                 {
                     {"PWNCTL_Aws__InVpc", "true"},
-                    {"PWNCTL_JobQueue__QueueName", AwsConstants.QueueName},
-                    {"PWNCTL_JobQueue__DLQName", AwsConstants.DLQName},
-                    {"PWNCTL_JobQueue__VisibilityTimeout", AwsConstants.QueueVisibilityTimeoutInSec.ToString()},
+                    {"PWNCTL_TaskQueue__QueueName", AwsConstants.QueueName},
+                    {"PWNCTL_TaskQueue__DLQName", AwsConstants.DLQName},
+                    {"PWNCTL_TaskQueue__VisibilityTimeout", AwsConstants.QueueVisibilityTimeoutInSec.ToString()},
                     {"PWNCTL_Logging__Provider", LogProfile.Console.ToString()},
                     {"PWNCTL_Logging__MinLevel", "Debug"},
                     {"PWNCTL_Logging__LogGroup", AwsConstants.LambdaLogGroup},
@@ -266,9 +266,9 @@ namespace pwnctl.infra.cdk.Stacks
                 Environment = new Dictionary<string, string>()
                 {
                     {"PWNCTL_Aws__InVpc", "true"},
-                    {"PWNCTL_JobQueue__QueueName", queue.QueueName},
-                    {"PWNCTL_JobQueue__DLQName", dlq.QueueName},
-                    {"PWNCTL_JobQueue__VisibilityTimeout", AwsConstants.QueueVisibilityTimeoutInSec.ToString()},
+                    {"PWNCTL_TaskQueue__QueueName", queue.QueueName},
+                    {"PWNCTL_TaskQueue__DLQName", dlq.QueueName},
+                    {"PWNCTL_TaskQueue__VisibilityTimeout", AwsConstants.QueueVisibilityTimeoutInSec.ToString()},
                     {"PWNCTL_Logging__Provider", LogProfile.File.ToString()},
                     {"PWNCTL_Logging__FilePath", "/mnt/efs/"},
                     {"PWNCTL_Logging__MinLevel", "Debug"},

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
 using pwnctl.domain.Attributes;
 using pwnctl.domain.BaseClasses;
-using pwnctl.app.Interfaces;
+using pwnctl.app.Common.Interfaces;
 
 namespace pwnctl.infra.Persistence.IdGenerators
 {
