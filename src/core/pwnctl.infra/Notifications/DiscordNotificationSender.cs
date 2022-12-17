@@ -9,11 +9,14 @@ namespace pwnctl.infra.Notifications
     {
         public void Send(Asset asset, NotificationRule rule)
         {
-            PwnContext.Logger.Debug("Send( " + rule.ShortName + ")");
+            Send($"{asset.DomainIdentifier} triggered rule {rule.ShortName}", rule.Topic);
+        }
 
+        public void Send(string message, string topic)
+        {
             var psi = new ProcessStartInfo();
-            psi.FileName = "notify";
-            psi.Arguments = $"-bulk -provider discord -id {rule.Topic}";
+            psi.FileName = "/root/go/bin/notify";
+            psi.Arguments = $"-bulk -provider discord -id {topic}";
             psi.RedirectStandardOutput = true;
             psi.RedirectStandardInput = true;
             psi.UseShellExecute = false;
@@ -22,7 +25,7 @@ namespace pwnctl.infra.Notifications
             using var process = Process.Start(psi);
             using (StreamWriter sr = process.StandardInput)
             {
-                sr.WriteLine($"{asset.DomainIdentifier} triggered rule {rule.ShortName}");
+                sr.WriteLine(message);
                 sr.Flush();
                 sr.Close();
             }

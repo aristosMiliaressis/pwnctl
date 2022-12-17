@@ -135,9 +135,10 @@ public sealed class Tests
 
         //assets = AssetParser.Parse("FD00:DEAD:BEEF:64:35::2", out assetTypes);
 
-        // TODO: ipv6 parsing (Host,Service,Endpoint,SPF,NetRange,NetRange.RouteTo)
+        // TODO: ipv6 parsing (Service,Endpoint,SPF,NetRange,NetRange.RouteTo)
         //NetRagne.RouteTo/mailto:
         //Parameters/VirtualHosts/CloudServices
+        // PTR records
     }
 
     [Fact]

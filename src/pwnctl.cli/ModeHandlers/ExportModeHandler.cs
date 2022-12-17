@@ -45,8 +45,25 @@ namespace pwnctl.cli.ModeHandlers
             var client = new PwnctlApiClient();
 
             var hosts = await client.Send(new ListHostsQuery());
-            WriteToFile(Path.Combine(path, "hosts.json"), hosts.Hosts.Select(a => (Asset)a));
+            WriteToFile(Path.Combine(path, "hosts.json"), hosts.Hosts);
+
             var endpoints = await client.Send(new ListEndpointsQuery());
+            WriteToFile(Path.Combine(path, "endpoints.json"), endpoints.Endpoints);
+
+            var domains = await client.Send(new ListDomainsQuery());
+            WriteToFile(Path.Combine(path, "domains.json"), domains.Domains);
+
+            var services = await client.Send(new ListServicesQuery());
+            WriteToFile(Path.Combine(path, "services.json"), services.Services);
+
+            var records = await client.Send(new ListDnsRecordsQuery());
+            WriteToFile(Path.Combine(path, "records.json"), records.DNSRecords);
+
+            var netRanges = await client.Send(new ListNetRangesQuery());
+            WriteToFile(Path.Combine(path, "netRanges.json"), netRanges.NetRanges);
+
+            var emails = await client.Send(new ListEmailsQuery());
+            WriteToFile(Path.Combine(path, "emails.json"), emails.Emails);
         }
         
         private void WriteToFile(string filename, IEnumerable<Asset> assets)
@@ -54,7 +71,7 @@ namespace pwnctl.cli.ModeHandlers
             foreach (var asset in assets)
             {
                 var dto = new AssetRecord(asset).ToDTO();
-                File.AppendAllText(filename, Serializer.Instance.Serialize(asset) + "\n");
+                File.AppendAllText(filename, Serializer.Instance.Serialize(dto) + "\n");
             }
         }
 

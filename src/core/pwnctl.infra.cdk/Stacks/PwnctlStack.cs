@@ -27,10 +27,35 @@ namespace pwnctl.infra.cdk.Stacks
 {
     internal sealed class PwnctlStack : Stack
     {
+        internal Vpc Vpc { get; set; }
+        internal IConnectable Database { get; set; }
+        internal SecretsManager.Secret DatabaseSecret { get; set; }
+        internal Queue Queue { get; set; }
+        internal Queue DLQueue { get; set; }
+        internal EFS.FileSystem FileSystem { get; set; }
+        internal AccessPoint AccessPoint { get; set; }
+        internal TaskDefinition TaskDefinition { get; set; }
+        internal FargateService FargateService { get; set; }
+
         internal PwnctlStack(Construct scope, string id, IStackProps props = null) : base(scope, id, props)
         {
-            #region VPC
-            var vpc = new Vpc(this, AwsConstants.VpcId, new VpcProps { 
+            CreateVpc();
+
+            CreateDatabase();
+
+            CreateQueues();
+
+            CreateFileSystem();
+
+            CreateLambda();
+
+            CreateFargateService();
+        }
+
+        internal void CreateVpc()
+        {
+            Vpc = new Vpc(this, AwsConstants.VpcId, new VpcProps
+            {
                 MaxAzs = 2,
                 NatGateways = 0,
                 SubnetConfiguration = new SubnetConfiguration[]
@@ -49,10 +74,11 @@ namespace pwnctl.infra.cdk.Stacks
                     }
                 }
             });
-            #endregion
+        }
 
-            #region Aurora RDS
-            var dbSecret = new SecretsManager.Secret(this, AwsConstants.DatabaseCredSecret, new SecretProps
+        internal void CreateDatabase(bool aurora = false)
+        {
+            DatabaseSecret = new SecretsManager.Secret(this, AwsConstants.DatabaseCredSecret, new SecretProps
             {
                 SecretName = AwsConstants.DatabaseCredSecretName,
                 RemovalPolicy = RemovalPolicy.DESTROY,
@@ -65,38 +91,43 @@ namespace pwnctl.infra.cdk.Stacks
                 }
             });
 
-            // var dbEngine = DatabaseClusterEngine.AuroraPostgres(new AuroraPostgresClusterEngineProps
-            // {
-            //     Version = AuroraPostgresEngineVersion.VER_14_5
-            // });
+            if (aurora)
+            {
+                var dbEngine = DatabaseClusterEngine.AuroraPostgres(new AuroraPostgresClusterEngineProps
+                {
+                    Version = AuroraPostgresEngineVersion.VER_14_5
+                });
 
-            // IConnectable dbCluster = new DatabaseCluster(this, AwsConstants.AuroraCluster, new DatabaseClusterProps
-            // {
-            //     ClusterIdentifier = AwsConstants.AuroraCluster,
-            //     Engine = dbEngine,
-            //     Credentials = Credentials.FromSecret(dbSecret),
-            //     InstanceProps = new RDS.InstanceProps
-            //     {
-            //         InstanceType = InstanceType.Of(InstanceClass.BURSTABLE3, InstanceSize.MICRO),
-            //         VpcSubnets = new SubnetSelection
-            //         {
-            //             SubnetType = SubnetType.PRIVATE_ISOLATED
-            //         },
-            //         Vpc = vpc,
-            //     },
-            //     RemovalPolicy = RemovalPolicy.DESTROY,
-            //     Instances = 1,
-            //     InstanceIdentifierBase = AwsConstants.AuroraInstance,
-            //     CloudwatchLogsRetention = RetentionDays.ONE_WEEK,
-            //     DefaultDatabaseName = AwsConstants.DatabaseName,
-            // });
+                Database = new DatabaseCluster(this, AwsConstants.AuroraCluster, new DatabaseClusterProps
+                {
+                    ClusterIdentifier = AwsConstants.AuroraCluster,
+                    Engine = dbEngine,
+                    Credentials = Credentials.FromSecret(DatabaseSecret),
+                    InstanceProps = new RDS.InstanceProps
+                    {
+                        InstanceType = InstanceType.Of(InstanceClass.BURSTABLE3, InstanceSize.MICRO),
+                        VpcSubnets = new SubnetSelection
+                        {
+                            SubnetType = SubnetType.PRIVATE_ISOLATED
+                        },
+                        Vpc = Vpc,
+                    },
+                    RemovalPolicy = RemovalPolicy.DESTROY,
+                    Instances = 1,
+                    InstanceIdentifierBase = AwsConstants.AuroraInstance,
+                    CloudwatchLogsRetention = RetentionDays.ONE_WEEK,
+                    DefaultDatabaseName = AwsConstants.DatabaseName,
+                });
 
-            IConnectable db = new DatabaseInstance(this, AwsConstants.AuroraInstance, new DatabaseInstanceProps
+                return;
+            }
+
+            Database = new DatabaseInstance(this, AwsConstants.AuroraInstance, new DatabaseInstanceProps
             {
                 Engine = DatabaseInstanceEngine.Postgres(new PostgresInstanceEngineProps { Version = PostgresEngineVersion.VER_14_4 }),
                 InstanceType = InstanceType.Of(InstanceClass.BURSTABLE3, InstanceSize.MICRO),
-                Credentials = Credentials.FromSecret(dbSecret),//Credentials.FromGeneratedSecret("syscdk"),
-                Vpc = vpc,
+                Credentials = Credentials.FromSecret(DatabaseSecret),//Credentials.FromGeneratedSecret("syscdk"),
+                Vpc = Vpc,
                 VpcSubnets = new SubnetSelection
                 {
                     SubnetType = SubnetType.PRIVATE_ISOLATED
@@ -106,10 +137,11 @@ namespace pwnctl.infra.cdk.Stacks
                 CloudwatchLogsRetention = RetentionDays.ONE_WEEK,
                 DatabaseName = AwsConstants.DatabaseName
             });
-            #endregion
+        }
 
-            #region SQS
-            var dlq = new Queue(this, AwsConstants.DLQName, new QueueProps
+        internal void CreateQueues()
+        {
+            DLQueue = new Queue(this, AwsConstants.DLQName, new QueueProps
             {
                 QueueName = AwsConstants.DLQName,
                 Encryption = QueueEncryption.UNENCRYPTED,
@@ -120,7 +152,7 @@ namespace pwnctl.infra.cdk.Stacks
                 VisibilityTimeout = Duration.Seconds(AwsConstants.QueueVisibilityTimeoutInSec)
             });
 
-            var queue = new Queue(this, AwsConstants.QueueName, new QueueProps
+            Queue = new Queue(this, AwsConstants.QueueName, new QueueProps
             {
                 QueueName = AwsConstants.QueueName,
                 Encryption = QueueEncryption.UNENCRYPTED,
@@ -132,27 +164,29 @@ namespace pwnctl.infra.cdk.Stacks
                 DeadLetterQueue = new DeadLetterQueue
                 {
                     MaxReceiveCount = 10,
-                    Queue = dlq
+                    Queue = DLQueue
                 }
             });
-            #endregion
+        }
 
-            #region EFS
-            var fs = new EFS.FileSystem(this, AwsConstants.EfsId, new FileSystemProps
+        internal void CreateFileSystem()
+        {
+            FileSystem = new EFS.FileSystem(this, AwsConstants.EfsId, new FileSystemProps
             {
-                Vpc = vpc,
+                Vpc = Vpc,
                 RemovalPolicy = RemovalPolicy.RETAIN
             });
 
-            var accessPoint = fs.AddAccessPoint(AwsConstants.EfsApId, new AccessPointOptions
+            AccessPoint = FileSystem.AddAccessPoint(AwsConstants.EfsApId, new AccessPointOptions
             {
                 CreateAcl = new Acl { OwnerGid = "1001", OwnerUid = "1001", Permissions = "777" },
                 PosixUser = new PosixUser { Gid = "0", Uid = "0" },
                 Path = "/"
             });
-            #endregion
+        }
 
-            #region Lambda API
+        internal void CreateLambda()
+        {
             var pwnctlApiRole = new Role(this, AwsConstants.LambdaRole, new RoleProps
             {
                 AssumedBy = new ServicePrincipal("lambda.amazonaws.com")
@@ -162,7 +196,7 @@ namespace pwnctl.infra.cdk.Stacks
             pwnctlApiRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("service-role/AWSLambdaVPCAccessExecutionRole"));
             pwnctlApiRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonElasticFileSystemClientFullAccess"));
             pwnctlApiRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonRDSFullAccess"));
-            queue.GrantSendMessages(pwnctlApiRole);
+            Queue.GrantSendMessages(pwnctlApiRole);
 
             var function = new Function(this, AwsConstants.LambdaName, new FunctionProps
             {
@@ -171,9 +205,9 @@ namespace pwnctl.infra.cdk.Stacks
                 Timeout = Duration.Seconds(60),
                 Code = Code.FromAsset(Path.Join("src", "pwnctl.api", "bin", "Release", "net6.0")),
                 Handler = "pwnctl.api",
-                Vpc = vpc,
+                Vpc = Vpc,
                 Role = pwnctlApiRole,
-                Filesystem = Lambda.FileSystem.FromEfsAccessPoint(accessPoint, AwsConstants.EfsMountPoint),
+                Filesystem = Lambda.FileSystem.FromEfsAccessPoint(AccessPoint, AwsConstants.EfsMountPoint),
                 LogRetention = RetentionDays.ONE_WEEK,
                 Environment = new Dictionary<string, string>()
                 {
@@ -187,7 +221,7 @@ namespace pwnctl.infra.cdk.Stacks
                     {"PWNCTL_InstallPath", AwsConstants.EfsMountPoint}
                 }
             });
-            db.Connections.AllowDefaultPortFrom(function);
+            Database.Connections.AllowDefaultPortFrom(function);
 
             var fnUrl = function.AddFunctionUrl(new FunctionUrlOptions
             {
@@ -200,9 +234,39 @@ namespace pwnctl.infra.cdk.Stacks
                 StringValue = fnUrl.Url,
                 Description = $"the base url of {AwsConstants.LambdaName}"
             });
-            #endregion
+        }
 
-            #region ECS Fargate Task Definition
+        internal void CreateFargateService()
+        {
+            CreateFargateTaskDefinition();
+
+            var cluster = new Cluster(this, AwsConstants.EcsClusterName, new ClusterProps
+            {
+                Vpc = Vpc
+            });
+
+            FargateService = new FargateService(this, AwsConstants.FargateServiceId, new FargateServiceProps
+            {
+                AssignPublicIp = true,
+                Cluster = cluster,
+                TaskDefinition = TaskDefinition,
+                DesiredCount = 0,
+                CapacityProviderStrategies = new[] {
+                    new CapacityProviderStrategy {
+                        CapacityProvider = "FARGATE",
+                        Weight = 1
+                    }
+                }
+            });
+
+            FileSystem.Connections.AllowDefaultPortFrom(FargateService);
+            Database.Connections.AllowDefaultPortFrom(FargateService);
+
+            CreateStepScalingPolicy();
+        }
+
+        internal void CreateFargateTaskDefinition()
+        {
             var ecsTaskExecutionRole = new Role(this, AwsConstants.EcsRoleName, new RoleProps
             {
                 AssumedBy = new ServicePrincipal("ecs-tasks.amazonaws.com")
@@ -213,11 +277,11 @@ namespace pwnctl.infra.cdk.Stacks
             ecsTaskExecutionRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonEC2ContainerRegistryReadOnly"));
             ecsTaskExecutionRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("CloudWatchLogsFullAccess"));
             ecsTaskExecutionRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonRDSFullAccess"));
-            queue.GrantConsumeMessages(ecsTaskExecutionRole);
-            queue.GrantSendMessages(ecsTaskExecutionRole);
-            dbSecret.GrantRead(ecsTaskExecutionRole);
+            Queue.GrantConsumeMessages(ecsTaskExecutionRole);
+            Queue.GrantSendMessages(ecsTaskExecutionRole);
+            DatabaseSecret.GrantRead(ecsTaskExecutionRole);
 
-            var taskDef = new FargateTaskDefinition(this, AwsConstants.TaskDefinitionId, new FargateTaskDefinitionProps
+            TaskDefinition = new FargateTaskDefinition(this, AwsConstants.TaskDefinitionId, new FargateTaskDefinitionProps
             {
                 MemoryLimitMiB = 2048,
                 Cpu = 512,
@@ -230,11 +294,11 @@ namespace pwnctl.infra.cdk.Stacks
                         Name = AwsConstants.EfsId,
                         EfsVolumeConfiguration = new EfsVolumeConfiguration
                         {
-                            FileSystemId = fs.FileSystemId,
+                            FileSystemId = FileSystem.FileSystemId,
                             AuthorizationConfig = new AuthorizationConfig
                             {
                                 Iam = "ENABLED",
-                                AccessPointId = accessPoint.AccessPointId
+                                AccessPointId = AccessPoint.AccessPointId
                             },
                             RootDirectory = "/",
                             TransitEncryption = "ENABLED"
@@ -252,11 +316,12 @@ namespace pwnctl.infra.cdk.Stacks
 
             logGroup.GrantWrite(new ServicePrincipal("ecs-tasks.amazonaws.com"));
 
-            var container = taskDef.AddContainer(AwsConstants.ContainerName, new ContainerDefinitionOptions
+            var container = TaskDefinition.AddContainer(AwsConstants.ContainerName, new ContainerDefinitionOptions
             {
                 ContainerName = AwsConstants.ContainerName,
                 Cpu = 512,
                 MemoryLimitMiB = 2048,
+                StopTimeout = Duration.Seconds(120),
                 Image = ContainerImage.FromRegistry("public.ecr.aws/i0m2p7r6/pwnctl:latest"),
                 Logging = LogDriver.AwsLogs(new AwsLogDriverProps
                 {
@@ -266,8 +331,8 @@ namespace pwnctl.infra.cdk.Stacks
                 Environment = new Dictionary<string, string>()
                 {
                     {"PWNCTL_Aws__InVpc", "true"},
-                    {"PWNCTL_TaskQueue__QueueName", queue.QueueName},
-                    {"PWNCTL_TaskQueue__DLQName", dlq.QueueName},
+                    {"PWNCTL_TaskQueue__QueueName", Queue.QueueName},
+                    {"PWNCTL_TaskQueue__DLQName", DLQueue.QueueName},
                     {"PWNCTL_TaskQueue__VisibilityTimeout", AwsConstants.QueueVisibilityTimeoutInSec.ToString()},
                     {"PWNCTL_Logging__Provider", LogProfile.File.ToString()},
                     {"PWNCTL_Logging__FilePath", "/mnt/efs/"},
@@ -285,30 +350,11 @@ namespace pwnctl.infra.cdk.Stacks
             };
 
             container.AddMountPoints(mountPoint);
-            #endregion
+        }
 
-            #region ECS Fargate Service
-            var cluster = new Cluster(this, AwsConstants.EcsClusterName, new ClusterProps
-            {
-                Vpc = vpc
-            });
-
-            var fargateService = new FargateService(this, AwsConstants.FargateServiceId, new FargateServiceProps
-            {
-                AssignPublicIp = true,
-                Cluster = cluster,
-                TaskDefinition = taskDef,
-                DesiredCount = 0,
-                CapacityProviderStrategies = new[] {
-                    new CapacityProviderStrategy {
-                        CapacityProvider = "FARGATE",
-                        Weight = 1
-                    }
-                }
-            });
-
-            fs.Connections.AllowDefaultPortFrom(fargateService);
-            db.Connections.AllowDefaultPortFrom(fargateService);
+        internal void CreateStepScalingPolicy(int maxInstances = 10, int stepDepth = 40)
+        {
+            var scaling = FargateService.AutoScaleTaskCount(new EnableScalingProps { MinCapacity = 0, MaxCapacity = 10 });
 
             var queueDepthMetric = new Metric(new MetricProps
             {
@@ -318,62 +364,44 @@ namespace pwnctl.infra.cdk.Stacks
                 Period = Duration.Seconds(60),
                 DimensionsMap = new Dictionary<string, string>
                 {
-                    { "QueueName", queue.QueueName }
+                    { "QueueName", Queue.QueueName }
                 }
             });
 
-            var scaling = fargateService.AutoScaleTaskCount(new EnableScalingProps { MinCapacity = 0, MaxCapacity = 5 });
-
-            scaling.ScaleOnMetric(AwsConstants.ScaleInPolicy, new BasicStepScalingPolicyProps
+            List<IScalingInterval> scaleOutSteps = new();
+            List<IScalingInterval> scaleInSteps = new();
+            
+            for (int i = 0; i < maxInstances; i++)
             {
-                Cooldown = Duration.Seconds(300),
-                Metric = queueDepthMetric,
-                AdjustmentType = AdjustmentType.EXACT_CAPACITY,
-                ScalingSteps = new[]
+                scaleOutSteps.Add(new ScalingInterval
                 {
-                    new ScalingInterval
-                    {
-                        Upper = 1,
-                        Change = 0
-                    },
-                    new ScalingInterval
-                    {
-                        Upper = 30,
-                        Change = 1
-                    },
-                    new ScalingInterval
-                    {
-                        Upper = 60,
-                        Change = 2
-                    }
-                }
-            });
+                    Lower = stepDepth * i + 1,
+                    Change = i + 1
+                });
+
+                scaleInSteps.Add(new ScalingInterval
+                {
+                    Upper = stepDepth * i + 1,
+                    Change = i
+                });
+            }
 
             scaling.ScaleOnMetric(AwsConstants.ScaleOutPolicy, new BasicStepScalingPolicyProps
             {
                 Cooldown = Duration.Seconds(300),
                 Metric = queueDepthMetric,
                 AdjustmentType = AdjustmentType.EXACT_CAPACITY,
-                ScalingSteps = new[]
-                {
-                    new ScalingInterval
-                    {
-                        Lower = 60,
-                        Change = 3
-                    },
-                    new ScalingInterval
-                    {
-                        Lower = 30,
-                        Change = 2
-                    },
-                    new ScalingInterval
-                    {
-                        Lower = 1,
-                        Change = 1
-                    }
-                }
+                ScalingSteps = scaleOutSteps.ToArray()
             });
-            #endregion
+
+            scaling.ScaleOnMetric(AwsConstants.ScaleInPolicy, new BasicStepScalingPolicyProps
+            {
+                Cooldown = Duration.Seconds(300),
+                EvaluationPeriods = 5,
+                Metric = queueDepthMetric,
+                AdjustmentType = AdjustmentType.EXACT_CAPACITY,
+                ScalingSteps = scaleInSteps.ToArray()
+            });
         }
     }
 }

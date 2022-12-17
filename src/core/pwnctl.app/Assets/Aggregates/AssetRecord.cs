@@ -1,8 +1,8 @@
 using pwnctl.app.Assets.DTO;
 using pwnctl.app.Tasks.Entities;
-using pwnctl.app.Common.Interfaces;
 using pwnctl.domain.BaseClasses;
 using pwnctl.kernel.BaseClasses;
+using System.Reflection;
 
 namespace pwnctl.app.Assets.Aggregates;
 
@@ -30,9 +30,14 @@ public sealed class AssetRecord : AggregateRoot<string>
             { nameof(Asset.FoundBy), Asset.FoundBy }
         };
 
-        var properties = Asset.GetType().GetProperties().Where(p => !p.Name.EndsWith("Id")
-                                    && !p.PropertyType.IsAssignableTo(typeof(Asset))).ToList();
-        properties.ForEach(p => dto.Tags.Add(p.Name, p.GetValue(dto.Asset)));
+        var properties = Asset.GetType()
+                            .GetProperties(BindingFlags.Public 
+                                         | BindingFlags.Instance
+                                         | BindingFlags.DeclaredOnly)
+                            .Where(p => !p.Name.EndsWith("Id")
+                                    && !p.PropertyType.IsAssignableTo(typeof(Asset)))
+                            .ToList();
+        properties.ForEach(p => dto.Tags.Add(p.Name, p.GetValue(Asset)) );
 
         return dto;
     }

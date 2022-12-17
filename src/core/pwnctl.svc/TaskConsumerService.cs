@@ -69,7 +69,7 @@ namespace pwnctl.svc
                         _context.Update(taskRecord);
                         await _context.SaveChangesAsync();
 
-                        await _queueService.DequeueAsync(message, stoppingToken);
+                        await _queueService.DequeueAsync(message, CancellationToken.None);
 
                         _unprocessedMessages.Remove(message);
                     }

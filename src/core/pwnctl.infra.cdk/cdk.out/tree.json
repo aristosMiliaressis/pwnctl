@@ -1351,7 +1351,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "bbf65b70d2d1410e49048ab8b3faa48f3bd18b044eb422f3fa0fc5f1be1212a1.zip"
+                      "s3Key": "27d0fe483de27dd79abc9fbe60c6e07c6e57c8668a913539f01af9e1249cbf9d.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -1868,6 +1868,7 @@
                           }
                         ],
                         "name": "pwnctl",
+                        "stopTimeout": 120,
                         "logConfiguration": {
                           "logDriver": "awslogs",
                           "options": {
@@ -2188,7 +2189,7 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::ApplicationAutoScaling::ScalableTarget",
                           "aws:cdk:cloudformation:props": {
-                            "maxCapacity": 5,
+                            "maxCapacity": 10,
                             "minCapacity": 0,
                             "resourceId": {
                               "Fn::Join": [
@@ -2233,112 +2234,6 @@
                           "version": "2.51.1"
                         }
                       },
-                      "ScaleInPolicy": {
-                        "id": "ScaleInPolicy",
-                        "path": "PwnctlStack/PwnctlSvc/TaskCount/Target/ScaleInPolicy",
-                        "children": {
-                          "LowerPolicy": {
-                            "id": "LowerPolicy",
-                            "path": "PwnctlStack/PwnctlSvc/TaskCount/Target/ScaleInPolicy/LowerPolicy",
-                            "children": {
-                              "Resource": {
-                                "id": "Resource",
-                                "path": "PwnctlStack/PwnctlSvc/TaskCount/Target/ScaleInPolicy/LowerPolicy/Resource",
-                                "attributes": {
-                                  "aws:cdk:cloudformation:type": "AWS::ApplicationAutoScaling::ScalingPolicy",
-                                  "aws:cdk:cloudformation:props": {
-                                    "policyName": "PwnctlStackPwnctlSvcTaskCountTargetScaleInPolicyLowerPolicy40016AEE",
-                                    "policyType": "StepScaling",
-                                    "scalingTargetId": {
-                                      "Ref": "PwnctlSvcTaskCountTarget569E5CCF"
-                                    },
-                                    "stepScalingPolicyConfiguration": {
-                                      "adjustmentType": "ExactCapacity",
-                                      "cooldown": 300,
-                                      "metricAggregationType": "Average",
-                                      "stepAdjustments": [
-                                        {
-                                          "metricIntervalLowerBound": -30,
-                                          "metricIntervalUpperBound": 0,
-                                          "scalingAdjustment": 2
-                                        },
-                                        {
-                                          "metricIntervalLowerBound": -59,
-                                          "metricIntervalUpperBound": -30,
-                                          "scalingAdjustment": 1
-                                        },
-                                        {
-                                          "metricIntervalUpperBound": -59,
-                                          "scalingAdjustment": 0
-                                        }
-                                      ]
-                                    }
-                                  }
-                                },
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_applicationautoscaling.CfnScalingPolicy",
-                                  "version": "2.51.1"
-                                }
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_applicationautoscaling.StepScalingAction",
-                              "version": "2.51.1"
-                            }
-                          },
-                          "LowerAlarm": {
-                            "id": "LowerAlarm",
-                            "path": "PwnctlStack/PwnctlSvc/TaskCount/Target/ScaleInPolicy/LowerAlarm",
-                            "children": {
-                              "Resource": {
-                                "id": "Resource",
-                                "path": "PwnctlStack/PwnctlSvc/TaskCount/Target/ScaleInPolicy/LowerAlarm/Resource",
-                                "attributes": {
-                                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
-                                  "aws:cdk:cloudformation:props": {
-                                    "comparisonOperator": "LessThanOrEqualToThreshold",
-                                    "evaluationPeriods": 1,
-                                    "alarmActions": [
-                                      {
-                                        "Ref": "PwnctlSvcTaskCountTargetScaleInPolicyLowerPolicy9A31FF1F"
-                                      }
-                                    ],
-                                    "alarmDescription": "Lower threshold scaling alarm",
-                                    "dimensions": [
-                                      {
-                                        "name": "QueueName",
-                                        "value": {
-                                          "Fn::GetAtt": [
-                                            "pwnctlfifo1F05FF65",
-                                            "QueueName"
-                                          ]
-                                        }
-                                      }
-                                    ],
-                                    "metricName": "ApproximateNumberOfMessagesVisible",
-                                    "namespace": "AWS/SQS",
-                                    "period": 60,
-                                    "statistic": "Average",
-                                    "threshold": 60
-                                  }
-                                },
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
-                                  "version": "2.51.1"
-                                }
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
-                              "version": "2.51.1"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_applicationautoscaling.StepScalingPolicy",
-                          "version": "2.51.1"
-                        }
-                      },
                       "ScaleOutPolicy": {
                         "id": "ScaleOutPolicy",
                         "path": "PwnctlStack/PwnctlSvc/TaskCount/Target/ScaleOutPolicy",
@@ -2365,17 +2260,52 @@
                                       "stepAdjustments": [
                                         {
                                           "metricIntervalLowerBound": 0,
-                                          "metricIntervalUpperBound": 29,
+                                          "metricIntervalUpperBound": 40,
                                           "scalingAdjustment": 1
                                         },
                                         {
-                                          "metricIntervalLowerBound": 29,
-                                          "metricIntervalUpperBound": 59,
+                                          "metricIntervalLowerBound": 40,
+                                          "metricIntervalUpperBound": 80,
                                           "scalingAdjustment": 2
                                         },
                                         {
-                                          "metricIntervalLowerBound": 59,
+                                          "metricIntervalLowerBound": 80,
+                                          "metricIntervalUpperBound": 120,
                                           "scalingAdjustment": 3
+                                        },
+                                        {
+                                          "metricIntervalLowerBound": 120,
+                                          "metricIntervalUpperBound": 160,
+                                          "scalingAdjustment": 4
+                                        },
+                                        {
+                                          "metricIntervalLowerBound": 160,
+                                          "metricIntervalUpperBound": 200,
+                                          "scalingAdjustment": 5
+                                        },
+                                        {
+                                          "metricIntervalLowerBound": 200,
+                                          "metricIntervalUpperBound": 240,
+                                          "scalingAdjustment": 6
+                                        },
+                                        {
+                                          "metricIntervalLowerBound": 240,
+                                          "metricIntervalUpperBound": 280,
+                                          "scalingAdjustment": 7
+                                        },
+                                        {
+                                          "metricIntervalLowerBound": 280,
+                                          "metricIntervalUpperBound": 320,
+                                          "scalingAdjustment": 8
+                                        },
+                                        {
+                                          "metricIntervalLowerBound": 320,
+                                          "metricIntervalUpperBound": 360,
+                                          "scalingAdjustment": 9
+                                        },
+                                        {
+                                          "metricIntervalLowerBound": 360,
+                                          "scalingAdjustment": 10
                                         }
                                       ]
                                     }
@@ -2426,6 +2356,147 @@
                                     "period": 60,
                                     "statistic": "Average",
                                     "threshold": 1
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
+                                  "version": "2.51.1"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
+                              "version": "2.51.1"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_applicationautoscaling.StepScalingPolicy",
+                          "version": "2.51.1"
+                        }
+                      },
+                      "ScaleInPolicy": {
+                        "id": "ScaleInPolicy",
+                        "path": "PwnctlStack/PwnctlSvc/TaskCount/Target/ScaleInPolicy",
+                        "children": {
+                          "LowerPolicy": {
+                            "id": "LowerPolicy",
+                            "path": "PwnctlStack/PwnctlSvc/TaskCount/Target/ScaleInPolicy/LowerPolicy",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "PwnctlStack/PwnctlSvc/TaskCount/Target/ScaleInPolicy/LowerPolicy/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::ApplicationAutoScaling::ScalingPolicy",
+                                  "aws:cdk:cloudformation:props": {
+                                    "policyName": "PwnctlStackPwnctlSvcTaskCountTargetScaleInPolicyLowerPolicy40016AEE",
+                                    "policyType": "StepScaling",
+                                    "scalingTargetId": {
+                                      "Ref": "PwnctlSvcTaskCountTarget569E5CCF"
+                                    },
+                                    "stepScalingPolicyConfiguration": {
+                                      "adjustmentType": "ExactCapacity",
+                                      "cooldown": 300,
+                                      "metricAggregationType": "Average",
+                                      "stepAdjustments": [
+                                        {
+                                          "metricIntervalLowerBound": -40,
+                                          "metricIntervalUpperBound": 0,
+                                          "scalingAdjustment": 9
+                                        },
+                                        {
+                                          "metricIntervalLowerBound": -80,
+                                          "metricIntervalUpperBound": -40,
+                                          "scalingAdjustment": 8
+                                        },
+                                        {
+                                          "metricIntervalLowerBound": -120,
+                                          "metricIntervalUpperBound": -80,
+                                          "scalingAdjustment": 7
+                                        },
+                                        {
+                                          "metricIntervalLowerBound": -160,
+                                          "metricIntervalUpperBound": -120,
+                                          "scalingAdjustment": 6
+                                        },
+                                        {
+                                          "metricIntervalLowerBound": -200,
+                                          "metricIntervalUpperBound": -160,
+                                          "scalingAdjustment": 5
+                                        },
+                                        {
+                                          "metricIntervalLowerBound": -240,
+                                          "metricIntervalUpperBound": -200,
+                                          "scalingAdjustment": 4
+                                        },
+                                        {
+                                          "metricIntervalLowerBound": -280,
+                                          "metricIntervalUpperBound": -240,
+                                          "scalingAdjustment": 3
+                                        },
+                                        {
+                                          "metricIntervalLowerBound": -320,
+                                          "metricIntervalUpperBound": -280,
+                                          "scalingAdjustment": 2
+                                        },
+                                        {
+                                          "metricIntervalLowerBound": -360,
+                                          "metricIntervalUpperBound": -320,
+                                          "scalingAdjustment": 1
+                                        },
+                                        {
+                                          "metricIntervalUpperBound": -360,
+                                          "scalingAdjustment": 0
+                                        }
+                                      ]
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_applicationautoscaling.CfnScalingPolicy",
+                                  "version": "2.51.1"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_applicationautoscaling.StepScalingAction",
+                              "version": "2.51.1"
+                            }
+                          },
+                          "LowerAlarm": {
+                            "id": "LowerAlarm",
+                            "path": "PwnctlStack/PwnctlSvc/TaskCount/Target/ScaleInPolicy/LowerAlarm",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "PwnctlStack/PwnctlSvc/TaskCount/Target/ScaleInPolicy/LowerAlarm/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                                  "aws:cdk:cloudformation:props": {
+                                    "comparisonOperator": "LessThanOrEqualToThreshold",
+                                    "evaluationPeriods": 5,
+                                    "alarmActions": [
+                                      {
+                                        "Ref": "PwnctlSvcTaskCountTargetScaleInPolicyLowerPolicy9A31FF1F"
+                                      }
+                                    ],
+                                    "alarmDescription": "Lower threshold scaling alarm",
+                                    "dimensions": [
+                                      {
+                                        "name": "QueueName",
+                                        "value": {
+                                          "Fn::GetAtt": [
+                                            "pwnctlfifo1F05FF65",
+                                            "QueueName"
+                                          ]
+                                        }
+                                      }
+                                    ],
+                                    "metricName": "ApproximateNumberOfMessagesVisible",
+                                    "namespace": "AWS/SQS",
+                                    "period": 60,
+                                    "statistic": "Average",
+                                    "threshold": 361
                                   }
                                 },
                                 "constructInfo": {

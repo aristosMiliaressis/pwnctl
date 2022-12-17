@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ae036755ab1158295eabafbc16c0ed529c0beea4c8cbb4459ce7af691b3e8656.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/663eb7ae2773db306a1be4a29673175942e90a842f64eab149f933b236eb75aa.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -345,18 +345,6 @@
             "data": "PwnctlSvcTaskCountTarget569E5CCF"
           }
         ],
-        "/PwnctlStack/PwnctlSvc/TaskCount/Target/ScaleInPolicy/LowerPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PwnctlSvcTaskCountTargetScaleInPolicyLowerPolicy9A31FF1F"
-          }
-        ],
-        "/PwnctlStack/PwnctlSvc/TaskCount/Target/ScaleInPolicy/LowerAlarm/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PwnctlSvcTaskCountTargetScaleInPolicyLowerAlarmE94B5844"
-          }
-        ],
         "/PwnctlStack/PwnctlSvc/TaskCount/Target/ScaleOutPolicy/UpperPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -367,6 +355,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "PwnctlSvcTaskCountTargetScaleOutPolicyUpperAlarm649CF721"
+          }
+        ],
+        "/PwnctlStack/PwnctlSvc/TaskCount/Target/ScaleInPolicy/LowerPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnctlSvcTaskCountTargetScaleInPolicyLowerPolicy9A31FF1F"
+          }
+        ],
+        "/PwnctlStack/PwnctlSvc/TaskCount/Target/ScaleInPolicy/LowerAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnctlSvcTaskCountTargetScaleInPolicyLowerAlarmE94B5844"
           }
         ],
         "/PwnctlStack/CDKMetadata/Default": [
