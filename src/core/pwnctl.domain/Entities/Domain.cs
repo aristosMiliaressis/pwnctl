@@ -54,7 +54,8 @@ namespace pwnctl.domain.Entities
                 var subs = domain.Name.Replace(parentDomain, "")
                             .Split(".")
                             .Where(sub => !string.IsNullOrEmpty(sub))
-                            .Skip(1).Reverse().ToList();
+                            .Skip(1)
+                            .Reverse();
                             
                 foreach (var sub in subs)
                 {

@@ -33,10 +33,9 @@ namespace pwnctl.app.Tasks.Entities
             {
                 List<string> _params = new();
 
-                var segments = CommandTemplate.Split("}}");
-                foreach (var seg in segments)
+                foreach (var seg in CommandTemplate.Split("}}"))
                 {
-                    if (seg.Split("{{").Count() == 1)
+                    if (!seg.Contains("{{"))
                         continue;
 
                     _params.Add(seg.Split("{{")[1]);

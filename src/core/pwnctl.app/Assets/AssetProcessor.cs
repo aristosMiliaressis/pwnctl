@@ -1,4 +1,4 @@
-﻿using pwnctl.domain.BaseClasses;
+using pwnctl.domain.BaseClasses;
 using pwnctl.app.Assets.Interfaces;
 using pwnctl.app.Notifications.Interfaces;
 using pwnctl.app.Tasks.Interfaces;
@@ -12,7 +12,7 @@ namespace pwnctl.app.Assets
     public sealed class AssetProcessor
     {
         private readonly AssetRepository _assetRepository;
-        private readonly TaskQueueService _TaskQueueService;
+        private readonly TaskQueueService _taskQueueService;
         private readonly List<TaskDefinition> _taskDefinitions;
         private readonly List<NotificationRule> _notificationRules;
         private readonly List<Program> _programs;
@@ -20,7 +20,7 @@ namespace pwnctl.app.Assets
         public AssetProcessor(TaskQueueService TaskQueueService, AssetRepository assetRepository, 
             List<TaskDefinition> definitions, List<NotificationRule> rules, List<Program> programs)
         {
-            _TaskQueueService = TaskQueueService;
+            _taskQueueService = TaskQueueService;
             _assetRepository = assetRepository;
             _programs = programs;
             _taskDefinitions = definitions;
@@ -33,7 +33,7 @@ namespace pwnctl.app.Assets
 
             foreach (var asset in assets)
             {
-                await HandleAssetAsync((Asset)asset);
+                await HandleAssetAsync(asset);
             }
         }
 
@@ -46,7 +46,6 @@ namespace pwnctl.app.Assets
                 .Where(p => p.PropertyType.IsAssignableTo(typeof(Asset)))
                 .Select(rf => (Asset) rf.GetValue(asset))
                 .Where(a => a != null)
-                .ToList()
                 .ForEachAsync(async refAsset =>
                 {
                     await HandleAssetAsync(refAsset);
@@ -85,7 +84,7 @@ namespace pwnctl.app.Assets
 
                 await _assetRepository.SaveAsync(assetRecord);
 
-                await _TaskQueueService.EnqueueAsync(task);
+                await _taskQueueService.EnqueueAsync(task);
             }
 
             await _assetRepository.SaveAsync(assetRecord);

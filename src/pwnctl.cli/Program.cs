@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using pwnctl.infra;
 
 internal sealed class Program
 {
@@ -16,6 +17,8 @@ internal sealed class Program
 
     static async Task Main(string[] args)
     {
+        PwnContext.Setup();
+
         if (args.Length < 1)
         {
             Console.WriteLine("No mode provided");

@@ -22,11 +22,11 @@ namespace pwnctl.app.Assets
             ParseTags(ref assetText, out List<Tag> tags);
 
             object[] parameters = new object[] { assetText, null, null };
-            foreach (var parseMethod in _tryParseMethod)
+            foreach (var tryParseMethod in _tryParseMethod)
             {
                 try
                 {
-                    bool parsed = (bool)parseMethod.Invoke(null, parameters);
+                    bool parsed = (bool)tryParseMethod.Invoke(null, parameters);
                     if (!parsed)
                         continue;
 

@@ -9,14 +9,14 @@ public class MediatedResponse
 {
     public object Result { get; set; }
 
-    public bool IsSuccess => Errors == null || Errors.Count == 0;
-    public List<MediatorError> Errors { get; init; }
+    public bool IsSuccess => Errors == null || Errors.Count() == 0;
+    public IEnumerable<MediatorError> Errors { get; init; }
 
     public MediatedResponse() {}
 
     private MediatedResponse(params MediatorError[] errors)
     {
-        Errors = errors.ToList();
+        Errors = errors;
     }
 
     public static MediatedResponse Error(string template, params string[] args)
@@ -68,7 +68,7 @@ public sealed class MediatedResponse<TResult> : MediatedResponse
 
     private MediatedResponse(params MediatorError[] errors)
     {
-        Errors = errors.ToList();
+        Errors = errors;
     }
 
     public new static MediatedResponse<TResult> Error(string template, params string[] args)

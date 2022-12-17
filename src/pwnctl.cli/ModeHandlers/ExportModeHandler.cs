@@ -4,11 +4,11 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using pwnctl.dto.Assets.Queries;
 using pwnctl.domain.BaseClasses;
-using pwnctl.infra;
-using pwnctl.cli.Interfaces;
 using pwnctl.app.Assets.Aggregates;
+using pwnctl.app.Common.Interfaces;
+using pwnctl.dto.Assets.Queries;
+using pwnctl.cli.Interfaces;
 
 namespace pwnctl.cli.ModeHandlers
 {
@@ -18,11 +18,6 @@ namespace pwnctl.cli.ModeHandlers
         
         public async Task Handle(string[] args)
         {
-            void WriteToFile(string filename, IEnumerable<Asset> assets)
-            {
-                assets.ToList().ForEach(a => File.AppendAllText(filename, new AssetRecord(a).Serialize() + "\n"));
-            }
-
             if (args.Length < 2 || args[1] != "--path")
             {
                 Console.WriteLine("--path option is required");
@@ -52,17 +47,15 @@ namespace pwnctl.cli.ModeHandlers
             var hosts = await client.Send(new ListHostsQuery());
             WriteToFile(Path.Combine(path, "hosts.json"), hosts.Hosts.Select(a => (Asset)a));
             var endpoints = await client.Send(new ListEndpointsQuery());
-            WriteToFile(Path.Combine(path, "endpoints.json"), endpoints.Endpoints.Select(a => (Asset)a));
-            var domains = await client.Send(new ListDomainsQuery());
-            WriteToFile(Path.Combine(path, "domains.json"), domains.Domains.Select(a => (Asset)a));
-            var services = await client.Send(new ListServicesQuery());
-            WriteToFile(Path.Combine(path, "services.json"), services.Services.Select(a => (Asset)a));
-            var records = await client.Send(new ListDnsRecordsQuery());
-            WriteToFile(Path.Combine(path, "records.json"), records.DNSRecords.Select(a => (Asset)a));
-            var netRanges = await client.Send(new ListNetRangesQuery());
-            WriteToFile(Path.Combine(path, "netRanges.json"), netRanges.NetRanges.Select(a => (Asset)a));
-            var emails = await client.Send(new ListEmailsQuery());
-            WriteToFile(Path.Combine(path, "emails.json"), emails.Emails.Select(a => (Asset)a));
+        }
+        
+        private void WriteToFile(string filename, IEnumerable<Asset> assets)
+        {
+            foreach (var asset in assets)
+            {
+                var dto = new AssetRecord(asset).ToDTO();
+                File.AppendAllText(filename, Serializer.Instance.Serialize(asset) + "\n");
+            }
         }
 
         public void PrintHelpSection()

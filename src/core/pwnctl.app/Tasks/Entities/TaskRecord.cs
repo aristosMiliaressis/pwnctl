@@ -46,14 +46,14 @@ namespace pwnctl.app.Tasks.Entities
 
         public TaskRecord() {}
 
-        public TaskRecord(TaskDefinition definition, AssetRecord asset)
+        public TaskRecord(TaskDefinition definition, AssetRecord record)
         {
             State = TaskState.PENDING;
             Definition = definition;
 
-            Discriminator = asset.Asset.GetType().Name;
-            GetType().GetProperty(Discriminator).SetValue(this, asset.Asset);
-            asset.Tasks.Add(this);
+            Discriminator = record.Asset.GetType().Name;
+            GetType().GetProperty(Discriminator).SetValue(this, record.Asset);
+            record.Tasks.Add(this);
         }
 
         public void Queued()

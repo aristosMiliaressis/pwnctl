@@ -124,7 +124,14 @@ done".Replace("\r\n", "").Replace("\n", ""));
             var line = await process.StandardOutput.ReadLineAsync();
             while ((line = process.StandardOutput.ReadLine()) != null)
             {
-                await processor.ProcessAsync(line);
+                try
+                {
+                    await processor.ProcessAsync(line);
+                }
+                catch (Exception ex)
+                {
+                    PwnContext.Logger.Error(ex.ToRecursiveExInfo());
+                }
             }
 
             PwnContext.Logger.Debug($"ExitCode: {process.ExitCode}, ExitTime: {process.ExitTime}");

@@ -24,8 +24,8 @@ public sealed class FsController : ControllerBase
         if (!Directory.Exists(filePath))
             return NotFound();
 
-        var directoryListing = Directory.GetDirectories(filePath).ToList();
-        directoryListing.AddRange(Directory.GetFiles(filePath));
+        var directoryListing = Directory.GetDirectories(filePath)
+                                .Concat(Directory.GetFiles(filePath));
 
         return Ok(directoryListing.Select(f => f.Replace(EnvironmentVariables.InstallPath, "")));
     }

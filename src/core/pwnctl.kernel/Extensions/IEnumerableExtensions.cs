@@ -1,8 +1,8 @@
 namespace pwnctl.kernel.Extensions;
 
-public static class ListExtensions
+public static class IEnumerableExtensions
 {
-    public static async Task ForEachAsync<T>(this List<T> list, Func<T, Task> func)
+    public static async Task ForEachAsync<T>(this IEnumerable<T> list, Func<T, Task> func)
     {
         foreach (var value in list)
         {

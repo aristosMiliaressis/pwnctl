@@ -196,7 +196,7 @@ tags are a way to store arbitary metadata relating to an asset, they can be used
   CommandTemplate: link-finder.sh {{Url}}
   IsActive: true
   Aggressiveness: 3
-  Filter: Endpoint.Extension == "js" ||Endpoint.Extension == "jsm"||Endpoint["Content-Type"].Contains("/javascript")
+  Filter: Endpoint.Extension=="js"||Endpoint.Extension=="jsm"||Endpoint["Content-Type"].Contains("/javascript")
   Subject: Endpoint
 
 - ShortName: cors_check

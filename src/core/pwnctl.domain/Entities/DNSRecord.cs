@@ -54,7 +54,7 @@ namespace pwnctl.domain.Entities
             var parts = assetText.Split(" ");
 
             if (parts.Length >= 4 && parts[1] == "IN"
-            && Enum.GetNames(typeof(DnsRecordType)).ToList().Contains(parts[2]))
+             && Enum.GetNames(typeof(DnsRecordType)).Contains(parts[2]))
             {
                 var record = new DNSRecord(Enum.Parse<DnsRecordType>(parts[2]), parts[0], string.Join(" ", parts.Skip(3)));
                 mainAsset = record;

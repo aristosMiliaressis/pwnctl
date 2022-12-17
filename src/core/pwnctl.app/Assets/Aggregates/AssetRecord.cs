@@ -8,15 +8,16 @@ namespace pwnctl.app.Assets.Aggregates;
 
 public sealed class AssetRecord : AggregateRoot<string>
 {
-    public Asset Asset { get; private set; }
-    public List<TaskRecord> Tasks { get; set; } = new List<TaskRecord>();
+    public Asset Asset { get; private init; }
+    public List<TaskRecord> Tasks { get; private init; } = new List<TaskRecord>();
 
     public AssetRecord(Asset asset)
     {
         Asset = asset;
     }
 
-    public string Serialize()
+
+    public AssetDTO ToDTO()
     {
         var dto = new AssetDTO();
 
@@ -33,6 +34,6 @@ public sealed class AssetRecord : AggregateRoot<string>
                                     && !p.PropertyType.IsAssignableTo(typeof(Asset))).ToList();
         properties.ForEach(p => dto.Tags.Add(p.Name, p.GetValue(dto.Asset)));
 
-        return Serializer.Instance.Serialize(dto);
+        return dto;
     }
 }

@@ -20,7 +20,7 @@ namespace pwnctl.infra.Repositories
             await asset.GetType()
                 .GetProperties()
                 .Where(p => p.PropertyType.IsAssignableTo(typeof(Asset)))
-                .ToList().ForEachAsync(async reference =>
+                .ForEachAsync(async reference =>
                 {
                     var assetRef = (Asset)reference.GetValue(asset);
                     if (assetRef == null)
@@ -48,6 +48,7 @@ namespace pwnctl.infra.Repositories
         {
             await SaveAsync(new AssetRecord(asset));
         }
+
 
         public async Task SaveAsync(AssetRecord record)
         {

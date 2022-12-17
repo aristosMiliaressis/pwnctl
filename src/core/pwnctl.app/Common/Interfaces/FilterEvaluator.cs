@@ -7,5 +7,5 @@ public interface FilterEvaluator
 {
     static FilterEvaluator Instance { get; set; }
 
-    public bool Evaluate(string filter, Asset asset);
+    bool Evaluate(string filter, Asset asset);
 }
