@@ -6,7 +6,7 @@ namespace pwnctl.app.Assets.Interfaces
 {
     public interface AssetRepository
     {
-        Task<AssetRecord> LoadRelatedAssets(Asset asset);
+        Task<AssetRecord> GetAssetRecord(Asset asset);
         TaskRecord FindTaskRecord(Asset asset, TaskDefinition def);
         Task SaveAsync(AssetRecord asset);
         Task SaveAsync(Asset asset);

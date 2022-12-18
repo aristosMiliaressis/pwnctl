@@ -6,6 +6,7 @@ using pwnctl.app.Tasks.Entities;
 using pwnctl.app.Scope.Entities;
 using pwnctl.app.Notifications.Entities;
 using pwnctl.kernel.Extensions;
+using pwnctl.app.Assets.Aggregates;
 
 namespace pwnctl.app.Assets
 {
@@ -15,14 +16,12 @@ namespace pwnctl.app.Assets
         private readonly TaskQueueService _taskQueueService;
         private readonly List<TaskDefinition> _taskDefinitions;
         private readonly List<NotificationRule> _notificationRules;
-        private readonly List<Program> _programs;
 
         public AssetProcessor(TaskQueueService TaskQueueService, AssetRepository assetRepository, 
-            List<TaskDefinition> definitions, List<NotificationRule> rules, List<Program> programs)
+            List<TaskDefinition> definitions, List<NotificationRule> rules)
         {
             _taskQueueService = TaskQueueService;
             _assetRepository = assetRepository;
-            _programs = programs;
             _taskDefinitions = definitions;
             _notificationRules = rules;
         }
@@ -33,11 +32,11 @@ namespace pwnctl.app.Assets
 
             foreach (var asset in assets)
             {
-                await HandleAssetAsync(asset);
+                await ProcessAssetAsync(asset);
             }
         }
 
-        private async Task HandleAssetAsync(Asset asset)
+        private async Task ProcessAssetAsync(Asset asset)
         {
             // recursivly process all parsed assets
             // starting from the botton of the ref tree.
@@ -48,46 +47,42 @@ namespace pwnctl.app.Assets
                 .Where(a => a != null)
                 .ForEachAsync(async refAsset =>
                 {
-                    await HandleAssetAsync(refAsset);
+                    await ProcessAssetAsync(refAsset);
                 });
 
-            var assetRecord = await _assetRepository.LoadRelatedAssets(asset);
-
-            var program = _programs.FirstOrDefault(program => program.Scope.Any(scope => scope.Matches(assetRecord.Asset)));
-
-            assetRecord.Asset.InScope = program != null;
-
-            await _assetRepository.SaveAsync(assetRecord);
-            
-            if (!assetRecord.Asset.InScope)
+            var record = await _assetRepository.GetAssetRecord(asset);
+            if (record.Asset.InScope)
             {
-                return;
+                await ProcessInScopeAssetAsync(record);           
             }
 
-            foreach (var rule in _notificationRules.Where(rule => rule.Check(assetRecord.Asset)))
+            await _assetRepository.SaveAsync(record);
+        }
+
+        private async Task ProcessInScopeAssetAsync(AssetRecord record)
+        {
+            foreach (var rule in _notificationRules.Where(rule => rule.Check(record.Asset)))
             {
-                NotificationSender.Instance.Send(assetRecord.Asset, rule);
+                NotificationSender.Instance.Send(record.Asset, rule);
             }
 
-            var matchingTasks = program.Policy
+            var matchingTasks = record.OwningProgram.Policy
                                     .GetAllowedTasks(_taskDefinitions)
-                                    .Where(def => def.Matches(assetRecord.Asset));
+                                    .Where(def => def.Matches(record.Asset));
 
-            foreach(var definition in matchingTasks)
+            foreach (var definition in matchingTasks)
             {
                 // only queue tasks once per definition/asset pair
-                var task = _assetRepository.FindTaskRecord(assetRecord.Asset, definition);
+                var task = _assetRepository.FindTaskRecord(record.Asset, definition);
                 if (task != null)
                     continue;
 
-                task = new TaskRecord(definition, assetRecord);
+                task = new TaskRecord(definition, record);
 
-                await _assetRepository.SaveAsync(assetRecord);
+                await _assetRepository.SaveAsync(record);
 
                 await _taskQueueService.EnqueueAsync(task);
             }
-
-            await _assetRepository.SaveAsync(assetRecord);
         }
     }
 }

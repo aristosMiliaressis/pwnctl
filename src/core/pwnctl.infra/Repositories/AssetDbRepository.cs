@@ -8,14 +8,21 @@ using Microsoft.EntityFrameworkCore;
 using pwnctl.app.Tasks.Entities;
 using pwnctl.app.Assets.Aggregates;
 using pwnctl.kernel.Extensions;
+using pwnctl.app.Scope.Entities;
 
 namespace pwnctl.infra.Repositories
 {
     public sealed class AssetDbRepository : AssetRepository
     {
         private PwnctlDbContext _context = new();
+        private List<Program> _programs;
+        
+        public AssetDbRepository()
+        {
+            _programs = _context.ListPrograms();
+        }
 
-        public async Task<AssetRecord> LoadRelatedAssets(Asset asset)
+        public async Task<AssetRecord> GetAssetRecord(Asset asset)
         {
             await asset.GetType()
                 .GetProperties()
@@ -34,8 +41,8 @@ namespace pwnctl.infra.Repositories
 
                     reference.SetValue(asset, assetRef);
                 });
-            
-            return new AssetRecord(asset);
+
+            return new AssetRecord(_programs, asset);
         }
 
         public TaskRecord FindTaskRecord(Asset asset, TaskDefinition def)

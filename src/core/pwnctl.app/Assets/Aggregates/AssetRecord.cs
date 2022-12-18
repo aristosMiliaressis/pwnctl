@@ -1,4 +1,5 @@
 using pwnctl.app.Assets.DTO;
+using pwnctl.app.Scope.Entities;
 using pwnctl.app.Tasks.Entities;
 using pwnctl.domain.BaseClasses;
 using pwnctl.kernel.BaseClasses;
@@ -10,12 +11,21 @@ public sealed class AssetRecord : AggregateRoot<string>
 {
     public Asset Asset { get; private init; }
     public List<TaskRecord> Tasks { get; private init; } = new List<TaskRecord>();
+    public Program OwningProgram { get; private init; }
 
     public AssetRecord(Asset asset)
     {
         Asset = asset;
     }
 
+    public AssetRecord(List<Program> programs, Asset asset)
+    {
+        Asset = asset;
+
+        OwningProgram = programs.FirstOrDefault(program => program.Scope.Any(scope => scope.Matches(Asset)));
+
+        Asset.InScope = OwningProgram != null;
+    }
 
     public AssetDTO ToDTO()
     {

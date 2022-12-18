@@ -31,56 +31,56 @@ namespace pwnctl.svc
 
             _cts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
 
-            try
+            while (!_cts.Token.IsCancellationRequested)
             {
-                while (!_cts.Token.IsCancellationRequested)
+                var messages = await _queueService.ReceiveAsync(_cts.Token);
+                if (messages == null || !messages.Any())
                 {
-                    var messages = await _queueService.ReceiveAsync(_cts.Token);
-                    if (messages == null || !messages.Any())
-                    {
-                        PwnContext.Logger.Information($"queue is empty");
-                        break;
-                    }
+                    PwnContext.Logger.Information($"queue is empty");
+                    break;
+                }
 
-                    var message = messages[0];
+                var message = messages[0];
 
-                    var timer = new System.Timers.Timer(1000 * (AwsConstants.QueueVisibilityTimeoutInSec - 10));
-                    timer.Elapsed += async (sender, e) => await _queueService.ChangeBatchVisibility(new List<Message> { message }, _cts.Token);
-                    timer.Start();
+                var timer = new System.Timers.Timer(1000 * (AwsConstants.QueueVisibilityTimeoutInSec - 10));
+                timer.Elapsed += async (sender, e) => await _queueService.ChangeBatchVisibility(new List<Message> { message }, _cts.Token);
+                timer.Start();
 
-                    var queuedTask = Serializer.Instance.Deserialize<TaskEntity>(message.Body);
+                var queuedTask = Serializer.Instance.Deserialize<TaskEntity>(message.Body);
 
-                    var taskRecord = await _context
-                                        .JoinedTaskRecordQueryable()
-                                        .FirstOrDefaultAsync(r => r.Id == queuedTask.TaskId);
-                                        
-                    if (taskRecord == null)
-                    {
-                        PwnContext.Logger.Error($"Task: {queuedTask.TaskId}:'{queuedTask.Command}' not found");
-                        await _queueService.DequeueAsync(message, _cts.Token);
-                        continue;
-                    }
+                var taskRecord = await _context
+                                    .JoinedTaskRecordQueryable()
+                                    .FirstOrDefaultAsync(r => r.Id == queuedTask.TaskId);
 
+                Process process = null;
+                try
+                {
                     taskRecord.Started();
 
-                    Process process = await ExecuteCommandAsync(queuedTask.Command, taskRecord.Definition, _cts.Token);
-
-                    // TODO: log stdout&stderr if ExitCode != 0
-                    taskRecord.Finished(process.ExitCode);
-                    
-                    await _context.SaveChangesAsync(CancellationToken.None);
-
-                    await _queueService.DequeueAsync(message, CancellationToken.None);
+                    process = await ExecuteCommandAsync(queuedTask.Command, taskRecord.Definition, _cts.Token);
                 }
+                catch (TaskCanceledException ex)
+                {
+                    PwnContext.Logger.Error(ex.ToRecursiveExInfo());
+                    continue;
+                }
+                catch (Exception ex)
+                {
+                    PwnContext.Logger.Debug(message.Body);
+                    PwnContext.Logger.Error(ex.ToRecursiveExInfo());
+                    await _queueService.DequeueAsync(message);
+                    continue;
+                }
+
+                // TODO: log stdout&stderr if ExitCode != 0
+                taskRecord.Finished(process.ExitCode);
+
+                await _context.SaveChangesAsync();
+
+                await _queueService.DequeueAsync(message);
             }
-            catch (Exception ex)
-            {
-                PwnContext.Logger.Error(ex.ToRecursiveExInfo());
-            }
-            finally
-            {
-                _hostApplicationLifetime.StopApplication();
-            }
+            
+            _hostApplicationLifetime.StopApplication();
         }
 
         private async Task<Process> ExecuteCommandAsync(string command, TaskDefinition definition, CancellationToken stoppingToken)

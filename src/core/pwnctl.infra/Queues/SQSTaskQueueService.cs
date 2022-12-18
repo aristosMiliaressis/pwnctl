@@ -57,7 +57,7 @@ namespace pwnctl.infra.Queues
             task.Queued();
         }
 
-        public async Task<List<Message>> ReceiveAsync(CancellationToken ct)
+        public async Task<List<Message>> ReceiveAsync(CancellationToken ct = default)
         {
             var receiveRequest = new ReceiveMessageRequest
             {
@@ -76,7 +76,7 @@ namespace pwnctl.infra.Queues
             return messageResponse.Messages;
         }
 
-        public async Task DequeueAsync(Message message, CancellationToken ct)
+        public async Task DequeueAsync(Message message, CancellationToken ct = default)
         {
             // TODO: delete batching?
 
@@ -85,7 +85,7 @@ namespace pwnctl.infra.Queues
                 PwnContext.Logger.Debug("DeleteMessage: " + Serializer.Instance.Serialize(response));
         }
 
-        public async Task ChangeBatchVisibility(List<Message> messages, CancellationToken ct)
+        public async Task ChangeBatchVisibility(List<Message> messages, CancellationToken ct = default)
         {
             PwnContext.Logger.Debug($"ChangeBatchVisibility");
 

@@ -9,7 +9,33 @@ on:
   workflow_dispatch:
 
 jobs:
+  test-app:
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/dotnet/sdk:6.0
+    steps:
+      - name: Checkout subject branch
+        uses: actions/checkout@v3
+
+      - name: Cache Nuget packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: nuget
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: test cli
+        run: dotnet test
+
   build-cli:
+    needs: test-app
     runs-on: ubuntu-latest
     container:
       image: mcr.microsoft.com/dotnet/sdk:6.0
@@ -67,6 +93,7 @@ jobs:
           asset_content_type: application/x-elf
 
   build-api:
+    needs: test-app
     runs-on: ubuntu-latest
     container:
       image: mcr.microsoft.com/dotnet/sdk:6.0
@@ -84,31 +111,6 @@ jobs:
       - name: build api
         run: dotnet build src/pwnctl.api/pwnctl.api.csproj
   
-  test-app:
-    runs-on: ubuntu-latest
-    container:
-      image: mcr.microsoft.com/dotnet/sdk:6.0
-    steps:
-      - name: Checkout subject branch
-        uses: actions/checkout@v3
-
-      - name: Cache Nuget packages
-        uses: actions/cache@v3
-        with:
-          path: ~/.nuget/packages
-          key: nuget-${{ hashFiles('**/packages.lock.json') }}
-          restore-keys: nuget
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1-node16
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-
-      - name: test cli
-        run: dotnet test
-
   build-and-push-worker:
     needs: test-app
     runs-on: ubuntu-latest

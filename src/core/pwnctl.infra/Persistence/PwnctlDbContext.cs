@@ -75,6 +75,7 @@ namespace pwnctl.infra.Persistence
                     return;
                 }
 
+                Console.WriteLine(PwnContext.Config.Db.ConnectionString);
                 optionsBuilder.UseNpgsql(PwnContext.Config.Db.ConnectionString, x => x.MigrationsHistoryTable("__EFMigrationHistory"));
             }
         }

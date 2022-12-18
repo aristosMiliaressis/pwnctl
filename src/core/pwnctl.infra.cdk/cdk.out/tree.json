@@ -1351,7 +1351,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "b525e6241e84edd3d0367fb04a1fb1e4547e70f7730ebe87f0acde905e0330be.zip"
+                      "s3Key": "e0a43f31ea747d1fee088787c92fa550e1f3b4f2bab6dfa218d9d9e5b5db7945.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -2260,51 +2260,51 @@
                                       "stepAdjustments": [
                                         {
                                           "metricIntervalLowerBound": 0,
-                                          "metricIntervalUpperBound": 40,
+                                          "metricIntervalUpperBound": 20,
                                           "scalingAdjustment": 1
                                         },
                                         {
-                                          "metricIntervalLowerBound": 40,
-                                          "metricIntervalUpperBound": 80,
+                                          "metricIntervalLowerBound": 20,
+                                          "metricIntervalUpperBound": 40,
                                           "scalingAdjustment": 2
                                         },
                                         {
-                                          "metricIntervalLowerBound": 80,
-                                          "metricIntervalUpperBound": 120,
+                                          "metricIntervalLowerBound": 40,
+                                          "metricIntervalUpperBound": 60,
                                           "scalingAdjustment": 3
                                         },
                                         {
-                                          "metricIntervalLowerBound": 120,
-                                          "metricIntervalUpperBound": 160,
+                                          "metricIntervalLowerBound": 60,
+                                          "metricIntervalUpperBound": 80,
                                           "scalingAdjustment": 4
                                         },
                                         {
-                                          "metricIntervalLowerBound": 160,
-                                          "metricIntervalUpperBound": 200,
+                                          "metricIntervalLowerBound": 80,
+                                          "metricIntervalUpperBound": 100,
                                           "scalingAdjustment": 5
                                         },
                                         {
-                                          "metricIntervalLowerBound": 200,
-                                          "metricIntervalUpperBound": 240,
+                                          "metricIntervalLowerBound": 100,
+                                          "metricIntervalUpperBound": 120,
                                           "scalingAdjustment": 6
                                         },
                                         {
-                                          "metricIntervalLowerBound": 240,
-                                          "metricIntervalUpperBound": 280,
+                                          "metricIntervalLowerBound": 120,
+                                          "metricIntervalUpperBound": 140,
                                           "scalingAdjustment": 7
                                         },
                                         {
-                                          "metricIntervalLowerBound": 280,
-                                          "metricIntervalUpperBound": 320,
+                                          "metricIntervalLowerBound": 140,
+                                          "metricIntervalUpperBound": 160,
                                           "scalingAdjustment": 8
                                         },
                                         {
-                                          "metricIntervalLowerBound": 320,
-                                          "metricIntervalUpperBound": 360,
+                                          "metricIntervalLowerBound": 160,
+                                          "metricIntervalUpperBound": 180,
                                           "scalingAdjustment": 9
                                         },
                                         {
-                                          "metricIntervalLowerBound": 360,
+                                          "metricIntervalLowerBound": 180,
                                           "scalingAdjustment": 10
                                         }
                                       ]
@@ -2400,52 +2400,52 @@
                                       "metricAggregationType": "Average",
                                       "stepAdjustments": [
                                         {
-                                          "metricIntervalLowerBound": -40,
+                                          "metricIntervalLowerBound": -20,
                                           "metricIntervalUpperBound": 0,
                                           "scalingAdjustment": 9
                                         },
                                         {
-                                          "metricIntervalLowerBound": -80,
-                                          "metricIntervalUpperBound": -40,
+                                          "metricIntervalLowerBound": -40,
+                                          "metricIntervalUpperBound": -20,
                                           "scalingAdjustment": 8
                                         },
                                         {
-                                          "metricIntervalLowerBound": -120,
-                                          "metricIntervalUpperBound": -80,
+                                          "metricIntervalLowerBound": -60,
+                                          "metricIntervalUpperBound": -40,
                                           "scalingAdjustment": 7
                                         },
                                         {
-                                          "metricIntervalLowerBound": -160,
-                                          "metricIntervalUpperBound": -120,
+                                          "metricIntervalLowerBound": -80,
+                                          "metricIntervalUpperBound": -60,
                                           "scalingAdjustment": 6
                                         },
                                         {
-                                          "metricIntervalLowerBound": -200,
-                                          "metricIntervalUpperBound": -160,
+                                          "metricIntervalLowerBound": -100,
+                                          "metricIntervalUpperBound": -80,
                                           "scalingAdjustment": 5
                                         },
                                         {
-                                          "metricIntervalLowerBound": -240,
-                                          "metricIntervalUpperBound": -200,
+                                          "metricIntervalLowerBound": -120,
+                                          "metricIntervalUpperBound": -100,
                                           "scalingAdjustment": 4
                                         },
                                         {
-                                          "metricIntervalLowerBound": -280,
-                                          "metricIntervalUpperBound": -240,
+                                          "metricIntervalLowerBound": -140,
+                                          "metricIntervalUpperBound": -120,
                                           "scalingAdjustment": 3
                                         },
                                         {
-                                          "metricIntervalLowerBound": -320,
-                                          "metricIntervalUpperBound": -280,
+                                          "metricIntervalLowerBound": -160,
+                                          "metricIntervalUpperBound": -140,
                                           "scalingAdjustment": 2
                                         },
                                         {
-                                          "metricIntervalLowerBound": -360,
-                                          "metricIntervalUpperBound": -320,
+                                          "metricIntervalLowerBound": -180,
+                                          "metricIntervalUpperBound": -160,
                                           "scalingAdjustment": 1
                                         },
                                         {
-                                          "metricIntervalUpperBound": -360,
+                                          "metricIntervalUpperBound": -180,
                                           "scalingAdjustment": 0
                                         }
                                       ]
@@ -2496,7 +2496,7 @@
                                     "namespace": "AWS/SQS",
                                     "period": 60,
                                     "statistic": "Average",
-                                    "threshold": 361
+                                    "threshold": 181
                                   }
                                 },
                                 "constructInfo": {
