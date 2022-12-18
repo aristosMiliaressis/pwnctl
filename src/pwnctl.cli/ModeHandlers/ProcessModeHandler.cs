@@ -45,8 +45,6 @@ namespace pwnctl.cli.ModeHandlers
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.ToRecursiveExInfo());
-                    Console.WriteLine(task.Definition.CommandTemplate);
-                    Console.WriteLine(task.Discriminator);
                 }
             }
         }

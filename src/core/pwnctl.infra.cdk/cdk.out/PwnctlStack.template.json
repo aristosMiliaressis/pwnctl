@@ -932,7 +932,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "27d0fe483de27dd79abc9fbe60c6e07c6e57c8668a913539f01af9e1249cbf9d.zip"
+     "S3Key": "b525e6241e84edd3d0367fb04a1fb1e4547e70f7730ebe87f0acde905e0330be.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -1014,7 +1014,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "PwnctlStack/PwnctlApi/Resource",
-    "aws:asset:path": "asset.27d0fe483de27dd79abc9fbe60c6e07c6e57c8668a913539f01af9e1249cbf9d.0",
+    "aws:asset:path": "asset.b525e6241e84edd3d0367fb04a1fb1e4547e70f7730ebe87f0acde905e0330be.0",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }

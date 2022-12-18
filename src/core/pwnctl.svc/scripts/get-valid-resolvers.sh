@@ -5,7 +5,7 @@ echo "Getting fresh resolvers"
 temp=`mktemp`
 temp2=`mktemp`
 
-curl https://public-dns.info/nameservers.txt | shuf -n 1000 >$temp
+curl https://public-dns.info/nameservers.txt | shuf -n 1500 >$temp
 
 dnsvalidator -tL $temp -threads 100 -o $temp2
 

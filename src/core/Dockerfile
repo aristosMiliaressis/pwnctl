@@ -107,7 +107,7 @@ RUN wget https://github.com/RustScan/RustScan/releases/download/2.0.1/rustscan_2
     && dpkg -i rustscan_2.0.1_amd64.deb && rm rustscan_2.0.1_amd64.deb
 RUN curl -o /opt/wordlists/common.txt https://raw.githubusercontent.com/danielmiessler/SecLists/master/Discovery/Web-Content/common.txt
 RUN curl -o /opt/wordlists/commonspeak2.txt https://raw.githubusercontent.com/assetnote/commonspeak2-wordlists/master/subdomains/subdomains.txt
-RUN curl -o /opt/wordlists/best-dns-wordlist.txt https://wordlists-cdn.assetnote.io/data/manual/best-dns-wordlist.txt
+RUN curl -o /opt/wordlists/subdomains-top-20000.txt https://raw.githubusercontent.com/theMiddleBlue/DNSenum/master/wordlist/subdomains-top1mil-20000.txt
 WORKDIR /opt/tools
 
 RUN git clone https://github.com/zmap/zdns.git && cd zdns && go build && cp zdns /usr/bin

@@ -14,65 +14,63 @@ namespace pwnctl.svc
 {
     public sealed class TaskConsumerService : BackgroundService
     {
+        private readonly IHostApplicationLifetime _hostApplicationLifetime;
         private readonly SQSTaskQueueService _queueService = new();
         private readonly PwnctlDbContext _context = new();
-        private List<Message> _unprocessedMessages = new List<Message>();
-        private readonly IHostApplicationLifetime _hostApplicationLifetime;
+        private CancellationTokenSource _cts = new();
         
         public TaskConsumerService(IHostApplicationLifetime hostApplicationLifetime)
-            => _hostApplicationLifetime = hostApplicationLifetime;
+        {
+            AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
+            _hostApplicationLifetime = hostApplicationLifetime;
+        }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             PwnContext.Logger.Information($"{nameof(TaskConsumerService)} started.");
 
+            _cts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
+
             try
             {
-                while (!stoppingToken.IsCancellationRequested)
+                while (!_cts.Token.IsCancellationRequested)
                 {
-                    var messages = await _queueService.ReceiveAsync(stoppingToken);
+                    var messages = await _queueService.ReceiveAsync(_cts.Token);
                     if (messages == null || !messages.Any())
                     {
                         PwnContext.Logger.Information($"queue is empty");
                         break;
                     }
 
-                    _unprocessedMessages = new(messages);
+                    var message = messages[0];
 
-                    var timer = new System.Timers.Timer(1000 * 60 * (AwsConstants.QueueVisibilityTimeoutInSec - 1));
-                    timer.Elapsed += async (sender, e) => await ChallengeMessageVisibility(stoppingToken);
-                    timer.AutoReset = false;
+                    var timer = new System.Timers.Timer(1000 * (AwsConstants.QueueVisibilityTimeoutInSec - 10));
+                    timer.Elapsed += async (sender, e) => await _queueService.ChangeBatchVisibility(new List<Message> { message }, _cts.Token);
                     timer.Start();
 
-                    foreach (var message in messages)
+                    var queuedTask = Serializer.Instance.Deserialize<TaskEntity>(message.Body);
+
+                    var taskRecord = await _context
+                                        .JoinedTaskRecordQueryable()
+                                        .FirstOrDefaultAsync(r => r.Id == queuedTask.TaskId);
+                                        
+                    if (taskRecord == null)
                     {
-                        var queuedTask = Serializer.Instance.Deserialize<TaskEntity>(message.Body);
-
-                        var taskRecord = await _context
-                                            .JoinedTaskRecordQueryable()
-                                            .FirstOrDefaultAsync(r => r.Id == queuedTask.TaskId);
-                                            
-                        if (taskRecord == null)
-                        {
-                            PwnContext.Logger.Error($"Task: {queuedTask.TaskId}:'{queuedTask.Command}' not found");
-                            await _queueService.DequeueAsync(message, stoppingToken);
-                            continue;
-                        }
-
-                        taskRecord.Started();
-
-                        Process process = await ExecuteCommandAsync(queuedTask.Command, taskRecord.Definition, stoppingToken);
-
-                        // TODO: log stdout&stderr if ExitCode != 0
-                        taskRecord.Finished(process.ExitCode);
-                        
-                        _context.Update(taskRecord);
-                        await _context.SaveChangesAsync();
-
-                        await _queueService.DequeueAsync(message, CancellationToken.None);
-
-                        _unprocessedMessages.Remove(message);
+                        PwnContext.Logger.Error($"Task: {queuedTask.TaskId}:'{queuedTask.Command}' not found");
+                        await _queueService.DequeueAsync(message, _cts.Token);
+                        continue;
                     }
+
+                    taskRecord.Started();
+
+                    Process process = await ExecuteCommandAsync(queuedTask.Command, taskRecord.Definition, _cts.Token);
+
+                    // TODO: log stdout&stderr if ExitCode != 0
+                    taskRecord.Finished(process.ExitCode);
+                    
+                    await _context.SaveChangesAsync(CancellationToken.None);
+
+                    await _queueService.DequeueAsync(message, CancellationToken.None);
                 }
             }
             catch (Exception ex)
@@ -87,7 +85,7 @@ namespace pwnctl.svc
 
         private async Task<Process> ExecuteCommandAsync(string command, TaskDefinition definition, CancellationToken stoppingToken)
         {
-            PwnContext.Logger.Debug(command);
+            PwnContext.Logger.Debug("Running: " + command);
             
             var psi = new ProcessStartInfo();
             psi.FileName = "/bin/bash";
@@ -139,9 +137,11 @@ done".Replace("\r\n", "").Replace("\n", ""));
             return process;
         }
 
-        public async Task ChallengeMessageVisibility(CancellationToken stoppingToken)
+        private void OnProcessExit(object sender, EventArgs e)
         {
-            await _queueService.ChangeBatchVisibility(_unprocessedMessages, stoppingToken);
+            PwnContext.Logger.Information("received SIGTERM");
+
+            _cts.Cancel();
         }
     }
 }

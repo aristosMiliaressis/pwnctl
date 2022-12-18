@@ -45,7 +45,7 @@ namespace pwnctl.domain.Entities
             
             assetText = assetText.Substring(0, assetText.Length - strPort.Length - 1);
 
-            var protocol = strPort[0] switch
+            var protocol = strPort[0] switch // TODO: replace this with scheme tcp://, udp:// sctp://
             {
                 'U' => TransportProtocol.UDP,
                 'T' => TransportProtocol.TCP,

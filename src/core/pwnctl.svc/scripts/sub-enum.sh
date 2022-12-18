@@ -1,7 +1,7 @@
 #!/bin/bash
 
 domain=$1
-dict='/opt/wordlists/best-dns-wordlist.txt'
+dict='/opt/wordlists/subdomains-top-20000.txt'
 DNS_RESOLVERS_FILE='/opt/wordlists/dns/resolvers_top25.txt'
 
 potential_subs_file=`mktemp`

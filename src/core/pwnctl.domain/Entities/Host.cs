@@ -26,6 +26,13 @@ namespace pwnctl.domain.Entities
             mainAsset = null;
             relatedAssets = null;
 
+            assetText = assetText.StartsWith("[") && assetText.EndsWith("]")
+                    ? assetText.Substring(1, assetText.Length-2)
+                    : assetText;
+
+            if (assetText.Contains("]"))
+                return false;
+
             if (IPAddress.TryParse(assetText, out IPAddress address))
             {
                 var host = new Host(address);

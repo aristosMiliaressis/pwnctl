@@ -68,14 +68,19 @@ namespace pwnctl.infra.Repositories
             }
 
             // otherwise add new tags/tasks & update the InScope flag
+
             var newTags = record.Asset.Tags.Where(tag => _context.FindAssetTag(existingAsset, tag) == null);
             newTags.ToList().ForEach(t => t.SetAsset(existingAsset));
             foreach (var tag in newTags)
                 _context.Entry(tag).State = EntityState.Added;
 
-            var newTasks = record.Tasks.Where(t => t.Id == default);
-            foreach (var task in newTasks) 
-                _context.Entry(task).State = EntityState.Added;
+            //add new tags & update the State property of existing ones
+            foreach (var task in record.Tasks)
+            {
+                _context.Entry(task).State = task.Id == default
+                                           ? EntityState.Added
+                                           : EntityState.Modified;
+            }
 
             existingAsset.InScope = record.Asset.InScope;
             _context.Update(existingAsset);

@@ -62,7 +62,7 @@ namespace pwnctl.infra.Queues
             var receiveRequest = new ReceiveMessageRequest
             {
                 QueueUrl = this[AwsConstants.QueueName],
-                MaxNumberOfMessages = 10
+                MaxNumberOfMessages = 1
             };
 
             var messageResponse = await _sqsClient.ReceiveMessageAsync(receiveRequest, ct);

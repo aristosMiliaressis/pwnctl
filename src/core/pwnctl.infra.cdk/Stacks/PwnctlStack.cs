@@ -352,7 +352,7 @@ namespace pwnctl.infra.cdk.Stacks
             container.AddMountPoints(mountPoint);
         }
 
-        internal void CreateStepScalingPolicy(int maxInstances = 10, int stepDepth = 40)
+        internal void CreateStepScalingPolicy(int maxInstances = 10, int stepDepth = 20)
         {
             var scaling = FargateService.AutoScaleTaskCount(new EnableScalingProps { MinCapacity = 0, MaxCapacity = 10 });
 

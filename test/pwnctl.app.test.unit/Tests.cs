@@ -109,6 +109,18 @@ public sealed class Tests
         Assert.Contains(assetTypes, t => t == typeof(Domain));
         Assert.Contains(assets, t => t.GetType() == typeof(Domain));
 
+        assets = AssetParser.Parse("mailto:test@tesla.com", out assetTypes);
+        Assert.Contains(assetTypes, t => t == typeof(Email));
+        Assert.Contains(assets, t => t.GetType() == typeof(Email));
+        Assert.Contains(assetTypes, t => t == typeof(Domain));
+        Assert.Contains(assets, t => t.GetType() == typeof(Domain));
+
+        assets = AssetParser.Parse("maito:test@tesla.com", out assetTypes);
+        Assert.Contains(assetTypes, t => t == typeof(Email));
+        Assert.Contains(assets, t => t.GetType() == typeof(Email));
+        Assert.Contains(assetTypes, t => t == typeof(Domain));
+        Assert.Contains(assets, t => t.GetType() == typeof(Domain));
+
         assets = AssetParser.Parse("no-reply@whatever.com", out assetTypes);
         Assert.Contains(assetTypes, t => t == typeof(Email));
         Assert.Contains(assets, t => t.GetType() == typeof(Email));
@@ -127,17 +139,30 @@ public sealed class Tests
 
         var spfRecord = "tesla.com IN TXT \"v = spf1 ip4:2.2.2.2 ipv4: 3.3.3.3 ipv6:FD00:DEAD:BEEF:64:34::2 include: spf.protection.outlook.com include:servers.mcsv.net - all\"";
         assets = AssetParser.Parse(spfRecord, out assetTypes);
-        Console.WriteLine(assetTypes.Select(a => a.Name));
         Assert.Equal(4, assets.Count());
         Assert.Contains(assetTypes, t => t == typeof(Domain));
         Assert.Contains(assetTypes, t => t == typeof(DNSRecord));
         Assert.Contains(assetTypes, t => t == typeof(Host));
 
-        //assets = AssetParser.Parse("FD00:DEAD:BEEF:64:35::2", out assetTypes);
+        assets = AssetParser.Parse("FD00:DEAD:BEEF:64:35::2", out assetTypes);
+        Assert.Contains(assetTypes, t => t == typeof(Host));
+        Assert.NotEmpty(assets);
 
-        // TODO: ipv6 parsing (Service,Endpoint,SPF,NetRange,NetRange.RouteTo)
-        //NetRagne.RouteTo/mailto:
+        assets = AssetParser.Parse("2001:db8::/48", out assetTypes);
+        Assert.Contains(assetTypes, t => t == typeof(NetRange));
+
+        assets = AssetParser.Parse("[FD00:DEAD:BEEF:64:35::2]:163", out assetTypes);
+        Assert.Contains(assetTypes, t => t == typeof(Service));
+        Assert.Contains(assetTypes, t => t == typeof(Host));
+
+        assets = AssetParser.Parse("http://[FD00:DEAD:BEEF:64:35::2]:80/ipv6test", out assetTypes);
+        Assert.Contains(assetTypes, t => t == typeof(Endpoint));
+        Assert.Contains(assetTypes, t => t == typeof(Service));
+        Assert.Contains(assetTypes, t => t == typeof(Host));
+
+        //NetRagne.RouteTo(ipv4|ipv6)
         //Parameters/VirtualHosts/CloudServices
+        // SPF ipv6 parsing, spfv1 vs spfv2?
         // PTR records
     }
 
