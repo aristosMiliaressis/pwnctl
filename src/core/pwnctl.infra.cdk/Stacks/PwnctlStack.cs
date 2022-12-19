@@ -354,14 +354,14 @@ namespace pwnctl.infra.cdk.Stacks
 
         internal void CreateStepScalingPolicy(int maxInstances = 10, int stepDepth = 20)
         {
-            var scaling = FargateService.AutoScaleTaskCount(new EnableScalingProps { MinCapacity = 0, MaxCapacity = 10 });
+            var scaling = FargateService.AutoScaleTaskCount(new EnableScalingProps { MinCapacity = 0, MaxCapacity = maxInstances });
 
             var queueDepthMetric = new Metric(new MetricProps
             {
                 Namespace = "AWS/SQS",
                 MetricName = "ApproximateNumberOfMessagesVisible",
                 Statistic = "Average",
-                Period = Duration.Seconds(60),
+                Period = Duration.Seconds(300),
                 DimensionsMap = new Dictionary<string, string>
                 {
                     { "QueueName", Queue.QueueName }

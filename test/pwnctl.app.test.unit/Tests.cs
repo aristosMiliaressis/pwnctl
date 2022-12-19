@@ -207,7 +207,7 @@ public sealed class Tests
         Assert.Null(programs.FirstOrDefault(program => program.Scope.Any(scope => scope.Matches(new DNSRecord(DnsRecordType.A, "example.com", "172.16.16.15")))));
 
         // test for inscope host from domain relationship
-        var processor = AssetProcessorFactory.Create(new MockTaskQueueService());
+        var processor = AssetProcessorFactory.Create();
         await processor.ProcessAsync("xyz.tesla.com IN A 1.3.3.7");
         var host = context.Hosts.First(h => h.IP == "1.3.3.7");
         Assert.True(host.InScope);
@@ -217,11 +217,10 @@ public sealed class Tests
     public async Task TaskFiltering_Tests()
     {
         PwnctlDbContext context = new();
-        var processor = AssetProcessorFactory.Create(new MockTaskQueueService());
+        var processor = AssetProcessorFactory.Create();
 
-        // blacklist test
         await processor.ProcessAsync("172.16.17.0/24");
-        Assert.False(context.JoinedTaskRecordQueryable().Any(t => t.Definition.ShortName == "nmap_basic"));
+        Assert.True(context.JoinedTaskRecordQueryable().Any(t => t.Definition.ShortName == "nmap_basic"));
         Assert.False(context.JoinedTaskRecordQueryable().Any(t => t.Definition.ShortName == "ffuf_common"));
 
         var exampleUrl = new
@@ -253,6 +252,9 @@ public sealed class Tests
                                     .First(t => t.Domain.Name == "sub.tesla.com" 
                                              && t.Definition.ShortName == "domain_resolution");
         Assert.Equal("dig +short sub.tesla.com | awk '{print \"sub.tesla.com IN A \" $1}'| pwnctl process", resolutionTask.Command);
+
+        // blacklist test
+        Assert.False(context.JoinedTaskRecordQueryable().Any(t => t.Definition.ShortName == "subfinder"));
 
         // Keyword test
         var cloudEnumTask = context.JoinedTaskRecordQueryable().First(t => t.Definition.ShortName == "cloud_enum");
@@ -316,7 +318,7 @@ public sealed class Tests
     [Fact]
     public async Task AssetProcessor_Tests()
     {
-        var processor = AssetProcessorFactory.Create(new MockTaskQueueService());
+        var processor = AssetProcessorFactory.Create();
         PwnctlDbContext context = new();
 
         var programs = context.ListPrograms();
@@ -352,7 +354,7 @@ public sealed class Tests
     [Fact]
     public async Task Tagging_Tests()
     {
-        var processor = AssetProcessorFactory.Create(new MockTaskQueueService());
+        var processor = AssetProcessorFactory.Create();
         PwnctlDbContext context = new();
 
         var exampleUrl = new AssetDTO {

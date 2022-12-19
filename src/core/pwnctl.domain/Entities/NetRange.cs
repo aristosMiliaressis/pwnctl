@@ -11,6 +11,8 @@ namespace pwnctl.domain.Entities
         [EqualityComponent]
         public ushort NetPrefixBits { get; init; }
 
+        public string CIDR => $"{FirstAddress}/{NetPrefixBits}";
+
         public NetRange() {}
         
         public NetRange(IPAddress firstAddress, ushort netPrefix)
@@ -43,7 +45,7 @@ namespace pwnctl.domain.Entities
 
         public override string ToString()
         {
-            return $"{FirstAddress}/{NetPrefixBits}";
+            return CIDR;
         }
     }
 }

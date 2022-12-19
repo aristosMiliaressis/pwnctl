@@ -932,7 +932,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "e0a43f31ea747d1fee088787c92fa550e1f3b4f2bab6dfa218d9d9e5b5db7945.zip"
+     "S3Key": "41e74f7850ca7b38f61c6ce4d22eb87cbbc265cdc6d4948281032bd1ff838e34.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -1014,7 +1014,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "PwnctlStack/PwnctlApi/Resource",
-    "aws:asset:path": "asset.e0a43f31ea747d1fee088787c92fa550e1f3b4f2bab6dfa218d9d9e5b5db7945.0",
+    "aws:asset:path": "asset.41e74f7850ca7b38f61c6ce4d22eb87cbbc265cdc6d4948281032bd1ff838e34.0",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
@@ -1691,7 +1691,7 @@
     ],
     "MetricName": "ApproximateNumberOfMessagesVisible",
     "Namespace": "AWS/SQS",
-    "Period": 60,
+    "Period": 300,
     "Statistic": "Average",
     "Threshold": 1
    },
@@ -1792,7 +1792,7 @@
     ],
     "MetricName": "ApproximateNumberOfMessagesVisible",
     "Namespace": "AWS/SQS",
-    "Period": 60,
+    "Period": 300,
     "Statistic": "Average",
     "Threshold": 181
    },

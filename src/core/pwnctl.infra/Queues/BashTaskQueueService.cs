@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using pwnctl.app.Tasks.Entities;
 using pwnctl.app.Tasks.Interfaces;
+using pwnctl.app.Tasks.Models;
 
 namespace pwnctl.infra.Queues
 {
@@ -8,33 +9,30 @@ namespace pwnctl.infra.Queues
     {
         private static readonly string _queueDirectory = Path.Combine(PwnContext.Config.InstallPath , "queue/");
 
+        public Task ChangeBatchVisibility(List<QueueMessage> messages, CancellationToken token = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DequeueAsync(QueueMessage message, CancellationToken token = default)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// pushes a task to the pending queue.
         /// </summary>
         /// <param name="command"></param>
-        public /*async*/ Task EnqueueAsync(TaskRecord task)
+        public async Task EnqueueAsync(TaskRecord task, CancellationToken token = default)
         {
-            var psi = new ProcessStartInfo();
-            psi.FileName = "job-queue.sh";
-            psi.Arguments = $"-w {PwnContext.Config.TaskQueue.WorkerCount} -q {_queueDirectory}";
-            psi.RedirectStandardOutput = true;
-            psi.RedirectStandardInput = true;
-            psi.UseShellExecute = false;
-            psi.CreateNoWindow = true;
-
-            using var process = Process.Start(psi);
-            using (StreamWriter sr = process.StandardInput)
-            {
-                //await sr.WriteLineAsync(task.WrappedCommand);
-                sr.Flush();
-                sr.Close();
-            }
-
-            process.WaitForExit();
+            await CommandExecutor.ExecuteAsync("job-queue.sh", $"-w {PwnContext.Config.TaskQueue.WorkerCount} -q {_queueDirectory}", token);
 
             task.Queued();
+        }
 
-            return Task.CompletedTask;
+        public Task<List<QueueMessage>> ReceiveAsync(CancellationToken token = default)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -2,7 +2,7 @@ Name: EXAMPLE BB TARGET
 Platform: HackerOne
 Policy:
     Whitelist: ffuf_common
-    Blacklist: nmap_basic
+    Blacklist: subfinder
     MaxAggressiveness: 6
     AllowActive: true
 

@@ -1,10 +1,10 @@
 ﻿using pwnctl.infra.Aws;
 using Amazon.SQS;
 using Amazon.SQS.Model;
-using System.Text.Json.Serialization;
 using pwnctl.app.Tasks.Entities;
 using pwnctl.app.Tasks.Interfaces;
 using pwnctl.app.Common.Interfaces;
+using pwnctl.app.Tasks.Models;
 
 namespace pwnctl.infra.Queues
 {
@@ -35,11 +35,11 @@ namespace pwnctl.infra.Queues
         /// pushes a task to the pending queue.
         /// </summary>
         /// <param name="command"></param>
-        public async Task EnqueueAsync(TaskRecord task)
+        public async Task EnqueueAsync(TaskRecord task, CancellationToken token = default)
         {
             PwnContext.Logger.Debug("Enqueue: " + task.Command);
 
-            var taskEnt = new TaskEntity() 
+            var taskEnt = new TaskDTO() 
             { 
                 TaskId = task.Id,
                 Command = task.Command
@@ -52,12 +52,12 @@ namespace pwnctl.infra.Queues
                 MessageBody = Serializer.Instance.Serialize(taskEnt)
             };
 
-            await _sqsClient.SendMessageAsync(request);
+            await _sqsClient.SendMessageAsync(request, token);
 
             task.Queued();
         }
 
-        public async Task<List<Message>> ReceiveAsync(CancellationToken ct = default)
+        public async Task<List<QueueMessage>> ReceiveAsync(CancellationToken token = default)
         {
             var receiveRequest = new ReceiveMessageRequest
             {
@@ -65,7 +65,7 @@ namespace pwnctl.infra.Queues
                 MaxNumberOfMessages = 1
             };
 
-            var messageResponse = await _sqsClient.ReceiveMessageAsync(receiveRequest, ct);
+            var messageResponse = await _sqsClient.ReceiveMessageAsync(receiveRequest, token);
             if (messageResponse.HttpStatusCode != System.Net.HttpStatusCode.OK)
             {
                 PwnContext.Logger.Warning(Serializer.Instance.Serialize(messageResponse));
@@ -73,19 +73,27 @@ namespace pwnctl.infra.Queues
                 // TODO: error handling
             }
 
-            return messageResponse.Messages;
+            return messageResponse.Messages.Select(msg => new QueueMessage 
+            { 
+                Content = Serializer.Instance.Deserialize<TaskDTO>(msg.Body),
+                Metadata = new Dictionary<string, string>
+                {
+                    { nameof(msg.MessageId), msg.MessageId },
+                    { nameof(msg.ReceiptHandle), msg.ReceiptHandle }
+                }
+            }).ToList();
         }
 
-        public async Task DequeueAsync(Message message, CancellationToken ct = default)
+        public async Task DequeueAsync(QueueMessage message, CancellationToken token = default)
         {
             // TODO: delete batching?
 
-            var response = await _sqsClient.DeleteMessageAsync(this[AwsConstants.QueueName], message.ReceiptHandle, ct);
+            var response = await _sqsClient.DeleteMessageAsync(this[AwsConstants.QueueName], message.Metadata[nameof(Message.ReceiptHandle)], token);
             if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
                 PwnContext.Logger.Debug("DeleteMessage: " + Serializer.Instance.Serialize(response));
         }
 
-        public async Task ChangeBatchVisibility(List<Message> messages, CancellationToken ct = default)
+        public async Task ChangeBatchVisibility(List<QueueMessage> messages, CancellationToken token = default)
         {
             PwnContext.Logger.Debug($"ChangeBatchVisibility");
 
@@ -96,24 +104,15 @@ namespace pwnctl.infra.Queues
                 QueueUrl = this[AwsConstants.QueueName],
                 Entries = messages.Select(msg => new ChangeMessageVisibilityBatchRequestEntry 
                 {
-                    Id = msg.MessageId,
-                    ReceiptHandle = msg.ReceiptHandle,
+                    Id = msg.Metadata[nameof(Message.MessageId)],
+                    ReceiptHandle = msg.Metadata[nameof(Message.ReceiptHandle)],
                     VisibilityTimeout = AwsConstants.QueueVisibilityTimeoutInSec *2*60
                 }).ToList()
             };
 
-            var response = await _sqsClient.ChangeMessageVisibilityBatchAsync(request, ct);
+            var response = await _sqsClient.ChangeMessageVisibilityBatchAsync(request, token);
             if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
                 PwnContext.Logger.Debug("ChangeMessageVisibility: " + Serializer.Instance.Serialize(response));
         }
-    }
-
-    public sealed class TaskEntity
-    {
-        [JsonPropertyName("taskId")]
-        public int TaskId { get; init; }
-
-        [JsonPropertyName("command")]
-        public string Command { get; init; }
     }
 }

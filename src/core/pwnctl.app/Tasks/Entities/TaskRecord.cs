@@ -124,5 +124,16 @@ namespace pwnctl.app.Tasks.Entities
                 return command;
             }
         }
+
+        [JsonIgnore]
+        public string WrappedCommand => @$"{Command} | while read assetLine;
+do
+  if [[ ${{assetLine::1}} == '{{' ]];
+  then
+    echo $assetLine | jq -c '.tags += {{""FoundBy"": ""{Definition.ShortName}""}}';
+  else
+    echo '{{""asset"":""'$assetLine'"", ""tags"":{{""FoundBy"":""{Definition.ShortName}""}}}}';
+  fi; 
+done".Replace("\r\n", "").Replace("\n", "");
     }
 }
