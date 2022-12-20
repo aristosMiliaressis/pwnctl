@@ -39,7 +39,7 @@ namespace pwnctl.cli.ModeHandlers
             {
                 try
                 {
-                    await queueService.EnqueueAsync(task);
+                    await queueService.EnqueueAsync(task.ToDTO());
                     Console.WriteLine($"Queued: {task.Command}");
                 }
                 catch (Exception ex)

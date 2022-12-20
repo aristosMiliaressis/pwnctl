@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using pwnctl.app.Tasks.Entities;
 using pwnctl.app.Tasks.Interfaces;
-using pwnctl.app.Tasks.Models;
+using pwnctl.app.Tasks.DTO;
 
 namespace pwnctl.infra.Queues
 {
@@ -9,12 +9,12 @@ namespace pwnctl.infra.Queues
     {
         private static readonly string _queueDirectory = Path.Combine(PwnContext.Config.InstallPath , "queue/");
 
-        public Task ChangeBatchVisibility(List<QueueMessage> messages, CancellationToken token = default)
+        public Task ChangeBatchVisibility(List<TaskDTO> tasks, CancellationToken token = default)
         {
             throw new NotImplementedException();
         }
 
-        public Task DequeueAsync(QueueMessage message, CancellationToken token = default)
+        public Task DequeueAsync(TaskDTO task, CancellationToken token = default)
         {
             throw new NotImplementedException();
         }
@@ -23,14 +23,14 @@ namespace pwnctl.infra.Queues
         /// pushes a task to the pending queue.
         /// </summary>
         /// <param name="command"></param>
-        public async Task EnqueueAsync(TaskRecord task, CancellationToken token = default)
+        public async Task<bool> EnqueueAsync(TaskDTO task, CancellationToken token = default)
         {
-            await CommandExecutor.ExecuteAsync("job-queue.sh", $"-w {PwnContext.Config.TaskQueue.WorkerCount} -q {_queueDirectory}", token);
+            await CommandExecutor.ExecuteAsync("job-queue.sh", $"-w {PwnContext.Config.TaskQueue.WorkerCount} -q {_queueDirectory}", task.Command, token);
 
-            task.Queued();
+            return true;
         }
 
-        public Task<List<QueueMessage>> ReceiveAsync(CancellationToken token = default)
+        public Task<List<TaskDTO>> ReceiveAsync(CancellationToken token = default)
         {
             throw new NotImplementedException();
         }

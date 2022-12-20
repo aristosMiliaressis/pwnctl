@@ -6,8 +6,11 @@ using pwnctl.infra.Persistence;
 using pwnctl.infra.Persistence.Extensions;
 using pwnctl.app.Assets;
 using pwnctl.app.Tasks.Interfaces;
-using pwnctl.app.Tasks.Models;
+using pwnctl.app.Tasks.DTO;
 using Microsoft.EntityFrameworkCore;
+using pwnctl.infra.Notifications;
+using pwnctl.app.Notifications.Interfaces;
+using pwnctl.infra.Configuration;
 
 namespace pwnctl.svc
 {
@@ -16,45 +19,49 @@ namespace pwnctl.svc
         private readonly IHostApplicationLifetime _hostApplicationLifetime;
         private readonly TaskQueueService _queueService = TaskQueueServiceFactory.Create();
         private readonly AssetProcessor _processor = AssetProcessorFactory.Create();
+        private readonly NotificationSender _notificationSender = new DiscordNotificationSender();
 
         public TaskConsumerService(IHostApplicationLifetime hostApplicationLifetime)
         {
             _hostApplicationLifetime = hostApplicationLifetime;
-            _hostApplicationLifetime.ApplicationStopping.Register(() => Console.WriteLine("ApplicationStopping called"));
-            _hostApplicationLifetime.ApplicationStopped.Register(() => Console.WriteLine("ApplicationStopped called"));
+            _hostApplicationLifetime.ApplicationStopping.Register(() => 
+            {
+                PwnContext.Logger.Information($"{nameof(TaskConsumerService)} stoped.");
+                _notificationSender.Send($"pwnctl service stoped on {EnvironmentVariables.HOSTNAME}", "status");
+            });
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             PwnContext.Logger.Information($"{nameof(TaskConsumerService)} started.");
+            _notificationSender.Send($"pwnctl service started on {EnvironmentVariables.HOSTNAME}", "status");
 
             PwnctlDbContext context = new();
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                var messages = await _queueService.ReceiveAsync(stoppingToken);
-                if (messages == null || !messages.Any())
+                var taskDTOs = await _queueService.ReceiveAsync(stoppingToken);
+                if (taskDTOs == null || !taskDTOs.Any())
                 {
                     PwnContext.Logger.Information("queue is empty");
                     break;
                 }
 
                 var timer = new System.Timers.Timer(1000 * (AwsConstants.QueueVisibilityTimeoutInSec - 10));
-                timer.Elapsed += async (_, _) => await _queueService.ChangeBatchVisibility(messages, stoppingToken);
+                timer.Elapsed += async (_, _) => await _queueService.ChangeBatchVisibility(taskDTOs, stoppingToken);
                 timer.Start();
 
-                var message = messages[0];
-                var queuedTask = message.Content as TaskDTO;
+                var taskDTO = taskDTOs[0];
 
                 var taskRecord = await context
                                     .JoinedTaskRecordQueryable()
-                                    .FirstOrDefaultAsync(r => r.Id == queuedTask.TaskId);
+                                    .FirstOrDefaultAsync(r => r.Id == taskDTO.TaskId);
 
                 try
                 {
                     taskRecord.Started();
 
-                    var process = await CommandExecutor.ExecuteAsync("/bin/bash", taskRecord.WrappedCommand, stoppingToken);
+                    var process = await CommandExecutor.ExecuteAsync("/bin/bash", null, taskRecord.WrappedCommand, stoppingToken);
 
                     foreach (var line in process.StandardOutput.ReadToEnd().Split("\n"))
                     {
@@ -78,13 +85,13 @@ namespace pwnctl.svc
                 catch (Exception ex)
                 {
                     PwnContext.Logger.Error(ex.ToRecursiveExInfo());
-                    await _queueService.DequeueAsync(message);
+                    await _queueService.DequeueAsync(taskDTO);
                     continue;
                 }
 
                 await context.SaveChangesAsync();
 
-                await _queueService.DequeueAsync(message);
+                await _queueService.DequeueAsync(taskDTO);
             }
             
             _hostApplicationLifetime.StopApplication();

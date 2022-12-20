@@ -3,6 +3,7 @@ using pwnctl.app.Scope.Entities;
 using pwnctl.app.Tasks.Entities;
 using pwnctl.domain.BaseClasses;
 using pwnctl.kernel.BaseClasses;
+using System.Collections;
 using System.Reflection;
 
 namespace pwnctl.app.Assets.Aggregates;
@@ -45,9 +46,20 @@ public sealed class AssetRecord : AggregateRoot<string>
                                          | BindingFlags.Instance
                                          | BindingFlags.DeclaredOnly)
                             .Where(p => !p.Name.EndsWith("Id")
-                                    && !p.PropertyType.IsAssignableTo(typeof(Asset)))
+                                    && !p.PropertyType.IsAssignableTo(typeof(Asset))
+                                    && !p.PropertyType.IsAssignableTo(typeof(ICollection)))
                             .ToList();
-        properties.ForEach(p => dto.Tags.Add(p.Name, p.GetValue(Asset)) );
+
+        properties.ForEach(p => 
+        {
+            var val = p.GetValue(Asset);
+
+            val = p.PropertyType.IsEnum
+                ? Enum.GetName(p.PropertyType, val)
+                : val;
+
+            dto.Tags.Add(p.Name, val);
+        });
 
         return dto;
     }

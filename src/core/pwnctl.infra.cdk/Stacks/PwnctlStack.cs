@@ -369,7 +369,6 @@ namespace pwnctl.infra.cdk.Stacks
             });
 
             List<IScalingInterval> scaleOutSteps = new();
-            List<IScalingInterval> scaleInSteps = new();
             
             for (int i = 0; i < maxInstances; i++)
             {
@@ -377,12 +376,6 @@ namespace pwnctl.infra.cdk.Stacks
                 {
                     Lower = stepDepth * i + 1,
                     Change = i + 1
-                });
-
-                scaleInSteps.Add(new ScalingInterval
-                {
-                    Upper = stepDepth * i + 1,
-                    Change = i
                 });
             }
 
@@ -392,15 +385,6 @@ namespace pwnctl.infra.cdk.Stacks
                 Metric = queueDepthMetric,
                 AdjustmentType = AdjustmentType.EXACT_CAPACITY,
                 ScalingSteps = scaleOutSteps.ToArray()
-            });
-
-            scaling.ScaleOnMetric(AwsConstants.ScaleInPolicy, new BasicStepScalingPolicyProps
-            {
-                Cooldown = Duration.Seconds(300),
-                EvaluationPeriods = 5,
-                Metric = queueDepthMetric,
-                AdjustmentType = AdjustmentType.EXACT_CAPACITY,
-                ScalingSteps = scaleInSteps.ToArray()
             });
         }
     }

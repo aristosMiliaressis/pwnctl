@@ -18,8 +18,8 @@ namespace pwnctl.domain.Entities
         {
             get
             {
-                var parts = Path.Split("/").Last().Split(".");
-                return parts.Length > 1  && parts.Last().Length > 1 ? parts.Last() : null;
+                var lastPart = Path.Split("/").Where(p => !string.IsNullOrEmpty(p)).Last(); 
+                return lastPart.Contains(".") ? lastPart : null;
             }
         }
 
@@ -27,13 +27,7 @@ namespace pwnctl.domain.Entities
         {
             get
             {
-                var parts = Path.Split(".");
-                if (parts.Count() == 1)
-                    return string.Empty;
-
-                return parts.Last().Length > 4
-                    ? string.Empty
-                    : parts.Last();
+                return Filename == null ? null : Filename.Split(".").Last();
             }
         }
 

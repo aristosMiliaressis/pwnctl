@@ -1,5 +1,5 @@
 using pwnctl.app.Tasks.Entities;
-using pwnctl.app.Tasks.Models;
+using pwnctl.app.Tasks.DTO;
 
 namespace pwnctl.app.Tasks.Interfaces
 {
@@ -9,9 +9,9 @@ namespace pwnctl.app.Tasks.Interfaces
         /// pushes a task to the pending queue.
         /// </summary>
         /// <param name="task"></param>
-        Task EnqueueAsync(TaskRecord task, CancellationToken token = default);
-        Task DequeueAsync(QueueMessage message, CancellationToken token = default);
-        Task<List<QueueMessage>> ReceiveAsync(CancellationToken token);
-        Task ChangeBatchVisibility(List<QueueMessage> messages, CancellationToken token);
+        Task<bool> EnqueueAsync(TaskDTO task, CancellationToken token = default);
+        Task DequeueAsync(TaskDTO task, CancellationToken token = default);
+        Task<List<TaskDTO>> ReceiveAsync(CancellationToken token);
+        Task ChangeBatchVisibility(List<TaskDTO> tasks, CancellationToken token);
     }
 }

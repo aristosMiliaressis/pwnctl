@@ -246,6 +246,17 @@ public sealed class Tests
         await processor.ProcessAsync("https://172.16.17.15/");
         Assert.True(context.JoinedTaskRecordQueryable().Any(t => t.Definition.ShortName == "ffuf_common"));
 
+        // Task added on existing asset
+        exampleUrl = new
+        {
+            asset = "https://172.16.17.15/",
+            tags = new Dictionary<string, string>{
+               {"Protocol", "IIS"}
+            }
+        };
+        await processor.ProcessAsync(Serializer.Instance.Serialize(exampleUrl));
+        Assert.True(context.JoinedTaskRecordQueryable().Any(t => t.Definition.ShortName == "shortname_scanner"));
+
         // multiple interpolation test
         await processor.ProcessAsync("sub.tesla.com");
         var resolutionTask = context.JoinedTaskRecordQueryable()

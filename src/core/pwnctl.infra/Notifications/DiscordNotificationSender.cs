@@ -14,7 +14,7 @@ namespace pwnctl.infra.Notifications
 
         public void Send(string message, string topic)
         {
-            CommandExecutor.ExecuteAsync("/root/go/bin/notify", $"-bulk -provider discord -id {topic}").Wait();
+            CommandExecutor.ExecuteAsync("/root/go/bin/notify", $"-bulk -provider discord -id {topic}", message).Wait();
         }
     }
 }

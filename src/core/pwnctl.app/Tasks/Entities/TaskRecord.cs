@@ -4,6 +4,7 @@ using pwnctl.app.Tasks.Exceptions;
 using pwnctl.kernel.BaseClasses;
 using pwnctl.domain.Entities;
 using System.Text.Json.Serialization;
+using pwnctl.app.Tasks.DTO;
 
 namespace pwnctl.app.Tasks.Entities
 {
@@ -82,6 +83,17 @@ namespace pwnctl.app.Tasks.Entities
             ExitCode = exitCode;
             State = TaskState.FINISHED;
             FinishedAt = DateTime.UtcNow;
+        }
+
+        public TaskDTO ToDTO()
+        {
+            var dto = new TaskDTO
+            {
+                Command = WrappedCommand,
+                TaskId = Id
+            };           
+
+            return dto;
         }
 
         [JsonIgnore]
