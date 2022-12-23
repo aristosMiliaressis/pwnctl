@@ -1,5 +1,6 @@
 using pwnctl.app.Common.Interfaces;
 using pwnctl.domain.BaseClasses;
+using pwnctl.domain.ValueObjects;
 using pwnctl.kernel.BaseClasses;
 
 namespace pwnctl.app.Tasks.Entities
@@ -10,14 +11,16 @@ namespace pwnctl.app.Tasks.Entities
 		public string CommandTemplate { get; set; }
 		public bool IsActive { get; private init; }
 		public int Aggressiveness { get; private init; }
-		public string Subject { get; private init; }
+		public AssetClass SubjectClass { get; private set; }
         public string Filter { get; private init; }
+
+        public string Subject { init { SubjectClass = AssetClass.Create(value); } }
 
         public TaskDefinition() {}
 
         public bool Matches(Asset asset)
         {
-            if (Subject != asset.GetType().Name)
+            if (SubjectClass.Class != asset.GetType().Name)
                 return false;
 
             if (string.IsNullOrEmpty(Filter))

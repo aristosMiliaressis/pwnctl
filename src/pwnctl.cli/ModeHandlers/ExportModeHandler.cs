@@ -9,6 +9,7 @@ using pwnctl.app.Assets.Aggregates;
 using pwnctl.app.Common.Interfaces;
 using pwnctl.dto.Assets.Queries;
 using pwnctl.cli.Interfaces;
+using pwnctl.dto.Db.Commands;
 
 namespace pwnctl.cli.ModeHandlers
 {
@@ -64,6 +65,16 @@ namespace pwnctl.cli.ModeHandlers
 
             var emails = await client.Send(new ListEmailsQuery());
             WriteToFile(Path.Combine(path, "emails.json"), emails.Emails);
+
+            var results = await client.Send(new RunSqlQueryCommand 
+            { 
+                Query = "SELECT \"TaskRecords\".\"Id\",\"ExitCode\",\"State\",\"QueuedAt\",\"StartedAt\",\"FinishedAt\",\"Discriminator\",\"ShortName\" FROM \"TaskRecords\" JOIN \"TaskDefinitions\" ON \"TaskRecords\".\"DefinitionId\" = \"TaskDefinitions\".\"Id\";"
+            });
+
+            foreach (var row in results)
+            {
+                File.AppendAllText(Path.Combine(path, "tasks.json"), row + "\n");
+            }
         }
         
         private void WriteToFile(string filename, IEnumerable<Asset> assets)

@@ -43,7 +43,9 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
     {
         public void Configure(EntityTypeBuilder<NotificationRule> builder)
         {
-            builder.HasKey(p => p.Id);
+            builder.HasKey(r => r.Id);
+
+            builder.OwnsOne(r => r.SubjectClass).Property(s => s.Class).IsRequired();
         }
     }
 }

@@ -1,8 +1,8 @@
 ﻿using pwnctl.kernel.Attributes;
 using pwnctl.domain.BaseClasses;
-using pwnctl.domain.Interfaces;
 using pwnctl.domain.ValueObjects;
 using System.Text.RegularExpressions;
+using pwnctl.domain.Services;
 
 namespace pwnctl.domain.Entities
 {
@@ -66,7 +66,7 @@ namespace pwnctl.domain.Entities
             }
 
             var regDomain = domain.GetRegistrationDomain();
-            var pubSuffix = domain.GetPublicSuffix();
+            var pubSuffix = PublicSuffixListService.Instance.GetPublicSuffix(domain.Name);
             var word = regDomain.Substring(0, regDomain.Length - pubSuffix.Suffix.Length - 1);
             relatedAssets = relatedAssets.Append(new Keyword(domain.IsRegistrationDomain ? domain : domain.RegistrationDomain, word)).ToArray();
 
@@ -80,7 +80,7 @@ namespace pwnctl.domain.Entities
 
         public string GetRegistrationDomain()
         {
-            var suffix = GetPublicSuffix();
+            var suffix = PublicSuffixListService.Instance.GetPublicSuffix(Name);
             if (suffix == null)
                 return null;
 
@@ -88,14 +88,6 @@ namespace pwnctl.domain.Entities
                     .Substring(0, Name.Length - suffix.Suffix.Length - 1)
                     .Split(".")
                     .Last() + "." + suffix.Suffix;
-        }
-
-        public PublicSuffix GetPublicSuffix()
-        {
-            return PublicSuffixRepository.Instance.List()
-                         .Where(suffix => Name.EndsWith($".{suffix.Suffix}"))
-                         .OrderByDescending(s => s.Suffix.Length)
-                         .FirstOrDefault();
         }
 
         private static readonly Regex _domainRegex = new Regex("(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]");

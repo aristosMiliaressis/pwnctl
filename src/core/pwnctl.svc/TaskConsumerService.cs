@@ -63,7 +63,7 @@ namespace pwnctl.svc
 
                     var process = await CommandExecutor.ExecuteAsync("/bin/bash", null, taskRecord.WrappedCommand, stoppingToken);
 
-                    foreach (var line in process.StandardOutput.ReadToEnd().Split("\n"))
+                    foreach (var line in process.StandardOutput.ReadToEnd().Split("\n").Where(l => !string.IsNullOrWhiteSpace(l)))
                     {
                         try
                         {

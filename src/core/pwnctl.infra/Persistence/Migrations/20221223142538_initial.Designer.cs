@@ -9,11 +9,11 @@ using pwnctl.infra.Persistence;
 
 #nullable disable
 
-namespace pwnctl.infra.Persistence.Migrations
+namespace pwnctl.infra.Migrations
 {
     [DbContext(typeof(PwnctlDbContext))]
-    [Migration("20221112110712_task-command")]
-    partial class taskcommand
+    [Migration("20221223142538_initial")]
+    partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -24,7 +24,204 @@ namespace pwnctl.infra.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("pwnctl.domain.Assets.Entities.CloudService", b =>
+            modelBuilder.Entity("pwnctl.app.Notifications.Entities.NotificationRule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Filter")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ShortName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Topic")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("NotificationRules");
+                });
+
+            modelBuilder.Entity("pwnctl.app.Scope.Entities.OperationalPolicy", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("AllowActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Blacklist")
+                        .HasColumnType("text");
+
+                    b.Property<long?>("MaxAggressiveness")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Whitelist")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("OperationalPolicies");
+                });
+
+            modelBuilder.Entity("pwnctl.app.Scope.Entities.Program", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Platform")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("PolicyId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PolicyId")
+                        .IsUnique();
+
+                    b.ToTable("Programs");
+                });
+
+            modelBuilder.Entity("pwnctl.app.Scope.Entities.ScopeDefinition", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Pattern")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("ProgramId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProgramId");
+
+                    b.ToTable("ScopeDefinitions");
+                });
+
+            modelBuilder.Entity("pwnctl.app.Tasks.Entities.TaskDefinition", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Aggressiveness")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("CommandTemplate")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Filter")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("ShortName")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TaskDefinitions");
+                });
+
+            modelBuilder.Entity("pwnctl.app.Tasks.Entities.TaskRecord", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CloudServiceId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("DNSRecordId")
+                        .HasColumnType("text");
+
+                    b.Property<int>("DefinitionId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("DomainId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("EndpointId")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("ExitCode")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("FinishedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("HostId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("KeywordId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("NetRangeId")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("QueuedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ServiceId")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("StartedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("State")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CloudServiceId");
+
+                    b.HasIndex("DNSRecordId");
+
+                    b.HasIndex("DefinitionId");
+
+                    b.HasIndex("DomainId");
+
+                    b.HasIndex("EndpointId");
+
+                    b.HasIndex("HostId");
+
+                    b.HasIndex("KeywordId");
+
+                    b.HasIndex("NetRangeId");
+
+                    b.HasIndex("ServiceId");
+
+                    b.ToTable("TaskRecords");
+                });
+
+            modelBuilder.Entity("pwnctl.domain.Entities.CloudService", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -60,7 +257,7 @@ namespace pwnctl.infra.Persistence.Migrations
                     b.ToTable("CloudService");
                 });
 
-            modelBuilder.Entity("pwnctl.domain.Assets.Entities.DNSRecord", b =>
+            modelBuilder.Entity("pwnctl.domain.Entities.DNSRecord", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -101,7 +298,7 @@ namespace pwnctl.infra.Persistence.Migrations
                     b.ToTable("DNSRecords");
                 });
 
-            modelBuilder.Entity("pwnctl.domain.Assets.Entities.Domain", b =>
+            modelBuilder.Entity("pwnctl.domain.Entities.Domain", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -134,7 +331,7 @@ namespace pwnctl.infra.Persistence.Migrations
                     b.ToTable("Domains");
                 });
 
-            modelBuilder.Entity("pwnctl.domain.Assets.Entities.Email", b =>
+            modelBuilder.Entity("pwnctl.domain.Entities.Email", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -164,7 +361,7 @@ namespace pwnctl.infra.Persistence.Migrations
                     b.ToTable("Emails");
                 });
 
-            modelBuilder.Entity("pwnctl.domain.Assets.Entities.Endpoint", b =>
+            modelBuilder.Entity("pwnctl.domain.Entities.Endpoint", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -200,7 +397,7 @@ namespace pwnctl.infra.Persistence.Migrations
                     b.ToTable("Endpoints");
                 });
 
-            modelBuilder.Entity("pwnctl.domain.Assets.Entities.Host", b =>
+            modelBuilder.Entity("pwnctl.domain.Entities.Host", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -228,7 +425,7 @@ namespace pwnctl.infra.Persistence.Migrations
                     b.ToTable("Hosts");
                 });
 
-            modelBuilder.Entity("pwnctl.domain.Assets.Entities.Keyword", b =>
+            modelBuilder.Entity("pwnctl.domain.Entities.Keyword", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -258,7 +455,7 @@ namespace pwnctl.infra.Persistence.Migrations
                     b.ToTable("Keywords");
                 });
 
-            modelBuilder.Entity("pwnctl.domain.Assets.Entities.NetRange", b =>
+            modelBuilder.Entity("pwnctl.domain.Entities.NetRange", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -286,7 +483,7 @@ namespace pwnctl.infra.Persistence.Migrations
                     b.ToTable("NetRanges");
                 });
 
-            modelBuilder.Entity("pwnctl.domain.Assets.Entities.Parameter", b =>
+            modelBuilder.Entity("pwnctl.domain.Entities.Parameter", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -325,7 +522,7 @@ namespace pwnctl.infra.Persistence.Migrations
                     b.ToTable("Parameters");
                 });
 
-            modelBuilder.Entity("pwnctl.domain.Assets.Entities.Service", b =>
+            modelBuilder.Entity("pwnctl.domain.Entities.Service", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -369,34 +566,7 @@ namespace pwnctl.infra.Persistence.Migrations
                     b.ToTable("Services");
                 });
 
-            modelBuilder.Entity("pwnctl.domain.Assets.Entities.VirtualHost", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("FoundAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("FoundBy")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("InScope")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ServiceId")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ServiceId");
-
-                    b.ToTable("VirtualHosts");
-                });
-
-            modelBuilder.Entity("pwnctl.domain.Common.Entities.Tag", b =>
+            modelBuilder.Entity("pwnctl.domain.Entities.Tag", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -476,396 +646,67 @@ namespace pwnctl.infra.Persistence.Migrations
                     b.ToTable("Tags");
                 });
 
-            modelBuilder.Entity("pwnctl.domain.Notifications.Entities.NotificationRule", b =>
+            modelBuilder.Entity("pwnctl.domain.Entities.VirtualHost", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Filter")
+                    b.Property<string>("Id")
                         .HasColumnType("text");
 
-                    b.Property<string>("Severity")
+                    b.Property<DateTime>("FoundAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("FoundBy")
                         .HasColumnType("text");
 
-                    b.Property<string>("ShortName")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Subject")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Topic")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("NotificationRules");
-                });
-
-            modelBuilder.Entity("pwnctl.domain.Targets.Entities.OperationalPolicy", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("AllowActive")
+                    b.Property<bool>("InScope")
                         .HasColumnType("boolean");
-
-                    b.Property<string>("Blacklist")
-                        .HasColumnType("text");
-
-                    b.Property<int?>("MaxAggressiveness")
-                        .HasColumnType("integer");
 
                     b.Property<string>("Name")
                         .HasColumnType("text");
-
-                    b.Property<string>("Whitelist")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("OperationalPolicies");
-                });
-
-            modelBuilder.Entity("pwnctl.domain.Targets.Entities.Program", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Platform")
-                        .HasColumnType("text");
-
-                    b.Property<int?>("PolicyId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PolicyId")
-                        .IsUnique();
-
-                    b.ToTable("Programs");
-                });
-
-            modelBuilder.Entity("pwnctl.domain.Targets.Entities.ScopeDefinition", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Pattern")
-                        .HasColumnType("text");
-
-                    b.Property<int?>("ProgramId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProgramId");
-
-                    b.ToTable("ScopeDefinitions");
-                });
-
-            modelBuilder.Entity("pwnctl.domain.Tasks.Entities.TaskDefinition", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Aggressiveness")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("CommandTemplate")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Filter")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("ShortName")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Subject")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TaskDefinitions");
-                });
-
-            modelBuilder.Entity("pwnctl.domain.Tasks.Entities.TaskRecord", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CloudServiceId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("DNSRecordId")
-                        .HasColumnType("text");
-
-                    b.Property<int>("DefinitionId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Discriminator")
-                        .HasColumnType("text");
-
-                    b.Property<string>("DomainId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("EmailId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("EndpointId")
-                        .HasColumnType("text");
-
-                    b.Property<int?>("ExitCode")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("FinishedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("HostId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("KeywordId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("NetRangeId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ParameterId")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("QueuedAt")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ServiceId")
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("StartedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("VirtualHostId")
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("CloudServiceId");
-
-                    b.HasIndex("DNSRecordId");
-
-                    b.HasIndex("DefinitionId");
-
-                    b.HasIndex("DomainId");
-
-                    b.HasIndex("EmailId");
-
-                    b.HasIndex("EndpointId");
-
-                    b.HasIndex("HostId");
-
-                    b.HasIndex("KeywordId");
-
-                    b.HasIndex("NetRangeId");
-
-                    b.HasIndex("ParameterId");
 
                     b.HasIndex("ServiceId");
 
-                    b.HasIndex("VirtualHostId");
-
-                    b.ToTable("TaskRecords");
+                    b.ToTable("VirtualHosts");
                 });
 
-            modelBuilder.Entity("pwnctl.domain.Assets.Entities.CloudService", b =>
+            modelBuilder.Entity("pwnctl.app.Notifications.Entities.NotificationRule", b =>
                 {
-                    b.HasOne("pwnctl.domain.Assets.Entities.Domain", "Domain")
-                        .WithMany()
-                        .HasForeignKey("DomainId");
+                    b.OwnsOne("pwnctl.domain.ValueObjects.AssetClass", "SubjectClass", b1 =>
+                        {
+                            b1.Property<int>("NotificationRuleId")
+                                .HasColumnType("integer");
 
-                    b.Navigation("Domain");
+                            b1.Property<string>("Class")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.HasKey("NotificationRuleId");
+
+                            b1.ToTable("NotificationRules");
+
+                            b1.WithOwner()
+                                .HasForeignKey("NotificationRuleId");
+                        });
+
+                    b.Navigation("SubjectClass");
                 });
 
-            modelBuilder.Entity("pwnctl.domain.Assets.Entities.DNSRecord", b =>
+            modelBuilder.Entity("pwnctl.app.Scope.Entities.Program", b =>
                 {
-                    b.HasOne("pwnctl.domain.Assets.Entities.Domain", "Domain")
-                        .WithMany("DNSRecords")
-                        .HasForeignKey("DomainId");
-
-                    b.HasOne("pwnctl.domain.Assets.Entities.Host", "Host")
-                        .WithMany("AARecords")
-                        .HasForeignKey("HostId");
-
-                    b.Navigation("Domain");
-
-                    b.Navigation("Host");
-                });
-
-            modelBuilder.Entity("pwnctl.domain.Assets.Entities.Domain", b =>
-                {
-                    b.HasOne("pwnctl.domain.Assets.Entities.Domain", "RegistrationDomain")
-                        .WithMany()
-                        .HasForeignKey("RegistrationDomainId");
-
-                    b.Navigation("RegistrationDomain");
-                });
-
-            modelBuilder.Entity("pwnctl.domain.Assets.Entities.Email", b =>
-                {
-                    b.HasOne("pwnctl.domain.Assets.Entities.Domain", "Domain")
-                        .WithMany()
-                        .HasForeignKey("DomainId");
-
-                    b.Navigation("Domain");
-                });
-
-            modelBuilder.Entity("pwnctl.domain.Assets.Entities.Endpoint", b =>
-                {
-                    b.HasOne("pwnctl.domain.Assets.Entities.Service", "Service")
-                        .WithMany()
-                        .HasForeignKey("ServiceId");
-
-                    b.Navigation("Service");
-                });
-
-            modelBuilder.Entity("pwnctl.domain.Assets.Entities.Keyword", b =>
-                {
-                    b.HasOne("pwnctl.domain.Assets.Entities.Domain", "Domain")
-                        .WithMany()
-                        .HasForeignKey("DomainId");
-
-                    b.Navigation("Domain");
-                });
-
-            modelBuilder.Entity("pwnctl.domain.Assets.Entities.Parameter", b =>
-                {
-                    b.HasOne("pwnctl.domain.Assets.Entities.Endpoint", "Endpoint")
-                        .WithMany()
-                        .HasForeignKey("EndpointId");
-
-                    b.Navigation("Endpoint");
-                });
-
-            modelBuilder.Entity("pwnctl.domain.Assets.Entities.Service", b =>
-                {
-                    b.HasOne("pwnctl.domain.Assets.Entities.Domain", "Domain")
-                        .WithMany()
-                        .HasForeignKey("DomainId");
-
-                    b.HasOne("pwnctl.domain.Assets.Entities.Host", "Host")
-                        .WithMany()
-                        .HasForeignKey("HostId");
-
-                    b.Navigation("Domain");
-
-                    b.Navigation("Host");
-                });
-
-            modelBuilder.Entity("pwnctl.domain.Assets.Entities.VirtualHost", b =>
-                {
-                    b.HasOne("pwnctl.domain.Assets.Entities.Service", "Service")
-                        .WithMany()
-                        .HasForeignKey("ServiceId");
-
-                    b.Navigation("Service");
-                });
-
-            modelBuilder.Entity("pwnctl.domain.Common.Entities.Tag", b =>
-                {
-                    b.HasOne("pwnctl.domain.Assets.Entities.CloudService", "CloudService")
-                        .WithMany("Tags")
-                        .HasForeignKey("CloudServiceId");
-
-                    b.HasOne("pwnctl.domain.Assets.Entities.DNSRecord", "DNSRecord")
-                        .WithMany("Tags")
-                        .HasForeignKey("DNSRecordId");
-
-                    b.HasOne("pwnctl.domain.Assets.Entities.Domain", "Domain")
-                        .WithMany("Tags")
-                        .HasForeignKey("DomainId");
-
-                    b.HasOne("pwnctl.domain.Assets.Entities.Email", null)
-                        .WithMany("Tags")
-                        .HasForeignKey("EmailId");
-
-                    b.HasOne("pwnctl.domain.Assets.Entities.Endpoint", "Endpoint")
-                        .WithMany("Tags")
-                        .HasForeignKey("EndpointId");
-
-                    b.HasOne("pwnctl.domain.Assets.Entities.Host", "Host")
-                        .WithMany("Tags")
-                        .HasForeignKey("HostId");
-
-                    b.HasOne("pwnctl.domain.Assets.Entities.Keyword", null)
-                        .WithMany("Tags")
-                        .HasForeignKey("KeywordId");
-
-                    b.HasOne("pwnctl.domain.Assets.Entities.NetRange", "NetRange")
-                        .WithMany("Tags")
-                        .HasForeignKey("NetRangeId");
-
-                    b.HasOne("pwnctl.domain.Assets.Entities.Parameter", null)
-                        .WithMany("Tags")
-                        .HasForeignKey("ParameterId");
-
-                    b.HasOne("pwnctl.domain.Assets.Entities.Service", "Service")
-                        .WithMany("Tags")
-                        .HasForeignKey("ServiceId");
-
-                    b.HasOne("pwnctl.domain.Assets.Entities.VirtualHost", null)
-                        .WithMany("Tags")
-                        .HasForeignKey("VirtualHostId");
-
-                    b.Navigation("CloudService");
-
-                    b.Navigation("DNSRecord");
-
-                    b.Navigation("Domain");
-
-                    b.Navigation("Endpoint");
-
-                    b.Navigation("Host");
-
-                    b.Navigation("NetRange");
-
-                    b.Navigation("Service");
-                });
-
-            modelBuilder.Entity("pwnctl.domain.Targets.Entities.Program", b =>
-                {
-                    b.HasOne("pwnctl.domain.Targets.Entities.OperationalPolicy", "Policy")
+                    b.HasOne("pwnctl.app.Scope.Entities.OperationalPolicy", "Policy")
                         .WithOne()
-                        .HasForeignKey("pwnctl.domain.Targets.Entities.Program", "PolicyId");
+                        .HasForeignKey("pwnctl.app.Scope.Entities.Program", "PolicyId");
 
                     b.Navigation("Policy");
                 });
 
-            modelBuilder.Entity("pwnctl.domain.Targets.Entities.ScopeDefinition", b =>
+            modelBuilder.Entity("pwnctl.app.Scope.Entities.ScopeDefinition", b =>
                 {
-                    b.HasOne("pwnctl.domain.Targets.Entities.Program", "Program")
+                    b.HasOne("pwnctl.app.Scope.Entities.Program", "Program")
                         .WithMany("Scope")
                         .HasForeignKey("ProgramId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -873,57 +714,84 @@ namespace pwnctl.infra.Persistence.Migrations
                     b.Navigation("Program");
                 });
 
-            modelBuilder.Entity("pwnctl.domain.Tasks.Entities.TaskRecord", b =>
+            modelBuilder.Entity("pwnctl.app.Tasks.Entities.TaskDefinition", b =>
                 {
-                    b.HasOne("pwnctl.domain.Assets.Entities.CloudService", "CloudService")
-                        .WithMany("Tasks")
+                    b.OwnsOne("pwnctl.domain.ValueObjects.AssetClass", "SubjectClass", b1 =>
+                        {
+                            b1.Property<int>("TaskDefinitionId")
+                                .HasColumnType("integer");
+
+                            b1.Property<string>("Class")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.HasKey("TaskDefinitionId");
+
+                            b1.ToTable("TaskDefinitions");
+
+                            b1.WithOwner()
+                                .HasForeignKey("TaskDefinitionId");
+                        });
+
+                    b.Navigation("SubjectClass");
+                });
+
+            modelBuilder.Entity("pwnctl.app.Tasks.Entities.TaskRecord", b =>
+                {
+                    b.HasOne("pwnctl.domain.Entities.CloudService", "CloudService")
+                        .WithMany()
                         .HasForeignKey("CloudServiceId");
 
-                    b.HasOne("pwnctl.domain.Assets.Entities.DNSRecord", "DNSRecord")
-                        .WithMany("Tasks")
+                    b.HasOne("pwnctl.domain.Entities.DNSRecord", "DNSRecord")
+                        .WithMany()
                         .HasForeignKey("DNSRecordId");
 
-                    b.HasOne("pwnctl.domain.Tasks.Entities.TaskDefinition", "Definition")
+                    b.HasOne("pwnctl.app.Tasks.Entities.TaskDefinition", "Definition")
                         .WithMany()
                         .HasForeignKey("DefinitionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("pwnctl.domain.Assets.Entities.Domain", "Domain")
-                        .WithMany("Tasks")
+                    b.HasOne("pwnctl.domain.Entities.Domain", "Domain")
+                        .WithMany()
                         .HasForeignKey("DomainId");
 
-                    b.HasOne("pwnctl.domain.Assets.Entities.Email", null)
-                        .WithMany("Tasks")
-                        .HasForeignKey("EmailId");
-
-                    b.HasOne("pwnctl.domain.Assets.Entities.Endpoint", "Endpoint")
-                        .WithMany("Tasks")
+                    b.HasOne("pwnctl.domain.Entities.Endpoint", "Endpoint")
+                        .WithMany()
                         .HasForeignKey("EndpointId");
 
-                    b.HasOne("pwnctl.domain.Assets.Entities.Host", "Host")
-                        .WithMany("Tasks")
+                    b.HasOne("pwnctl.domain.Entities.Host", "Host")
+                        .WithMany()
                         .HasForeignKey("HostId");
 
-                    b.HasOne("pwnctl.domain.Assets.Entities.Keyword", "Keyword")
-                        .WithMany("Tasks")
+                    b.HasOne("pwnctl.domain.Entities.Keyword", "Keyword")
+                        .WithMany()
                         .HasForeignKey("KeywordId");
 
-                    b.HasOne("pwnctl.domain.Assets.Entities.NetRange", "NetRange")
-                        .WithMany("Tasks")
+                    b.HasOne("pwnctl.domain.Entities.NetRange", "NetRange")
+                        .WithMany()
                         .HasForeignKey("NetRangeId");
 
-                    b.HasOne("pwnctl.domain.Assets.Entities.Parameter", null)
-                        .WithMany("Tasks")
-                        .HasForeignKey("ParameterId");
-
-                    b.HasOne("pwnctl.domain.Assets.Entities.Service", "Service")
-                        .WithMany("Tasks")
+                    b.HasOne("pwnctl.domain.Entities.Service", "Service")
+                        .WithMany()
                         .HasForeignKey("ServiceId");
 
-                    b.HasOne("pwnctl.domain.Assets.Entities.VirtualHost", null)
-                        .WithMany("Tasks")
-                        .HasForeignKey("VirtualHostId");
+                    b.OwnsOne("pwnctl.domain.ValueObjects.AssetClass", "SubjectClass", b1 =>
+                        {
+                            b1.Property<int>("TaskRecordId")
+                                .HasColumnType("integer");
+
+                            b1.Property<string>("Class")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.HasKey("TaskRecordId");
+
+                            b1.ToTable("TaskRecords");
+
+                            b1.WithOwner()
+                                .HasForeignKey("TaskRecordId");
+                        });
 
                     b.Navigation("CloudService");
 
@@ -942,92 +810,226 @@ namespace pwnctl.infra.Persistence.Migrations
                     b.Navigation("NetRange");
 
                     b.Navigation("Service");
+
+                    b.Navigation("SubjectClass");
                 });
 
-            modelBuilder.Entity("pwnctl.domain.Assets.Entities.CloudService", b =>
+            modelBuilder.Entity("pwnctl.domain.Entities.CloudService", b =>
+                {
+                    b.HasOne("pwnctl.domain.Entities.Domain", "Domain")
+                        .WithMany()
+                        .HasForeignKey("DomainId");
+
+                    b.Navigation("Domain");
+                });
+
+            modelBuilder.Entity("pwnctl.domain.Entities.DNSRecord", b =>
+                {
+                    b.HasOne("pwnctl.domain.Entities.Domain", "Domain")
+                        .WithMany("DNSRecords")
+                        .HasForeignKey("DomainId");
+
+                    b.HasOne("pwnctl.domain.Entities.Host", "Host")
+                        .WithMany("AARecords")
+                        .HasForeignKey("HostId");
+
+                    b.Navigation("Domain");
+
+                    b.Navigation("Host");
+                });
+
+            modelBuilder.Entity("pwnctl.domain.Entities.Domain", b =>
+                {
+                    b.HasOne("pwnctl.domain.Entities.Domain", "RegistrationDomain")
+                        .WithMany()
+                        .HasForeignKey("RegistrationDomainId");
+
+                    b.Navigation("RegistrationDomain");
+                });
+
+            modelBuilder.Entity("pwnctl.domain.Entities.Email", b =>
+                {
+                    b.HasOne("pwnctl.domain.Entities.Domain", "Domain")
+                        .WithMany()
+                        .HasForeignKey("DomainId");
+
+                    b.Navigation("Domain");
+                });
+
+            modelBuilder.Entity("pwnctl.domain.Entities.Endpoint", b =>
+                {
+                    b.HasOne("pwnctl.domain.Entities.Service", "Service")
+                        .WithMany()
+                        .HasForeignKey("ServiceId");
+
+                    b.Navigation("Service");
+                });
+
+            modelBuilder.Entity("pwnctl.domain.Entities.Keyword", b =>
+                {
+                    b.HasOne("pwnctl.domain.Entities.Domain", "Domain")
+                        .WithMany()
+                        .HasForeignKey("DomainId");
+
+                    b.Navigation("Domain");
+                });
+
+            modelBuilder.Entity("pwnctl.domain.Entities.Parameter", b =>
+                {
+                    b.HasOne("pwnctl.domain.Entities.Endpoint", "Endpoint")
+                        .WithMany()
+                        .HasForeignKey("EndpointId");
+
+                    b.Navigation("Endpoint");
+                });
+
+            modelBuilder.Entity("pwnctl.domain.Entities.Service", b =>
+                {
+                    b.HasOne("pwnctl.domain.Entities.Domain", "Domain")
+                        .WithMany()
+                        .HasForeignKey("DomainId");
+
+                    b.HasOne("pwnctl.domain.Entities.Host", "Host")
+                        .WithMany()
+                        .HasForeignKey("HostId");
+
+                    b.Navigation("Domain");
+
+                    b.Navigation("Host");
+                });
+
+            modelBuilder.Entity("pwnctl.domain.Entities.Tag", b =>
+                {
+                    b.HasOne("pwnctl.domain.Entities.CloudService", "CloudService")
+                        .WithMany("Tags")
+                        .HasForeignKey("CloudServiceId");
+
+                    b.HasOne("pwnctl.domain.Entities.DNSRecord", "DNSRecord")
+                        .WithMany("Tags")
+                        .HasForeignKey("DNSRecordId");
+
+                    b.HasOne("pwnctl.domain.Entities.Domain", "Domain")
+                        .WithMany("Tags")
+                        .HasForeignKey("DomainId");
+
+                    b.HasOne("pwnctl.domain.Entities.Email", null)
+                        .WithMany("Tags")
+                        .HasForeignKey("EmailId");
+
+                    b.HasOne("pwnctl.domain.Entities.Endpoint", "Endpoint")
+                        .WithMany("Tags")
+                        .HasForeignKey("EndpointId");
+
+                    b.HasOne("pwnctl.domain.Entities.Host", "Host")
+                        .WithMany("Tags")
+                        .HasForeignKey("HostId");
+
+                    b.HasOne("pwnctl.domain.Entities.Keyword", null)
+                        .WithMany("Tags")
+                        .HasForeignKey("KeywordId");
+
+                    b.HasOne("pwnctl.domain.Entities.NetRange", "NetRange")
+                        .WithMany("Tags")
+                        .HasForeignKey("NetRangeId");
+
+                    b.HasOne("pwnctl.domain.Entities.Parameter", null)
+                        .WithMany("Tags")
+                        .HasForeignKey("ParameterId");
+
+                    b.HasOne("pwnctl.domain.Entities.Service", "Service")
+                        .WithMany("Tags")
+                        .HasForeignKey("ServiceId");
+
+                    b.HasOne("pwnctl.domain.Entities.VirtualHost", null)
+                        .WithMany("Tags")
+                        .HasForeignKey("VirtualHostId");
+
+                    b.Navigation("CloudService");
+
+                    b.Navigation("DNSRecord");
+
+                    b.Navigation("Domain");
+
+                    b.Navigation("Endpoint");
+
+                    b.Navigation("Host");
+
+                    b.Navigation("NetRange");
+
+                    b.Navigation("Service");
+                });
+
+            modelBuilder.Entity("pwnctl.domain.Entities.VirtualHost", b =>
+                {
+                    b.HasOne("pwnctl.domain.Entities.Service", "Service")
+                        .WithMany()
+                        .HasForeignKey("ServiceId");
+
+                    b.Navigation("Service");
+                });
+
+            modelBuilder.Entity("pwnctl.app.Scope.Entities.Program", b =>
+                {
+                    b.Navigation("Scope");
+                });
+
+            modelBuilder.Entity("pwnctl.domain.Entities.CloudService", b =>
                 {
                     b.Navigation("Tags");
-
-                    b.Navigation("Tasks");
                 });
 
-            modelBuilder.Entity("pwnctl.domain.Assets.Entities.DNSRecord", b =>
+            modelBuilder.Entity("pwnctl.domain.Entities.DNSRecord", b =>
                 {
                     b.Navigation("Tags");
-
-                    b.Navigation("Tasks");
                 });
 
-            modelBuilder.Entity("pwnctl.domain.Assets.Entities.Domain", b =>
+            modelBuilder.Entity("pwnctl.domain.Entities.Domain", b =>
                 {
                     b.Navigation("DNSRecords");
 
                     b.Navigation("Tags");
-
-                    b.Navigation("Tasks");
                 });
 
-            modelBuilder.Entity("pwnctl.domain.Assets.Entities.Email", b =>
+            modelBuilder.Entity("pwnctl.domain.Entities.Email", b =>
                 {
                     b.Navigation("Tags");
-
-                    b.Navigation("Tasks");
                 });
 
-            modelBuilder.Entity("pwnctl.domain.Assets.Entities.Endpoint", b =>
+            modelBuilder.Entity("pwnctl.domain.Entities.Endpoint", b =>
                 {
                     b.Navigation("Tags");
-
-                    b.Navigation("Tasks");
                 });
 
-            modelBuilder.Entity("pwnctl.domain.Assets.Entities.Host", b =>
+            modelBuilder.Entity("pwnctl.domain.Entities.Host", b =>
                 {
                     b.Navigation("AARecords");
 
                     b.Navigation("Tags");
-
-                    b.Navigation("Tasks");
                 });
 
-            modelBuilder.Entity("pwnctl.domain.Assets.Entities.Keyword", b =>
+            modelBuilder.Entity("pwnctl.domain.Entities.Keyword", b =>
                 {
                     b.Navigation("Tags");
-
-                    b.Navigation("Tasks");
                 });
 
-            modelBuilder.Entity("pwnctl.domain.Assets.Entities.NetRange", b =>
+            modelBuilder.Entity("pwnctl.domain.Entities.NetRange", b =>
                 {
                     b.Navigation("Tags");
-
-                    b.Navigation("Tasks");
                 });
 
-            modelBuilder.Entity("pwnctl.domain.Assets.Entities.Parameter", b =>
+            modelBuilder.Entity("pwnctl.domain.Entities.Parameter", b =>
                 {
                     b.Navigation("Tags");
-
-                    b.Navigation("Tasks");
                 });
 
-            modelBuilder.Entity("pwnctl.domain.Assets.Entities.Service", b =>
+            modelBuilder.Entity("pwnctl.domain.Entities.Service", b =>
                 {
                     b.Navigation("Tags");
-
-                    b.Navigation("Tasks");
                 });
 
-            modelBuilder.Entity("pwnctl.domain.Assets.Entities.VirtualHost", b =>
+            modelBuilder.Entity("pwnctl.domain.Entities.VirtualHost", b =>
                 {
                     b.Navigation("Tags");
-
-                    b.Navigation("Tasks");
-                });
-
-            modelBuilder.Entity("pwnctl.domain.Targets.Entities.Program", b =>
-                {
-                    b.Navigation("Scope");
                 });
 #pragma warning restore 612, 618
         }

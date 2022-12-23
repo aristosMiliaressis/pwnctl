@@ -4,10 +4,13 @@ using pwnctl.kernel.BaseClasses;
 
 public sealed class PublicSuffix : ValueObject
 {
-    public string Suffix { get; private set; }
+    public string Suffix { get; }
 
     private PublicSuffix(string suffix)
     {
+        if(Uri.CheckHostName(suffix) != UriHostNameType.Dns)
+            throw new ArgumentException("Invalid Public Suffix: " + suffix, nameof(suffix));
+
         Suffix = suffix;
     }
 

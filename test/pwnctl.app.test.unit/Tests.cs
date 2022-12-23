@@ -1,7 +1,6 @@
 namespace pwnctl.app.test.unit;
 
 using pwnctl.infra;
-using pwnctl.infra.Queues;
 using pwnctl.infra.Persistence;
 using pwnctl.infra.Persistence.Extensions;
 using pwnctl.infra.Repositories;
@@ -13,6 +12,7 @@ using System.Net;
 using pwnctl.app.Assets;
 using pwnctl.app.Common.Interfaces;
 using pwnctl.app.Assets.DTO;
+using pwnctl.domain.Services;
 
 public sealed class Tests
 {
@@ -275,17 +275,17 @@ public sealed class Tests
     }
 
     [Fact]
-    public void PublicSuffixRepository_Tests()
+    public void PublicSuffixListService_Tests()
     {
         var exampleDomain = new Domain("xyz.example.com");
 
         Assert.Equal("example.com", exampleDomain.GetRegistrationDomain());
-        Assert.Equal("com", exampleDomain.GetPublicSuffix().Suffix);
+        Assert.Equal("com", PublicSuffixListService.Instance.GetPublicSuffix(exampleDomain.Name).Suffix);
 
         var exampleSubDomain = new Domain("sub.example.azurewebsites.net");
 
         Assert.Equal("example.azurewebsites.net", exampleSubDomain.GetRegistrationDomain());
-        Assert.Equal("azurewebsites.net", exampleSubDomain.GetPublicSuffix().Suffix);
+        Assert.Equal("azurewebsites.net", PublicSuffixListService.Instance.GetPublicSuffix(exampleSubDomain.Name).Suffix);
     }
 
     [Fact]

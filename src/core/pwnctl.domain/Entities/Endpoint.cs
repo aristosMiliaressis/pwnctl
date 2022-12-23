@@ -18,8 +18,8 @@ namespace pwnctl.domain.Entities
         {
             get
             {
-                var lastPart = Path.Split("/").Where(p => !string.IsNullOrEmpty(p)).Last(); 
-                return lastPart.Contains(".") ? lastPart : null;
+                var lastPart = Path.Split("/").Where(p => !string.IsNullOrEmpty(p)).LastOrDefault(); 
+                return lastPart != null && lastPart.Contains(".") ? lastPart : null;
             }
         }
 

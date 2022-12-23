@@ -4,11 +4,13 @@ using pwnctl.app.Tasks.Entities;
 
 namespace pwnctl.infra.Persistence.EntityConfiguration
 {
-    public sealed class TaskConfig : IEntityTypeConfiguration<TaskRecord>
+    public sealed class TaskRecordConfig : IEntityTypeConfiguration<TaskRecord>
     {
         public void Configure(EntityTypeBuilder<TaskRecord> builder)
         {
             builder.HasKey(t => t.Id);
+
+            builder.OwnsOne(t => t.SubjectClass).Property(s => s.Class).IsRequired();
 
             builder.HasOne(t => t.Definition)
                 .WithMany()
@@ -53,6 +55,8 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
         public void Configure(EntityTypeBuilder<TaskDefinition> builder)
         {
             builder.HasKey(d => d.Id);
+
+            builder.OwnsOne(d => d.SubjectClass).Property(s => s.Class).IsRequired();
         }
     }
 }

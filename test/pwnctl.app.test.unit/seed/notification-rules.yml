@@ -2,13 +2,3 @@
   Subject: Service
   Filter: Service["vuln-default-creds"] == "true"
   Topic: misconfigs
-- ShortName: spf_dmarc
-- ShortName: iis_shortnames
-- ShortName: zone_transfer
-- ShortName: zone_walking
-- ShortName: cname_takeover
-- ShortName: cors_misconfig
-- ShortName: info_disclosure
-  Filter: "[\"/git\", \"/phpinfo.php\", \"/Trace.axd\"]"
-  Topic: info_disclosure
-

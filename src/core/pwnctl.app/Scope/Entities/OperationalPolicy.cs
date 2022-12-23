@@ -7,7 +7,7 @@ namespace pwnctl.app.Scope.Entities
     {
 		public string Blacklist { get; init; }
 		public string Whitelist { get; init; }
-		public int? MaxAggressiveness { get; init; }
+		public uint? MaxAggressiveness { get; init; }
 		public bool AllowActive { get; init; }
 
         public OperationalPolicy() {}

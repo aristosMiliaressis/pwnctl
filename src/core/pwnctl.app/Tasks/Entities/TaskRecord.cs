@@ -5,6 +5,7 @@ using pwnctl.kernel.BaseClasses;
 using pwnctl.domain.Entities;
 using System.Text.Json.Serialization;
 using pwnctl.app.Tasks.DTO;
+using pwnctl.domain.ValueObjects;
 
 namespace pwnctl.app.Tasks.Entities
 {
@@ -43,17 +44,17 @@ namespace pwnctl.app.Tasks.Entities
         public CloudService CloudService { get; set; }
         public string CloudServiceId { get; private init; }
 
-        public string Discriminator { get; set; }
+        public AssetClass SubjectClass { get; private init; }
 
-        public TaskRecord() {}
+        private TaskRecord() {}
 
         public TaskRecord(TaskDefinition definition, AssetRecord record)
         {
             State = TaskState.PENDING;
             Definition = definition;
 
-            Discriminator = record.Asset.GetType().Name;
-            GetType().GetProperty(Discriminator).SetValue(this, record.Asset);
+            SubjectClass = AssetClass.Create(record.Asset.GetType().Name);
+            GetType().GetProperty(SubjectClass.Class).SetValue(this, record.Asset);
             record.Tasks.Add(this);
         }
 
@@ -103,14 +104,14 @@ namespace pwnctl.app.Tasks.Entities
             {
                 List<string> arguments = new();
 
-                var asset = GetType().GetProperty(Discriminator).GetValue(this);
+                var asset = GetType().GetProperty(SubjectClass.Class).GetValue(this);
                 var assetType = asset.GetType();
 
                 foreach (var param in Definition.Parameters)
                 {
                     var prop = assetType.GetProperty(param);
                     if (prop == null)
-                        throw new CommandInterpolationException($"Property {param} not found on type {Discriminator}");
+                        throw new CommandInterpolationException($"Property {param} not found on type {SubjectClass.Class}");
 
                     var arg = prop.GetValue(asset);
 

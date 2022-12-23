@@ -9,12 +9,13 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using pwnctl.infra.Logging;
 using pwnctl.app.Tasks.Enums;
+using pwnctl.app.Tasks.DTO;
 
 namespace pwnctl.api.Mediator.Handlers.Assets.Commands
 {
-    public sealed class ProcessAssetsCommandHandler : IRequestHandler<ProcessAssetsCommand, MediatedResponse<List<TaskRecord>>>
+    public sealed class ProcessAssetsCommandHandler : IRequestHandler<ProcessAssetsCommand, MediatedResponse<List<TaskDTO>>>
     {
-        public async Task<MediatedResponse<List<TaskRecord>>> Handle(ProcessAssetsCommand command, CancellationToken cancellationToken)
+        public async Task<MediatedResponse<List<TaskDTO>>> Handle(ProcessAssetsCommand command, CancellationToken cancellationToken)
         {
             var context = new PwnctlDbContext();
 
@@ -54,7 +55,7 @@ namespace pwnctl.api.Mediator.Handlers.Assets.Commands
             pendingTasks.ForEach(task => task.Queued());
             await context.SaveChangesAsync(cancellationToken);
 
-            return MediatedResponse<List<TaskRecord>>.Success(pendingTasks);
+            return MediatedResponse<List<TaskDTO>>.Success(pendingTasks.Select(t => t.ToDTO()).ToList());
         }
     }
 }

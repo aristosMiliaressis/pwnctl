@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace pwnctl.infra.Persistence.Migrations
+namespace pwnctl.infra.Migrations
 {
     public partial class initial : Migration
     {
@@ -65,29 +65,15 @@ namespace pwnctl.infra.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "NotificationProviderSettings",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_NotificationProviderSettings", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "NotificationRules",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     ShortName = table.Column<string>(type: "text", nullable: true),
-                    Subject = table.Column<string>(type: "text", nullable: true),
+                    SubjectClass_Class = table.Column<string>(type: "text", nullable: true),
                     Filter = table.Column<string>(type: "text", nullable: true),
-                    Topic = table.Column<string>(type: "text", nullable: true),
-                    Severity = table.Column<string>(type: "text", nullable: true)
+                    Topic = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -100,10 +86,9 @@ namespace pwnctl.infra.Persistence.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: true),
                     Blacklist = table.Column<string>(type: "text", nullable: true),
                     Whitelist = table.Column<string>(type: "text", nullable: true),
-                    MaxAggressiveness = table.Column<int>(type: "integer", nullable: true),
+                    MaxAggressiveness = table.Column<long>(type: "bigint", nullable: true),
                     AllowActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
@@ -121,12 +106,35 @@ namespace pwnctl.infra.Persistence.Migrations
                     CommandTemplate = table.Column<string>(type: "text", nullable: true),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
                     Aggressiveness = table.Column<int>(type: "integer", nullable: false),
-                    Subject = table.Column<string>(type: "text", nullable: true),
+                    SubjectClass_Class = table.Column<string>(type: "text", nullable: true),
                     Filter = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_TaskDefinitions", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CloudService",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    Hostname = table.Column<string>(type: "text", nullable: true),
+                    Service = table.Column<string>(type: "text", nullable: true),
+                    Provider = table.Column<string>(type: "text", nullable: true),
+                    DomainId = table.Column<string>(type: "text", nullable: true),
+                    FoundAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    FoundBy = table.Column<string>(type: "text", nullable: true),
+                    InScope = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CloudService", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CloudService_Domains_DomainId",
+                        column: x => x.DomainId,
+                        principalTable: "Domains",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -231,27 +239,6 @@ namespace pwnctl.infra.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "NotificationChannels",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: true),
-                    Filter = table.Column<string>(type: "text", nullable: true),
-                    ProviderId = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_NotificationChannels", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_NotificationChannels_NotificationProviderSettings_ProviderId",
-                        column: x => x.ProviderId,
-                        principalTable: "NotificationProviderSettings",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Programs",
                 columns: table => new
                 {
@@ -321,7 +308,6 @@ namespace pwnctl.infra.Persistence.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: true),
                     Type = table.Column<int>(type: "integer", nullable: false),
                     Pattern = table.Column<string>(type: "text", nullable: true),
                     ProgramId = table.Column<int>(type: "integer", nullable: true)
@@ -362,6 +348,79 @@ namespace pwnctl.infra.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TaskRecords",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    DefinitionId = table.Column<int>(type: "integer", nullable: false),
+                    ExitCode = table.Column<int>(type: "integer", nullable: true),
+                    QueuedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    StartedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    FinishedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    State = table.Column<int>(type: "integer", nullable: false),
+                    HostId = table.Column<string>(type: "text", nullable: true),
+                    ServiceId = table.Column<string>(type: "text", nullable: true),
+                    EndpointId = table.Column<string>(type: "text", nullable: true),
+                    DomainId = table.Column<string>(type: "text", nullable: true),
+                    DNSRecordId = table.Column<string>(type: "text", nullable: true),
+                    NetRangeId = table.Column<string>(type: "text", nullable: true),
+                    KeywordId = table.Column<string>(type: "text", nullable: true),
+                    CloudServiceId = table.Column<string>(type: "text", nullable: true),
+                    SubjectClass_Class = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TaskRecords", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TaskRecords_CloudService_CloudServiceId",
+                        column: x => x.CloudServiceId,
+                        principalTable: "CloudService",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_TaskRecords_DNSRecords_DNSRecordId",
+                        column: x => x.DNSRecordId,
+                        principalTable: "DNSRecords",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_TaskRecords_Domains_DomainId",
+                        column: x => x.DomainId,
+                        principalTable: "Domains",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_TaskRecords_Endpoints_EndpointId",
+                        column: x => x.EndpointId,
+                        principalTable: "Endpoints",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_TaskRecords_Hosts_HostId",
+                        column: x => x.HostId,
+                        principalTable: "Hosts",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_TaskRecords_Keywords_KeywordId",
+                        column: x => x.KeywordId,
+                        principalTable: "Keywords",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_TaskRecords_NetRanges_NetRangeId",
+                        column: x => x.NetRangeId,
+                        principalTable: "NetRanges",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_TaskRecords_Services_ServiceId",
+                        column: x => x.ServiceId,
+                        principalTable: "Services",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_TaskRecords_TaskDefinitions_DefinitionId",
+                        column: x => x.DefinitionId,
+                        principalTable: "TaskDefinitions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Tags",
                 columns: table => new
                 {
@@ -375,6 +434,7 @@ namespace pwnctl.infra.Persistence.Migrations
                     DomainId = table.Column<string>(type: "text", nullable: true),
                     DNSRecordId = table.Column<string>(type: "text", nullable: true),
                     NetRangeId = table.Column<string>(type: "text", nullable: true),
+                    CloudServiceId = table.Column<string>(type: "text", nullable: true),
                     EmailId = table.Column<string>(type: "text", nullable: true),
                     KeywordId = table.Column<string>(type: "text", nullable: true),
                     ParameterId = table.Column<string>(type: "text", nullable: true),
@@ -383,6 +443,11 @@ namespace pwnctl.infra.Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Tags", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Tags_CloudService_CloudServiceId",
+                        column: x => x.CloudServiceId,
+                        principalTable: "CloudService",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Tags_DNSRecords_DNSRecordId",
                         column: x => x.DNSRecordId,
@@ -435,89 +500,16 @@ namespace pwnctl.infra.Persistence.Migrations
                         principalColumn: "Id");
                 });
 
-            migrationBuilder.CreateTable(
-                name: "Tasks",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    DefinitionId = table.Column<int>(type: "integer", nullable: false),
-                    ReturnCode = table.Column<int>(type: "integer", nullable: true),
-                    QueuedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    StartedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    FinishedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Arguments = table.Column<string>(type: "text", nullable: true),
-                    HostId = table.Column<string>(type: "text", nullable: true),
-                    ServiceId = table.Column<string>(type: "text", nullable: true),
-                    EndpointId = table.Column<string>(type: "text", nullable: true),
-                    DomainId = table.Column<string>(type: "text", nullable: true),
-                    DNSRecordId = table.Column<string>(type: "text", nullable: true),
-                    NetRangeId = table.Column<string>(type: "text", nullable: true),
-                    KeywordId = table.Column<string>(type: "text", nullable: true),
-                    EmailId = table.Column<string>(type: "text", nullable: true),
-                    ParameterId = table.Column<string>(type: "text", nullable: true),
-                    VirtualHostId = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Tasks", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Tasks_DNSRecords_DNSRecordId",
-                        column: x => x.DNSRecordId,
-                        principalTable: "DNSRecords",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Tasks_Domains_DomainId",
-                        column: x => x.DomainId,
-                        principalTable: "Domains",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Tasks_Emails_EmailId",
-                        column: x => x.EmailId,
-                        principalTable: "Emails",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Tasks_Endpoints_EndpointId",
-                        column: x => x.EndpointId,
-                        principalTable: "Endpoints",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Tasks_Hosts_HostId",
-                        column: x => x.HostId,
-                        principalTable: "Hosts",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Tasks_Keywords_KeywordId",
-                        column: x => x.KeywordId,
-                        principalTable: "Keywords",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Tasks_NetRanges_NetRangeId",
-                        column: x => x.NetRangeId,
-                        principalTable: "NetRanges",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Tasks_Parameters_ParameterId",
-                        column: x => x.ParameterId,
-                        principalTable: "Parameters",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Tasks_Services_ServiceId",
-                        column: x => x.ServiceId,
-                        principalTable: "Services",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Tasks_TaskDefinitions_DefinitionId",
-                        column: x => x.DefinitionId,
-                        principalTable: "TaskDefinitions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Tasks_VirtualHosts_VirtualHostId",
-                        column: x => x.VirtualHostId,
-                        principalTable: "VirtualHosts",
-                        principalColumn: "Id");
-                });
+            migrationBuilder.CreateIndex(
+                name: "IX_CloudService_DomainId",
+                table: "CloudService",
+                column: "DomainId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CloudService_Hostname",
+                table: "CloudService",
+                column: "Hostname",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_DNSRecords_DomainId",
@@ -592,11 +584,6 @@ namespace pwnctl.infra.Persistence.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_NotificationChannels_ProviderId",
-                table: "NotificationChannels",
-                column: "ProviderId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Parameters_EndpointId",
                 table: "Parameters",
                 column: "EndpointId");
@@ -633,6 +620,11 @@ namespace pwnctl.infra.Persistence.Migrations
                 table: "Services",
                 column: "Origin",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tags_CloudServiceId",
+                table: "Tags",
+                column: "CloudServiceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tags_DNSRecordId_Name",
@@ -691,59 +683,49 @@ namespace pwnctl.infra.Persistence.Migrations
                 column: "VirtualHostId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tasks_DefinitionId",
-                table: "Tasks",
+                name: "IX_TaskRecords_CloudServiceId",
+                table: "TaskRecords",
+                column: "CloudServiceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TaskRecords_DefinitionId",
+                table: "TaskRecords",
                 column: "DefinitionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tasks_DNSRecordId",
-                table: "Tasks",
+                name: "IX_TaskRecords_DNSRecordId",
+                table: "TaskRecords",
                 column: "DNSRecordId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tasks_DomainId",
-                table: "Tasks",
+                name: "IX_TaskRecords_DomainId",
+                table: "TaskRecords",
                 column: "DomainId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tasks_EmailId",
-                table: "Tasks",
-                column: "EmailId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Tasks_EndpointId",
-                table: "Tasks",
+                name: "IX_TaskRecords_EndpointId",
+                table: "TaskRecords",
                 column: "EndpointId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tasks_HostId",
-                table: "Tasks",
+                name: "IX_TaskRecords_HostId",
+                table: "TaskRecords",
                 column: "HostId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tasks_KeywordId",
-                table: "Tasks",
+                name: "IX_TaskRecords_KeywordId",
+                table: "TaskRecords",
                 column: "KeywordId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tasks_NetRangeId",
-                table: "Tasks",
+                name: "IX_TaskRecords_NetRangeId",
+                table: "TaskRecords",
                 column: "NetRangeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tasks_ParameterId",
-                table: "Tasks",
-                column: "ParameterId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Tasks_ServiceId",
-                table: "Tasks",
+                name: "IX_TaskRecords_ServiceId",
+                table: "TaskRecords",
                 column: "ServiceId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Tasks_VirtualHostId",
-                table: "Tasks",
-                column: "VirtualHostId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_VirtualHosts_ServiceId",
@@ -754,9 +736,6 @@ namespace pwnctl.infra.Persistence.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "NotificationChannels");
-
-            migrationBuilder.DropTable(
                 name: "NotificationRules");
 
             migrationBuilder.DropTable(
@@ -766,19 +745,25 @@ namespace pwnctl.infra.Persistence.Migrations
                 name: "Tags");
 
             migrationBuilder.DropTable(
-                name: "Tasks");
-
-            migrationBuilder.DropTable(
-                name: "NotificationProviderSettings");
+                name: "TaskRecords");
 
             migrationBuilder.DropTable(
                 name: "Programs");
 
             migrationBuilder.DropTable(
-                name: "DNSRecords");
+                name: "Emails");
 
             migrationBuilder.DropTable(
-                name: "Emails");
+                name: "Parameters");
+
+            migrationBuilder.DropTable(
+                name: "VirtualHosts");
+
+            migrationBuilder.DropTable(
+                name: "CloudService");
+
+            migrationBuilder.DropTable(
+                name: "DNSRecords");
 
             migrationBuilder.DropTable(
                 name: "Keywords");
@@ -787,13 +772,7 @@ namespace pwnctl.infra.Persistence.Migrations
                 name: "NetRanges");
 
             migrationBuilder.DropTable(
-                name: "Parameters");
-
-            migrationBuilder.DropTable(
                 name: "TaskDefinitions");
-
-            migrationBuilder.DropTable(
-                name: "VirtualHosts");
 
             migrationBuilder.DropTable(
                 name: "OperationalPolicies");

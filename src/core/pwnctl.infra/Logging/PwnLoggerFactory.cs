@@ -45,7 +45,7 @@ namespace pwnctl.infra.Logging
                     .CreateLogger();
         }
 
-        private static string _outputTemplate = $"[{{Timestamp:HH:mm:ss}} {EnvironmentVariables.HOSTNAME} {{Level:u3}}] {{Message:lj}}\n";
+        private static string _outputTemplate = $"[{{Timestamp:yyyy-MM-dd HH:mm:ss.fff}} {EnvironmentVariables.HOSTNAME} {{Level:u3}}] {{Message:lj}}\n";
 
         private static readonly LoggerConfiguration _baseConfig = new LoggerConfiguration()
                     .MinimumLevel.Is(Enum.Parse<LogEventLevel>(PwnContext.Config.Logging.MinLevel ?? "Information"));

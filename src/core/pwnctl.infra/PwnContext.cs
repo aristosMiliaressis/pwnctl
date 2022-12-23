@@ -1,4 +1,3 @@
-using pwnctl.domain.Interfaces;
 using pwnctl.app.Common.Interfaces;
 using pwnctl.app.Notifications.Interfaces;
 using pwnctl.infra.Configuration;
@@ -7,6 +6,7 @@ using pwnctl.infra.Logging;
 using pwnctl.infra.Serialization;
 using pwnctl.infra.Notifications;
 using Serilog;
+using pwnctl.domain.Services;
 
 namespace pwnctl.infra
 {
@@ -21,7 +21,7 @@ namespace pwnctl.infra
         {
             FilterEvaluator.Instance = new CSharpFilterEvaluator();
             NotificationSender.Instance = new DiscordNotificationSender();
-            PublicSuffixRepository.Instance = new PublicSuffixFileRepository();
+            PublicSuffixListService.Instance = new FsPublicSuffixListService();
             Serializer.Instance = new AppJsonSerializer();
         }
 

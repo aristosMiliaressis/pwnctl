@@ -5,6 +5,7 @@ using pwnctl.infra.Persistence;
 
 using Microsoft.EntityFrameworkCore;
 using MediatR;
+using pwnctl.app.Tasks.Enums;
 
 namespace pwnctl.api.Mediator.Handlers.Targets.Commands
 {
@@ -33,8 +34,8 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Commands
             viewModel.InScopeEndpointCount = await context.Endpoints.Where(a => a.InScope).CountAsync();
             viewModel.InScopeParamCount = await context.Parameters.Where(a => a.InScope).CountAsync();
             viewModel.InScopeEmailCount = await context.Emails.Where(a => a.InScope).CountAsync();
-            viewModel.FirstTask = (await context.TaskRecords.OrderBy(t => t.QueuedAt).FirstOrDefaultAsync())?.QueuedAt;
-            viewModel.LastTask = (await context.TaskRecords.OrderBy(t => t.QueuedAt).FirstOrDefaultAsync())?.QueuedAt;
+            viewModel.FirstTask = (await context.TaskRecords.Where(t => t.State != TaskState.PENDING).OrderBy(t => t.QueuedAt).FirstOrDefaultAsync())?.QueuedAt;
+            viewModel.LastTask = (await context.TaskRecords.Where(t => t.State != TaskState.PENDING).OrderByDescending(t => t.QueuedAt).FirstOrDefaultAsync())?.QueuedAt;
 
             return MediatedResponse<SummaryViewModel>.Success(viewModel);
         }

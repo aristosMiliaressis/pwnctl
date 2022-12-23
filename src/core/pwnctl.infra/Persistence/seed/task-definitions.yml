@@ -125,7 +125,7 @@
   CommandTemplate: webcrawl.sh '{{Url}}'
   IsActive: true
   Aggressiveness: 3
-  Filter: Endpoint["Content-Type"].Contains("/html") || Endpoint["Content-Type"].Contains("/xhtml")
+  Filter: Endpoint.Path == "/" || Endpoint["Content-Type"].Contains("/html") || Endpoint["Content-Type"].Contains("/xhtml")
   Subject: Endpoint
 
 - ShortName: link_finder
@@ -136,7 +136,7 @@
   Subject: Endpoint
 
 - ShortName: cors_check
-  CommandTemplate: cors-check.sh {{Url}}
+  CommandTemplate: check-cors.sh {{Url}}
   IsActive: true
   Aggressiveness: 5
   Subject: Endpoint

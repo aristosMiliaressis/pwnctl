@@ -78,11 +78,11 @@ namespace pwnctl.app.Assets
 
                 task = new TaskRecord(definition, record);
 
+                await _assetRepository.SaveAsync(record);
+
                 bool queued = await _taskQueueService.EnqueueAsync(task.ToDTO());
                 if (queued)
                     task.Queued();
-
-                await _assetRepository.SaveAsync(record);
             }
         }
     }

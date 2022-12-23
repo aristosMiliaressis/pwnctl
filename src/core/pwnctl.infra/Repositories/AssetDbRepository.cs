@@ -87,6 +87,10 @@ namespace pwnctl.infra.Repositories
                 _context.Entry(task).State = task.Id == default
                                            ? EntityState.Added
                                            : EntityState.Modified;
+                if (task.Id == default)
+                {
+                    _context.Entry(task).Reference(t => t.SubjectClass).TargetEntry.State = EntityState.Added;
+                }
             }
 
             existingAsset.InScope = record.Asset.InScope;

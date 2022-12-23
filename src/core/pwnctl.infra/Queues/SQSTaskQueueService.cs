@@ -98,7 +98,7 @@ namespace pwnctl.infra.Queues
 
         public async Task ChangeBatchVisibility(List<TaskDTO> tasks, CancellationToken token = default)
         {
-            PwnContext.Logger.Debug($"ChangeBatchVisibility");
+            PwnContext.Logger.Debug($"ChangeBatchVisibility fot tasks {string.Join(",", tasks.Select(t=>t.TaskId))}");
 
             // TODO: what if timeout exhedded more than once?
 
