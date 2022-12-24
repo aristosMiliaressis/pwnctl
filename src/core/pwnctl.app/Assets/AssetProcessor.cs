@@ -50,6 +50,8 @@ namespace pwnctl.app.Assets
                 });
 
             var record = await _assetRepository.GetAssetRecord(asset);
+            await _assetRepository.SaveAsync(record);
+
             if (record.Asset.InScope)
             {
                 await ProcessInScopeAssetAsync(record);           

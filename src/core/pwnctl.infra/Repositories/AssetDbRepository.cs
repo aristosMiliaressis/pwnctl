@@ -56,7 +56,6 @@ namespace pwnctl.infra.Repositories
             await SaveAsync(new AssetRecord(asset));
         }
 
-
         public async Task SaveAsync(AssetRecord record)
         {
             var existingAsset = _context.FindAsset(record.Asset);

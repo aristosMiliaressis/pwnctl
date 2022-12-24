@@ -12,9 +12,6 @@ namespace pwnctl.domain.BaseClasses
         public string FoundBy { get; set; }
         public bool InScope { get; set; }
 
-        [JsonIgnore]
-        public string DomainIdentifier => string.Join(",", GetType().GetProperties().Where(p => p.GetCustomAttribute(typeof(EqualityComponentAttribute)) != null).Select(p => p.GetValue(this).ToString()));
-
         public List<Tag> Tags { get; set; } = new List<Tag>();
 
         public string this[string key]

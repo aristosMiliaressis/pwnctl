@@ -8,8 +8,6 @@ public sealed class AssetClass : ValueObject
 {
     public string Class { get; }
 
-    private AssetClass() {}
-
     private AssetClass(string @class)
     {
         if (!_assetClasses.Contains(@class))

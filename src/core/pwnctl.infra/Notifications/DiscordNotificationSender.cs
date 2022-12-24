@@ -9,7 +9,7 @@ namespace pwnctl.infra.Notifications
     {
         public void Send(Asset asset, NotificationRule rule)
         {
-            Send($"{asset.DomainIdentifier} triggered rule {rule.ShortName}", rule.Topic);
+            Send($"{asset} triggered rule {rule.ShortName}", rule.Topic);
         }
 
         public void Send(string message, string topic)
