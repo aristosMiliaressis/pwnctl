@@ -10,11 +10,10 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Queries
 {
     public sealed class ListEmailsQueryHandler : IRequestHandler<ListEmailsQuery, MediatedResponse<EmailListViewModel>>
     {
-        private readonly PwnctlDbContext _context = new PwnctlDbContext();
-
         public async Task<MediatedResponse<EmailListViewModel>> Handle(ListEmailsQuery command, CancellationToken cancellationToken)
         {
-            AssetDbRepository repository = new();
+            PwnctlDbContext context = new();
+            AssetDbRepository repository = new(context);
 
             var emails = await repository.ListEmailsAsync();
 

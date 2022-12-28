@@ -20,12 +20,9 @@ namespace pwnctl.domain.Entities
             Domain = domain;
         }
 
-        public static bool TryParse(string assetText, out Asset mainAsset, out Asset[] relatedAssets)
+        public static bool TryParse(string assetText, out Asset asset)
         {
-            mainAsset = null;
-            relatedAssets = null;
-
-            return false;
+            throw new NotImplementedException();
         }
 
         public override string ToString()

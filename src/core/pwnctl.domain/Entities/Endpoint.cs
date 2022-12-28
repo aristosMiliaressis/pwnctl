@@ -11,6 +11,9 @@ namespace pwnctl.domain.Entities
 
         public string ServiceId { get; private init; }
         public Service Service { get; init; }
+        public string ParentEndpointId { get; private init; }
+        public Endpoint ParentEndpoint { get; private set; }
+        public List<Parameter> Parameters { get; private set; }
 
         public string Scheme { get; init; }
         public string Path { get; init; }
@@ -31,6 +34,7 @@ namespace pwnctl.domain.Entities
             }
         }
 
+
         public Endpoint() {}
         
         public Endpoint(string scheme, Service service, string path)
@@ -41,41 +45,39 @@ namespace pwnctl.domain.Entities
             Url = $"{Service.Origin.Replace("tcp", scheme)}{path}" + (path.EndsWith("/") ? "" : "/");
         }
 
-        public static bool TryParse(string assetText, out Asset mainAsset, out Asset[] relatedAssets)
+        public static bool TryParse(string assetText, out Asset asset)
         {
-            var _assets = new List<Asset>();
+            asset = null;
+
+            if (!assetText.Contains("://"))
+                return false;
 
             var uri = new Uri(assetText);
 
-            var origin = Host.TryParse(uri.Host, out Asset host, out Asset[] assets)
+            var origin = Host.TryParse(uri.Host, out Asset host)
                     ? new Service((Host)host, (ushort)uri.Port)
                     : new Service(new Domain(uri.Host), (ushort)uri.Port);
 
             var endpoint = new Endpoint(uri.Scheme, origin, uri.AbsolutePath);
 
-            _assets.Add(endpoint);
-            _assets.Add(origin);
-            if (origin.Domain != null) _assets.Add(origin.Domain);
-            if (origin.Host != null) _assets.Add(origin.Host);
-
             var _params = uri.GetComponents(UriComponents.Query, UriFormat.SafeUnescaped)
                 .Split("&")
                 .Select(p => new Parameter(endpoint, p.Split("=")[0], ParamType.Query, null))
-                .Where(p => !string.IsNullOrEmpty(p.Name));
+                .Where(p => !string.IsNullOrEmpty(p.Name))
+                .ToList();
+
+            endpoint.Parameters = _params;
+            asset = endpoint;
 
             // Adds all subdirectories
             string path = endpoint.Path;
             do
             {
                 path = string.Join("/", path.Split("/").Reverse().Skip(1).Reverse());
-                _assets.Add(new Endpoint(endpoint.Scheme, endpoint.Service, path));
+                endpoint.ParentEndpoint = new Endpoint(endpoint.Scheme, endpoint.Service, path);
+                endpoint = endpoint.ParentEndpoint;
             } while (path.Length > 1);
 
-            if (_params.Any())
-                _assets.AddRange(_params);
-
-            mainAsset = endpoint;
-            relatedAssets = _assets.ToArray();
             return true;
         }
 

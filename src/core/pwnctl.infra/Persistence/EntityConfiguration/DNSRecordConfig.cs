@@ -9,9 +9,11 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
     {
         public void Configure(EntityTypeBuilder<DNSRecord> builder)
         {
-            builder.Property(c => c.Id).HasValueGenerator<HashIdValueGenerator>();
+            builder.Property(e => e.Id).HasValueGenerator<HashIdValueGenerator>();
 
-            builder.HasKey(p => p.Id);
+            builder.HasKey(e => e.Id);
+
+            builder.Ignore(e => e.SPFHosts);
 
             builder.HasOne(e => e.Domain)
                 .WithMany(e => e.DNSRecords)

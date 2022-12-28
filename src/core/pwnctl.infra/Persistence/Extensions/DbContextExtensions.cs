@@ -4,9 +4,9 @@ using pwnctl.app.Tasks.Entities;
 using pwnctl.app.Scope.Entities;
 using System.Reflection;
 using System.Linq.Expressions;
-using pwnctl.domain.Entities;
 using pwnctl.app.Common.Extensions;
 using pwnctl.kernel.BaseClasses;
+using pwnctl.app.Tagging.Entities;
 
 namespace pwnctl.infra.Persistence.Extensions
 {
@@ -17,22 +17,51 @@ namespace pwnctl.infra.Persistence.Extensions
             return context.Programs
                             .Include(p => p.Policy)
                             .Include(p => p.Scope)
-                            .AsNoTracking()
                             .ToList();
         }
 
-        public static IQueryable<TaskRecord> JoinedTaskRecordQueryable(this PwnctlDbContext context)
+        public static IQueryable<TaskEntry> JoinedTaskRecordQueryable(this PwnctlDbContext context)
         {
-            return context.TaskRecords
+            return context.TaskEntries
                             .Include(r => r.Definition)
-                            .Include(r => r.Host)
-                            .Include(r => r.Domain)
-                            .Include(r => r.Endpoint)
-                            .Include(r => r.NetRange)
-                            .Include(r => r.DNSRecord)
-                            .Include(r => r.Service)
-                            .Include(r => r.CloudService)
-                            .Include(r => r.Keyword);
+                            .Include(r => r.Record)
+                                .ThenInclude(r => r.CloudService)
+                            .Include(r => r.Record)
+                                .ThenInclude(r => r.DNSRecord)
+                                .ThenInclude(r => r.Domain)
+                            .Include(r => r.Record)
+                                .ThenInclude(r => r.DNSRecord)
+                                .ThenInclude(r => r.Host)
+                            .Include(r => r.Record)
+                                .ThenInclude(r => r.Domain)
+                            .Include(r => r.Record)
+                                .ThenInclude(r => r.Email)
+                                .ThenInclude(r => r.Domain)
+                            .Include(r => r.Record)
+                                .ThenInclude(r => r.Endpoint)
+                                .ThenInclude(s => s.Service)
+                                .ThenInclude(s => s.Domain)
+                            .Include(r => r.Record)
+                                .ThenInclude(r => r.Endpoint)
+                                .ThenInclude(s => s.Service)
+                                .ThenInclude(s => s.Host)
+                            .Include(r => r.Record)
+                                .ThenInclude(r => r.Host)
+                                .ThenInclude(r => r.AARecords)
+                            .Include(r => r.Record)
+                                .ThenInclude(r => r.Keyword)
+                                .ThenInclude(e => e.Domain)
+                            .Include(r => r.Record)
+                                .ThenInclude(r => r.NetRange)
+                            .Include(r => r.Record)
+                                .ThenInclude(r => r.Parameter)
+                            .Include(r => r.Record)
+                                .ThenInclude(r => r.Service)
+                                .ThenInclude(r => r.Host)
+                            .Include(r => r.Record)
+                                .ThenInclude(r => r.Domain)
+                            .Include(r => r.Record)
+                                .ThenInclude(r => r.VirtualHost);
         }
 
         public static Asset FindAsset(this DbContext context, Asset asset)
@@ -42,13 +71,7 @@ namespace pwnctl.infra.Persistence.Extensions
             return (Asset)context.FirstFromLambda(lambda);
         }
 
-        public static Tag FindAssetTag(this DbContext context, Asset asset, Tag tag)
-        {
-            var lambda = ExpressionTreeBuilder.BuildTagMatchingLambda(asset, tag);
-            return (Tag)context.FirstFromLambda(lambda);
-        }
-
-        public static Entity FirstFromLambda(this DbContext context, LambdaExpression lambda)
+        public static Entity FirstFromLambda(this DbContext context, LambdaExpression lambda) // TODO: make async
         {
             var type = lambda.Parameters.First().Type;
 
@@ -63,7 +86,7 @@ namespace pwnctl.infra.Persistence.Extensions
             return (Entity)firstOrDefaultMethod.Invoke(null, new object[] { filteredQueryable });
         }
 
-        public static Entity FirstNotTrackedFromLambda(this DbContext context, LambdaExpression lambda)
+        public static Entity FirstNotTrackedFromLambda(this DbContext context, LambdaExpression lambda) // TODO: make async
         {
             var type = lambda.Parameters.First().Type;
 

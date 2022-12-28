@@ -1,4 +1,4 @@
 - ShortName: default_creds
   Subject: Service
-  Filter: Service["vuln-default-creds"] == "true"
+  Filter: Tags["vuln-default-creds"] == "true"
   Topic: misconfigs

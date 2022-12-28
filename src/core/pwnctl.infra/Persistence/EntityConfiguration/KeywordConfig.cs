@@ -16,9 +16,7 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
             builder.HasIndex(nameof(Keyword.Word)).IsUnique();
 
             builder.HasOne(e => e.Domain)
-                .WithMany()
-                .HasForeignKey(e => e.DomainId);
-
+                .WithOne();
         }
     }
 }

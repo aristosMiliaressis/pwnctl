@@ -11,7 +11,7 @@ namespace pwnctl.domain.Entities
         public string IP { get; init; }
         public AddressFamily Version { get; init; }
 
-        public List<DNSRecord> AARecords { get; private init; } = new List<DNSRecord>();
+        public List<DNSRecord> AARecords { get; internal set; } = new List<DNSRecord>();
 
         public Host() {}
 
@@ -21,10 +21,9 @@ namespace pwnctl.domain.Entities
             Version = address.AddressFamily;
         }
 
-        public static bool TryParse(string assetText, out Asset mainAsset, out Asset[] relatedAssets)
+        public static bool TryParse(string assetText, out Asset asset)
         {
-            mainAsset = null;
-            relatedAssets = null;
+            asset = null;
 
             assetText = assetText.StartsWith("[") && assetText.EndsWith("]")
                     ? assetText.Substring(1, assetText.Length-2)
@@ -36,7 +35,7 @@ namespace pwnctl.domain.Entities
             if (IPAddress.TryParse(assetText, out IPAddress address))
             {
                 var host = new Host(address);
-                mainAsset = host;
+                asset = host;
                 return true;
             }
 

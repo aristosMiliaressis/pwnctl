@@ -1,13 +1,14 @@
 namespace pwnctl.dto.Assets.ViewModels;
 
-using pwnctl.domain.Entities;
+using pwnctl.app.Assets.Aggregates;
+using pwnctl.app.Assets.DTO;
 
 public sealed class NetRangeListViewModel
 {
-    public List<NetRange> NetRanges { get; init; }
+    public IEnumerable<AssetDTO> NetRanges { get; init; }
 
-    public NetRangeListViewModel(List<NetRange> netRanges)
+    public NetRangeListViewModel(List<AssetRecord> netRanges)
     {
-        NetRanges = netRanges;
+        NetRanges = netRanges.Select(e => e.ToDTO());
     }
 }

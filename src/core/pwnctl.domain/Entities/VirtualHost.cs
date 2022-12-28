@@ -16,7 +16,7 @@ namespace pwnctl.domain.Entities
             Name = name;
         }
 
-        public static bool TryParse(string assetText, out Asset mainAsset, out Asset[] relatedAssets)
+        public static bool TryParse(string assetText, out Asset asset)
         {
             throw new NotImplementedException();
         }

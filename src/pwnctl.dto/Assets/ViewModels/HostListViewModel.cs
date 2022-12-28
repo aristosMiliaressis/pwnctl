@@ -1,13 +1,14 @@
 namespace pwnctl.dto.Assets.ViewModels;
 
-using pwnctl.domain.Entities;
+using pwnctl.app.Assets.Aggregates;
+using pwnctl.app.Assets.DTO;
 
 public sealed class HostListViewModel
 {
-    public List<Host> Hosts { get; init; }
+    public IEnumerable<AssetDTO> Hosts { get; init; }
 
-    public HostListViewModel(List<Host> hosts)
+    public HostListViewModel(List<AssetRecord> hosts)
     {
-        Hosts = hosts;
+        Hosts = hosts.Select(e => e.ToDTO());
     }
 }

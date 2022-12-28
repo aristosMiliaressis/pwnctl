@@ -16,7 +16,7 @@
   IsActive: true
   Aggressiveness: 5
   Subject: Endpoint
-  Filter: Endpoint.Path == "/" && Endpoint["Protocol"] == "IIS"
+  Filter: Endpoint.Path == "/" && Tags["Protocol"] == "IIS"
 
 - ShortName: subfinder
   CommandTemplate: subfinder {{Name}}
@@ -35,7 +35,7 @@
   IsActive: true
   Aggressiveness: 3
   Subject: Endpoint
-  Filter: Endpoint["Content-Type"].Contains("/html")
+  Filter: Tags["Content-Type"].Contains("/html")
 
 - ShortName: sqlmap
   CommandTemplate: sqlmap {{Url}}

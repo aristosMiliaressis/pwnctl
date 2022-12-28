@@ -21,15 +21,22 @@ namespace pwnctl.domain.Entities
             NetPrefixBits = netPrefix;
         }
 
-        public static bool TryParse(string assetText, out Asset mainAsset, out Asset[] relatedAssets)
+        public static bool TryParse(string assetText, out Asset asset)
         {
-            var firstAddress = IPAddress.Parse(assetText.Split("/")[0]);
-            var netPrefixBits = ushort.Parse(assetText.Split("/")[1]);
-            var netRange = new NetRange(firstAddress, netPrefixBits);
+            try
+            {
+                var firstAddress = IPAddress.Parse(assetText.Split("/")[0]);
+                var netPrefixBits = ushort.Parse(assetText.Split("/")[1]);
+                var netRange = new NetRange(firstAddress, netPrefixBits);
 
-            relatedAssets = null;
-            mainAsset = netRange;
-            return true;
+                asset = netRange;
+                return true;
+            }
+            catch
+            {
+                asset = null;
+                return false;
+            }
         }
 
         public static bool RoutesTo(string ipAddress, string cidr)

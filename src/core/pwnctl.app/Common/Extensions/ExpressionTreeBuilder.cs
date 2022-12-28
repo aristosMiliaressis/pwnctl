@@ -3,7 +3,7 @@ using pwnctl.domain.BaseClasses;
 using pwnctl.app.Tasks.Entities;
 using System.Reflection;
 using System.Linq.Expressions;
-using pwnctl.domain.Entities;
+using pwnctl.app.Tagging.Entities;
 
 namespace pwnctl.app.Common.Extensions
 {
@@ -43,15 +43,15 @@ namespace pwnctl.app.Common.Extensions
         /// </summary>
         public static LambdaExpression BuildTaskMatchingLambda(Asset asset, TaskDefinition definition)
         {
-            var type = typeof(TaskRecord);
+            var type = typeof(TaskEntry);
 
             var _param = Expression.Parameter(type, "t");
 
-            var lref = Expression.PropertyOrField(_param, nameof(TaskRecord.DefinitionId));
+            var lref = Expression.PropertyOrField(_param, nameof(TaskEntry.DefinitionId));
             var rval = Expression.Constant(definition.Id);
             var expression = Expression.Equal(lref, rval);
 
-            lref = Expression.PropertyOrField(_param, asset.GetType().Name + "Id");
+            lref = Expression.PropertyOrField(_param, nameof(Tag.RecordId));
             rval = Expression.Constant(asset.Id);
             var assetExpression = Expression.Equal(lref, rval);
 
@@ -76,7 +76,7 @@ namespace pwnctl.app.Common.Extensions
             var rval = Expression.Constant(tag.Name);
             var expression = Expression.Equal(lref, rval);
 
-            lref = Expression.PropertyOrField(_param, asset.GetType().Name + "Id");
+            lref = Expression.PropertyOrField(_param, nameof(Tag.RecordId));
             rval = Expression.Constant(asset.Id);
             var assetExpression = Expression.Equal(lref, rval);
 

@@ -8,11 +8,13 @@ using pwnctl.app.Tasks.Entities;
 using pwnctl.app.Scope.Entities;
 using pwnctl.app.Notifications.Entities;
 using pwnctl.domain.Entities;
+using pwnctl.app.Tagging.Entities;
+using pwnctl.app.Assets.Aggregates;
 
 namespace pwnctl.infra.Persistence
 {
     public sealed class PwnctlDbContext : DbContext
-    {     
+    {
         public static readonly ILoggerFactory _loggerFactory = LoggerFactory.Create(builder =>
         {
             builder.AddDebug();
@@ -30,8 +32,9 @@ namespace pwnctl.infra.Persistence
         public DbSet<Program> Programs { get; set; }
         public DbSet<ScopeDefinition> ScopeDefinitions { get; set; }
         public DbSet<OperationalPolicy> OperationalPolicies { get; set; }
-        public DbSet<TaskRecord> TaskRecords { get; set; }
+        public DbSet<TaskEntry> TaskEntries { get; set; }
         public DbSet<TaskDefinition> TaskDefinitions { get; set; }
+        public DbSet<AssetRecord> AssetRecords { get; set; }
         public DbSet<Domain> Domains { get; set; }
         public DbSet<NetRange> NetRanges { get; set; }
         public DbSet<Host> Hosts { get; set; }

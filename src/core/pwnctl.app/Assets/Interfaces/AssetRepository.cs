@@ -1,4 +1,5 @@
 using pwnctl.app.Assets.Aggregates;
+using pwnctl.app.Tagging.Entities;
 using pwnctl.app.Tasks.Entities;
 using pwnctl.domain.BaseClasses;
 
@@ -6,9 +7,18 @@ namespace pwnctl.app.Assets.Interfaces
 {
     public interface AssetRepository
     {
-        Task<AssetRecord> GetAssetRecord(Asset asset);
-        TaskRecord FindTaskRecord(Asset asset, TaskDefinition def);
+        Task<AssetRecord> FindRecordAsync(Asset asset);
+        Tag FindTag(Asset asset, Tag tag);
+        TaskEntry FindTaskEntry(Asset asset, TaskDefinition def);
+        Task<AssetRecord> MergeCurrentRecordWithDBRecord(AssetRecord record, Asset asset);
         Task SaveAsync(AssetRecord asset);
-        Task SaveAsync(Asset asset);
+
+        Task<List<AssetRecord>> ListHostsAsync();
+        Task<List<AssetRecord>> ListEndpointsAsync();
+        Task<List<AssetRecord>> ListServicesAsync();
+        Task<List<AssetRecord>> ListNetRangesAsync();
+        Task<List<AssetRecord>> ListDomainsAsync();
+        Task<List<AssetRecord>> ListDNSRecordsAsync();
+        Task<List<AssetRecord>> ListEmailsAsync();
     }
 }

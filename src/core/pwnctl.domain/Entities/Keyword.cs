@@ -19,6 +19,11 @@ namespace pwnctl.domain.Entities
             Word = word;
         }
 
+        public static bool TryParse(string assetText, out Asset asset)
+        {
+            throw new NotImplementedException();
+        }
+
         public override string ToString()
         {
             return Word;

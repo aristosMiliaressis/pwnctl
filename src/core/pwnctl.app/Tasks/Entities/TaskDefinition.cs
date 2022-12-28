@@ -1,5 +1,5 @@
+using pwnctl.app.Assets.Aggregates;
 using pwnctl.app.Common.Interfaces;
-using pwnctl.domain.BaseClasses;
 using pwnctl.domain.ValueObjects;
 using pwnctl.kernel.BaseClasses;
 
@@ -18,15 +18,15 @@ namespace pwnctl.app.Tasks.Entities
 
         public TaskDefinition() {}
 
-        public bool Matches(Asset asset)
+        public bool Matches(AssetRecord record)
         {
-            if (SubjectClass.Class != asset.GetType().Name)
+            if (SubjectClass.Class != record.Asset.GetType().Name)
                 return false;
 
             if (string.IsNullOrEmpty(Filter))
                 return true;
 
-            return FilterEvaluator.Instance.Evaluate(Filter, asset);
+            return FilterEvaluator.Instance.Evaluate(Filter, record);
         }
 
         // Extrapolate list of parameter names from CommandTemplate

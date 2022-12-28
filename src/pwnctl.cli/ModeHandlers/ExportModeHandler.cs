@@ -1,15 +1,14 @@
 using System;
 using System.IO;
-using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
 using pwnctl.domain.BaseClasses;
 using pwnctl.app.Assets.Aggregates;
 using pwnctl.app.Common.Interfaces;
 using pwnctl.dto.Assets.Queries;
 using pwnctl.cli.Interfaces;
 using pwnctl.dto.Db.Commands;
+using pwnctl.app.Assets.DTO;
 
 namespace pwnctl.cli.ModeHandlers
 {
@@ -68,7 +67,7 @@ namespace pwnctl.cli.ModeHandlers
 
             var results = await client.Send(new RunSqlQueryCommand 
             { 
-                Query = "SELECT \"TaskRecords\".\"Id\",\"ExitCode\",\"State\",\"QueuedAt\",\"StartedAt\",\"FinishedAt\",\"Discriminator\",\"ShortName\" FROM \"TaskRecords\" JOIN \"TaskDefinitions\" ON \"TaskRecords\".\"DefinitionId\" = \"TaskDefinitions\".\"Id\";"
+                Query = "SELECT \"TaskEntries\".\"Id\",\"ExitCode\",\"State\",\"QueuedAt\",\"StartedAt\",\"FinishedAt\",\"Discriminator\",\"ShortName\" FROM \"TaskEntries\" JOIN \"TaskDefinitions\" ON \"TaskEntries\".\"DefinitionId\" = \"TaskDefinitions\".\"Id\";"
             });
 
             foreach (var row in results)
@@ -77,12 +76,11 @@ namespace pwnctl.cli.ModeHandlers
             }
         }
         
-        private void WriteToFile(string filename, IEnumerable<Asset> assets)
+        private void WriteToFile(string filename, IEnumerable<AssetDTO> assets)
         {
             foreach (var asset in assets)
             {
-                var dto = new AssetRecord(asset).ToDTO();
-                File.AppendAllText(filename, Serializer.Instance.Serialize(dto) + "\n");
+                File.AppendAllText(filename, Serializer.Instance.Serialize(asset) + "\n");
             }
         }
 

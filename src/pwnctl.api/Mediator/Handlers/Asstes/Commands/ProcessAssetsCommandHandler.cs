@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using pwnctl.infra.Logging;
 using pwnctl.app.Tasks.Enums;
 using pwnctl.app.Tasks.DTO;
+using pwnctl.infra.Persistence.Extensions;
 
 namespace pwnctl.api.Mediator.Handlers.Assets.Commands
 {
@@ -19,13 +20,7 @@ namespace pwnctl.api.Mediator.Handlers.Assets.Commands
         {
             var context = new PwnctlDbContext();
 
-            // swapping the TaskQueueService with a mock that does not queue 
-            // anywhere & leaves TakRecords in a PENDING state inorder to 
-            // return the tasks to the client for queueing, that way we 
-            // eliminate the need for a VpcEndpoint to access the SQS API
-            var queueService = new MockTaskQueueService();
-
-            var processor = AssetProcessorFactory.Create(queueService);
+            var processor = AssetProcessorFactory.Create();
 
             foreach (var asset in command.Assets)
             {
@@ -39,16 +34,10 @@ namespace pwnctl.api.Mediator.Handlers.Assets.Commands
                 }            
             }
 
-            var pendingTasks = await context.TaskRecords
-                    .Include(r => r.Definition)
-                    .Include(r => r.Domain)
-                    .Include(r => r.Host)
-                    .Include(r => r.NetRange)
-                    .Include(r => r.DNSRecord)
-                    .Include(r => r.Endpoint)
-                    .Include(r => r.Service)
-                    .Include(r => r.Keyword)
-                    .Include(r => r.CloudService)
+            //leaves TakRecords in a PENDING state inorder to 
+            // return the tasks to the client for queueing, that way we 
+            // eliminate the need for a VpcEndpoint to access the SQS API
+            var pendingTasks = await context.JoinedTaskRecordQueryable()
                     .Where(r => r.State == TaskState.PENDING)
                     .ToListAsync(cancellationToken);
 

@@ -23,15 +23,12 @@ namespace pwnctl.infra.Repositories
             if (_publicSuffixes == null)
             {
                 _publicSuffixes = File.ReadLines(_publicSuffixDataFile)
-                    .Select(suffix => 
-                    {
-                        try
-                        {
+                    .Select(suffix => {
+                        try {
                             return PublicSuffix.Create(suffix);
                         } catch {
                             return null;
-                        }
-                    })
+                        }})
                     .Where(s => s != null)
                     .Distinct()
                     .ToList();

@@ -1,13 +1,14 @@
 namespace pwnctl.dto.Assets.ViewModels;
 
-using pwnctl.domain.Entities;
+using pwnctl.app.Assets.Aggregates;
+using pwnctl.app.Assets.DTO;
 
 public sealed class ServiceListViewModel
 {
-    public List<Service> Services { get; init; }
+    public IEnumerable<AssetDTO> Services { get; init; }
 
-    public ServiceListViewModel(List<Service> services)
+    public ServiceListViewModel(List<AssetRecord> services)
     {
-        Services = services;
+        Services = services.Select(e => e.ToDTO());
     }
 }

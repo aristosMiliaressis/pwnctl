@@ -1,13 +1,14 @@
 namespace pwnctl.dto.Assets.ViewModels;
 
-using pwnctl.domain.Entities;
+using pwnctl.app.Assets.Aggregates;
+using pwnctl.app.Assets.DTO;
 
 public sealed class DnsRecordListViewModel
 {
-    public List<DNSRecord> DNSRecords { get; init; }
+    public IEnumerable<AssetDTO> DNSRecords { get; init; }
 
-    public DnsRecordListViewModel(List<DNSRecord> dnsRecords)
+    public DnsRecordListViewModel(List<AssetRecord> dnsRecords)
     {
-        DNSRecords = dnsRecords;
+        DNSRecords = dnsRecords.Select(e => e.ToDTO());
     }
 }

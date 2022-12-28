@@ -10,12 +10,11 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Queries
 {
     public sealed class ListEndpointsQueryHandler : IRequestHandler<ListEndpointsQuery, MediatedResponse<EndpointListViewModel>>
     {
-        private readonly PwnctlDbContext _context = new PwnctlDbContext();
-
         public async Task<MediatedResponse<EndpointListViewModel>> Handle(ListEndpointsQuery command, CancellationToken cancellationToken)
         {
-            AssetDbRepository repository = new();
-
+            PwnctlDbContext context = new();
+            AssetDbRepository repository = new(context);
+            
             var endpoints = await repository.ListEndpointsAsync();
 
             return MediatedResponse<EndpointListViewModel>.Success(new EndpointListViewModel(endpoints));

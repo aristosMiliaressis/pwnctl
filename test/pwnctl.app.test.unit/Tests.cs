@@ -1,18 +1,20 @@
 namespace pwnctl.app.test.unit;
 
+using pwnctl.domain.BaseClasses;
+using pwnctl.domain.Entities;
+using pwnctl.domain.Enums;
+using pwnctl.domain.Services;
+using pwnctl.app.Assets;
+using pwnctl.app.Assets.Aggregates;
+using pwnctl.app.Assets.DTO;
+using pwnctl.app.Common.Interfaces;
 using pwnctl.infra;
 using pwnctl.infra.Persistence;
 using pwnctl.infra.Persistence.Extensions;
 using pwnctl.infra.Repositories;
-using pwnctl.domain.Entities;
-using pwnctl.domain.BaseClasses;
-using Microsoft.EntityFrameworkCore;
-using pwnctl.domain.Enums;
+
 using System.Net;
-using pwnctl.app.Assets;
-using pwnctl.app.Common.Interfaces;
-using pwnctl.app.Assets.DTO;
-using pwnctl.domain.Services;
+using Microsoft.EntityFrameworkCore;
 
 public sealed class Tests
 {
@@ -28,142 +30,126 @@ public sealed class Tests
     [Fact]
     public void AssetParser_Tests()
     {
-        Asset[] assets = AssetParser.Parse("example.com", out Type[] assetTypes);
-        Assert.Contains(assetTypes, t => t == typeof(Domain));
-        Assert.Contains(assets, t => t.GetType() == typeof(Domain));
-        Assert.Contains(assetTypes, t => t == typeof(Keyword));
-        Assert.Contains(assets, t => t.GetType() == typeof(Keyword));
-        Assert.Equal(2, assets.Count());
-        Assert.Equal(2, assetTypes.Count());
+        Asset asset = AssetParser.Parse("example.com");
+        Assert.IsType<Domain>(asset);
+        Assert.NotNull(((Domain)asset).Keyword);
 
-        assets = AssetParser.Parse("1.3.3.7", out assetTypes);
-        Assert.Contains(assetTypes, t => t == typeof(Host));
-        Assert.Contains(assets, t => t.GetType() == typeof(Host));
-        Assert.Single(assets);
-        Assert.Single(assetTypes);
+        // parent domain parsing test
+        asset = AssetParser.Parse("multi.level.sub.example.com");
+        Assert.IsType<Domain>(asset);
 
-        assets = AssetParser.Parse("76.24.104.208:65533", out assetTypes);
-        Assert.Contains(assetTypes, t => t == typeof(Host));
-        Assert.Contains(assets, t => t.GetType() == typeof(Host));
-        Assert.Contains(assets, t => t.GetType() == typeof(Service));
-        Assert.Contains(assetTypes, t => t == typeof(Service));
-        Assert.Equal(2, assets.Length);
-        Assert.Equal(2, assetTypes.Length);
+        var domain = (Domain)asset;
+        Assert.Equal("multi.level.sub.example.com", domain.Name);
+        Assert.Equal("level.sub.example.com", domain.ParentDomain.Name);
+        Assert.Equal("sub.example.com", domain.ParentDomain.ParentDomain.Name);
+        Assert.Equal("example.com", domain.ParentDomain.ParentDomain.ParentDomain.Name);
+        Assert.Equal("example", domain.Keyword.Word);
 
-        assets = AssetParser.Parse("76.24.104.208:U161", out assetTypes);
-        Assert.Contains(assetTypes, t => t == typeof(Host));
-        Assert.Contains(assets, t => t.GetType() == typeof(Host));
-        Assert.Contains(assets, t => t.GetType() == typeof(Service));
-        Assert.Contains(assetTypes, t => t == typeof(Service));
-        Assert.Equal(2, assets.Length);
-        Assert.Equal(2, assetTypes.Length);
+        // fqdn parsing test
+        asset = AssetParser.Parse("fqdn.example.com.");
+        Assert.IsType<Domain>(asset);
 
-        assets = AssetParser.Parse("172.16.17.0/24", out assetTypes);
-        Assert.Contains(assetTypes, t => t == typeof(NetRange));
-        Assert.Contains(assets, t => t.GetType() == typeof(NetRange));
-        Assert.Single(assets);
-        Assert.Single(assetTypes);
+        domain = (Domain)asset;
+        Assert.Equal("fqdn.example.com", domain.Name);
+        Assert.Equal("example.com", domain.ParentDomain.Name);
+        Assert.Equal("example", domain.Keyword.Word);
 
-        assets = AssetParser.Parse("xyz.example.com", out assetTypes);
-        Assert.Contains(assetTypes, t => t == typeof(Domain));
-        Assert.Contains(assets, t => t.GetType() == typeof(Domain));
-        Assert.Equal(3, assets.Length);
-        Assert.Equal(3, assetTypes.Length);
+        // host
+        asset = AssetParser.Parse("1.3.3.7");
+        Assert.IsType<Host>(asset);
 
-        assets = AssetParser.Parse("xyz.example.com IN A 31.3.3.7", out assetTypes);
-        Assert.Contains(assetTypes, t => t == typeof(DNSRecord));
-        Assert.Contains(assets, t => t.GetType() == typeof(DNSRecord));
-        Assert.Contains(assetTypes, t => t == typeof(Domain));
-        Assert.Contains(assets, t => t.GetType() == typeof(Domain));
-        Assert.Contains(assetTypes, t => t == typeof(Host));
-        Assert.Contains(assets, t => t.GetType() == typeof(Host));
+        //ipv6 parsing
+        asset = AssetParser.Parse("FD00:DEAD:BEEF:64:35::2");
+        Assert.IsType<Host>(asset);
 
-        assets = AssetParser.Parse("https://xyz.example.com:8443/api/token", out assetTypes);
-        Assert.Contains(assetTypes, t => t == typeof(Endpoint));
-        Assert.Contains(assets, t => t.GetType() == typeof(Endpoint));
-        Assert.Contains(assetTypes, t => t == typeof(Domain));
-        Assert.Contains(assets, t => t.GetType() == typeof(Domain));
-        Assert.Contains(assetTypes, t => t == typeof(Service));
-        Assert.Contains(assets, t => t.GetType() == typeof(Service));
+        // service
+        asset = AssetParser.Parse("76.24.104.208:65533");
+        Assert.IsType<Service>(asset);
+        Assert.NotNull(((Service)asset).Host);
 
-        // subdirectory parsing test
-        Assert.Contains(assets, t => t.GetType() == typeof(Endpoint) && ((Endpoint)t).Url == "https://xyz.example.com:8443/api/");
+        // ipv6 parsing 
+        asset = AssetParser.Parse("[FD00:DEAD:BEEF:64:35::2]:163");
+        Assert.IsType<Service>(asset);
+        Assert.NotNull(((Service)asset).Host);
 
-        assets = AssetParser.Parse("https://xyz.example.com:8443/api/token?_u=xxx", out assetTypes);
-        Assert.Contains(assetTypes, t => t == typeof(Endpoint));
-        Assert.Contains(assets, t => t.GetType() == typeof(Endpoint));
+        // transport protocol parsing test
+        asset = AssetParser.Parse("76.24.104.208:U161");
+        Assert.IsType<Service>(asset);
+        Assert.NotNull(((Service)asset).Host);
+        Assert.Equal(TransportProtocol.UDP, ((Service)asset).TransportProtocol);
+        Assert.Equal(161, ((Service)asset).Port);
 
-        assets = AssetParser.Parse("multi.level.sub.example.com", out assetTypes);
-        Assert.Contains(assets, t => ((Domain)t).Name == "example.com");
-        Assert.Contains(assets, t => ((Domain)t).Name == "sub.example.com");
-        Assert.Contains(assets, t => ((Domain)t).Name == "level.sub.example.com");
-        Assert.Contains(assets, t => ((Domain)t).Name == "multi.level.sub.example.com");
+        // netrange
+        asset = AssetParser.Parse("172.16.17.0/24");
+        Assert.IsType<NetRange>(asset);
 
-        assets = AssetParser.Parse("fqdn.example.com.", out assetTypes);
-        Assert.Contains(assets, t => ((Domain)t).Name == "example.com");
-        Assert.Contains(assets, t => ((Domain)t).Name == "fqdn.example.com");
+        // ipv6 parsing
+        asset = AssetParser.Parse("2001:db8::/48");
+        Assert.IsType<NetRange>(asset);
 
-        assets = AssetParser.Parse("no-reply@tesla.com", out assetTypes);
-        Assert.Contains(assetTypes, t => t == typeof(Email));
-        Assert.Contains(assets, t => t.GetType() == typeof(Email));
-        Assert.Contains(assetTypes, t => t == typeof(Domain));
-        Assert.Contains(assets, t => t.GetType() == typeof(Domain));
+        // dns record
+        asset = AssetParser.Parse("xyz.example.com IN A 31.3.3.7");
+        Assert.IsType<DNSRecord>(asset);
+        Assert.NotNull(((DNSRecord)asset).Domain);
+        Assert.NotNull(((DNSRecord)asset).Host);
 
-        assets = AssetParser.Parse("mailto:test@tesla.com", out assetTypes);
-        Assert.Contains(assetTypes, t => t == typeof(Email));
-        Assert.Contains(assets, t => t.GetType() == typeof(Email));
-        Assert.Contains(assetTypes, t => t == typeof(Domain));
-        Assert.Contains(assets, t => t.GetType() == typeof(Domain));
-
-        assets = AssetParser.Parse("maito:test@tesla.com", out assetTypes);
-        Assert.Contains(assetTypes, t => t == typeof(Email));
-        Assert.Contains(assets, t => t.GetType() == typeof(Email));
-        Assert.Contains(assetTypes, t => t == typeof(Domain));
-        Assert.Contains(assets, t => t.GetType() == typeof(Domain));
-
-        assets = AssetParser.Parse("no-reply@whatever.com", out assetTypes);
-        Assert.Contains(assetTypes, t => t == typeof(Email));
-        Assert.Contains(assets, t => t.GetType() == typeof(Email));
-        Assert.Contains(assetTypes, t => t == typeof(Domain));
-        Assert.Contains(assets, t => t.GetType() == typeof(Domain));
-
-        assets = AssetParser.Parse("{\"asset\":\"https://whatever.tesla.com/.git\",\"tags\":{\"status\":403,\"location\":\"\",\"FoundBy\":\"dir_brute_common\"}}", out assetTypes);
-        Assert.Contains(assetTypes, t => t == typeof(Endpoint));
-        Assert.Contains(assetTypes, t => t == typeof(Service));
-        Assert.Contains(assets, t => t.GetType() == typeof(Service));
-        Assert.Contains(assetTypes, t => t == typeof(Domain));
-        Assert.Contains(assets, t => t.GetType() == typeof(Domain));
-        var asset = assets.First(a => a is Endpoint);
-        Assert.Contains(asset.Tags, t => t.Name == "status" && t.Value == "403");
-        Assert.True(assets.All(a => a.FoundBy == "dir_brute_common"));
-
+        // spf record parsing
         var spfRecord = "tesla.com IN TXT \"v = spf1 ip4:2.2.2.2 ipv4: 3.3.3.3 ipv6:FD00:DEAD:BEEF:64:34::2 include: spf.protection.outlook.com include:servers.mcsv.net - all\"";
-        assets = AssetParser.Parse(spfRecord, out assetTypes);
-        Assert.Equal(4, assets.Count());
-        Assert.Contains(assetTypes, t => t == typeof(Domain));
-        Assert.Contains(assetTypes, t => t == typeof(DNSRecord));
-        Assert.Contains(assetTypes, t => t == typeof(Host));
+        asset = AssetParser.Parse(spfRecord);
+        Assert.IsType<DNSRecord>(asset);
+        Assert.Equal(3, ((DNSRecord)asset).SPFHosts.Count());
+        Assert.NotNull(((DNSRecord)asset).Domain);
 
-        assets = AssetParser.Parse("FD00:DEAD:BEEF:64:35::2", out assetTypes);
-        Assert.Contains(assetTypes, t => t == typeof(Host));
-        Assert.NotEmpty(assets);
+        //endpoint
+        // subdirectory parsing test
+        asset = AssetParser.Parse("https://xyz.example.com:8443/api/token");
+        Assert.IsType<Endpoint>(asset);
+        Assert.NotNull(((Endpoint)asset).Service);
+        Assert.NotNull(((Endpoint)asset).ParentEndpoint);
 
-        assets = AssetParser.Parse("2001:db8::/48", out assetTypes);
-        Assert.Contains(assetTypes, t => t == typeof(NetRange));
+        // parameter
+        asset = AssetParser.Parse("https://xyz.example.com:8443/api/token?_u=xxx");
+        Assert.IsType<Endpoint>(asset);
+        Assert.NotEmpty(((Endpoint)asset).Parameters);
 
-        assets = AssetParser.Parse("[FD00:DEAD:BEEF:64:35::2]:163", out assetTypes);
-        Assert.Contains(assetTypes, t => t == typeof(Service));
-        Assert.Contains(assetTypes, t => t == typeof(Host));
+        // ipv6 parsing 
+        asset = AssetParser.Parse("http://[FD00:DEAD:BEEF:64:35::2]:80/ipv6test");
+        Assert.IsType<Endpoint>(asset);
+        Assert.NotNull(((Endpoint)asset).Service);
 
-        assets = AssetParser.Parse("http://[FD00:DEAD:BEEF:64:35::2]:80/ipv6test", out assetTypes);
-        Assert.Contains(assetTypes, t => t == typeof(Endpoint));
-        Assert.Contains(assetTypes, t => t == typeof(Service));
-        Assert.Contains(assetTypes, t => t == typeof(Host));
+        // email
+        asset = AssetParser.Parse("no-reply@tesla.com");
+        Assert.IsType<Email>(asset);
+        Assert.NotNull(((Email)asset).Domain);
+
+        // mailto: parsing test
+        asset = AssetParser.Parse("mailto:test@tesla.com");
+        Assert.IsType<Email>(asset);
+        Assert.NotNull(((Email)asset).Domain);
+
+        // maito: parsing test
+        asset = AssetParser.Parse("maito:test@tesla.com");
+        Assert.IsType<Email>(asset);
+        Assert.NotNull(((Email)asset).Domain);
 
         //NetRagne.RouteTo(ipv4|ipv6)
         //Parameters/VirtualHosts/CloudServices
-        // SPF ipv6 parsing, spfv1 vs spfv2?
+        // spfv1 vs spfv2?
         // PTR records
+    }
+
+    [Fact]
+    public void PublicSuffixListService_Tests()
+    {
+        var exampleDomain = new Domain("xyz.example.com");
+
+        Assert.Equal("example.com", exampleDomain.GetRegistrationDomain());
+        Assert.Equal("com", PublicSuffixListService.Instance.GetPublicSuffix(exampleDomain.Name).Suffix);
+
+        var exampleSubDomain = new Domain("sub.example.azurewebsites.net");
+
+        Assert.Equal("example.azurewebsites.net", exampleSubDomain.GetRegistrationDomain());
+        Assert.Equal("azurewebsites.net", PublicSuffixListService.Instance.GetPublicSuffix(exampleSubDomain.Name).Suffix);
     }
 
     [Fact]
@@ -209,8 +195,81 @@ public sealed class Tests
         // test for inscope host from domain relationship
         var processor = AssetProcessorFactory.Create();
         await processor.ProcessAsync("xyz.tesla.com IN A 1.3.3.7");
-        var host = context.Hosts.First(h => h.IP == "1.3.3.7");
-        Assert.True(host.InScope);
+        var record = context.AssetRecords.Include(r => r.Host).First(r => r.Host.IP == "1.3.3.7");
+        Assert.True(record.InScope);
+    }
+
+    [Fact]
+    public async Task AssetRepository_Tests()
+    {
+        PwnctlDbContext context = new();
+        AssetDbRepository repository = new(context);
+
+        var inScopeDomain = new Domain("tesla.com");
+        var outOfScope = new Domain("www.outofscope.com");
+
+        Assert.Null(context.FindAsset(inScopeDomain));
+        await repository.SaveAsync(new AssetRecord(inScopeDomain));
+        Assert.NotNull(context.FindAsset(inScopeDomain));
+        inScopeDomain = context.Domains.First(d => d.Name == "tesla.com");
+        await repository.SaveAsync(new AssetRecord(outOfScope));
+        outOfScope = context.Domains.First(d => d.Name == "www.outofscope.com");
+
+        var record1 = new DNSRecord(DnsRecordType.A, "hackerone.com", "1.3.3.7");
+        var record2 = new DNSRecord(DnsRecordType.AAAA, "hackerone.com", "dead:beef::::");
+
+        Assert.Null(context.FindAsset(record1));
+        Assert.Null(context.FindAsset(record2));
+        await repository.SaveAsync(new AssetRecord(record1));
+        Assert.NotNull(context.FindAsset(record1));
+        Assert.Null(context.FindAsset(record2));
+        await repository.SaveAsync(new AssetRecord(record2));
+        Assert.NotNull(context.FindAsset(record2));
+
+        var netRange = new NetRange(System.Net.IPAddress.Parse("10.1.101.0"), 24);
+        Assert.Null(context.FindAsset(netRange));
+        await repository.SaveAsync(new AssetRecord(netRange));
+        Assert.NotNull(context.FindAsset(netRange));
+
+        var service = new Service(inScopeDomain, 443);
+        Assert.Null(context.FindAsset(service));
+        await repository.SaveAsync(new AssetRecord(service));
+        Assert.NotNull(context.FindAsset(service));
+    }
+
+    [Fact]
+    public async Task AssetProcessor_Tests()
+    {
+        var processor = AssetProcessorFactory.Create();
+        PwnctlDbContext context = new();
+
+        var programs = context.ListPrograms();
+
+        await processor.ProcessAsync("tesla.com");
+
+        var record = context.AssetRecords.Include(r => r.Domain).First(r => r.Domain.Name == "tesla.com");
+        Assert.True(record.InScope);
+
+        record = context.AssetRecords.Include(r => r.Keyword).First(d => d.Keyword.Word == "tesla");
+        Assert.True(record.InScope);
+        var cloudEnumTask = context.JoinedTaskRecordQueryable().First(t => t.Definition.ShortName == "cloud_enum");
+        Assert.Equal("cloud-enum.sh tesla", cloudEnumTask.Command);
+
+        await processor.ProcessAsync("tesla.com IN A 31.3.3.7");
+
+        record = context.AssetRecords.Include(r => r.DNSRecord).First(r => r.DNSRecord.Key == "tesla.com" && r.DNSRecord.Value == "31.3.3.7");
+        Assert.True(record.InScope);
+
+        record = context.AssetRecords.Include(r => r.Host).ThenInclude(h => h.AARecords).First(r => r.Host.IP == "31.3.3.7");
+        Assert.True(record.InScope);
+        Assert.NotNull(record.Host.AARecords.First());
+        // Assert.True(record.Host.AARecords.First().InScope);
+        // Assert.True(record.Host.AARecords.First().Domain.InScope);
+        Assert.NotNull(programs.FirstOrDefault(program => program.Scope.Any(scope => scope.Matches(record.Host))));
+
+        await processor.ProcessAsync("85.25.105.204:65530");
+        record.Host = context.Hosts.First(h => h.IP == "85.25.105.204");
+        var service = context.Services.First(srv => srv.Origin == "tcp://85.25.105.204:65530");
     }
 
     [Fact]
@@ -260,7 +319,7 @@ public sealed class Tests
         // multiple interpolation test
         await processor.ProcessAsync("sub.tesla.com");
         var resolutionTask = context.JoinedTaskRecordQueryable()
-                                    .First(t => t.Domain.Name == "sub.tesla.com" 
+                                    .First(t => t.Record.Domain.Name == "sub.tesla.com" 
                                              && t.Definition.ShortName == "domain_resolution");
         Assert.Equal("dig +short sub.tesla.com | awk '{print \"sub.tesla.com IN A \" $1}'| pwnctl process", resolutionTask.Command);
 
@@ -275,98 +334,11 @@ public sealed class Tests
     }
 
     [Fact]
-    public void PublicSuffixListService_Tests()
-    {
-        var exampleDomain = new Domain("xyz.example.com");
-
-        Assert.Equal("example.com", exampleDomain.GetRegistrationDomain());
-        Assert.Equal("com", PublicSuffixListService.Instance.GetPublicSuffix(exampleDomain.Name).Suffix);
-
-        var exampleSubDomain = new Domain("sub.example.azurewebsites.net");
-
-        Assert.Equal("example.azurewebsites.net", exampleSubDomain.GetRegistrationDomain());
-        Assert.Equal("azurewebsites.net", PublicSuffixListService.Instance.GetPublicSuffix(exampleSubDomain.Name).Suffix);
-    }
-
-    [Fact]
-    public async Task AssetRepository_Tests()
-    {
-        AssetDbRepository repository = new();
-        PwnctlDbContext context = new();
-
-        var inScopeDomain = new Domain("tesla.com");
-        var outOfScope = new Domain("www.outofscope.com");
-
-        Assert.Null(context.FindAsset(inScopeDomain));
-        await repository.SaveAsync(inScopeDomain);
-        Assert.NotNull(context.FindAsset(inScopeDomain));
-        inScopeDomain = context.Domains.First(d => d.Name == "tesla.com");
-        await repository.SaveAsync(outOfScope);
-        outOfScope = context.Domains.First(d => d.Name == "www.outofscope.com");
-
-        var record1 = new DNSRecord(DnsRecordType.A, "hackerone.com", "1.3.3.7");
-        var record2 = new DNSRecord(DnsRecordType.AAAA, "hackerone.com", "dead:beef::::");
-
-        Assert.Null(context.FindAsset(record1));
-        Assert.Null(context.FindAsset(record2));
-        await repository.SaveAsync(record1);
-        Assert.NotNull(context.FindAsset(record1));
-        Assert.Null(context.FindAsset(record2));
-        await repository.SaveAsync(record2);
-        Assert.NotNull(context.FindAsset(record2));
-
-        var netRange = new NetRange(System.Net.IPAddress.Parse("10.1.101.0"), 24);
-        Assert.Null(context.FindAsset(netRange));
-        await repository.SaveAsync(netRange);
-        Assert.NotNull(context.FindAsset(netRange));
-
-        var service = new Service(inScopeDomain, 443);
-        Assert.Null(context.FindAsset(service));
-        await repository.SaveAsync(service);
-        Assert.NotNull(context.FindAsset(service));
-    }
-
-    [Fact]
-    public async Task AssetProcessor_Tests()
-    {
-        var processor = AssetProcessorFactory.Create();
-        PwnctlDbContext context = new();
-
-        var programs = context.ListPrograms();
-
-        await processor.ProcessAsync("tesla.com");
-
-        var domain = context.Domains.First(d => d.Name == "tesla.com");
-        Assert.True(domain.InScope);
-
-        var keyword = context.Keywords.First(d => d.Word == "tesla");
-        Assert.True(keyword.InScope);
-        var cloudEnumTask = context.JoinedTaskRecordQueryable().First(t => t.Definition.ShortName == "cloud_enum");
-        Assert.Equal("cloud-enum.sh tesla", cloudEnumTask.Command);
-
-        await processor.ProcessAsync("tesla.com IN A 31.3.3.7");
-
-        var record = context.DNSRecords.First(r => r.Key == "tesla.com" && r.Value == "31.3.3.7");
-        Assert.True(record.InScope);
-
-        var host = context.Hosts.Include(h => h.AARecords).First(host => host.IP == "31.3.3.7");
-        Assert.True(host.InScope);
-        host.AARecords.Add(record);
-        Assert.NotNull(host.AARecords.First());
-        Assert.True(host.AARecords.First().InScope);
-        Assert.True(host.AARecords.First().Domain.InScope);
-        Assert.NotNull(programs.FirstOrDefault(program => program.Scope.Any(scope => scope.Matches(host))));
-
-        await processor.ProcessAsync("85.25.105.204:65530");
-        host = context.Hosts.First(h => h.IP == "85.25.105.204");
-        var service = context.Services.First(srv => srv.Origin == "tcp://85.25.105.204:65530");
-    }
-
-    [Fact]
     public async Task Tagging_Tests()
     {
         var processor = AssetProcessorFactory.Create();
         PwnctlDbContext context = new();
+        AssetDbRepository repository = new(context);
 
         var exampleUrl = new AssetDTO {
             Asset = "https://example.com",
@@ -377,18 +349,20 @@ public sealed class Tests
             }
         };
 
-        Asset[] assets = AssetParser.Parse(Serializer.Instance.Serialize(exampleUrl), out Type[] assetTypes);
         await processor.ProcessAsync(Serializer.Instance.Serialize(exampleUrl));
 
-        var endpoint = (Endpoint)assets.First(a => a.GetType() == typeof(Endpoint));
+        var endpointRecord = context.AssetRecords
+                                .Include(r => r.Tags)
+                                .Include(r => r.Endpoint)
+                                .First(r => r.Endpoint.Url == "https://example.com:443/");
 
-        var ctTag = endpoint.Tags.First(t => t.Name == "content-type");
+        var ctTag = endpointRecord.Tags.First(t => t.Name == "content-type");
         Assert.Equal("text/html", ctTag.Value);
 
-        var stTag = endpoint.Tags.First(t => t.Name == "status");
+        var stTag = endpointRecord.Tags.First(t => t.Name == "status");
         Assert.Equal("200", stTag.Value);
 
-        var srvTag = endpoint.Tags.First(t => t.Name == "server");
+        var srvTag = endpointRecord.Tags.First(t => t.Name == "server");
         Assert.Equal("IIS", srvTag.Value);
 
         exampleUrl.Tags = new Dictionary<string, object> {
@@ -399,20 +373,20 @@ public sealed class Tests
 
         await processor.ProcessAsync(Serializer.Instance.Serialize(exampleUrl));
 
-        endpoint = context.Endpoints.Include(e => e.Tags).Where(t => t.Url == "https://example.com:443/").First();
+        endpointRecord = (await repository.ListEndpointsAsync()).Where(t => ((Endpoint)t.Asset).Url == "https://example.com:443/").First();
 
-        srvTag = endpoint.Tags.First(t => t.Name == "server");
+        srvTag = endpointRecord.Tags.First(t => t.Name == "server");
         Assert.Equal("IIS", srvTag.Value);
 
-        var newTag = endpoint.Tags.First(t => t.Name == "newtag");
+        var newTag = endpointRecord.Tags.First(t => t.Name == "newtag");
         Assert.Equal("whatever", newTag.Value);
 
-        Assert.Null(endpoint.Tags.FirstOrDefault(t => t.Name == "emptytag"));
+        Assert.Null(endpointRecord.Tags.FirstOrDefault(t => t.Name == "emptytag"));
 
-        ctTag = endpoint.Tags.First(t => t.Name == "content-type");
+        ctTag = endpointRecord.Tags.First(t => t.Name == "content-type");
         Assert.Equal("text/html", ctTag.Value);
 
-        stTag = endpoint.Tags.First(t => t.Name == "status");
+        stTag = endpointRecord.Tags.First(t => t.Name == "status");
         Assert.Equal("200", stTag.Value);
 
         var teslaUrl = new
@@ -427,10 +401,10 @@ public sealed class Tests
 
         // process same asset twice and make sure tasks are only assigned once
         await processor.ProcessAsync(Serializer.Instance.Serialize(teslaUrl));
-        endpoint = (Endpoint) context.Endpoints.Include(e => e.Tags).Where(ep => ep.Url == "https://iis.tesla.com:443/").First();
-        var tasks = context.JoinedTaskRecordQueryable().Where(t => t.EndpointId == endpoint.Id).ToList();
+        endpointRecord = (await repository.ListEndpointsAsync()).Where(ep => ((Endpoint)ep.Asset).Url == "https://iis.tesla.com:443/").First();
+        var tasks = context.JoinedTaskRecordQueryable().Where(t => t.Record.Id == endpointRecord.Asset.Id).ToList();
         Assert.True(!tasks.GroupBy(t => t.DefinitionId).Any(g => g.Count() > 1));
-        srvTag = endpoint.Tags.First(t => t.Name == "protocol");
+        srvTag = endpointRecord.Tags.First(t => t.Name == "protocol");
         Assert.Equal("IIS", srvTag.Value);
         Assert.Contains(tasks, t => t.Definition.ShortName == "shortname_scanner");
 
@@ -446,8 +420,8 @@ public sealed class Tests
 
         // test Tag filter
         await processor.ProcessAsync(Serializer.Instance.Serialize(apacheTeslaUrl));
-        endpoint = context.Endpoints.Include(e => e.Tags).Where(ep => ep.Url == "https://apache.tesla.com:443/").First();
-        tasks = context.JoinedTaskRecordQueryable().Where(t => t.EndpointId == endpoint.Id).ToList();
+        endpointRecord = (await repository.ListEndpointsAsync()).Where(ep => ((Endpoint)ep.Asset).Url == "https://apache.tesla.com:443/").First();
+        tasks = context.JoinedTaskRecordQueryable().Where(t => t.Record.Id == endpointRecord.Id).ToList();
         Assert.DoesNotContain(tasks, t => t.Definition.ShortName == "shortname_scanner");
 
         var sshService = new

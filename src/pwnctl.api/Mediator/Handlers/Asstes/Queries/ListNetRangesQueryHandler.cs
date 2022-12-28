@@ -10,11 +10,10 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Queries
 {
     public sealed class ListNetRangesQueryHandler : IRequestHandler<ListNetRangesQuery, MediatedResponse<NetRangeListViewModel>>
     {
-        private readonly PwnctlDbContext _context = new PwnctlDbContext();
-
         public async Task<MediatedResponse<NetRangeListViewModel>> Handle(ListNetRangesQuery command, CancellationToken cancellationToken)
         {
-            AssetDbRepository repository = new();
+            PwnctlDbContext context = new();
+            AssetDbRepository repository = new(context);
 
             var netRanges = await repository.ListNetRangesAsync();
 

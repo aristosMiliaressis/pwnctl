@@ -1,6 +1,7 @@
 using pwnctl.kernel.Attributes;
 using pwnctl.domain.BaseClasses;
 using MimeKit;
+using System.Net;
 
 namespace pwnctl.domain.Entities
 {
@@ -20,10 +21,9 @@ namespace pwnctl.domain.Entities
             Domain = domain;
         }
 
-        public static bool TryParse(string assetText, out Asset mainAsset, out Asset[] relatedAssets)
+        public static bool TryParse(string assetText, out Asset asset)
         {
-            mainAsset = null;
-            relatedAssets = null;
+            asset = null;
 
             assetText = assetText.StartsWith("mailto:")
                     ? assetText.Substring(7)
@@ -32,18 +32,19 @@ namespace pwnctl.domain.Entities
             assetText = assetText.StartsWith("maito:")
                     ? assetText.Substring(6)
                     : assetText;
-         
+
+            // for some reason MailKit parses IPv4 as valid email address so if it is ip return false
+            if (IPAddress.TryParse(assetText, out IPAddress _)
+             || NetRange.TryParse(assetText, out Asset _))
+                return false;
+
             if (!MailboxAddress.TryParse(assetText, out MailboxAddress address))
                 return false;
 
             var domain = new Domain(address.Domain);
 
-            mainAsset = new Email(domain, address.Address);
-            relatedAssets = new Asset[] 
-            {
-                domain
-            };
-            
+            asset = new Email(domain, address.Address);
+
             return true;
         }
 

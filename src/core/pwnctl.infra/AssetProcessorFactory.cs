@@ -1,26 +1,26 @@
 namespace pwnctl.infra;
 
 using pwnctl.infra.Persistence;
+using pwnctl.infra.Persistence.Extensions;
 using pwnctl.infra.Repositories;
-using Microsoft.EntityFrameworkCore;
 using pwnctl.app.Assets;
-using pwnctl.app.Tasks.Interfaces;
-using pwnctl.infra.Queues;
+
+using Microsoft.EntityFrameworkCore;
 
 public static class AssetProcessorFactory
 {
-    public static AssetProcessor Create(TaskQueueService queueService = null)
+    public static AssetProcessor Create()
     {
-        queueService ??= TaskQueueServiceFactory.Create();
-
         var context = new PwnctlDbContext();
 
-        var assetRepository = new AssetDbRepository();
+        var assetRepository = new AssetDbRepository(context);
 
         var definitions = context.TaskDefinitions.ToList();
 
         var rules = context.NotificationRules.AsNoTracking().ToList();
-
-        return new AssetProcessor(queueService, assetRepository, definitions, rules);
+        
+        var programs = context.ListPrograms();
+        
+        return new AssetProcessor(assetRepository, definitions, rules, programs);
     }
 }

@@ -6,11 +6,11 @@ using pwnctl.infra.Persistence;
 using pwnctl.infra.Persistence.Extensions;
 using pwnctl.app.Assets;
 using pwnctl.app.Tasks.Interfaces;
-using pwnctl.app.Tasks.DTO;
 using Microsoft.EntityFrameworkCore;
 using pwnctl.infra.Notifications;
 using pwnctl.app.Notifications.Interfaces;
 using pwnctl.infra.Configuration;
+using pwnctl.app.Tasks.Enums;
 
 namespace pwnctl.svc
 {
@@ -53,15 +53,15 @@ namespace pwnctl.svc
 
                 var taskDTO = taskDTOs[0];
 
-                var taskRecord = await context
+                var taskEntry = await context
                                     .JoinedTaskRecordQueryable()
                                     .FirstOrDefaultAsync(r => r.Id == taskDTO.TaskId);
 
                 try
                 {
-                    taskRecord.Started();
+                    taskEntry.Started();
 
-                    var process = await CommandExecutor.ExecuteAsync("/bin/bash", null, taskRecord.WrappedCommand, stoppingToken);
+                    var process = await CommandExecutor.ExecuteAsync("/bin/bash", null, taskEntry.WrappedCommand, stoppingToken);
 
                     foreach (var line in process.StandardOutput.ReadToEnd().Split("\n").Where(l => !string.IsNullOrWhiteSpace(l)))
                     {
@@ -73,9 +73,21 @@ namespace pwnctl.svc
                         {
                             PwnContext.Logger.Error(ex.ToRecursiveExInfo());
                         }
+
+                        var pendingTasks = await context.JoinedTaskRecordQueryable()
+                                    .Where(r => r.State == TaskState.PENDING)
+                                    .ToListAsync(stoppingToken);
+
+                        pendingTasks.ForEach(async task => 
+                        {
+                            task.Queued();
+                            await _queueService.EnqueueAsync(task.ToDTO());
+                        });
+                        
+                        await context.SaveChangesAsync(stoppingToken);
                     }
 
-                    taskRecord.Finished(process.ExitCode);
+                    taskEntry.Finished(process.ExitCode);
                 }
                 catch (TaskCanceledException ex)
                 {

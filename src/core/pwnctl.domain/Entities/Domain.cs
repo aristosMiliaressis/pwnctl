@@ -1,6 +1,5 @@
 ﻿using pwnctl.kernel.Attributes;
 using pwnctl.domain.BaseClasses;
-using pwnctl.domain.ValueObjects;
 using System.Text.RegularExpressions;
 using pwnctl.domain.Services;
 
@@ -11,9 +10,12 @@ namespace pwnctl.domain.Entities
         [EqualityComponent]
         public string Name { get; init; }
         public bool IsRegistrationDomain { get; init; }
-        public string RegistrationDomainId { get; private init; }
-        public Domain RegistrationDomain { get; private init; }
+        // public string RegistrationDomainId { get; private init; }
+        // public Domain RegistrationDomain { get; private init; }
+        public Domain ParentDomain { get; private set; }
+        public string ParentDomainId { get; private init; }
         public List<DNSRecord> DNSRecords { get; private init; }
+        public Keyword Keyword {get; private set; }
 
         public Domain() {}
 
@@ -23,18 +25,12 @@ namespace pwnctl.domain.Entities
             domain = domain.EndsWith(".") ? domain.Substring(0, domain.Length - 1) : domain;
 
             Name = domain;
-            var regDomain = GetRegistrationDomain();
-            IsRegistrationDomain = regDomain == domain;
-            if (!IsRegistrationDomain)
-            {
-                RegistrationDomain = new Domain(regDomain);
-            }
+            IsRegistrationDomain = GetRegistrationDomain() == domain;
         }
 
-        public static bool TryParse(string assetText, out Asset mainAsset, out Asset[] relatedAssets)
+        public static bool TryParse(string assetText, out Asset asset)
         {
-            relatedAssets = new Asset[] {};
-            mainAsset = null;
+            asset = null;
 
             if (assetText.Trim().Contains(" ")
                 || assetText.Contains("/")
@@ -47,28 +43,19 @@ namespace pwnctl.domain.Entities
 
             var domain = new Domain(assetText);
 
-            mainAsset = domain;
-            if (domain.RegistrationDomain != null)
+            var tmp = domain;
+            var registrationDomain = new Domain(domain.GetRegistrationDomain());
+            while (tmp.Name != registrationDomain.Name)
             {
-                var parentDomain = domain.RegistrationDomain.Name;
-                var subs = domain.Name.Replace(parentDomain, "")
-                            .Split(".")
-                            .Where(sub => !string.IsNullOrEmpty(sub))
-                            .Skip(1)
-                            .Reverse();
-                            
-                foreach (var sub in subs)
-                {
-                    parentDomain = sub + "." + parentDomain;
-                    relatedAssets = relatedAssets.Append(new Domain(parentDomain)).ToArray();
-                }
-                relatedAssets = relatedAssets.Append(domain.RegistrationDomain).ToArray();
+                tmp.ParentDomain = new Domain(string.Join(".", tmp.Name.Split(".").Skip(1)));
+                tmp = tmp.ParentDomain;
             }
 
-            var regDomain = domain.GetRegistrationDomain();
             var pubSuffix = PublicSuffixListService.Instance.GetPublicSuffix(domain.Name);
-            var word = regDomain.Substring(0, regDomain.Length - pubSuffix.Suffix.Length - 1);
-            relatedAssets = relatedAssets.Append(new Keyword(domain.IsRegistrationDomain ? domain : domain.RegistrationDomain, word)).ToArray();
+            var word = registrationDomain.Name.Substring(0, registrationDomain.Name.Length - pubSuffix.Suffix.Length - 1);
+            domain.Keyword = new Keyword(registrationDomain, word);
+
+            asset = domain;
 
             return true;
        }

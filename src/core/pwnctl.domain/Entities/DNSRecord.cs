@@ -20,6 +20,8 @@ namespace pwnctl.domain.Entities
         public Host Host { get; private init; }
         public Domain Domain { get; private init; }
 
+        public List<Host> SPFHosts { get; private set; }
+
         public DNSRecord() {}
         
         public DNSRecord(DnsRecordType type, string key, string value)
@@ -28,28 +30,28 @@ namespace pwnctl.domain.Entities
             Key = key;
             Value = value;
 
-            if (Host.TryParse(key, out Asset host, out Asset[] assets))
+            if (Host.TryParse(key, out Asset host))
             {
                 Host = (Host)host;
             }
-            else if (Domain.TryParse(key, out Asset domain, out assets))
+            else if (Domain.TryParse(key, out Asset domain))
             {
                 Domain = (Domain)domain;
             }
 
-            if (Host.TryParse(value, out host, out assets))
+            if (Host.TryParse(value, out host))
             {
                 Host = (Host)host;
+                Host.AARecords = new List<DNSRecord> { this };
             }
-            else if (Domain.TryParse(value, out Asset domain, out assets))
+            else if (Domain.TryParse(value, out Asset domain))
             {
                 Domain = (Domain)domain;
             }
         }
 
-        public static bool TryParse(string assetText, out Asset mainAsset, out Asset[] relatedAssets)
+        public static bool TryParse(string assetText, out Asset asset)
         {
-            var _assets = new List<Asset>();
             assetText = assetText.Replace("\t", " ");
             var parts = assetText.Split(" ");
 
@@ -57,28 +59,23 @@ namespace pwnctl.domain.Entities
              && Enum.GetNames(typeof(DnsRecordType)).Contains(parts[2]))
             {
                 var record = new DNSRecord(Enum.Parse<DnsRecordType>(parts[2]), parts[0], string.Join(" ", parts.Skip(3)));
-                mainAsset = record;
 
                 if (record.Type == DnsRecordType.TXT && record.Value.Contains("spf"))
                 {
-                    var spfHosts = record.Value
+                    record.SPFHosts = record.Value
                                         .Split("ip")
                                         .Skip(1)
-                                        .Select(p => p.Split(":")[1].Trim().Split(" ")[0])
+                                        .Select(p => string.Join(":", p.Split(":").Skip(1)).Trim().Split(" ")[0])
                                         .Where(ip => IPAddress.TryParse(ip, out IPAddress address))
-                                        .Select(ip => new Host(IPAddress.Parse(ip)));
-
-                    _assets.AddRange(spfHosts);
+                                        .Select(ip => new Host(IPAddress.Parse(ip)))
+                                        .ToList();
                 }
 
-                if (record.Host != null) _assets.Add(record.Host);
-                if (record.Domain != null) _assets.Add(record.Domain);
-                relatedAssets = _assets.ToArray();
+                asset = record;
                 return true;
             }
-            
-            mainAsset = null;
-            relatedAssets = null;
+
+            asset = null;
             return false;
         }
 

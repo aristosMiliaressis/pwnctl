@@ -4,49 +4,20 @@ using pwnctl.app.Tasks.Entities;
 
 namespace pwnctl.infra.Persistence.EntityConfiguration
 {
-    public sealed class TaskRecordConfig : IEntityTypeConfiguration<TaskRecord>
+    public sealed class TaskEntryConfig : IEntityTypeConfiguration<TaskEntry>
     {
-        public void Configure(EntityTypeBuilder<TaskRecord> builder)
+        public void Configure(EntityTypeBuilder<TaskEntry> builder)
         {
             builder.HasKey(t => t.Id);
 
-            builder.OwnsOne(t => t.SubjectClass).Property(s => s.Class).IsRequired();
 
             builder.HasOne(t => t.Definition)
                 .WithMany()
                 .HasForeignKey(t => t.DefinitionId);
 
-            builder.HasOne(t => t.Host)
+            builder.HasOne(t => t.Record)
                 .WithMany()
-                .HasForeignKey(t => t.HostId);
-
-            builder.HasOne(t => t.Service)
-                .WithMany()
-                .HasForeignKey(t => t.ServiceId);
-
-            builder.HasOne(t => t.Endpoint)
-                .WithMany()
-                .HasForeignKey(t => t.EndpointId);
-
-            builder.HasOne(t => t.Domain)
-                .WithMany()
-                .HasForeignKey(t => t.DomainId);
-
-            builder.HasOne(t => t.NetRange)
-                .WithMany()
-                .HasForeignKey(t => t.NetRangeId);
-
-            builder.HasOne(t => t.DNSRecord)
-                .WithMany()
-                .HasForeignKey(t => t.DNSRecordId);
-
-            builder.HasOne(t => t.CloudService)
-                .WithMany()
-                .HasForeignKey(t => t.CloudServiceId);
-
-            builder.HasOne(t => t.Keyword)
-                .WithMany()
-                .HasForeignKey(t => t.KeywordId);
+                .HasForeignKey(t => t.RecordId);
         }
     }
 
