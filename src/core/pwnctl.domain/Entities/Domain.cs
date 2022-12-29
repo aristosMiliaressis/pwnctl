@@ -10,8 +10,6 @@ namespace pwnctl.domain.Entities
         [EqualityComponent]
         public string Name { get; init; }
         public bool IsRegistrationDomain { get; init; }
-        // public string RegistrationDomainId { get; private init; }
-        // public Domain RegistrationDomain { get; private init; }
         public Domain ParentDomain { get; private set; }
         public string ParentDomainId { get; private init; }
         public List<DNSRecord> DNSRecords { get; private init; }

@@ -25,6 +25,7 @@ namespace pwnctl.domain.Entities
         {
             asset = null;
 
+            // if inside square brakets could be an ipv6
             assetText = assetText.StartsWith("[") && assetText.EndsWith("]")
                     ? assetText.Substring(1, assetText.Length-2)
                     : assetText;

@@ -12,8 +12,8 @@ using pwnctl.infra.Persistence;
 namespace pwnctl.infra.Migrations
 {
     [DbContext(typeof(PwnctlDbContext))]
-    [Migration("20221226134757_initial3")]
-    partial class initial3
+    [Migration("20221229132018_pwnctl-schema")]
+    partial class pwnctlschema
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

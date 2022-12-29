@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace pwnctl.infra.Migrations
 {
-    public partial class initial : Migration
+    public partial class pwnctlschema : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -329,82 +329,82 @@ namespace pwnctl.infra.Migrations
                     FoundBy = table.Column<string>(type: "text", nullable: true),
                     InScope = table.Column<bool>(type: "boolean", nullable: false),
                     OwningProgramId = table.Column<int>(type: "integer", nullable: true),
-                    SubjectClass_Class = table.Column<string>(type: "text", nullable: true)
+                    SubjectClass_Class = table.Column<string>(type: "text", nullable: true),
+                    HostId = table.Column<string>(type: "text", nullable: true),
+                    ServiceId = table.Column<string>(type: "text", nullable: true),
+                    EndpointId = table.Column<string>(type: "text", nullable: true),
+                    DomainId = table.Column<string>(type: "text", nullable: true),
+                    DNSRecordId = table.Column<string>(type: "text", nullable: true),
+                    NetRangeId = table.Column<string>(type: "text", nullable: true),
+                    KeywordId = table.Column<string>(type: "text", nullable: true),
+                    EmailId = table.Column<string>(type: "text", nullable: true),
+                    CloudServiceId = table.Column<string>(type: "text", nullable: true),
+                    ParameterId = table.Column<string>(type: "text", nullable: true),
+                    VirtualHostId = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AssetRecords", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AssetRecords_CloudService_Id",
-                        column: x => x.Id,
+                        name: "FK_AssetRecords_CloudService_CloudServiceId",
+                        column: x => x.CloudServiceId,
                         principalTable: "CloudService",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_AssetRecords_DNSRecords_Id",
-                        column: x => x.Id,
+                        name: "FK_AssetRecords_DNSRecords_DNSRecordId",
+                        column: x => x.DNSRecordId,
                         principalTable: "DNSRecords",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_AssetRecords_Domains_Id",
-                        column: x => x.Id,
+                        name: "FK_AssetRecords_Domains_DomainId",
+                        column: x => x.DomainId,
                         principalTable: "Domains",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_AssetRecords_Emails_Id",
-                        column: x => x.Id,
+                        name: "FK_AssetRecords_Emails_EmailId",
+                        column: x => x.EmailId,
                         principalTable: "Emails",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_AssetRecords_Endpoints_Id",
-                        column: x => x.Id,
+                        name: "FK_AssetRecords_Endpoints_EndpointId",
+                        column: x => x.EndpointId,
                         principalTable: "Endpoints",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_AssetRecords_Hosts_Id",
-                        column: x => x.Id,
+                        name: "FK_AssetRecords_Hosts_HostId",
+                        column: x => x.HostId,
                         principalTable: "Hosts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_AssetRecords_Keywords_Id",
-                        column: x => x.Id,
+                        name: "FK_AssetRecords_Keywords_KeywordId",
+                        column: x => x.KeywordId,
                         principalTable: "Keywords",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_AssetRecords_NetRanges_Id",
-                        column: x => x.Id,
+                        name: "FK_AssetRecords_NetRanges_NetRangeId",
+                        column: x => x.NetRangeId,
                         principalTable: "NetRanges",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_AssetRecords_Parameters_Id",
-                        column: x => x.Id,
+                        name: "FK_AssetRecords_Parameters_ParameterId",
+                        column: x => x.ParameterId,
                         principalTable: "Parameters",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_AssetRecords_Programs_OwningProgramId",
                         column: x => x.OwningProgramId,
                         principalTable: "Programs",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_AssetRecords_Services_Id",
-                        column: x => x.Id,
+                        name: "FK_AssetRecords_Services_ServiceId",
+                        column: x => x.ServiceId,
                         principalTable: "Services",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_AssetRecords_VirtualHosts_Id",
-                        column: x => x.Id,
+                        name: "FK_AssetRecords_VirtualHosts_VirtualHostId",
+                        column: x => x.VirtualHostId,
                         principalTable: "VirtualHosts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -470,9 +470,64 @@ namespace pwnctl.infra.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_AssetRecords_CloudServiceId",
+                table: "AssetRecords",
+                column: "CloudServiceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AssetRecords_DNSRecordId",
+                table: "AssetRecords",
+                column: "DNSRecordId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AssetRecords_DomainId",
+                table: "AssetRecords",
+                column: "DomainId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AssetRecords_EmailId",
+                table: "AssetRecords",
+                column: "EmailId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AssetRecords_EndpointId",
+                table: "AssetRecords",
+                column: "EndpointId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AssetRecords_HostId",
+                table: "AssetRecords",
+                column: "HostId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AssetRecords_KeywordId",
+                table: "AssetRecords",
+                column: "KeywordId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AssetRecords_NetRangeId",
+                table: "AssetRecords",
+                column: "NetRangeId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_AssetRecords_OwningProgramId",
                 table: "AssetRecords",
                 column: "OwningProgramId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AssetRecords_ParameterId",
+                table: "AssetRecords",
+                column: "ParameterId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AssetRecords_ServiceId",
+                table: "AssetRecords",
+                column: "ServiceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AssetRecords_VirtualHostId",
+                table: "AssetRecords",
+                column: "VirtualHostId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CloudService_DomainId",
