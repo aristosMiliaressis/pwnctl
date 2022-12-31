@@ -9,7 +9,8 @@ namespace pwnctl.domain.Entities
     {
         [EqualityComponent]
         public string Name { get; init; }
-        public bool IsRegistrationDomain { get; init; }
+        public int ZoneDepth { get; private init; }
+        public bool IsRegistrationDomain { get; private init; }//////
         public Domain ParentDomain { get; private set; }
         public string ParentDomainId { get; private init; }
         public List<DNSRecord> DNSRecords { get; private init; }
@@ -23,6 +24,12 @@ namespace pwnctl.domain.Entities
             domain = domain.EndsWith(".") ? domain.Substring(0, domain.Length - 1) : domain;
 
             Name = domain;
+
+            var suffix = PublicSuffixListService.Instance.GetPublicSuffix(Name);
+            ZoneDepth = Name.Substring(0, Name.Length - suffix.Suffix.Length - 1)
+                        .Split(".")
+                        .Count();
+
             IsRegistrationDomain = GetRegistrationDomain() == domain;
         }
 

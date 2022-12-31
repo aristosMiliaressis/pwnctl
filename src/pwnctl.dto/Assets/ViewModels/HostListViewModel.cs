@@ -7,6 +7,8 @@ public sealed class HostListViewModel
 {
     public IEnumerable<AssetDTO> Hosts { get; init; }
 
+    public HostListViewModel() { }
+
     public HostListViewModel(List<AssetRecord> hosts)
     {
         Hosts = hosts.Select(e => e.ToDTO());

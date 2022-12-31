@@ -40,7 +40,6 @@ namespace pwnctl.cli.ModeHandlers
                 try
                 {
                     await queueService.EnqueueAsync(task);
-                    Console.WriteLine($"Queued: {task.Command}");
                 }
                 catch (Exception ex)
                 {

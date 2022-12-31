@@ -7,6 +7,8 @@ public sealed class EndpointListViewModel
 {
     public IEnumerable<AssetDTO> Endpoints { get; init; }
 
+    public EndpointListViewModel() { }
+
     public EndpointListViewModel(List<AssetRecord> endpoints)
     {
         Endpoints = endpoints.Select(ep => ep.ToDTO());

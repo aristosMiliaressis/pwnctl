@@ -32,7 +32,7 @@
   CommandTemplate: sub-enum.sh {{Name}}
   IsActive: false
   Aggressiveness: 0
-  Filter: Domain.IsRegistrationDomain == true
+  Filter: Domain.ZoneDepth <= 2
   Subject: Domain
 
 - ShortName: tld_brute

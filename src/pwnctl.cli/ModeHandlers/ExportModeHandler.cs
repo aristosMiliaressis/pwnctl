@@ -44,14 +44,14 @@ namespace pwnctl.cli.ModeHandlers
 
             var client = new PwnctlApiClient();
 
+            var domains = await client.Send(new ListDomainsQuery());
+            WriteToFile(Path.Combine(path, "domains.json"), domains.Domains);
+
             var hosts = await client.Send(new ListHostsQuery());
             WriteToFile(Path.Combine(path, "hosts.json"), hosts.Hosts);
 
             var endpoints = await client.Send(new ListEndpointsQuery());
             WriteToFile(Path.Combine(path, "endpoints.json"), endpoints.Endpoints);
-
-            var domains = await client.Send(new ListDomainsQuery());
-            WriteToFile(Path.Combine(path, "domains.json"), domains.Domains);
 
             var services = await client.Send(new ListServicesQuery());
             WriteToFile(Path.Combine(path, "services.json"), services.Services);

@@ -8,7 +8,7 @@
   "profile": "",
   "region": "",
   "configuration": "Release",
-  "function-runtime": "dotnet6",
+  "function-runtime": "dotnet7",
   "function-memory-size": 256,
   "function-timeout": 900,
   "function-handler": "pwnctl.api",

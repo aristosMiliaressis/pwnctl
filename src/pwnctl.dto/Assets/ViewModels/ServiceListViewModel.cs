@@ -7,6 +7,8 @@ public sealed class ServiceListViewModel
 {
     public IEnumerable<AssetDTO> Services { get; init; }
 
+    public ServiceListViewModel() { }
+
     public ServiceListViewModel(List<AssetRecord> services)
     {
         Services = services.Select(e => e.ToDTO());
