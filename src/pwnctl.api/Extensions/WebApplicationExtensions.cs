@@ -3,7 +3,7 @@ namespace pwnctl.api.Extensions;
 using System.Reflection;
 using MediatR;
 using pwnctl.dto.Mediator;
-using pwnctl.app.Common.Interfaces;
+using pwnctl.app;
 
 public static class WebApplicationExtensions
 {
@@ -63,7 +63,7 @@ public static class WebApplicationExtensions
 
                 var mediator = context.RequestServices.GetService<IMediator>();
 
-                var request = Serializer.Instance.Deserialize(json, requestType);
+                var request = PwnInfraContext.Serializer.Deserialize(json, requestType);
 
                 var result = (MediatedResponse)await mediator.Send(request);
 

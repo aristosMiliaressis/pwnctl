@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 using pwnctl.dto.Assets.Queries;
 using pwnctl.dto.Targets.Queries;
-using pwnctl.app.Common.Interfaces;
+using pwnctl.app;
 using pwnctl.cli.Interfaces;
 
 namespace pwnctl.cli.ModeHandlers
@@ -43,7 +43,7 @@ namespace pwnctl.cli.ModeHandlers
                  _ => throw new NotSupportedException("Not supported class " + @class)
             };
             
-            Console.WriteLine(Serializer.Instance.Serialize(result));
+            Console.WriteLine(PwnInfraContext.Serializer.Serialize(result));
         }
 
         public void PrintHelpSection()

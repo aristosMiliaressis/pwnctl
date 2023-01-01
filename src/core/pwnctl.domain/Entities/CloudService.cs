@@ -12,7 +12,7 @@ namespace pwnctl.domain.Entities
         public Domain Domain { get; set; }
         public string DomainId { get; set; }
 
-        private CloudService() { }
+        public CloudService() { }
 
         public CloudService(Domain domain)
         {

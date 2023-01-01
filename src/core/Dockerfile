@@ -155,7 +155,7 @@ RUN git clone https://github.com/xnl-h4ck3r/waymore.git \
     && python3 setup.py install
 RUN go install github.com/detectify/page-fetch@latest
 
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 
 # building worker service & cli
 COPY ["/pwnctl.kernel/pwnctl.kernel.csproj", "/src/pwnctl.kernel/"]

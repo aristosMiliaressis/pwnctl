@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using pwnctl.infra;
+using pwnctl.infra.DependencyInjection;
 
 internal sealed class Program
 {
@@ -17,7 +17,7 @@ internal sealed class Program
 
     static async Task Main(string[] args)
     {
-        PwnContext.Setup();
+        PwnInfraContextInitializer.Setup();
 
         if (args.Length < 1)
         {

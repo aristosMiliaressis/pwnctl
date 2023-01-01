@@ -9,6 +9,7 @@ using pwnctl.app.Assets.Aggregates;
 using pwnctl.app.Assets.DTO;
 using pwnctl.app.Common.Interfaces;
 using pwnctl.infra;
+using pwnctl.infra.DependencyInjection;
 using pwnctl.infra.Persistence;
 using pwnctl.infra.Persistence.Extensions;
 using pwnctl.infra.Repositories;
@@ -22,6 +23,9 @@ public sealed class Tests
     {
         Environment.SetEnvironmentVariable("PWNCTL_IsTestRun", "true");
         Environment.SetEnvironmentVariable("PWNCTL_InstallPath", ".");
+        Environment.SetEnvironmentVariable("PWNCTL_Logging__FilePath", ".");
+
+        PwnInfraContextInitializer.Setup();
 
         // reset the database for every test method
         DatabaseInitializer.InitializeAsync().Wait();
@@ -291,7 +295,7 @@ public sealed class Tests
         };
 
         // TaskDefinition.Filter fail test
-        await processor.ProcessAsync(Serializer.Instance.Serialize(exampleUrl));
+        await processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(exampleUrl));
 
         // aggresivness test
         Assert.True(context.JoinedTaskRecordQueryable().Any(t => t.Definition.ShortName == "hakrawler"));
@@ -313,7 +317,7 @@ public sealed class Tests
                {"Protocol", "IIS"}
             }
         };
-        await processor.ProcessAsync(Serializer.Instance.Serialize(exampleUrl));
+        await processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(exampleUrl));
         Assert.True(context.JoinedTaskRecordQueryable().Any(t => t.Definition.ShortName == "shortname_scanner"));
 
         // multiple interpolation test
@@ -349,7 +353,7 @@ public sealed class Tests
             }
         };
 
-        await processor.ProcessAsync(Serializer.Instance.Serialize(exampleUrl));
+        await processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(exampleUrl));
 
         var endpointRecord = context.AssetRecords
                                 .Include(r => r.Tags)
@@ -371,7 +375,7 @@ public sealed class Tests
             {"emptyTag", ""}        // testing that empty tags are not added
         };
 
-        await processor.ProcessAsync(Serializer.Instance.Serialize(exampleUrl));
+        await processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(exampleUrl));
 
         endpointRecord = (await repository.ListEndpointsAsync()).Where(t => ((Endpoint)t.Asset).Url == "https://example.com:443/").First();
 
@@ -400,7 +404,7 @@ public sealed class Tests
         };
 
         // process same asset twice and make sure tasks are only assigned once
-        await processor.ProcessAsync(Serializer.Instance.Serialize(teslaUrl));
+        await processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl));
         endpointRecord = (await repository.ListEndpointsAsync()).Where(ep => ((Endpoint)ep.Asset).Url == "https://iis.tesla.com:443/").First();
         var tasks = context.JoinedTaskRecordQueryable().Where(t => t.Record.Id == endpointRecord.Asset.Id).ToList();
         Assert.True(!tasks.GroupBy(t => t.DefinitionId).Any(g => g.Count() > 1));
@@ -419,7 +423,7 @@ public sealed class Tests
         };
 
         // test Tag filter
-        await processor.ProcessAsync(Serializer.Instance.Serialize(apacheTeslaUrl));
+        await processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(apacheTeslaUrl));
         endpointRecord = (await repository.ListEndpointsAsync()).Where(ep => ((Endpoint)ep.Asset).Url == "https://apache.tesla.com:443/").First();
         tasks = context.JoinedTaskRecordQueryable().Where(t => t.Record.Id == endpointRecord.Id).ToList();
         Assert.DoesNotContain(tasks, t => t.Definition.ShortName == "shortname_scanner");
@@ -432,7 +436,7 @@ public sealed class Tests
             }
         };
 
-        await processor.ProcessAsync(Serializer.Instance.Serialize(sshService));
+        await processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(sshService));
         var service = context.Services.Where(ep => ep.Origin == "tcp://1.3.3.7:22").First();
         Assert.Equal("ssh", service.ApplicationProtocol);
     }

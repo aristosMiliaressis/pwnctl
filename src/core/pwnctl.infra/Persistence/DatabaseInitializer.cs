@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using pwnctl.app;
 using pwnctl.app.Tasks.Entities;
 using pwnctl.app.Scope.Entities;
 using pwnctl.app.Notifications.Entities;
@@ -14,7 +15,7 @@ namespace pwnctl.infra.Persistence
         {
             PwnctlDbContext instance = new();
 
-            if (PwnContext.Config.IsTestRun)
+            if (PwnInfraContext.Config.IsTestRun)
             {
                 await instance.Database.EnsureDeletedAsync();
             }
@@ -28,7 +29,7 @@ namespace pwnctl.infra.Persistence
                 .WithNamingConvention(PascalCaseNamingConvention.Instance)
                 .Build();
 
-            string taskFile = $"{PwnContext.Config.InstallPath}/seed/task-definitions.yml";
+            string taskFile = $"{PwnInfraContext.Config.InstallPath}/seed/task-definitions.yml";
             if (!instance.TaskDefinitions.Any() && File.Exists(taskFile))
             {
                 var taskText = File.ReadAllText(taskFile);
@@ -43,7 +44,7 @@ namespace pwnctl.infra.Persistence
                 Matcher matcher = new();
                 matcher.AddInclude("target-*.yml");
 
-                foreach (string file in matcher.GetResultsInFullPath($"{PwnContext.Config.InstallPath}/seed/"))
+                foreach (string file in matcher.GetResultsInFullPath($"{PwnInfraContext.Config.InstallPath}/seed/"))
                 {
                     var programText = File.ReadAllText(file);
                     var program = deserializer.Deserialize<Program>(programText);
@@ -55,7 +56,7 @@ namespace pwnctl.infra.Persistence
                 }
             }
 
-            string notificationFile = $"{PwnContext.Config.InstallPath}/seed/notification-rules.yml";
+            string notificationFile = $"{PwnInfraContext.Config.InstallPath}/seed/notification-rules.yml";
             if (!instance.NotificationRules.Any() && File.Exists(notificationFile))
             {
                 var taskText = File.ReadAllText(notificationFile);

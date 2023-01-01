@@ -11,7 +11,7 @@ namespace pwnctl.infra.Persistence
             var config = PwnConfigFactory.Create();
 
             var optionsBuilder = new DbContextOptionsBuilder<PwnctlDbContext>();
-            optionsBuilder.UseNpgsql(config.Db.ConnectionString);
+            optionsBuilder.UseNpgsql(PwnctlDbContext.ConnectionString);
 
             return new PwnctlDbContext(optionsBuilder.Options);
         }

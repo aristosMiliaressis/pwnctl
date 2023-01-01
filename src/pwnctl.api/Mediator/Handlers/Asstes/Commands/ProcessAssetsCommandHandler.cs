@@ -1,5 +1,4 @@
-using pwnctl.app.Tasks.Entities;
-using pwnctl.infra.Queues;
+using pwnctl.app;
 using pwnctl.infra.Persistence;
 using pwnctl.infra;
 using pwnctl.dto.Assets.Commands;
@@ -7,7 +6,6 @@ using pwnctl.dto.Mediator;
 
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using pwnctl.infra.Logging;
 using pwnctl.app.Tasks.Enums;
 using pwnctl.app.Tasks.DTO;
 using pwnctl.infra.Persistence.Extensions;
@@ -30,7 +28,7 @@ namespace pwnctl.api.Mediator.Handlers.Assets.Commands
                 }
                 catch (Exception ex)
                 {
-                    PwnContext.Logger.Error(ex.ToRecursiveExInfo());
+                    PwnInfraContext.Logger.Exception(ex);
                 }            
             }
 

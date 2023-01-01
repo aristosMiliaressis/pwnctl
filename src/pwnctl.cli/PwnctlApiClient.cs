@@ -8,7 +8,7 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using pwnctl.dto.Mediator;
 using pwnctl.app.Common.Interfaces;
-using pwnctl.infra;
+using pwnctl.app;
 using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
 
@@ -23,7 +23,7 @@ public sealed class PwnctlApiClient
     public PwnctlApiClient()
     {
         _httpClient = new HttpClient();
-        _httpClient.BaseAddress = new Uri(PwnContext.Config.Api.BaseUrl);
+        _httpClient.BaseAddress = new Uri(PwnInfraContext.Config.Api.BaseUrl);
     }
 
     public async Task<TResult> Send<TResult>(MediatedRequest<TResult> request)
@@ -32,7 +32,7 @@ public sealed class PwnctlApiClient
         if (apiResponse.Result == null)
             return default;
 
-        return Serializer.Instance.Deserialize<TResult>((JsonElement)apiResponse.Result);
+        return PwnInfraContext.Serializer.Deserialize<TResult>((JsonElement)apiResponse.Result);
     }
 
     public async Task Send(MediatedRequest request)
@@ -46,7 +46,7 @@ public sealed class PwnctlApiClient
     {
         var concreteRequestType = request.GetType();
 
-        var json = Serializer.Instance.Serialize(request, concreteRequestType);
+        var json = PwnInfraContext.Serializer.Serialize(request, concreteRequestType);
         var route = request.GetInterpolatedRoute();
 
         var httpRequest = new HttpRequestMessage {
@@ -55,7 +55,7 @@ public sealed class PwnctlApiClient
             Content = new StringContent(json, Encoding.UTF8, "application/json")
         };
         
-        var (profile, credentials) = GetAWSProfileCredentials(PwnContext.Config.Aws.Profile);
+        var (profile, credentials) = GetAWSProfileCredentials(PwnInfraContext.Config.Aws.Profile);
 
         HttpResponseMessage response = null;
         try

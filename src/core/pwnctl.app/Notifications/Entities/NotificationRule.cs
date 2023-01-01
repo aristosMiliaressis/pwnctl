@@ -1,5 +1,4 @@
 using pwnctl.app.Assets.Aggregates;
-using pwnctl.app.Common.Interfaces;
 using pwnctl.domain.ValueObjects;
 using pwnctl.kernel.BaseClasses;
 
@@ -21,7 +20,7 @@ namespace pwnctl.app.Notifications.Entities
             if (SubjectClass.Class != record.Asset.GetType().Name)
                 return false;
 
-            return FilterEvaluator.Instance.Evaluate(Filter, record);
+            return PwnInfraContext.FilterEvaluator.Evaluate(Filter, record);
         }
     }
 }

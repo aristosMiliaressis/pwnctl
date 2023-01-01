@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using pwnctl.infra.Logging;
 
 namespace pwnctl.infra.Persistence.Extensions
 {
@@ -39,15 +38,7 @@ namespace pwnctl.infra.Persistence.Extensions
                 if (!filter(collection.Metadata.ClrType))
                     continue;
 
-                try
-                {
-                    await collection.LoadAsync(token);
-                }
-                catch (Exception ex)
-                {
-                    PwnContext.Logger.Error(ex.ToRecursiveExInfo());
-                    continue;
-                }
+                await collection.LoadAsync(token);
 
                 var enumerator = collection.CurrentValue.GetEnumerator();
                 while (enumerator.MoveNext())

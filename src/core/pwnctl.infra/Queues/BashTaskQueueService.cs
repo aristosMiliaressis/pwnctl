@@ -1,13 +1,13 @@
-﻿using System.Diagnostics;
-using pwnctl.app.Tasks.Entities;
+﻿using pwnctl.infra.Commands;
 using pwnctl.app.Tasks.Interfaces;
 using pwnctl.app.Tasks.DTO;
+using pwnctl.app;
 
 namespace pwnctl.infra.Queues
 {
     public sealed class BashTaskQueueService : TaskQueueService
     {
-        private static readonly string _queueDirectory = Path.Combine(PwnContext.Config.InstallPath , "queue/");
+        private static readonly string _queueDirectory = Path.Combine(PwnInfraContext.Config.InstallPath , "queue/");
 
         public Task ChangeBatchVisibility(List<TaskDTO> tasks, CancellationToken token = default)
         {
@@ -25,7 +25,7 @@ namespace pwnctl.infra.Queues
         /// <param name="command"></param>
         public async Task<bool> EnqueueAsync(TaskDTO task, CancellationToken token = default)
         {
-            await CommandExecutor.ExecuteAsync("job-queue.sh", $"-w {PwnContext.Config.TaskQueue.WorkerCount} -q {_queueDirectory}", task.Command, token);
+            await CommandExecutor.ExecuteAsync("job-queue.sh", $"-w {PwnInfraContext.Config.TaskQueue.WorkerCount} -q {_queueDirectory}", task.Command, token);
 
             return true;
         }

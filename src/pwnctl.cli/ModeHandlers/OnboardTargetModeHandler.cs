@@ -1,9 +1,9 @@
 using System;
-using pwnctl.app.Common.Interfaces;
 using System.Threading.Tasks;
 
 using pwnctl.dto.Targets.Commands;
 using pwnctl.cli.Interfaces;
+using pwnctl.app;
 
 namespace pwnctl.cli.ModeHandlers
 {
@@ -20,7 +20,7 @@ namespace pwnctl.cli.ModeHandlers
                 json += line + "\n";
             }
 
-            var command = Serializer.Instance.Deserialize<OnboardTargetCommand>(json);
+            var command = PwnInfraContext.Serializer.Deserialize<OnboardTargetCommand>(json);
 
             var client = new PwnctlApiClient();
             await client.Send(command);

@@ -1,5 +1,5 @@
 using Npgsql;
-using pwnctl.app.Common.Interfaces;
+using pwnctl.app;
 
 namespace pwnctl.infra.Persistence
 {
@@ -7,14 +7,14 @@ namespace pwnctl.infra.Persistence
     {
         public async Task<string> RunAsync(string sql)
         {
-            using (var connection = new NpgsqlConnection(PwnContext.Config.Db.ConnectionString))
+            using (var connection = new NpgsqlConnection(PwnctlDbContext.ConnectionString))
             {
                 var command = new NpgsqlCommand(sql, connection);
 
                 await connection.OpenAsync();
                 NpgsqlDataReader reader = await command.ExecuteReaderAsync();
                 var rows = Serialize(reader);
-                var json = Serializer.Instance.Serialize(rows);
+                var json = PwnInfraContext.Serializer.Serialize(rows);
                 await reader.CloseAsync();
                 
                 return json;

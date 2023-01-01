@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Configuration;
+using pwnctl.app.Configuration;
 
 namespace pwnctl.infra.Configuration
 {

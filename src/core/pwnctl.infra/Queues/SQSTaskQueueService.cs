@@ -1,7 +1,7 @@
 ﻿using pwnctl.infra.Aws;
 using Amazon.SQS;
 using Amazon.SQS.Model;
-using pwnctl.app.Tasks.Entities;
+using pwnctl.app;
 using pwnctl.app.Tasks.Interfaces;
 using pwnctl.app.Common.Interfaces;
 using pwnctl.app.Tasks.DTO;
@@ -37,7 +37,7 @@ namespace pwnctl.infra.Queues
         /// <param name="command"></param>
         public async Task<bool> EnqueueAsync(TaskDTO task, CancellationToken token = default)
         {
-            PwnContext.Logger.Debug("Enqueue: " + task.Command);
+            PwnInfraContext.Logger.Debug("Enqueue: " + task.Command);
 
             var taskEnt = new TaskDTO() 
             { 
@@ -49,7 +49,7 @@ namespace pwnctl.infra.Queues
             {
                 MessageGroupId = Guid.NewGuid().ToString(),
                 QueueUrl = this[AwsConstants.QueueName],
-                MessageBody = Serializer.Instance.Serialize(taskEnt)
+                MessageBody = PwnInfraContext.Serializer.Serialize(taskEnt)
             };
 
             await _sqsClient.SendMessageAsync(request, token);
@@ -68,14 +68,14 @@ namespace pwnctl.infra.Queues
             var messageResponse = await _sqsClient.ReceiveMessageAsync(receiveRequest, token);
             if (messageResponse.HttpStatusCode != System.Net.HttpStatusCode.OK)
             {
-                PwnContext.Logger.Warning(Serializer.Instance.Serialize(messageResponse));
-                PwnContext.Logger.Warning($"HttpStatusCode: {messageResponse.HttpStatusCode}");
+                PwnInfraContext.Logger.Warning(PwnInfraContext.Serializer.Serialize(messageResponse));
+                PwnInfraContext.Logger.Warning($"HttpStatusCode: {messageResponse.HttpStatusCode}");
                 // TODO: error handling
             }
 
             return messageResponse.Messages.Select(msg => 
             {
-                var task = Serializer.Instance.Deserialize<TaskDTO>(msg.Body);
+                var task = PwnInfraContext.Serializer.Deserialize<TaskDTO>(msg.Body);
                 
                 task.Metadata = new Dictionary<string, string>
                 {
@@ -93,12 +93,12 @@ namespace pwnctl.infra.Queues
 
             var response = await _sqsClient.DeleteMessageAsync(this[AwsConstants.QueueName], task.Metadata[nameof(Message.ReceiptHandle)], token);
             if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
-                PwnContext.Logger.Debug("DeleteMessage: " + Serializer.Instance.Serialize(response));
+                PwnInfraContext.Logger.Debug("DeleteMessage: " + PwnInfraContext.Serializer.Serialize(response));
         }
 
         public async Task ChangeBatchVisibility(List<TaskDTO> tasks, CancellationToken token = default)
         {
-            PwnContext.Logger.Debug($"ChangeBatchVisibility fot tasks {string.Join(",", tasks.Select(t=>t.TaskId))}");
+            PwnInfraContext.Logger.Debug($"ChangeBatchVisibility fot tasks {string.Join(",", tasks.Select(t=>t.TaskId))}");
 
             // TODO: what if timeout exhedded more than once?
 
@@ -115,7 +115,7 @@ namespace pwnctl.infra.Queues
 
             var response = await _sqsClient.ChangeMessageVisibilityBatchAsync(request, token);
             if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
-                PwnContext.Logger.Debug("ChangeMessageVisibility: " + Serializer.Instance.Serialize(response));
+                PwnInfraContext.Logger.Debug("ChangeMessageVisibility: " + PwnInfraContext.Serializer.Serialize(response));
         }
     }
 }

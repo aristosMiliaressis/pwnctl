@@ -2,9 +2,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using pwnctl.domain.BaseClasses;
-using pwnctl.app.Assets.Aggregates;
-using pwnctl.app.Common.Interfaces;
+using pwnctl.app;
 using pwnctl.dto.Assets.Queries;
 using pwnctl.cli.Interfaces;
 using pwnctl.dto.Db.Commands;
@@ -65,9 +63,9 @@ namespace pwnctl.cli.ModeHandlers
             var emails = await client.Send(new ListEmailsQuery());
             WriteToFile(Path.Combine(path, "emails.json"), emails.Emails);
 
-            var results = await client.Send(new RunSqlQueryCommand 
+            var results = await client.Send(new RunSqlQueryCommand // TODO: make this a strongly typed command
             { 
-                Query = "SELECT \"TaskEntries\".\"Id\",\"ExitCode\",\"State\",\"QueuedAt\",\"StartedAt\",\"FinishedAt\",\"Discriminator\",\"ShortName\" FROM \"TaskEntries\" JOIN \"TaskDefinitions\" ON \"TaskEntries\".\"DefinitionId\" = \"TaskDefinitions\".\"Id\";"
+                Query = "SELECT \"TaskEntries\".\"Id\",\"ExitCode\",\"State\",\"QueuedAt\",\"StartedAt\",\"FinishedAt\",\"SubjectClass_Class\",\"ShortName\" FROM \"TaskEntries\" JOIN \"TaskDefinitions\" ON \"TaskEntries\".\"DefinitionId\" = \"TaskDefinitions\".\"Id\";"
             });
 
             foreach (var row in results)
@@ -80,7 +78,7 @@ namespace pwnctl.cli.ModeHandlers
         {
             foreach (var asset in assets)
             {
-                File.AppendAllText(filename, Serializer.Instance.Serialize(asset) + "\n");
+                File.AppendAllText(filename, PwnInfraContext.Serializer.Serialize(asset) + "\n");
             }
         }
 

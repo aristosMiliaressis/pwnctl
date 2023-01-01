@@ -18,7 +18,7 @@ namespace pwnctl.domain.Entities
 
         public string UrlEncodedCsValues { get; private init; }
 
-        private Parameter() {}
+        public Parameter() {}
         
         public Parameter(Endpoint endpoint, string name, ParamType type, string urlEncodedCsValues)
         {

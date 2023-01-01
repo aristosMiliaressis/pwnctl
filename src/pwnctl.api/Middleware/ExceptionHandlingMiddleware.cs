@@ -1,7 +1,6 @@
 namespace pwnctl.api.Middleware;
 
-using pwnctl.infra;
-using pwnctl.infra.Logging;
+using pwnctl.app;
 using pwnctl.api.Extensions;
 using System.Net;
 
@@ -22,7 +21,7 @@ public sealed class ExceptionHandlingMiddleware
         }
         catch (Exception ex)
         {
-            PwnContext.Logger.Error(ex.ToRecursiveExInfo());
+            PwnInfraContext.Logger.Exception(ex);
 
             await context.Response.Create(HttpStatusCode.InternalServerError);
 

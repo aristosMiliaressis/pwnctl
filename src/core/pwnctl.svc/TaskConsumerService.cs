@@ -1,3 +1,4 @@
+using pwnctl.app;
 using pwnctl.infra;
 using pwnctl.infra.Aws;
 using pwnctl.infra.Queues;
@@ -7,10 +8,9 @@ using pwnctl.infra.Persistence.Extensions;
 using pwnctl.app.Assets;
 using pwnctl.app.Tasks.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using pwnctl.infra.Notifications;
-using pwnctl.app.Notifications.Interfaces;
-using pwnctl.infra.Configuration;
+using pwnctl.infra.Commands;
 using pwnctl.app.Tasks.Enums;
+using pwnctl.app.Logging;
 
 namespace pwnctl.svc
 {
@@ -19,22 +19,19 @@ namespace pwnctl.svc
         private readonly IHostApplicationLifetime _hostApplicationLifetime;
         private readonly TaskQueueService _queueService = TaskQueueServiceFactory.Create();
         private readonly AssetProcessor _processor = AssetProcessorFactory.Create();
-        private readonly NotificationSender _notificationSender = new DiscordNotificationSender();
 
         public TaskConsumerService(IHostApplicationLifetime hostApplicationLifetime)
         {
             _hostApplicationLifetime = hostApplicationLifetime;
             _hostApplicationLifetime.ApplicationStopping.Register(() => 
             {
-                PwnContext.Logger.Information($"{nameof(TaskConsumerService)} stoped.");
-                _notificationSender.Send($"pwnctl service stoped on {EnvironmentVariables.HOSTNAME}", "status");
+                PwnInfraContext.Logger.Information(LogSinks.File | LogSinks.Notification, $"{nameof(TaskConsumerService)} stoped.");
             });
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            PwnContext.Logger.Information($"{nameof(TaskConsumerService)} started.");
-            _notificationSender.Send($"pwnctl service started on {EnvironmentVariables.HOSTNAME}", "status");
+            PwnInfraContext.Logger.Information(LogSinks.File | LogSinks.Notification, $"{nameof(TaskConsumerService)} started.");
 
             PwnctlDbContext context = new();
 
@@ -43,7 +40,7 @@ namespace pwnctl.svc
                 var taskDTOs = await _queueService.ReceiveAsync(stoppingToken);
                 if (taskDTOs == null || !taskDTOs.Any())
                 {
-                    PwnContext.Logger.Information("queue is empty");
+                    PwnInfraContext.Logger.Information("queue is empty");
                     break;
                 }
 
@@ -71,7 +68,7 @@ namespace pwnctl.svc
                         }
                         catch (Exception ex)
                         {
-                            PwnContext.Logger.Error(ex.ToRecursiveExInfo());
+                            PwnInfraContext.Logger.Exception(ex);
                         }
 
                         var pendingTasks = await context.JoinedTaskRecordQueryable()
@@ -91,12 +88,12 @@ namespace pwnctl.svc
                 }
                 catch (TaskCanceledException ex)
                 {
-                    PwnContext.Logger.Error(ex.ToRecursiveExInfo());
+                    PwnInfraContext.Logger.Exception(ex);
                     continue;
                 }
                 catch (Exception ex)
                 {
-                    PwnContext.Logger.Error(ex.ToRecursiveExInfo());
+                    PwnInfraContext.Logger.Exception(ex);
                     await _queueService.DequeueAsync(taskDTO);
                     continue;
                 }

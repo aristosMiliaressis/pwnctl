@@ -1,7 +1,7 @@
 using pwnctl.domain.BaseClasses;
 using pwnctl.app.Notifications.Entities;
 using pwnctl.app.Notifications.Interfaces;
-using System.Diagnostics;
+using pwnctl.infra.Commands;
 
 namespace pwnctl.infra.Notifications
 {

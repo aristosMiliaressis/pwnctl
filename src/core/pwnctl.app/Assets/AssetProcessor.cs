@@ -1,14 +1,11 @@
 ﻿using pwnctl.domain.BaseClasses;
 using pwnctl.app.Assets.Interfaces;
-using pwnctl.app.Notifications.Interfaces;
-using pwnctl.app.Tasks.Interfaces;
 using pwnctl.app.Tasks.Entities;
 using pwnctl.app.Notifications.Entities;
 using pwnctl.kernel.Extensions;
 using pwnctl.app.Assets.Aggregates;
 using pwnctl.app.Scope.Entities;
 using pwnctl.app.Assets.DTO;
-using pwnctl.app.Common.Interfaces;
 
 namespace pwnctl.app.Assets
 {
@@ -31,9 +28,9 @@ namespace pwnctl.app.Assets
         public async Task ProcessAsync(string assetText)
         {
             Dictionary<string, object> tags = null;
-            if (assetText.StartsWith("{"))
+            if (assetText.Trim().StartsWith("{"))
             {
-                var dto = Serializer.Instance.Deserialize<AssetDTO>(assetText);
+                var dto = PwnInfraContext.Serializer.Deserialize<AssetDTO>(assetText);
                 assetText = dto.Asset;
                 tags = dto.Tags;
             }
@@ -81,7 +78,7 @@ namespace pwnctl.app.Assets
         {
             foreach (var rule in _notificationRules.Where(rule => rule.Check(record)))
             {
-                NotificationSender.Instance.Send(record.Asset, rule);
+                PwnInfraContext.NotificationSender.Send(record.Asset, rule);
             }
 
             var matchingTasks = record.OwningProgram.Policy

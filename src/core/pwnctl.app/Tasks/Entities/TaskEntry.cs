@@ -111,16 +111,14 @@ namespace pwnctl.app.Tasks.Entities
         }
 
         [JsonIgnore]
-        public string WrappedCommand => $$"""
-{{Command}} | while read assetLine;
+        public string WrappedCommand => @$"{Command} | while read assetLine;
 do
-  if [[ ${assetLine::1} == '{' ]];
+  if [[ ${{assetLine::1}} == '{{' ]];
   then
-    echo $assetLine | jq -c '.tags += {"FoundBy": "{{Definition.ShortName}}"}';
+    echo $assetLine | jq -c '.tags += {{""FoundBy"": ""{Definition.ShortName}""}}';
   else
-    echo '{"asset":"'$assetLine'", "tags":{"FoundBy":"{{Definition.ShortName}}"}';
+    echo '{{""asset"":""'$assetLine'"", ""tags"":{{""FoundBy"":""{Definition.ShortName}""}}}}';
   fi; 
-done
-""".Replace("\r\n", "").Replace("\n", "");
+done".Replace("\r\n", "").Replace("\n", "");
     }
 }

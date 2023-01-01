@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 using pwnctl.dto.Assets.Commands;
 using pwnctl.infra.Queues;
-using pwnctl.infra.Logging;
+using pwnctl.kernel.Extensions;
 using pwnctl.cli.Interfaces;
 
 namespace pwnctl.cli.ModeHandlers

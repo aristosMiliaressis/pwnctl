@@ -4,17 +4,24 @@ using Microsoft.Extensions.Logging;
 using System.Reflection;
 using pwnctl.infra.Persistence.Extensions;
 using pwnctl.infra.Persistence.IdGenerators;
+using pwnctl.app;
 using pwnctl.app.Tasks.Entities;
 using pwnctl.app.Scope.Entities;
 using pwnctl.app.Notifications.Entities;
 using pwnctl.domain.Entities;
 using pwnctl.app.Tagging.Entities;
 using pwnctl.app.Assets.Aggregates;
+using pwnctl.infra.Aws;
 
 namespace pwnctl.infra.Persistence
 {
     public sealed class PwnctlDbContext : DbContext
     {
+        public static string ConnectionString = $"Host={PwnInfraContext.Config.Db.Host};"
+                                              + $"Database={AwsConstants.DatabaseName};"
+                                              + $"Username={AwsConstants.AuroraInstanceUsername};"
+                                              + $"Password={PwnInfraContext.Config.Db.Password};Timeout=30";
+
         public static readonly ILoggerFactory _loggerFactory = LoggerFactory.Create(builder =>
         {
             builder.AddDebug();
@@ -72,13 +79,13 @@ namespace pwnctl.infra.Persistence
 #endif
                 optionsBuilder = optionsBuilder.ReplaceService<StringValueGenerator, HashIdValueGenerator>();
 
-                if (PwnContext.Config.IsTestRun)
+                if (PwnInfraContext.Config.IsTestRun)
                 {
                     optionsBuilder.UseSqlite("Data Source=./pwnctl.db", x => x.MigrationsHistoryTable("__EFMigrationHistory"));
                     return;
                 }
 
-                optionsBuilder.UseNpgsql(PwnContext.Config.Db.ConnectionString, x => x.MigrationsHistoryTable("__EFMigrationHistory"));
+                optionsBuilder.UseNpgsql(ConnectionString, x => x.MigrationsHistoryTable("__EFMigrationHistory"));
             }
         }
 

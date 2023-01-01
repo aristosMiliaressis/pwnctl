@@ -21,7 +21,6 @@ using ECS = Amazon.CDK.AWS.ECS;
 using RDS = Amazon.CDK.AWS.RDS;
 using Lambda = Amazon.CDK.AWS.Lambda;
 using pwnctl.infra.Aws;
-using pwnctl.infra.Logging;
 
 namespace pwnctl.infra.cdk.Stacks
 {
@@ -203,7 +202,7 @@ namespace pwnctl.infra.cdk.Stacks
                 Runtime = Runtime.DOTNET_6,
                 MemorySize = 1536,
                 Timeout = Duration.Seconds(60),
-                Code = Code.FromAsset(Path.Join("src", "pwnctl.api", "bin", "Release", "net7.0")),
+                Code = Code.FromAsset(Path.Join("src", "pwnctl.api", "bin", "Release", "net6.0")),
                 Handler = "pwnctl.api",
                 Vpc = Vpc,
                 Role = pwnctlApiRole,
@@ -215,8 +214,8 @@ namespace pwnctl.infra.cdk.Stacks
                     {"PWNCTL_TaskQueue__QueueName", AwsConstants.QueueName},
                     {"PWNCTL_TaskQueue__DLQName", AwsConstants.DLQName},
                     {"PWNCTL_TaskQueue__VisibilityTimeout", AwsConstants.QueueVisibilityTimeoutInSec.ToString()},
-                    {"PWNCTL_Logging__Provider", LogProfile.Console.ToString()},
                     {"PWNCTL_Logging__MinLevel", "Debug"},
+                    {"PWNCTL_Logging__FilePath", "/mnt/efs/"},
                     {"PWNCTL_Logging__LogGroup", AwsConstants.LambdaLogGroup},
                     {"PWNCTL_InstallPath", AwsConstants.EfsMountPoint}
                 }
@@ -334,7 +333,6 @@ namespace pwnctl.infra.cdk.Stacks
                     {"PWNCTL_TaskQueue__QueueName", Queue.QueueName},
                     {"PWNCTL_TaskQueue__DLQName", DLQueue.QueueName},
                     {"PWNCTL_TaskQueue__VisibilityTimeout", AwsConstants.QueueVisibilityTimeoutInSec.ToString()},
-                    {"PWNCTL_Logging__Provider", LogProfile.File.ToString()},
                     {"PWNCTL_Logging__FilePath", "/mnt/efs/"},
                     {"PWNCTL_Logging__MinLevel", "Debug"},
                     {"PWNCTL_Logging__LogGroup", logGroup.LogGroupName},

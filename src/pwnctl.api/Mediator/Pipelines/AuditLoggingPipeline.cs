@@ -1,5 +1,5 @@
 using MediatR;
-using pwnctl.infra;
+using pwnctl.app;
 using pwnctl.dto.Mediator;
 
 namespace pwnctl.api.Mediator.Pipelines
@@ -19,11 +19,9 @@ namespace pwnctl.api.Mediator.Pipelines
         {
             var ip = _httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
 
-            PwnContext.Logger.Information($"{ip} requested {typeof(TRequest).Name}");
+            PwnInfraContext.Logger.Information($"{ip} requested {typeof(TRequest).Name}");
 
             return await next();
-
-            // TODO: debug level logging of request/response objects
         }
     }
 }

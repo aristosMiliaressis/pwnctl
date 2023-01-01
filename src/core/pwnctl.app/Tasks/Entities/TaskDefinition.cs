@@ -1,5 +1,4 @@
 using pwnctl.app.Assets.Aggregates;
-using pwnctl.app.Common.Interfaces;
 using pwnctl.domain.ValueObjects;
 using pwnctl.kernel.BaseClasses;
 
@@ -26,7 +25,7 @@ namespace pwnctl.app.Tasks.Entities
             if (string.IsNullOrEmpty(Filter))
                 return true;
 
-            return FilterEvaluator.Instance.Evaluate(Filter, record);
+            return PwnInfraContext.FilterEvaluator.Evaluate(Filter, record);
         }
 
         // Extrapolate list of parameter names from CommandTemplate
