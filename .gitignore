@@ -357,7 +357,7 @@ MigrationBackup/
 .ionide/
 
 obj/
-bin/
+src/**/bin/
 *.log
 *.txt
 *.db
