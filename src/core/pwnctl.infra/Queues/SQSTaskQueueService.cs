@@ -2,9 +2,8 @@
 using Amazon.SQS;
 using Amazon.SQS.Model;
 using pwnctl.app;
-using pwnctl.app.Tasks.Interfaces;
-using pwnctl.app.Common.Interfaces;
-using pwnctl.app.Tasks.DTO;
+using pwnctl.app.Queueing.Interfaces;
+using pwnctl.app.Queueing.DTO;
 
 namespace pwnctl.infra.Queues
 {
@@ -35,21 +34,15 @@ namespace pwnctl.infra.Queues
         /// pushes a task to the pending queue.
         /// </summary>
         /// <param name="command"></param>
-        public async Task<bool> EnqueueAsync(TaskDTO task, CancellationToken token = default)
+        public async Task<bool> EnqueueAsync(QueueTaskDTO task, CancellationToken token = default)
         {
             PwnInfraContext.Logger.Debug("Enqueue: " + task.Command);
-
-            var taskEnt = new TaskDTO() 
-            { 
-                TaskId = task.TaskId,
-                Command = task.Command
-            };
 
             var request = new SendMessageRequest
             {
                 MessageGroupId = Guid.NewGuid().ToString(),
                 QueueUrl = this[AwsConstants.QueueName],
-                MessageBody = PwnInfraContext.Serializer.Serialize(taskEnt)
+                MessageBody = PwnInfraContext.Serializer.Serialize(task)
             };
 
             await _sqsClient.SendMessageAsync(request, token);
@@ -57,7 +50,7 @@ namespace pwnctl.infra.Queues
             return true;
         }
 
-        public async Task<List<TaskDTO>> ReceiveAsync(CancellationToken token = default)
+        public async Task<List<QueueTaskDTO>> ReceiveAsync(CancellationToken token = default)
         {
             var receiveRequest = new ReceiveMessageRequest
             {
@@ -75,7 +68,7 @@ namespace pwnctl.infra.Queues
 
             return messageResponse.Messages.Select(msg => 
             {
-                var task = PwnInfraContext.Serializer.Deserialize<TaskDTO>(msg.Body);
+                var task = PwnInfraContext.Serializer.Deserialize<QueueTaskDTO>(msg.Body);
                 
                 task.Metadata = new Dictionary<string, string>
                 {
@@ -87,7 +80,7 @@ namespace pwnctl.infra.Queues
             }).ToList();
         }
 
-        public async Task DequeueAsync(TaskDTO task, CancellationToken token = default)
+        public async Task DequeueAsync(QueueTaskDTO task, CancellationToken token = default)
         {
             // TODO: delete batching?
 
@@ -96,7 +89,7 @@ namespace pwnctl.infra.Queues
                 PwnInfraContext.Logger.Debug("DeleteMessage: " + PwnInfraContext.Serializer.Serialize(response));
         }
 
-        public async Task ChangeBatchVisibility(List<TaskDTO> tasks, CancellationToken token = default)
+        public async Task ChangeBatchVisibility(List<QueueTaskDTO> tasks, CancellationToken token = default)
         {
             PwnInfraContext.Logger.Debug($"ChangeBatchVisibility fot tasks {string.Join(",", tasks.Select(t=>t.TaskId))}");
 

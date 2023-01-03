@@ -1,10 +1,7 @@
-using pwnctl.app.Assets.DTO;
 using pwnctl.app.Scope.Entities;
 using pwnctl.app.Tasks.Entities;
 using pwnctl.domain.BaseClasses;
 using pwnctl.kernel.BaseClasses;
-using System.Collections;
-using System.Reflection;
 using pwnctl.app.Tagging.Entities;
 using pwnctl.domain.ValueObjects;
 using pwnctl.domain.Entities;
@@ -85,10 +82,10 @@ public sealed class AssetRecord : Entity<string>
         set
         {
             // if a property with the tag name exists on the asset class, set that property instead of adding a tag.
-            var property = Asset.GetType().GetProperties().FirstOrDefault(p => p.Name.ToLower() == key.ToLower());
-            if (property != null && property.GetValue(Asset) == default)
+            var property = typeof(AssetRecord).GetProperties().FirstOrDefault(p => p.Name.ToLower() == key.ToLower());
+            if (property != null && property.GetValue(this) == default)
             {
-                property.SetValue(Asset, value);
+                property.SetValue(this, value);
                 return;
             }
 
@@ -101,41 +98,5 @@ public sealed class AssetRecord : Entity<string>
             var tag = new Tag(this, key, value);
             Tags.Add(tag);
         }
-    }
-
-    public AssetDTO ToDTO()
-    {
-        var dto = new AssetDTO();
-
-        dto.Asset = Asset.ToString();
-        dto.Tags = Tags.ToDictionary(t => t.Name, t => (object)t.Value);
-        dto.Metadata = new Dictionary<string, string>
-        {
-            { nameof(InScope), InScope.ToString() },
-            { nameof(FoundAt), FoundAt.ToString("yyyy-MM-ddTHH\\:mm\\:ss.ff") },
-            { nameof(FoundBy), FoundBy }
-        };
-
-        var properties = Asset.GetType()
-                            .GetProperties(BindingFlags.Public 
-                                         | BindingFlags.Instance
-                                         | BindingFlags.DeclaredOnly)
-                            .Where(p => !p.Name.EndsWith("Id")
-                                    && !p.PropertyType.IsAssignableTo(typeof(Asset))
-                                    && !p.PropertyType.IsAssignableTo(typeof(ICollection)))
-                            .ToList();
-
-        properties.ForEach(p => 
-        {
-            var val = p.GetValue(Asset);
-
-            val = p.PropertyType.IsEnum
-                ? Enum.GetName(p.PropertyType, val)
-                : val;
-
-            dto.Tags.Add(p.Name, val);
-        });
-
-        return dto;
     }
 }

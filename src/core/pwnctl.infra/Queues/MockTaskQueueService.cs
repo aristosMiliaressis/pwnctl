@@ -1,17 +1,16 @@
-using pwnctl.app.Tasks.Interfaces;
-using pwnctl.app.Tasks.Entities;
-using pwnctl.app.Tasks.DTO;
+using pwnctl.app.Queueing.DTO;
+using pwnctl.app.Queueing.Interfaces;
 
 namespace pwnctl.infra.Queues
 {
     public sealed class MockTaskQueueService : TaskQueueService
     {
-        public Task ChangeBatchVisibility(List<TaskDTO> tasks, CancellationToken token = default)
+        public Task ChangeBatchVisibility(List<QueueTaskDTO> tasks, CancellationToken token = default)
         {
             return Task.CompletedTask;
         }
 
-        public Task DequeueAsync(TaskDTO task, CancellationToken token = default)
+        public Task DequeueAsync(QueueTaskDTO task, CancellationToken token = default)
         {
             return Task.CompletedTask;
         }
@@ -20,14 +19,14 @@ namespace pwnctl.infra.Queues
         /// pushes a task to the pending queue.
         /// </summary>
         /// <param name="task"></param>
-        public Task<bool> EnqueueAsync(TaskDTO task, CancellationToken token = default)
+        public Task<bool> EnqueueAsync(QueueTaskDTO task, CancellationToken token = default)
         {
             return Task.FromResult(false);
         }
 
-        public Task<List<TaskDTO>> ReceiveAsync(CancellationToken token = default)
+        public Task<List<QueueTaskDTO>> ReceiveAsync(CancellationToken token = default)
         {
-            return Task.FromResult(new List<TaskDTO>());
+            return Task.FromResult(new List<QueueTaskDTO>());
         }
     }
 }

@@ -6,7 +6,6 @@ using System.Reflection;
 using System.Linq.Expressions;
 using pwnctl.app.Common.Extensions;
 using pwnctl.kernel.BaseClasses;
-using pwnctl.app.Tagging.Entities;
 
 namespace pwnctl.infra.Persistence.Extensions
 {

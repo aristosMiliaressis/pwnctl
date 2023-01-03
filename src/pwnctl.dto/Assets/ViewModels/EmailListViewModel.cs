@@ -11,6 +11,6 @@ public sealed class EmailListViewModel
 
     public EmailListViewModel(List<AssetRecord> emails)
     {
-        Emails = emails.Select(e => e.ToDTO());
+        Emails = emails.Select(e => new AssetDTO(e));
     }
 }

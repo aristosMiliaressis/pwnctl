@@ -11,6 +11,6 @@ public sealed class DomainListViewModel
 
     public DomainListViewModel(List<AssetRecord> domains)
     {
-        Domains = domains.Select(e => e.ToDTO());
+        Domains = domains.Select(e => new AssetDTO(e));
     }
 }

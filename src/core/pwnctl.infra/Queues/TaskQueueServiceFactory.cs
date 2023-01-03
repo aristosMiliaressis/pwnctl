@@ -1,6 +1,6 @@
 namespace pwnctl.infra.Queues;
 
-using pwnctl.app.Tasks.Interfaces;
+using pwnctl.app.Queueing.Interfaces;
 using pwnctl.infra.Configuration;
 
 public static class TaskQueueServiceFactory

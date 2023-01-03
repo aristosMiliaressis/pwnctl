@@ -10,7 +10,6 @@ namespace pwnctl.domain.Entities
         [EqualityComponent]
         public string Name { get; init; }
         public int ZoneDepth { get; private init; }
-        public bool IsRegistrationDomain { get; private init; }//////
         public Domain ParentDomain { get; private set; }
         public string ParentDomainId { get; private init; }
         public List<DNSRecord> DNSRecords { get; private init; }
@@ -29,8 +28,6 @@ namespace pwnctl.domain.Entities
             ZoneDepth = Name.Substring(0, Name.Length - suffix.Suffix.Length - 1)
                         .Split(".")
                         .Count();
-
-            IsRegistrationDomain = GetRegistrationDomain() == domain;
         }
 
         public static bool TryParse(string assetText, out Asset asset)

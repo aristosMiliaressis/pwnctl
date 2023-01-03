@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using pwnctl.app;
 using pwnctl.dto.Assets.Queries;
 using pwnctl.cli.Interfaces;
-using pwnctl.dto.Db.Commands;
 using pwnctl.app.Assets.DTO;
+using pwnctl.dto.Targets.Queries;
 
 namespace pwnctl.cli.ModeHandlers
 {
@@ -63,14 +63,10 @@ namespace pwnctl.cli.ModeHandlers
             var emails = await client.Send(new ListEmailsQuery());
             WriteToFile(Path.Combine(path, "emails.json"), emails.Emails);
 
-            var results = await client.Send(new RunSqlQueryCommand // TODO: make this a strongly typed command
-            { 
-                Query = "SELECT \"TaskEntries\".\"Id\",\"ExitCode\",\"State\",\"QueuedAt\",\"StartedAt\",\"FinishedAt\",\"SubjectClass_Class\",\"ShortName\" FROM \"TaskEntries\" JOIN \"TaskDefinitions\" ON \"TaskEntries\".\"DefinitionId\" = \"TaskDefinitions\".\"Id\";"
-            });
-
-            foreach (var row in results)
+            var tasks = await client.Send(new ListTasksQuery());
+            foreach (var task in tasks.Tasks)
             {
-                File.AppendAllText(Path.Combine(path, "tasks.json"), row + "\n");
+                File.AppendAllText(Path.Combine(path, "tasks.json"), PwnInfraContext.Serializer.Serialize(task) + "\n");
             }
         }
         

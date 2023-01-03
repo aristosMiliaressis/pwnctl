@@ -1,6 +1,5 @@
 using pwnctl.kernel.BaseClasses;
 using pwnctl.app.Assets.Aggregates;
-using pwnctl.app.Tasks.DTO;
 using pwnctl.app.Tasks.Enums;
 using pwnctl.app.Tasks.Exceptions;
 using System.Text.Json.Serialization;
@@ -57,17 +56,6 @@ namespace pwnctl.app.Tasks.Entities
             ExitCode = exitCode;
             State = TaskState.FINISHED;
             FinishedAt = DateTime.UtcNow;
-        }
-
-        public TaskDTO ToDTO()
-        {
-            var dto = new TaskDTO
-            {
-                Command = WrappedCommand,
-                TaskId = Id
-            };           
-
-            return dto;
         }
 
         [JsonIgnore]

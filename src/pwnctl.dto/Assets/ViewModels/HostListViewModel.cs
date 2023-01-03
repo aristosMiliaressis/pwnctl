@@ -11,6 +11,6 @@ public sealed class HostListViewModel
 
     public HostListViewModel(List<AssetRecord> hosts)
     {
-        Hosts = hosts.Select(e => e.ToDTO());
+        Hosts = hosts.Select(e => new AssetDTO(e));
     }
 }

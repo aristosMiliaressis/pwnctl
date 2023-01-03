@@ -11,6 +11,6 @@ public sealed class ServiceListViewModel
 
     public ServiceListViewModel(List<AssetRecord> services)
     {
-        Services = services.Select(e => e.ToDTO());
+        Services = services.Select(e => new AssetDTO(e));
     }
 }

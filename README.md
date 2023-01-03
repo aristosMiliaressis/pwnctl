@@ -1,7 +1,7 @@
 PWNCTL ![ci: tag](https://github.com/aristosMiliaressis/pwnctl/actions/workflows/ci.yml/badge.svg)
 ==
 
-serverless recursive configuration based engine for external recon.
+serverless configuration driven crawler for recon automation.
 
 ### Overview
 
@@ -91,13 +91,13 @@ tags are a way to store arbitary metadata relating to an asset, they can be used
 
 - ShortName: sub_enum
   CommandTemplate: sub-enum.sh {{Name}}
-  Filter: Domain.IsRegistrationDomain == true
+  Filter: Domain.ZoneDepth <= 2
   Subject: Domain
 
 - ShortName: tld_brute
   CommandTemplate: tld-brute.sh {{Name}}
   Subject: Domain
-  Filter: Domain.IsRegistrationDomain == true
+  Filter: Domain.ZoneDepth == 1
 
 - ShortName: asn_lookup
   CommandTemplate: asn-lookup.sh {{IP}}
@@ -149,30 +149,35 @@ tags are a way to store arbitary metadata relating to an asset, they can be used
   Filter: Endpoint.Path == "/"
   Subject: Endpoint
 
+- ShortName: screenshot
+  CommandTemplate: screenshot.sh {{Url}}
+  Filter: Endpoint.Path == "/"
+  Subject: Endpoint
+
 - ShortName: webcrawl
   CommandTemplate: webcrawl.sh '{{Url}}'
-  Filter: Endpoint["Content-Type"].Contains("/html") || Endpoint["Content-Type"].Contains("/xhtml")
+  Filter: Endpoint.Path == "/" || Tags["Content-Type"].Contains("/html") || Tags["Content-Type"].Contains("/xhtml")
   Subject: Endpoint
 
 - ShortName: link_finder
   CommandTemplate: link-finder.sh {{Url}}
-  Filter: Endpoint.Extension=="js"||Endpoint.Extension=="jsm"||Endpoint["Content-Type"].Contains("/javascript")
+  Filter: Endpoint.Extension == "js" || Endpoint.Extension == "jsm" || Tags["Content-Type"].Contains("/javascript")
   Subject: Endpoint
 
 - ShortName: cors_check
   CommandTemplate: check-cors.sh {{Url}}
   Subject: Endpoint
-  Filter: Endpoint["Content-Type"].Contains("/json") || Endpoint["Content-Type"].Contains("/xml")
+  Filter: Endpoint.Path == "/" || Tags["Content-Type"].Contains("/json") || Tags["Content-Type"].Contains("/xml")
 
 - ShortName: shortname_scanning
   CommandTemplate: shortname-check.sh {{Url}}
   Subject: Endpoint
-  Filter: Endpoint["Title"].Contains("Internet Information Services")
+  Filter: Tags["Title"].Contains("Internet Information Services")
 
 - ShortName: shortname_scanning
   CommandTemplate: shortname-check.sh {{Origin}}
   Subject: Service
-  Filter: Service["Version"].Contains("IIS") || Service["Version"].Contains("Microsoft HTTPAPI")
+  Filter: Tags["Version"].Contains("IIS") || Tags["Version"].Contains("Microsoft HTTPAPI")
 
 - ShortName: zone_walking
   CommandTemplate: ldns-walk {{Key}} | tail -n +2 | cut -d ' ' -f 1
@@ -194,19 +199,28 @@ tags are a way to store arbitary metadata relating to an asset, they can be used
 ```YAML
 - ShortName: default_creds
   Subject: Service
-  Filter: Service["vuln-default-creds"] == "true"
-  Topic: misconfigs
-
-- ShortName: cors_misconfig
-  Subject: Endpoint
-  Filter: Endpoint["cors-misconfig"] == "true"
+  Filter: Tags["vuln-default-creds"] == "true"
   Topic: misconfigs
   
-- ShortName: shortname_misconfig
+- ShortName: cors_misconfig
   Subject: Endpoint
-  Filter: Endpoint["shortname-misconfig"] == "true"
+  Filter: Tags["cors-misconfig"] == "true"
   Topic: misconfigs
 
+- ShortName: shortname_misconfig
+  Subject: Endpoint
+  Filter: Tags["shortname-misconfig"] == "true"
+  Topic: misconfigs
+
+- ShortName: node_debug
+  Subject: Service
+  Filter: Service.Port == 9228 || Service.Port == 9229
+  Topic: misconfigs
+
+- ShortName: docker_api
+  Subject: Service
+  Filter: Service.Port == 2735 || Service.Port == 2736
+  Topic: misconfigs
 ```
 
 ## `$ pwnctl query`

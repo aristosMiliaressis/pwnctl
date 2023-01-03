@@ -1551,7 +1551,7 @@
   "PwnctlSvcTaskCountTarget569E5CCF": {
    "Type": "AWS::ApplicationAutoScaling::ScalableTarget",
    "Properties": {
-    "MaxCapacity": 10,
+    "MaxCapacity": 20,
     "MinCapacity": 0,
     "ResourceId": {
      "Fn::Join": [
@@ -1654,7 +1654,57 @@
       },
       {
        "MetricIntervalLowerBound": 180,
+       "MetricIntervalUpperBound": 200,
        "ScalingAdjustment": 10
+      },
+      {
+       "MetricIntervalLowerBound": 200,
+       "MetricIntervalUpperBound": 220,
+       "ScalingAdjustment": 11
+      },
+      {
+       "MetricIntervalLowerBound": 220,
+       "MetricIntervalUpperBound": 240,
+       "ScalingAdjustment": 12
+      },
+      {
+       "MetricIntervalLowerBound": 240,
+       "MetricIntervalUpperBound": 260,
+       "ScalingAdjustment": 13
+      },
+      {
+       "MetricIntervalLowerBound": 260,
+       "MetricIntervalUpperBound": 280,
+       "ScalingAdjustment": 14
+      },
+      {
+       "MetricIntervalLowerBound": 280,
+       "MetricIntervalUpperBound": 300,
+       "ScalingAdjustment": 15
+      },
+      {
+       "MetricIntervalLowerBound": 300,
+       "MetricIntervalUpperBound": 320,
+       "ScalingAdjustment": 16
+      },
+      {
+       "MetricIntervalLowerBound": 320,
+       "MetricIntervalUpperBound": 340,
+       "ScalingAdjustment": 17
+      },
+      {
+       "MetricIntervalLowerBound": 340,
+       "MetricIntervalUpperBound": 360,
+       "ScalingAdjustment": 18
+      },
+      {
+       "MetricIntervalLowerBound": 360,
+       "MetricIntervalUpperBound": 380,
+       "ScalingAdjustment": 19
+      },
+      {
+       "MetricIntervalLowerBound": 380,
+       "ScalingAdjustment": 20
       }
      ]
     }

@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using pwnctl.infra.Configuration;
+using pwnctl.infra.DependencyInjection;
 
 namespace pwnctl.infra.Persistence
 {
@@ -8,7 +8,7 @@ namespace pwnctl.infra.Persistence
     {
         public PwnctlDbContext CreateDbContext(string[] args)
         {
-            var config = PwnConfigFactory.Create();
+            PwnInfraContextInitializer.Setup();
 
             var optionsBuilder = new DbContextOptionsBuilder<PwnctlDbContext>();
             optionsBuilder.UseNpgsql(PwnctlDbContext.ConnectionString);

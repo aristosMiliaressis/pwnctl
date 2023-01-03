@@ -59,7 +59,8 @@ tasks:
 
   init-app:
     cmds:
-      - ./init.sh
+      - chmod +x ./bin/upload-conf.sh && ./bin/upload-conf.sh
+      - chmod +x ./bin/init-db.sh && ./bin/init-db.sh
 
   clean-cdk:
     cmds:

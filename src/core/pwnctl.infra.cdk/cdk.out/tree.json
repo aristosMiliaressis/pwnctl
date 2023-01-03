@@ -2185,7 +2185,7 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::ApplicationAutoScaling::ScalableTarget",
                           "aws:cdk:cloudformation:props": {
-                            "maxCapacity": 10,
+                            "maxCapacity": 20,
                             "minCapacity": 0,
                             "resourceId": {
                               "Fn::Join": [
@@ -2301,7 +2301,57 @@
                                         },
                                         {
                                           "metricIntervalLowerBound": 180,
+                                          "metricIntervalUpperBound": 200,
                                           "scalingAdjustment": 10
+                                        },
+                                        {
+                                          "metricIntervalLowerBound": 200,
+                                          "metricIntervalUpperBound": 220,
+                                          "scalingAdjustment": 11
+                                        },
+                                        {
+                                          "metricIntervalLowerBound": 220,
+                                          "metricIntervalUpperBound": 240,
+                                          "scalingAdjustment": 12
+                                        },
+                                        {
+                                          "metricIntervalLowerBound": 240,
+                                          "metricIntervalUpperBound": 260,
+                                          "scalingAdjustment": 13
+                                        },
+                                        {
+                                          "metricIntervalLowerBound": 260,
+                                          "metricIntervalUpperBound": 280,
+                                          "scalingAdjustment": 14
+                                        },
+                                        {
+                                          "metricIntervalLowerBound": 280,
+                                          "metricIntervalUpperBound": 300,
+                                          "scalingAdjustment": 15
+                                        },
+                                        {
+                                          "metricIntervalLowerBound": 300,
+                                          "metricIntervalUpperBound": 320,
+                                          "scalingAdjustment": 16
+                                        },
+                                        {
+                                          "metricIntervalLowerBound": 320,
+                                          "metricIntervalUpperBound": 340,
+                                          "scalingAdjustment": 17
+                                        },
+                                        {
+                                          "metricIntervalLowerBound": 340,
+                                          "metricIntervalUpperBound": 360,
+                                          "scalingAdjustment": 18
+                                        },
+                                        {
+                                          "metricIntervalLowerBound": 360,
+                                          "metricIntervalUpperBound": 380,
+                                          "scalingAdjustment": 19
+                                        },
+                                        {
+                                          "metricIntervalLowerBound": 380,
+                                          "scalingAdjustment": 20
                                         }
                                       ]
                                     }

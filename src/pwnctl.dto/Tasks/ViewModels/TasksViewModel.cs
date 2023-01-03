@@ -9,6 +9,6 @@ public sealed class TasksViewModel
 
     public TasksViewModel(List<TaskEntry> tasks)
     {
-        Tasks = tasks.Select(t => t.ToDTO());
+        Tasks = tasks.Select(t => new TaskDTO(t));
     }
 }

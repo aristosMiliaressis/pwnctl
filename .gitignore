@@ -358,6 +358,7 @@ MigrationBackup/
 
 obj/
 src/**/bin/
+test/**/bin/
 *.log
 *.txt
 *.db

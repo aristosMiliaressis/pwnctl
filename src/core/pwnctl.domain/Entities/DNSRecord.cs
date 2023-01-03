@@ -62,13 +62,7 @@ namespace pwnctl.domain.Entities
 
                 if (record.Type == DnsRecordType.TXT && record.Value.Contains("spf"))
                 {
-                    record.SPFHosts = record.Value
-                                        .Split("ip")
-                                        .Skip(1)
-                                        .Select(p => string.Join(":", p.Split(":").Skip(1)).Trim().Split(" ")[0])
-                                        .Where(ip => IPAddress.TryParse(ip, out IPAddress address))
-                                        .Select(ip => new Host(IPAddress.Parse(ip)))
-                                        .ToList();
+                    record.SPFHosts = DNSRecord.ParseSPFString(record.Value);
                 }
 
                 asset = record;
@@ -77,6 +71,16 @@ namespace pwnctl.domain.Entities
 
             asset = null;
             return false;
+        }
+
+        public static List<Host> ParseSPFString(string spf)
+        {
+            return spf.Split("ip")
+                    .Skip(1)
+                    .Select(p => string.Join(":", p.Split(":").Skip(1)).Trim().Split(" ")[0])
+                    .Where(ip => IPAddress.TryParse(ip, out IPAddress address))
+                    .Select(ip => new Host(IPAddress.Parse(ip)))
+                    .ToList();
         }
 
         public override string ToString()

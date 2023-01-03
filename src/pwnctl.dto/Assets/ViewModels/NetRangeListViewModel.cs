@@ -11,6 +11,6 @@ public sealed class NetRangeListViewModel
 
     public NetRangeListViewModel(List<AssetRecord> netRanges)
     {
-        NetRanges = netRanges.Select(e => e.ToDTO());
+        NetRanges = netRanges.Select(e => new AssetDTO(e));
     }
 }

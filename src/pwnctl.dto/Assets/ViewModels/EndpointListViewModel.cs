@@ -11,6 +11,6 @@ public sealed class EndpointListViewModel
 
     public EndpointListViewModel(List<AssetRecord> endpoints)
     {
-        Endpoints = endpoints.Select(ep => ep.ToDTO());
+        Endpoints = endpoints.Select(e => new AssetDTO(e));
     }
 }

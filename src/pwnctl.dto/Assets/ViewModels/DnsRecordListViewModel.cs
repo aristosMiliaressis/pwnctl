@@ -11,6 +11,6 @@ public sealed class DnsRecordListViewModel
 
     public DnsRecordListViewModel(List<AssetRecord> dnsRecords)
     {
-        DNSRecords = dnsRecords.Select(e => e.ToDTO());
+        DNSRecords = dnsRecords.Select(e => new AssetDTO(e));
     }
 }
