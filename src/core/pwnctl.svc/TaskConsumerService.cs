@@ -1,16 +1,16 @@
 using pwnctl.app;
+using pwnctl.app.Assets;
+using pwnctl.app.Logging;
+using pwnctl.app.Queueing.Interfaces;
+using pwnctl.app.Tasks.Enums;
 using pwnctl.infra;
 using pwnctl.infra.Aws;
-using pwnctl.infra.Queues;
-using pwnctl.infra.Logging;
+using pwnctl.infra.Commands;
 using pwnctl.infra.Persistence;
 using pwnctl.infra.Persistence.Extensions;
-using pwnctl.app.Assets;
-using pwnctl.app.Tasks.Interfaces;
+using pwnctl.infra.Queues;
 using Microsoft.EntityFrameworkCore;
-using pwnctl.infra.Commands;
-using pwnctl.app.Tasks.Enums;
-using pwnctl.app.Logging;
+using pwnctl.app.Queueing.DTO;
 
 namespace pwnctl.svc
 {
@@ -58,7 +58,10 @@ namespace pwnctl.svc
                 {
                     taskEntry.Started();
 
-                    var process = await CommandExecutor.ExecuteAsync("/bin/bash", null, taskEntry.WrappedCommand, stoppingToken);
+                    var commandCancellationToken = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
+                    commandCancellationToken.CancelAfter(TimeSpan.FromHours(1));
+
+                    var process = await CommandExecutor.ExecuteAsync("/bin/bash", null, taskEntry.WrappedCommand, commandCancellationToken.Token);
 
                     foreach (var line in process.StandardOutput.ReadToEnd().Split("\n").Where(l => !string.IsNullOrWhiteSpace(l)))
                     {
@@ -78,7 +81,7 @@ namespace pwnctl.svc
                         pendingTasks.ForEach(async task => 
                         {
                             task.Queued();
-                            await _queueService.EnqueueAsync(task.ToDTO());
+                            await _queueService.EnqueueAsync(new QueueTaskDTO(task));
                         });
                         
                         await context.SaveChangesAsync(stoppingToken);
