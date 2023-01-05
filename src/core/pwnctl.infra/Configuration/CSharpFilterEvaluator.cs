@@ -18,8 +18,11 @@ namespace pwnctl.infra.Configuration
         {
             var options = ScriptOptions.Default.AddReferences(typeof(Asset).Assembly)
                                                 .AddReferences(typeof(Tag).Assembly)
+                                                .AddReferences(typeof(List<>).Assembly)
                                                 .AddReferences(Assembly.GetAssembly(typeof(System.Linq.Enumerable)))
-                                                .AddReferences(Assembly.GetAssembly(typeof(System.Collections.Generic.IEnumerable<>)));
+                                                //.AddReferences(Assembly.GetAssembly(typeof(System.Collections.Generic.List<>)))
+                                                .AddReferences(Assembly.GetAssembly(typeof(System.Collections.Generic.IEnumerable<>)))
+                                                .WithImports("System.Collections.Generic");
 
             var funcType = typeof(Func<,,>).MakeGenericType(record.Asset.GetType(), typeof(AssetRecord), typeof(bool));
             var evalMethod = typeof(CSharpScript).GetMethods(BindingFlags.Public | BindingFlags.Static)

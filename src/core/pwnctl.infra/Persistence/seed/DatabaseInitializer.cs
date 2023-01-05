@@ -6,8 +6,8 @@ using pwnctl.app.Notifications.Entities;
 using Microsoft.Extensions.FileSystemGlobbing;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
-using pwnctl.app.Tasks.Validation.Exceptions;
-using pwnctl.app.Tasks.Validation;
+using pwnctl.infra.Configuration.Validation.Exceptions;
+using pwnctl.infra.Configuration.Validation;
 
 namespace pwnctl.infra.Persistence
 {

@@ -103,7 +103,7 @@
   Subject: Endpoint
   Filter: Tags["Title"].Contains("Internet Information Services")
 
-- ShortName: shortname_scanning
+- ShortName: shortname_scanning_srv
   CommandTemplate: shortname-check.sh {{Origin}}
   Subject: Service
   Filter: Tags["Version"].Contains("IIS") || Tags["Version"].Contains("Microsoft HTTPAPI")

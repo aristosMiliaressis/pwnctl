@@ -56,11 +56,9 @@ tasks:
     deps: [clean-cdk, build-api]
     cmds:
       - cdk deploy -o src/core/pwnctl.infra.cdk/cdk.out
-
-  init-app:
-    cmds:
-      - chmod +x ./bin/upload-conf.sh && ./bin/upload-conf.sh
-      - chmod +x ./bin/init-db.sh && ./bin/init-db.sh
+      - chmod +x ./bin/*
+      - ./bin/upload-conf.sh
+      - ./bin/init-db.sh
 
   clean-cdk:
     cmds:

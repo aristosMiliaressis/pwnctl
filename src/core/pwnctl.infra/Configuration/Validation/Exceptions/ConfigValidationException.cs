@@ -1,4 +1,4 @@
-namespace pwnctl.app.Tasks.Validation.Exceptions;
+namespace pwnctl.infra.Configuration.Validation.Exceptions;
 
 public sealed class ConfigValidationException : Exception
 {

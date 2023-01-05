@@ -75,7 +75,7 @@ namespace pwnctl.app.Tasks.Entities
 
                     var arg = prop.GetValue(Record.Asset);
 
-                    arguments.Add(arg.ToString());
+                    arguments.Add((string)arg);
                 }
 
                 return arguments;

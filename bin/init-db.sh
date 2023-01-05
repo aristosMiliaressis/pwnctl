@@ -1,9 +1,5 @@
 #!/bin/bash
 
-#
-# TODO: document purpose
-#
-
 functionUrl=$(aws ssm get-parameter --name /pwnctl/Api/BaseUrl | jq -r .Parameter.Value)
 
 echo "Seeding db"
@@ -18,4 +14,4 @@ python3 -m awscurl -X PUT ${functionUrl}fs/upload?path=/config.ini \
                     -H 'Content-Type: text/plain' \
                     -d "$(printf "[Db]\nHost = $dbHostname\nPassword = $dbPassword\n")"
                     
-python3 -m awscurl --service lambda -X POST ${functionUrl}db/seed > /dev/null
+python3 -m awscurl --service lambda -X POST ${functionUrl}db/seed 2>/dev/null

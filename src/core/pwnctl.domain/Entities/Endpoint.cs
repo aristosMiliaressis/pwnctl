@@ -21,6 +21,9 @@ namespace pwnctl.domain.Entities
         {
             get
             {
+                if (Path == null)
+                    return null;
+                    
                 var lastPart = Path.Split("/").Where(p => !string.IsNullOrEmpty(p)).LastOrDefault(); 
                 return lastPart != null && lastPart.Contains(".") ? lastPart : null;
             }

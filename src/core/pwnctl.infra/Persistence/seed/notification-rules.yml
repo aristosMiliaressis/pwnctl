@@ -51,7 +51,7 @@
 
 - ShortName: hadoop
   Subject: Service
-  Filter: new int[] {50030,50060,50070,50075,50090}.Conatins(Service.Port)
+  Filter: new List<int> {50030,50060,50070,50075,50090}.Contains(Service.Port)
   Topic: misconfigs
 
 - ShortName: mongodb
@@ -61,7 +61,7 @@
 
 - ShortName: clusterfs
   Subject: Service
-  Filter: new int[] {24007,24008,24009,49152}.Conatins(Service.Port)
+  Filter: new List<int> {24007,24008,24009,49152}.Contains(Service.Port)
   Topic: misconfigs
 
 - ShortName: rabbitmq

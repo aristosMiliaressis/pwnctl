@@ -1,18 +1,20 @@
-namespace pwnctl.app.Tasks.Validation;
+namespace pwnctl.infra.Configuration.Validation;
 
 using System.Text.RegularExpressions;
+using pwnctl.app;
 using pwnctl.app.Assets.Aggregates;
 using pwnctl.app.Notifications.Entities;
 using pwnctl.app.Tasks.Entities;
 using pwnctl.domain.BaseClasses;
 using pwnctl.domain.Entities;
 using pwnctl.domain.ValueObjects;
+using pwnctl.kernel.Extensions;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
 public static class ConfigValidator
 {
-    private static readonly Regex _shortNameCharSet = new Regex("^[a-zA-Z08_-]+$");
+    private static readonly Regex _shortNameCharSet = new Regex("^[a-zA-Z0-9_]+$");
 
     private static Dictionary<AssetClass, Asset> _mockAssets = new Dictionary<AssetClass, Asset>
     {
@@ -55,7 +57,7 @@ public static class ConfigValidator
             return false;
         }
 
-        if (taskDefinitions.Select(d => d.ShortName).Distinct().Count() == taskDefinitions.Count())
+        if (taskDefinitions.Select(d => d.ShortName).Distinct().Count() != taskDefinitions.Count())
         {
             errorMessage = "Duplicate ShortName";
             return false;
@@ -84,12 +86,14 @@ public static class ConfigValidator
             AssetRecord record;
             try
             {
-                record = new AssetRecord(_mockAssets[definition.SubjectClass]);
+                var asset = _mockAssets[definition.SubjectClass];
+                record = new AssetRecord(asset);
                 var taskEntry = new TaskEntry(definition, record);
                 var test = taskEntry.Command;
             }
-            catch
+            catch (Exception ex)
             {
+                PwnInfraContext.Logger.Error(ex.ToRecursiveExInfo());
                 errorMessage = $"task definition {definition.ShortName} failed to interpolate CommandTemplate arguments";
                 return false;
             }
@@ -98,8 +102,9 @@ public static class ConfigValidator
             {
                 definition.Matches(record);
             }
-            catch
+            catch (Exception ex)
             {
+                PwnInfraContext.Logger.Error(ex.ToRecursiveExInfo());
                 errorMessage = $"task definition {definition.ShortName} Filter through exception";
                 return false;
             }
@@ -124,7 +129,7 @@ public static class ConfigValidator
             return false;
         }
 
-        if (notificationRules.Select(d => d.ShortName).Distinct().Count() == notificationRules.Count())
+        if (notificationRules.Select(d => d.ShortName).Distinct().Count() != notificationRules.Count())
         {
             errorMessage = "Duplicate ShortName";
             return false;
@@ -156,8 +161,9 @@ public static class ConfigValidator
             {
                 rule.Check(record);
             }
-            catch
+            catch (Exception ex)
             {
+                PwnInfraContext.Logger.Error(ex.ToRecursiveExInfo());
                 errorMessage = $"notification rule {rule.ShortName} Filter through exception";
                 return false;
             }
