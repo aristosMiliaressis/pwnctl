@@ -7,7 +7,6 @@ using pwnctl.infra.Configuration;
 using pwnctl.infra.Notifications;
 using pwnctl.infra.Repositories;
 using pwnctl.infra.Serialization;
-using pwnctl.app.Logging;
 using pwnctl.infra.Logging;
 
 public static class PwnInfraContextInitializer

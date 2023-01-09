@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using pwnctl.dto.Assets.Commands;
-using pwnctl.infra.Queues;
+using pwnctl.infra.Queueing;
 using pwnctl.kernel.Extensions;
 using pwnctl.cli.Interfaces;
 

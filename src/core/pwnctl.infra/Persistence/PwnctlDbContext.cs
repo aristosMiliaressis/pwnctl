@@ -17,7 +17,7 @@ namespace pwnctl.infra.Persistence
 {
     public sealed class PwnctlDbContext : DbContext
     {
-        public static string ConnectionString = $"Host={PwnInfraContext.Config.Db.Host};"
+        public static string ConnectionString => $"Host={PwnInfraContext.Config.Db.Host};"
                                               + $"Database={AwsConstants.DatabaseName};"
                                               + $"Username={AwsConstants.AuroraInstanceUsername};"
                                               + $"Password={PwnInfraContext.Config.Db.Password};Timeout=30";

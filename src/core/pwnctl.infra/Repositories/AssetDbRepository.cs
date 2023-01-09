@@ -8,7 +8,6 @@ using Microsoft.EntityFrameworkCore;
 using pwnctl.app.Tasks.Entities;
 using pwnctl.app.Assets.Aggregates;
 using pwnctl.kernel.Extensions;
-using pwnctl.app.Tagging.Entities;
 
 namespace pwnctl.infra.Repositories
 {
@@ -33,12 +32,6 @@ namespace pwnctl.infra.Repositories
             return await _context.AssetRecords
                             .Include(r => r.Tags)
                             .FirstOrDefaultAsync(r => r.Id == asset.Id);
-        }
-
-        public Tag FindTag(Asset asset, Tag tag)
-        {
-            var lambda = ExpressionTreeBuilder.BuildTagMatchingLambda(asset, tag);
-            return (Tag)_context.FirstNotTrackedFromLambda(lambda);
         }
 
         public TaskEntry FindTaskEntry(Asset asset, TaskDefinition def)

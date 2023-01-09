@@ -32,7 +32,7 @@ namespace pwnctl.api.Mediator.Handlers.Assets.Commands
                 }            
             }
 
-            //leaves TakRecords in a PENDING state inorder to 
+            // leaves TakRecords in a PENDING state inorder to 
             // return the tasks to the client for queueing, that way we 
             // eliminate the need for a VpcEndpoint to access the SQS API
             var pendingTasks = await context.JoinedTaskRecordQueryable()

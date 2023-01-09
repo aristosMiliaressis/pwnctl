@@ -13,7 +13,6 @@ public sealed class AppConfig
     public sealed class AwsSettings
     {
         public string Profile { get; set; } = "default";
-        public bool InVpc { get; set; }
     }
 
     public sealed class ApiSettings

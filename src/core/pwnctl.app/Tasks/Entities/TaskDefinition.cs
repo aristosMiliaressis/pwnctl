@@ -7,10 +7,10 @@ namespace pwnctl.app.Tasks.Entities
     public sealed class TaskDefinition : Entity<int>
     {
         public string ShortName { get; private init; }
-		public string CommandTemplate { get; set; }
-		public bool IsActive { get; private init; }
-		public int Aggressiveness { get; private init; }
-		public AssetClass SubjectClass { get; private set; }
+        public string CommandTemplate { get; set; }
+        public bool IsActive { get; private init; }
+        public int Aggressiveness { get; private init; }
+        public AssetClass SubjectClass { get; private set; }
         public string Filter { get; private init; }
 
         public string Subject { init { SubjectClass = AssetClass.Create(value); } }

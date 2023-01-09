@@ -101,7 +101,7 @@
 - ShortName: shortname_scanning
   CommandTemplate: shortname-check.sh {{Url}}
   Subject: Endpoint
-  Filter: Tags["Title"].Contains("Internet Information Services")
+  Filter: Tags["Title"].Contains("Internet Information Services") ||  Tags["Title"].Contains("IIS")
 
 - ShortName: shortname_scanning_srv
   CommandTemplate: shortname-check.sh {{Origin}}

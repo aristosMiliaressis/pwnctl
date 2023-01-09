@@ -1,8 +1,8 @@
 namespace pwnctl.app.Assets.Exceptions;
 
-using System;
+using pwnctl.app.Common.Exceptions;
 
-public sealed class UnparsableAssetException : Exception
+public sealed class UnparsableAssetException : AppException
 {
     public UnparsableAssetException(string assetText)
         : base("Can't parse asset " + assetText)

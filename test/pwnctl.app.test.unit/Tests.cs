@@ -7,7 +7,6 @@ using pwnctl.domain.Services;
 using pwnctl.app.Assets;
 using pwnctl.app.Assets.Aggregates;
 using pwnctl.app.Assets.DTO;
-using pwnctl.app.Common.Interfaces;
 using pwnctl.infra;
 using pwnctl.infra.DependencyInjection;
 using pwnctl.infra.Persistence;
@@ -439,12 +438,5 @@ public sealed class Tests
         await processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(sshService));
         var service = context.Services.Where(ep => ep.Origin == "tcp://1.3.3.7:22").First();
         //Assert.Equal("ssh", service.ApplicationProtocol);
-    }
-
-    [Fact]
-    public Task TaskDefinition_Tests()
-    {
-        // TODO: validate task-definitions.yml/notification-rules.yml (deserialization/Filter/Template Interpolation)
-        return Task.CompletedTask;
     }
 }

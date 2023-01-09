@@ -1,7 +1,7 @@
 using pwnctl.app.Queueing.DTO;
 using pwnctl.app.Queueing.Interfaces;
 
-namespace pwnctl.infra.Queues
+namespace pwnctl.infra.Queueing
 {
     public sealed class MockTaskQueueService : TaskQueueService
     {

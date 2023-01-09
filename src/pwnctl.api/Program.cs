@@ -1,10 +1,10 @@
+using pwnctl.infra.DependencyInjection;
 using pwnctl.api.Extensions;
 using pwnctl.api.Middleware;
 using pwnctl.api.Mediator.Pipelines;
 using pwnctl.dto;
 using MediatR;
 using FluentValidation;
-using pwnctl.infra.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 

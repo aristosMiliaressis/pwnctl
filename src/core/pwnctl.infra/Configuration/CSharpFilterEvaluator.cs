@@ -18,9 +18,7 @@ namespace pwnctl.infra.Configuration
         {
             var options = ScriptOptions.Default.AddReferences(typeof(Asset).Assembly)
                                                 .AddReferences(typeof(Tag).Assembly)
-                                                .AddReferences(typeof(List<>).Assembly)
                                                 .AddReferences(Assembly.GetAssembly(typeof(System.Linq.Enumerable)))
-                                                //.AddReferences(Assembly.GetAssembly(typeof(System.Collections.Generic.List<>)))
                                                 .AddReferences(Assembly.GetAssembly(typeof(System.Collections.Generic.IEnumerable<>)))
                                                 .WithImports("System.Collections.Generic");
 

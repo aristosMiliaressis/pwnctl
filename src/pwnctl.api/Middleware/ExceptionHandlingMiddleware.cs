@@ -1,8 +1,8 @@
 namespace pwnctl.api.Middleware;
 
 using pwnctl.app;
+using pwnctl.app.Common.Exceptions;
 using pwnctl.api.Extensions;
-using pwnctl.infra.Configuration.Validation.Exceptions;
 using pwnctl.dto.Mediator;
 using System.Net;
 
@@ -21,7 +21,7 @@ public sealed class ExceptionHandlingMiddleware
         {
             await _next(context);
         }
-        catch (ConfigValidationException ex)
+        catch (AppException ex)
         {
             var responseModel = MediatedResponse.Error(ex.Message);
 

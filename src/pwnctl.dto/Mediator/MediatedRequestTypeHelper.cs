@@ -12,7 +12,7 @@ public static class MediatedRequestTypeHelper
         return (HttpMethod)type.GetProperty(nameof(Request.Verb)).GetValue(null);
     }
 
-    public static void CheckRequestConfig(Type type)
+    public static void CheckRequestConfig(Type type) // TODO: implement
     {
         throw new NotImplementedException();
     }

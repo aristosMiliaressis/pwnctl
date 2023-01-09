@@ -8,7 +8,6 @@ namespace pwnctl.app.Assets.Interfaces
     public interface AssetRepository
     {
         Task<AssetRecord> FindRecordAsync(Asset asset);
-        Tag FindTag(Asset asset, Tag tag);
         TaskEntry FindTaskEntry(Asset asset, TaskDefinition def);
         Task<AssetRecord> MergeCurrentRecordWithDBRecord(AssetRecord record, Asset asset);
         Task SaveAsync(AssetRecord asset);

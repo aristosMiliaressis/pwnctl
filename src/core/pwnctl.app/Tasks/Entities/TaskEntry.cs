@@ -11,10 +11,10 @@ namespace pwnctl.app.Tasks.Entities
         public int DefinitionId { get; private init; }
         public TaskDefinition Definition { get; set; }
 
-		public int? ExitCode { get; private set; }
-		public DateTime QueuedAt { get; private set; }
-		public DateTime StartedAt { get; private set; }
-		public DateTime FinishedAt { get; private set; }
+        public int? ExitCode { get; private set; }
+        public DateTime QueuedAt { get; private set; }
+        public DateTime StartedAt { get; private set; }
+        public DateTime FinishedAt { get; private set; }
         public TaskState State { get; private set; }
 
         public AssetRecord Record { get; set; }

@@ -5,7 +5,6 @@ public static class AwsConstants
     public const string VpcId = "PwnctlVpc";
     public const string PublicSubnet1 = "PublicSubnet1";
     public const string PrivateSubnet1 = "PrivateSubnet1";
-    public const string VpcSQSEndpoint = "PwnctlLambdaSQSEp";    
     public const string AuroraCluster = "PwnctlAuroraCluster";
     public const string AuroraInstance = "PwnctlAuroraPostgreSqlInstance";
     public const string AuroraInstanceUsername = "pwnadmin";
@@ -17,7 +16,6 @@ public static class AwsConstants
     public const int QueueVisibilityTimeoutInSec = 3600;
     public const string EfsId = "PwnctlFs";
     public const string EfsMountPoint = "/mnt/efs";
-    public const string PwnctlEfsAccessPointId = "PwnctlEfsAccessPointId";
     public const string EcsClusterName = "PwnctlCluster";
     public const string EcsLogGroupId = "PwnctlLogs";
     public const string EcsRoleName = "PwnctlRole";
@@ -31,6 +29,5 @@ public static class AwsConstants
     public const string EcsLogGroupName = "/aws/ecs/pwnctl";
     public const string ApiUrlParamId = "PwnctlApiUrlParam";
     public const string ApiUrlParam = "/pwnctl/Api/BaseUrl";
-    public const string ScaleInPolicy = "ScaleInPolicy";
     public const string ScaleOutPolicy = "ScaleOutPolicy";
 }

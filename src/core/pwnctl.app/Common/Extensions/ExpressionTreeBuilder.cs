@@ -63,31 +63,6 @@ namespace pwnctl.app.Common.Extensions
             return lambda;
         }
 
-        /// <summary>
-        /// builds a LambdaExpression object that matches the provided tag & asset combination 
-        /// </summary>
-        public static LambdaExpression BuildTagMatchingLambda(Asset asset, Tag tag)
-        {
-            var type = typeof(Tag);
-
-            var _param = Expression.Parameter(type, "t");
-
-            var lref = Expression.PropertyOrField(_param, nameof(Tag.Name));
-            var rval = Expression.Constant(tag.Name);
-            var expression = Expression.Equal(lref, rval);
-
-            lref = Expression.PropertyOrField(_param, nameof(Tag.RecordId));
-            rval = Expression.Constant(asset.Id);
-            var assetExpression = Expression.Equal(lref, rval);
-
-            expression = Expression.AndAlso(expression, assetExpression);
-
-            var lamdaMethod = _lambdaMethod.MakeGenericMethod(typeof(Func<,>).MakeGenericType(type, typeof(bool)));
-            var lambda = (LambdaExpression)lamdaMethod.Invoke(null, new object[] { expression, new ParameterExpression[] { _param } });
-
-            return lambda;
-        }
-
         private static MethodInfo _lambdaMethod = typeof(Expression).GetMethods().Where(m => m.Name == nameof(Expression.Lambda)
                         && m.IsGenericMethod && m.GetParameters().Count() == 2
                         && m.GetParameters()[1].ParameterType == typeof(ParameterExpression[])).First();

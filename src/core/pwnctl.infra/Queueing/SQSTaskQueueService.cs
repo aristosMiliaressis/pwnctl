@@ -5,7 +5,7 @@ using pwnctl.app;
 using pwnctl.app.Queueing.Interfaces;
 using pwnctl.app.Queueing.DTO;
 
-namespace pwnctl.infra.Queues
+namespace pwnctl.infra.Queueing
 {
     public sealed class SQSTaskQueueService : TaskQueueService
     {

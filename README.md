@@ -235,14 +235,12 @@ lists assets of the specified class in JSONL(ine) format
 
 exports all assets in JSONL(ine) format at the specified directory
 
+**To DO**
+- [ ]  `$ pwnctl export-db --path dump.sql`
+
 ## `$ pwnctl summary`
 
 prints a summary about queued tasks and found assets
-
-## `$ pwnctl import -s/--source <source>`
-
-**To Do**
-- [ ] burp suite importer
 
 ## Setup
 

@@ -8,7 +8,7 @@ using pwnctl.infra.Aws;
 using pwnctl.infra.Commands;
 using pwnctl.infra.Persistence;
 using pwnctl.infra.Persistence.Extensions;
-using pwnctl.infra.Queues;
+using pwnctl.infra.Queueing;
 using Microsoft.EntityFrameworkCore;
 using pwnctl.app.Queueing.DTO;
 
