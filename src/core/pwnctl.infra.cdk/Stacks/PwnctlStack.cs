@@ -143,7 +143,7 @@ namespace pwnctl.infra.cdk.Stacks
             DLQueue = new Queue(this, AwsConstants.DLQName, new QueueProps
             {
                 QueueName = AwsConstants.DLQName,
-                Encryption = QueueEncryption.UNENCRYPTED,
+                Encryption = QueueEncryption.SQS_MANAGED,
                 ContentBasedDeduplication = true,
                 MaxMessageSizeBytes = 8192,
                 ReceiveMessageWaitTime = Duration.Seconds(20),
@@ -154,7 +154,7 @@ namespace pwnctl.infra.cdk.Stacks
             Queue = new Queue(this, AwsConstants.QueueName, new QueueProps
             {
                 QueueName = AwsConstants.QueueName,
-                Encryption = QueueEncryption.UNENCRYPTED,
+                Encryption = QueueEncryption.SQS_MANAGED,
                 ContentBasedDeduplication = true,
                 MaxMessageSizeBytes = 8192,
                 ReceiveMessageWaitTime = Duration.Seconds(20),
@@ -162,7 +162,7 @@ namespace pwnctl.infra.cdk.Stacks
                 VisibilityTimeout = Duration.Seconds(AwsConstants.QueueVisibilityTimeoutInSec),
                 DeadLetterQueue = new DeadLetterQueue
                 {
-                    MaxReceiveCount = 10,
+                    MaxReceiveCount = 4,
                     Queue = DLQueue
                 }
             });
@@ -173,7 +173,7 @@ namespace pwnctl.infra.cdk.Stacks
             FileSystem = new EFS.FileSystem(this, AwsConstants.EfsId, new FileSystemProps
             {
                 Vpc = Vpc,
-                RemovalPolicy = RemovalPolicy.RETAIN
+                RemovalPolicy = RemovalPolicy.DESTROY
             });
 
             AccessPoint = FileSystem.AddAccessPoint(AwsConstants.EfsApId, new AccessPointOptions
@@ -366,11 +366,17 @@ namespace pwnctl.infra.cdk.Stacks
                 }
             });
 
-            List<IScalingInterval> scaleOutSteps = new();
-            
+            List<IScalingInterval> scalingSteps = new();
+
+            scalingSteps.Add(new ScalingInterval
+            {
+                Upper = 1,
+                Change = 0
+            });
+
             for (int i = 0; i < maxInstances; i++)
             {
-                scaleOutSteps.Add(new ScalingInterval
+                scalingSteps.Add(new ScalingInterval
                 {
                     Lower = stepDepth * i + 1,
                     Change = i + 1
@@ -382,7 +388,7 @@ namespace pwnctl.infra.cdk.Stacks
                 Cooldown = Duration.Seconds(300),
                 Metric = queueDepthMetric,
                 AdjustmentType = AdjustmentType.EXACT_CAPACITY,
-                ScalingSteps = scaleOutSteps.ToArray()
+                ScalingSteps = scalingSteps.ToArray()
             });
         }
     }

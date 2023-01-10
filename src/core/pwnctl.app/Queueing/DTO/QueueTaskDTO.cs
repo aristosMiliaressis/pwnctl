@@ -11,6 +11,8 @@ public sealed class QueueTaskDTO
     [JsonIgnore]
     public Dictionary<string, string> Metadata { get; set; }
 
+    public QueueTaskDTO() { }
+
     public QueueTaskDTO(TaskEntry entry)
     {
         TaskId = entry.Id;
