@@ -1,4 +1,5 @@
 using pwnctl.app.Assets.Aggregates;
+using pwnctl.app.Notifications.Enums;
 using pwnctl.domain.ValueObjects;
 using pwnctl.kernel.BaseClasses;
 
@@ -9,7 +10,7 @@ namespace pwnctl.app.Notifications.Entities
         public string ShortName { get; private init; }
         public AssetClass SubjectClass { get; private set; }
         public string Filter { get; private init; }
-        public string Topic { get; private init; }
+        public NotificationTopic Topic { get; private init; }
 
         public string Subject { init { SubjectClass = AssetClass.Create(value); } }
 

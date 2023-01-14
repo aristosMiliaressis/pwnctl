@@ -101,10 +101,10 @@
 - ShortName: shortname_scanning
   CommandTemplate: shortname-check.sh {{Url}}
   Subject: Endpoint
-  Filter: Tags["Title"].Contains("Internet Information Services") ||  Tags["Title"].Contains("IIS")
+  Filter: Tags["Title"].Contains("Internet Information Services")|| Tags["Title"].Contains("IIS")||Tags["Server"].Contains("IIS")||Tags["Server"].Contains("Microsoft-HTTPAPI")
 
 - ShortName: shortname_scanning_srv
-  CommandTemplate: shortname-check.sh {{Origin}}
+  CommandTemplate: shortname-check.sh {{Address}}
   Subject: Service
   Filter: Tags["Version"].Contains("IIS") || Tags["Version"].Contains("Microsoft HTTPAPI")
 

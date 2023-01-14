@@ -20,16 +20,9 @@ namespace pwnctl.api.Mediator.Handlers.Assets.Commands
 
             var processor = AssetProcessorFactory.Create();
 
-            foreach (var asset in command.Assets)
+            foreach (var asset in command.Assets.Where(a => !string.IsNullOrEmpty(a)))
             {
-                try
-                {
-                    await processor.ProcessAsync(asset);
-                }
-                catch (Exception ex)
-                {
-                    PwnInfraContext.Logger.Exception(ex);
-                }            
+                await processor.TryProcessAsync(asset);           
             }
 
             // leaves TakRecords in a PENDING state inorder to 

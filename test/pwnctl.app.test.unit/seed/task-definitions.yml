@@ -25,7 +25,7 @@
   Subject: Domain
 
 - ShortName: domain_resolution
-  CommandTemplate: dig +short {{Name}} | awk '{print "{{Name}} IN A " $1}'| pwnctl process
+  CommandTemplate: dig +short {{Name}} | awk '{print "{{Name}} IN A " $1}'
   IsActive: false
   Aggressiveness: 1
   Subject: Domain

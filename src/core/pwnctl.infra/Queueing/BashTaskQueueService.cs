@@ -10,11 +10,6 @@ namespace pwnctl.infra.Queueing
     {
         private static readonly string _queueDirectory = Path.Combine(PwnInfraContext.Config.InstallPath , "queue/");
 
-        public Task ChangeBatchVisibility(List<QueueTaskDTO> tasks, CancellationToken token = default)
-        {
-            throw new NotImplementedException();
-        }
-
         public Task DequeueAsync(QueueTaskDTO task, CancellationToken token = default)
         {
             throw new NotImplementedException();

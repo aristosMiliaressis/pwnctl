@@ -4,14 +4,14 @@ using pwnctl.kernel.BaseClasses;
 
 public sealed class PublicSuffix : ValueObject
 {
-    public string Suffix { get; }
+    public string Value { get; }
 
-    private PublicSuffix(string suffix)
+    private PublicSuffix(string value)
     {
-        if(Uri.CheckHostName(suffix) != UriHostNameType.Dns)
-            throw new ArgumentException("Invalid Public Suffix: " + suffix, nameof(suffix));
+        if(Uri.CheckHostName(value) != UriHostNameType.Dns)
+            throw new ArgumentException("Invalid Suffix: " + value, nameof(value));
 
-        Suffix = suffix;
+        Value = value;
     }
 
     public static PublicSuffix Create(string suffix)
@@ -21,6 +21,6 @@ public sealed class PublicSuffix : ValueObject
 
     protected override IEnumerable<object> GetEqualityComponents()
     {
-        yield return Suffix;
+        yield return Value;
     }
 }

@@ -11,6 +11,7 @@ using pwnctl.infra.Persistence.Extensions;
 using pwnctl.infra.Queueing;
 using Microsoft.EntityFrameworkCore;
 using pwnctl.app.Queueing.DTO;
+using pwnctl.app.Tasks.Entities;
 
 namespace pwnctl.svc
 {
@@ -25,7 +26,7 @@ namespace pwnctl.svc
             _hostApplicationLifetime = hostApplicationLifetime;
             _hostApplicationLifetime.ApplicationStopping.Register(() => 
             {
-                PwnInfraContext.Logger.Information(LogSinks.File | LogSinks.Notification, $"{nameof(TaskConsumerService)} stoped.");
+                PwnInfraContext.Logger.Information(LogSinks.File|LogSinks.Notification, $"{nameof(TaskConsumerService)} stoped.");
             });
         }
 
@@ -44,50 +45,33 @@ namespace pwnctl.svc
                     break;
                 }
 
-                var timer = new System.Timers.Timer(1000 * (AwsConstants.QueueVisibilityTimeoutInSec - 10));
-                timer.Elapsed += async (_, _) => await _queueService.ChangeBatchVisibility(taskDTOs, stoppingToken);
-                timer.Start();
-
                 var taskDTO = taskDTOs[0];
-
                 var taskEntry = await context
                                     .JoinedTaskRecordQueryable()
                                     .FirstOrDefaultAsync(r => r.Id == taskDTO.TaskId);
 
                 try
                 {
-                    taskEntry.Started();
-
                     var commandCancellationToken = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
-                    commandCancellationToken.CancelAfter(TimeSpan.FromHours(1));
+                    commandCancellationToken.CancelAfter(TimeSpan.FromSeconds(AwsConstants.QueueVisibilityTimeoutInSec - 60));
 
-                    var process = await CommandExecutor.ExecuteAsync("/bin/bash", null, taskEntry.WrappedCommand, commandCancellationToken.Token);
-
-                    foreach (var line in process.StandardOutput.ReadToEnd().Split("\n").Where(l => !string.IsNullOrWhiteSpace(l)))
+                    var outputLines = await ExecuteTaskAsync(taskEntry, commandCancellationToken.Token);
+                    foreach (var line in outputLines.Where(a => !string.IsNullOrEmpty(a)))
                     {
-                        try
-                        {
-                            await _processor.ProcessAsync(line);
-                        }
-                        catch (Exception ex)
-                        {
-                            PwnInfraContext.Logger.Exception(ex);
-                        }
+                        await _processor.TryProcessAsync(line);
 
                         var pendingTasks = await context.JoinedTaskRecordQueryable()
                                     .Where(r => r.State == TaskState.PENDING)
-                                    .ToListAsync(stoppingToken);
+                                    .ToListAsync();
 
-                        pendingTasks.ForEach(async task => 
+                        pendingTasks.ForEach(async task =>
                         {
-                            task.Queued();
                             await _queueService.EnqueueAsync(new QueueTaskDTO(task));
+                            task.Queued();
                         });
-                        
-                        await context.SaveChangesAsync(stoppingToken);
                     }
 
-                    taskEntry.Finished(process.ExitCode);
+                    await context.SaveChangesAsync();
                 }
                 catch (TaskCanceledException ex)
                 {
@@ -97,16 +81,32 @@ namespace pwnctl.svc
                 catch (Exception ex)
                 {
                     PwnInfraContext.Logger.Exception(ex);
-                    await _queueService.DequeueAsync(taskDTO);
-                    continue;
                 }
-
-                await context.SaveChangesAsync();
 
                 await _queueService.DequeueAsync(taskDTO);
             }
-            
+
             _hostApplicationLifetime.StopApplication();
+        }
+
+        public static async Task<string[]> ExecuteTaskAsync(TaskEntry task, CancellationToken token = default)
+        {
+            string wrappedCommand = @$"{task.Command} | while read assetLine;
+do
+  if [[ ${{assetLine::1}} == '{{' ]];
+  then
+    echo $assetLine | jq -c '.tags += {{""FoundBy"": ""{task.Definition.ShortName}""}}';
+  else
+    echo '{{""asset"":""'$assetLine'"", ""tags"":{{""FoundBy"":""{task.Definition.ShortName}""}}}}';
+  fi;
+done".Replace("\r\n", "").Replace("\n", "");
+
+            task.Started();
+            var process = await CommandExecutor.ExecuteAsync("/bin/bash", null, wrappedCommand, token);
+            var output = await process.StandardOutput.ReadToEndAsync();
+            task.Finished(process.ExitCode);
+
+            return output.Split("\n");
         }
     }
 }

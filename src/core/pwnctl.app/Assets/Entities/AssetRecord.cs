@@ -73,7 +73,7 @@ public sealed class AssetRecord : Entity<string>
         if (tags == null)
             return;
 
-        tags.ToList().ForEach(t => this[t.Key] = t.Value.ToString());
+        tags.ToList().ForEach(t => this[t.Key] = t.Value?.ToString());
     }
 
     public string this[string key]
@@ -83,9 +83,10 @@ public sealed class AssetRecord : Entity<string>
         {
             // if a property with the tag name exists on the asset class, set that property instead of adding a tag.
             var property = typeof(AssetRecord).GetProperties().FirstOrDefault(p => p.Name.ToLower() == key.ToLower());
-            if (property != null && property.GetValue(this) == default)
+            if (property != null)
             {
-                property.SetValue(this, value);
+                if (property.GetValue(this) == default)
+                    property.SetValue(this, value);
                 return;
             }
 

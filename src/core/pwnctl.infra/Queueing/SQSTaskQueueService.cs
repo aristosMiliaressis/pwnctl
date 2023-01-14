@@ -10,7 +10,6 @@ namespace pwnctl.infra.Queueing
     public sealed class SQSTaskQueueService : TaskQueueService
     {
         private readonly AmazonSQSClient _sqsClient = new();
-
         private Dictionary<string,string> _queueUrls;
         private string this[string queueName]
         {
@@ -63,7 +62,6 @@ namespace pwnctl.infra.Queueing
             {
                 PwnInfraContext.Logger.Warning(PwnInfraContext.Serializer.Serialize(messageResponse));
                 PwnInfraContext.Logger.Warning($"HttpStatusCode: {messageResponse.HttpStatusCode}");
-                // TODO: error handling
             }
 
             return messageResponse.Messages.Select(msg => 
@@ -82,33 +80,9 @@ namespace pwnctl.infra.Queueing
 
         public async Task DequeueAsync(QueueTaskDTO task, CancellationToken token = default)
         {
-            // TODO: delete batching?
-
             var response = await _sqsClient.DeleteMessageAsync(this[AwsConstants.QueueName], task.Metadata[nameof(Message.ReceiptHandle)], token);
             if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
                 PwnInfraContext.Logger.Debug("DeleteMessage: " + PwnInfraContext.Serializer.Serialize(response));
-        }
-
-        public async Task ChangeBatchVisibility(List<QueueTaskDTO> tasks, CancellationToken token = default)
-        {
-            PwnInfraContext.Logger.Debug($"ChangeBatchVisibility fot tasks {string.Join(",", tasks.Select(t=>t.TaskId))}");
-
-            // TODO: what if timeout exhedded more than once?
-
-            var request = new ChangeMessageVisibilityBatchRequest
-            {
-                QueueUrl = this[AwsConstants.QueueName],
-                Entries = tasks.Select(msg => new ChangeMessageVisibilityBatchRequestEntry 
-                {
-                    Id = msg.Metadata[nameof(Message.MessageId)],
-                    ReceiptHandle = msg.Metadata[nameof(Message.ReceiptHandle)],
-                    VisibilityTimeout = AwsConstants.QueueVisibilityTimeoutInSec *2*60
-                }).ToList()
-            };
-
-            var response = await _sqsClient.ChangeMessageVisibilityBatchAsync(request, token);
-            if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
-                PwnInfraContext.Logger.Debug("ChangeMessageVisibility: " + PwnInfraContext.Serializer.Serialize(response));
         }
     }
 }

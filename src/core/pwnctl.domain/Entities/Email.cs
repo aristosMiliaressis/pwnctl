@@ -9,7 +9,6 @@ namespace pwnctl.domain.Entities
     {
         [EqualityComponent]
         public string Address { get; init; }
-        public string Hostname  => Address.Split("@").Last();
         public Domain Domain { get; private init; }
         public string DomainId { get; private init; }
 

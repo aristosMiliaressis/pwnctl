@@ -7,6 +7,8 @@ public sealed class TasksViewModel
 {
     public IEnumerable<TaskDTO> Tasks { get; init; }
 
+    public TasksViewModel() { }
+
     public TasksViewModel(List<TaskEntry> tasks)
     {
         Tasks = tasks.Select(t => new TaskDTO(t));

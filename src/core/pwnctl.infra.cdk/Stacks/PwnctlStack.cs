@@ -282,8 +282,8 @@ namespace pwnctl.infra.cdk.Stacks
 
             TaskDefinition = new FargateTaskDefinition(this, AwsConstants.TaskDefinitionId, new FargateTaskDefinitionProps
             {
-                MemoryLimitMiB = 2048,
-                Cpu = 512,
+                Cpu = 256,
+                MemoryLimitMiB = 1024,
                 TaskRole = ecsTaskExecutionRole,
                 ExecutionRole = ecsTaskExecutionRole,
                 Volumes = new ECS.Volume[]
@@ -318,8 +318,6 @@ namespace pwnctl.infra.cdk.Stacks
             var container = TaskDefinition.AddContainer(AwsConstants.ContainerName, new ContainerDefinitionOptions
             {
                 ContainerName = AwsConstants.ContainerName,
-                Cpu = 512,
-                MemoryLimitMiB = 2048,
                 StopTimeout = Duration.Seconds(120),
                 Image = ContainerImage.FromRegistry("public.ecr.aws/i0m2p7r6/pwnctl:latest"),
                 Logging = LogDriver.AwsLogs(new AwsLogDriverProps

@@ -11,6 +11,5 @@ public interface TaskQueueService
     Task<bool> EnqueueAsync(QueueTaskDTO task, CancellationToken token = default);
     Task DequeueAsync(QueueTaskDTO task, CancellationToken token = default);
     Task<List<QueueTaskDTO>> ReceiveAsync(CancellationToken token);
-    Task ChangeBatchVisibility(List<QueueTaskDTO> tasks, CancellationToken token);
 }
 

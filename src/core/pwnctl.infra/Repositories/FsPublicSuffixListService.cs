@@ -1,4 +1,4 @@
-using pwnctl.domain.Services;
+using pwnctl.domain.Interfaces;
 using pwnctl.domain.ValueObjects;
 using pwnctl.infra.Configuration;
 
@@ -8,21 +8,21 @@ namespace pwnctl.infra.Repositories
     {
         private static string _publicSuffixDataFile = $"{EnvironmentVariables.InstallPath}/public_suffix_list.dat";
 
-        private List<PublicSuffix> _publicSuffixes;
+        private List<PublicSuffix> _suffixes;
 
-        public PublicSuffix GetPublicSuffix(string name)
+        public PublicSuffix GetSuffix(string suffix)
         {
             return List()
-                .Where(suffix => name.EndsWith($".{suffix.Suffix}"))
-                .OrderByDescending(s => s.Suffix.Length)
+                .Where(s => suffix.EndsWith($".{s.Value}"))
+                .OrderByDescending(s => s.Value.Length)
                 .FirstOrDefault();
         }
 
         private List<PublicSuffix> List()
         {
-            if (_publicSuffixes == null)
+            if (_suffixes == null)
             {
-                _publicSuffixes = File.ReadLines(_publicSuffixDataFile)
+                _suffixes = File.ReadLines(_publicSuffixDataFile)
                     .Select(suffix => {
                         try {
                             return PublicSuffix.Create(suffix);
@@ -34,7 +34,7 @@ namespace pwnctl.infra.Repositories
                     .ToList();
             }
 
-            return _publicSuffixes;
+            return _suffixes;
         }
     }
 }

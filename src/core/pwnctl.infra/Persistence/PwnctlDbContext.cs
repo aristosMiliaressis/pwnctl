@@ -12,6 +12,7 @@ using pwnctl.domain.Entities;
 using pwnctl.app.Tagging.Entities;
 using pwnctl.app.Assets.Aggregates;
 using pwnctl.infra.Aws;
+using pwnctl.infra.Configuration;
 
 namespace pwnctl.infra.Persistence
 {
@@ -81,7 +82,8 @@ namespace pwnctl.infra.Persistence
 
                 if (PwnInfraContext.Config.IsTestRun)
                 {
-                    optionsBuilder.UseSqlite("Data Source=./pwnctl.db", x => x.MigrationsHistoryTable("__EFMigrationHistory"));
+                    optionsBuilder.UseSqlite($"Data Source={EnvironmentVariables.InstallPath}/pwnctl.db", 
+                                            x => x.MigrationsHistoryTable("__EFMigrationHistory"));
                     return;
                 }
 

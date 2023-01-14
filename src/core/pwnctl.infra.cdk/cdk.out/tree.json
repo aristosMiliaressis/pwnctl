@@ -802,7 +802,7 @@
                     "messageRetentionPeriod": 1209600,
                     "queueName": "pwnctl-dlq.fifo",
                     "receiveMessageWaitTimeSeconds": 20,
-                    "sqsManagedSseEnabled": false,
+                    "sqsManagedSseEnabled": true,
                     "visibilityTimeout": 3600
                   }
                 },
@@ -840,9 +840,9 @@
                           "Arn"
                         ]
                       },
-                      "maxReceiveCount": 10
+                      "maxReceiveCount": 4
                     },
-                    "sqsManagedSseEnabled": false,
+                    "sqsManagedSseEnabled": true,
                     "visibilityTimeout": 3600
                   }
                 },
@@ -1351,7 +1351,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "420c98d669952848fe987f1bfdba9765e23e5822e367b3971347c2a80ad4461d.zip"
+                      "s3Key": "354e51a541b74f0dc2daa6dafec82011019247ff484112129d4d628a43a9aac1.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -1856,10 +1856,8 @@
                   "aws:cdk:cloudformation:props": {
                     "containerDefinitions": [
                       {
-                        "cpu": 512,
                         "essential": true,
                         "image": "public.ecr.aws/i0m2p7r6/pwnctl:latest",
-                        "memory": 2048,
                         "mountPoints": [
                           {
                             "containerPath": "/mnt/efs",
@@ -1929,7 +1927,7 @@
                         ]
                       }
                     ],
-                    "cpu": "512",
+                    "cpu": "256",
                     "executionRoleArn": {
                       "Fn::GetAtt": [
                         "PwnctlRole3D3A5C97",
@@ -1937,7 +1935,7 @@
                       ]
                     },
                     "family": "PwnctlStackPwnctlDef78C9F95D",
-                    "memory": "2048",
+                    "memory": "1024",
                     "networkMode": "awsvpc",
                     "requiresCompatibilities": [
                       "FARGATE"
@@ -2234,6 +2232,137 @@
                         "id": "ScaleOutPolicy",
                         "path": "PwnctlStack/PwnctlSvc/TaskCount/Target/ScaleOutPolicy",
                         "children": {
+                          "LowerPolicy": {
+                            "id": "LowerPolicy",
+                            "path": "PwnctlStack/PwnctlSvc/TaskCount/Target/ScaleOutPolicy/LowerPolicy",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "PwnctlStack/PwnctlSvc/TaskCount/Target/ScaleOutPolicy/LowerPolicy/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::ApplicationAutoScaling::ScalingPolicy",
+                                  "aws:cdk:cloudformation:props": {
+                                    "policyName": "PwnctlStackPwnctlSvcTaskCountTargetScaleOutPolicyLowerPolicy9ECA2AC3",
+                                    "policyType": "StepScaling",
+                                    "scalingTargetId": {
+                                      "Ref": "PwnctlSvcTaskCountTarget569E5CCF"
+                                    },
+                                    "stepScalingPolicyConfiguration": {
+                                      "adjustmentType": "ExactCapacity",
+                                      "cooldown": 300,
+                                      "metricAggregationType": "Average",
+                                      "stepAdjustments": [
+                                        {
+                                          "metricIntervalLowerBound": -20,
+                                          "metricIntervalUpperBound": 0,
+                                          "scalingAdjustment": 9
+                                        },
+                                        {
+                                          "metricIntervalLowerBound": -40,
+                                          "metricIntervalUpperBound": -20,
+                                          "scalingAdjustment": 8
+                                        },
+                                        {
+                                          "metricIntervalLowerBound": -60,
+                                          "metricIntervalUpperBound": -40,
+                                          "scalingAdjustment": 7
+                                        },
+                                        {
+                                          "metricIntervalLowerBound": -80,
+                                          "metricIntervalUpperBound": -60,
+                                          "scalingAdjustment": 6
+                                        },
+                                        {
+                                          "metricIntervalLowerBound": -100,
+                                          "metricIntervalUpperBound": -80,
+                                          "scalingAdjustment": 5
+                                        },
+                                        {
+                                          "metricIntervalLowerBound": -120,
+                                          "metricIntervalUpperBound": -100,
+                                          "scalingAdjustment": 4
+                                        },
+                                        {
+                                          "metricIntervalLowerBound": -140,
+                                          "metricIntervalUpperBound": -120,
+                                          "scalingAdjustment": 3
+                                        },
+                                        {
+                                          "metricIntervalLowerBound": -160,
+                                          "metricIntervalUpperBound": -140,
+                                          "scalingAdjustment": 2
+                                        },
+                                        {
+                                          "metricIntervalLowerBound": -180,
+                                          "metricIntervalUpperBound": -160,
+                                          "scalingAdjustment": 1
+                                        },
+                                        {
+                                          "metricIntervalUpperBound": -180,
+                                          "scalingAdjustment": 0
+                                        }
+                                      ]
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_applicationautoscaling.CfnScalingPolicy",
+                                  "version": "2.51.1"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_applicationautoscaling.StepScalingAction",
+                              "version": "2.51.1"
+                            }
+                          },
+                          "LowerAlarm": {
+                            "id": "LowerAlarm",
+                            "path": "PwnctlStack/PwnctlSvc/TaskCount/Target/ScaleOutPolicy/LowerAlarm",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "PwnctlStack/PwnctlSvc/TaskCount/Target/ScaleOutPolicy/LowerAlarm/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                                  "aws:cdk:cloudformation:props": {
+                                    "comparisonOperator": "LessThanOrEqualToThreshold",
+                                    "evaluationPeriods": 1,
+                                    "alarmActions": [
+                                      {
+                                        "Ref": "PwnctlSvcTaskCountTargetScaleOutPolicyLowerPolicy82027844"
+                                      }
+                                    ],
+                                    "alarmDescription": "Lower threshold scaling alarm",
+                                    "dimensions": [
+                                      {
+                                        "name": "QueueName",
+                                        "value": {
+                                          "Fn::GetAtt": [
+                                            "pwnctlfifo1F05FF65",
+                                            "QueueName"
+                                          ]
+                                        }
+                                      }
+                                    ],
+                                    "metricName": "ApproximateNumberOfMessagesVisible",
+                                    "namespace": "AWS/SQS",
+                                    "period": 300,
+                                    "statistic": "Average",
+                                    "threshold": 181
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
+                                  "version": "2.51.1"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
+                              "version": "2.51.1"
+                            }
+                          },
                           "UpperPolicy": {
                             "id": "UpperPolicy",
                             "path": "PwnctlStack/PwnctlSvc/TaskCount/Target/ScaleOutPolicy/UpperPolicy",
@@ -2257,100 +2386,55 @@
                                         {
                                           "metricIntervalLowerBound": 0,
                                           "metricIntervalUpperBound": 20,
-                                          "scalingAdjustment": 1
+                                          "scalingAdjustment": 10
                                         },
                                         {
                                           "metricIntervalLowerBound": 20,
                                           "metricIntervalUpperBound": 40,
-                                          "scalingAdjustment": 2
+                                          "scalingAdjustment": 11
                                         },
                                         {
                                           "metricIntervalLowerBound": 40,
                                           "metricIntervalUpperBound": 60,
-                                          "scalingAdjustment": 3
+                                          "scalingAdjustment": 12
                                         },
                                         {
                                           "metricIntervalLowerBound": 60,
                                           "metricIntervalUpperBound": 80,
-                                          "scalingAdjustment": 4
+                                          "scalingAdjustment": 13
                                         },
                                         {
                                           "metricIntervalLowerBound": 80,
                                           "metricIntervalUpperBound": 100,
-                                          "scalingAdjustment": 5
+                                          "scalingAdjustment": 14
                                         },
                                         {
                                           "metricIntervalLowerBound": 100,
                                           "metricIntervalUpperBound": 120,
-                                          "scalingAdjustment": 6
+                                          "scalingAdjustment": 15
                                         },
                                         {
                                           "metricIntervalLowerBound": 120,
                                           "metricIntervalUpperBound": 140,
-                                          "scalingAdjustment": 7
+                                          "scalingAdjustment": 16
                                         },
                                         {
                                           "metricIntervalLowerBound": 140,
                                           "metricIntervalUpperBound": 160,
-                                          "scalingAdjustment": 8
+                                          "scalingAdjustment": 17
                                         },
                                         {
                                           "metricIntervalLowerBound": 160,
                                           "metricIntervalUpperBound": 180,
-                                          "scalingAdjustment": 9
+                                          "scalingAdjustment": 18
                                         },
                                         {
                                           "metricIntervalLowerBound": 180,
                                           "metricIntervalUpperBound": 200,
-                                          "scalingAdjustment": 10
-                                        },
-                                        {
-                                          "metricIntervalLowerBound": 200,
-                                          "metricIntervalUpperBound": 220,
-                                          "scalingAdjustment": 11
-                                        },
-                                        {
-                                          "metricIntervalLowerBound": 220,
-                                          "metricIntervalUpperBound": 240,
-                                          "scalingAdjustment": 12
-                                        },
-                                        {
-                                          "metricIntervalLowerBound": 240,
-                                          "metricIntervalUpperBound": 260,
-                                          "scalingAdjustment": 13
-                                        },
-                                        {
-                                          "metricIntervalLowerBound": 260,
-                                          "metricIntervalUpperBound": 280,
-                                          "scalingAdjustment": 14
-                                        },
-                                        {
-                                          "metricIntervalLowerBound": 280,
-                                          "metricIntervalUpperBound": 300,
-                                          "scalingAdjustment": 15
-                                        },
-                                        {
-                                          "metricIntervalLowerBound": 300,
-                                          "metricIntervalUpperBound": 320,
-                                          "scalingAdjustment": 16
-                                        },
-                                        {
-                                          "metricIntervalLowerBound": 320,
-                                          "metricIntervalUpperBound": 340,
-                                          "scalingAdjustment": 17
-                                        },
-                                        {
-                                          "metricIntervalLowerBound": 340,
-                                          "metricIntervalUpperBound": 360,
-                                          "scalingAdjustment": 18
-                                        },
-                                        {
-                                          "metricIntervalLowerBound": 360,
-                                          "metricIntervalUpperBound": 380,
                                           "scalingAdjustment": 19
                                         },
                                         {
-                                          "metricIntervalLowerBound": 380,
+                                          "metricIntervalLowerBound": 200,
                                           "scalingAdjustment": 20
                                         }
                                       ]
@@ -2401,7 +2485,7 @@
                                     "namespace": "AWS/SQS",
                                     "period": 300,
                                     "statistic": "Average",
-                                    "threshold": 1
+                                    "threshold": 181
                                   }
                                 },
                                 "constructInfo": {

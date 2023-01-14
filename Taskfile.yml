@@ -43,6 +43,7 @@ tasks:
       - chmod +x src/pwnctl.cli/bin/Release/net6.0/linux-x64/publish/pwnctl
       - sudo mv src/pwnctl.cli/bin/Release/net6.0/linux-x64/publish/pwnctl /usr/local/bin
       - sudo mkdir -p /etc/pwnctl/
+      - sudo chown $USER /etc/pwnctl/
       - sudo mv src/pwnctl.cli/bin/Release/net6.0/linux-x64/publish/config.ini /etc/pwnctl/
   
   bootstrap-aws:

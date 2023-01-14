@@ -5,6 +5,7 @@ using pwnctl.kernel.Extensions;
 using pwnctl.infra.Configuration;
 using Serilog;
 using Serilog.Events;
+using pwnctl.app.Notifications.Enums;
 
 public class PwnLogger : AppLogger
 {
@@ -99,7 +100,7 @@ public class PwnLogger : AppLogger
 
         if ((sinkBitMap & LogSinks.Notification) > 0)
         {
-            _notificationSender.Send($"[{EnvironmentVariables.HOSTNAME}] {message}", "status");
+            _notificationSender.Send($"[{EnvironmentVariables.HOSTNAME}] {message}", NotificationTopic.status);
         }
     }
 }

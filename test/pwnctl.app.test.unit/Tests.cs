@@ -3,7 +3,7 @@ namespace pwnctl.app.test.unit;
 using pwnctl.domain.BaseClasses;
 using pwnctl.domain.Entities;
 using pwnctl.domain.Enums;
-using pwnctl.domain.Services;
+using pwnctl.domain.Interfaces;
 using pwnctl.app.Assets;
 using pwnctl.app.Assets.Aggregates;
 using pwnctl.app.Assets.DTO;
@@ -15,6 +15,8 @@ using pwnctl.infra.Repositories;
 
 using System.Net;
 using Microsoft.EntityFrameworkCore;
+using pwnctl.app.Tasks.Entities;
+using pwnctl.infra.Commands;
 
 public sealed class Tests
 {
@@ -147,12 +149,12 @@ public sealed class Tests
         var exampleDomain = new Domain("xyz.example.com");
 
         Assert.Equal("example.com", exampleDomain.GetRegistrationDomain());
-        Assert.Equal("com", PublicSuffixListService.Instance.GetPublicSuffix(exampleDomain.Name).Suffix);
+        Assert.Equal("com", PublicSuffixListService.Instance.GetSuffix(exampleDomain.Name).Value);
 
         var exampleSubDomain = new Domain("sub.example.azurewebsites.net");
 
         Assert.Equal("example.azurewebsites.net", exampleSubDomain.GetRegistrationDomain());
-        Assert.Equal("azurewebsites.net", PublicSuffixListService.Instance.GetPublicSuffix(exampleSubDomain.Name).Suffix);
+        Assert.Equal("azurewebsites.net", PublicSuffixListService.Instance.GetSuffix(exampleSubDomain.Name).Value);
     }
 
     [Fact]
@@ -324,7 +326,7 @@ public sealed class Tests
         var resolutionTask = context.JoinedTaskRecordQueryable()
                                     .First(t => t.Record.Domain.Name == "sub.tesla.com" 
                                              && t.Definition.ShortName == "domain_resolution");
-        Assert.Equal("dig +short sub.tesla.com | awk '{print \"sub.tesla.com IN A \" $1}'| pwnctl process", resolutionTask.Command);
+        Assert.Equal("dig +short sub.tesla.com | awk '{print \"sub.tesla.com IN A \" $1}'", resolutionTask.Command);
 
         // blacklist test
         Assert.False(context.JoinedTaskRecordQueryable().Any(t => t.Definition.ShortName == "subfinder"));
@@ -371,7 +373,8 @@ public sealed class Tests
         exampleUrl.Tags = new Dictionary<string, object> {
             {"Server", "apache"},   // testing that existing tags don't get updated
             {"newTag", "whatever"}, // testing that new tags are added to existing assets
-            {"emptyTag", ""}        // testing that empty tags are not added
+            {"emptyTag", ""},        // testing that empty tags are not added
+            {"nullTag", ""}
         };
 
         await processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(exampleUrl));
@@ -385,6 +388,7 @@ public sealed class Tests
         Assert.Equal("whatever", newTag.Value);
 
         Assert.Null(endpointRecord.Tags.FirstOrDefault(t => t.Name == "emptytag"));
+        Assert.Null(endpointRecord.Tags.FirstOrDefault(t => t.Name == "nullTag"));
 
         ctTag = endpointRecord.Tags.First(t => t.Name == "content-type");
         Assert.Equal("text/html", ctTag.Value);
@@ -438,5 +442,61 @@ public sealed class Tests
         await processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(sshService));
         var service = context.Services.Where(ep => ep.Origin == "tcp://1.3.3.7:22").First();
         //Assert.Equal("ssh", service.ApplicationProtocol);
+    }
+
+    [Fact]
+    public async Task TaskEntry_Tests()
+    {
+        PwnctlDbContext context = new();
+        var processor = AssetProcessorFactory.Create();
+
+        var definition = context.TaskDefinitions.FirstOrDefault(t => t.ShortName == "domain_resolution");
+        
+        var record = new AssetRecord(new Domain("example.com"));
+        var task = new TaskEntry(definition, record);
+
+        var rawInputTestCmd = task.WrappedCommand.Replace(task.Command, "echo example.com");
+
+        var process = await CommandExecutor.ExecuteAsync("/bin/bash", null, rawInputTestCmd);
+
+        string? line = "";
+        while ((line = process.StandardOutput.ReadLine()) != null)
+        {
+            await processor.ProcessAsync(line);
+        }
+
+        record = context.AssetRecords.Include(r => r.Tags).Include(r => r.Domain).FirstOrDefault(r => r.Domain.Name == "example.com");
+        Assert.Equal("domain_resolution", record?.FoundBy);
+        Assert.DoesNotContain("foundby", record?.Tags.Select(t => t.Name));
+
+        var jsonInputTestCmd = task.WrappedCommand.Replace(task.Command, "echo '{\"Asset\":\"example2.com\"}'");
+
+        process = await CommandExecutor.ExecuteAsync("/bin/bash", null, jsonInputTestCmd);
+
+        while ((line = process.StandardOutput.ReadLine()) != null)
+        {
+            await processor.ProcessAsync(line);
+        }
+
+        record = context.AssetRecords.Include(r => r.Tags).Include(r => r.Domain).FirstOrDefault(r => r.Domain.Name == "example2.com");
+        Assert.Equal("domain_resolution", record?.FoundBy);
+        Assert.DoesNotContain("foundby", record?.Tags.Select(t => t.Name));
+
+        var jsonAltInputTestCmd = task.WrappedCommand.Replace(task.Command, "echo '{\"Asset\":\"sub.example3.com\",\"tags\":{\"test\":\"tag\"}}'");
+
+        process = await CommandExecutor.ExecuteAsync("/bin/bash", null, jsonAltInputTestCmd);
+
+        while ((line = process.StandardOutput.ReadLine()) != null)
+        {
+            await processor.ProcessAsync(line);
+        }
+
+        record = context.AssetRecords.Include(r => r.Tags).Include(r => r.Domain).FirstOrDefault(r => r.Domain.Name == "sub.example3.com");
+        Assert.Equal("domain_resolution", record?.FoundBy);
+        Assert.DoesNotContain("foundby", record?.Tags.Select(t => t.Name));
+
+        record = context.AssetRecords.Include(r => r.Tags).Include(r => r.Domain).FirstOrDefault(r => r.Domain.Name == "example3.com");
+        Assert.Equal("domain_resolution", record?.FoundBy);
+        Assert.DoesNotContain("foundby", record?.Tags.Select(t => t.Name));
     }
 }

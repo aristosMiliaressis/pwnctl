@@ -25,15 +25,23 @@ namespace pwnctl.app.Assets
             _programs = programs;
         }
 
+        public async Task<bool> TryProcessAsync(string assetText)
+        {
+            try
+            {
+                await ProcessAsync(assetText);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                PwnInfraContext.Logger.Exception(ex);
+                return false;
+            }
+        }
+
         public async Task ProcessAsync(string assetText)
         {
-            Dictionary<string, object> tags = null;
-            if (assetText.Trim().StartsWith("{"))
-            {
-                var dto = PwnInfraContext.Serializer.Deserialize<AssetDTO>(assetText);
-                assetText = dto.Asset;
-                tags = dto.Tags;
-            }
+            Dictionary<string, object> tags = TagParser.Parse(ref assetText);
 
             Asset asset = AssetParser.Parse(assetText);
 
@@ -51,7 +59,9 @@ namespace pwnctl.app.Assets
                     .Where(a => a != null)
                     .ForEachAsync(async refAsset =>
                     {
-                        await ProcessAssetAsync(refAsset, null);
+                        await ProcessAssetAsync(refAsset, tags == null || !tags.ContainsKey("FoundBy")
+                                        ? null 
+                                        : new Dictionary<string, object> { { "FoundBy", tags["FoundBy"] } });
                     });
 
             var record = await _assetRepository.FindRecordAsync(asset); 

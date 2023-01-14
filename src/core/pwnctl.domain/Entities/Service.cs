@@ -6,13 +6,11 @@ namespace pwnctl.domain.Entities
 {
     public sealed class Service : Asset
     {
-        public ushort Port { get; init; }
-
         [EqualityComponent]
         public string Origin { get; init; }
 
+        public ushort Port { get; init; }
         public TransportProtocol TransportProtocol { get; init; }
-        public string ApplicationProtocol { get; init; }
 
         public string HostId { get; private init; }
         public Host Host { get; init; }

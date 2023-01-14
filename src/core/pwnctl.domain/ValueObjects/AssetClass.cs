@@ -1,6 +1,5 @@
 namespace pwnctl.domain.ValueObjects;
 
-using System.Text.Json.Serialization;
 using pwnctl.domain.BaseClasses;
 using pwnctl.kernel.BaseClasses;
 

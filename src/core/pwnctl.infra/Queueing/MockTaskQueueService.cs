@@ -5,11 +5,6 @@ namespace pwnctl.infra.Queueing
 {
     public sealed class MockTaskQueueService : TaskQueueService
     {
-        public Task ChangeBatchVisibility(List<QueueTaskDTO> tasks, CancellationToken token = default)
-        {
-            return Task.CompletedTask;
-        }
-
         public Task DequeueAsync(QueueTaskDTO task, CancellationToken token = default)
         {
             return Task.CompletedTask;

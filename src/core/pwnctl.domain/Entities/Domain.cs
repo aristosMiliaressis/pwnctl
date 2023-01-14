@@ -1,7 +1,7 @@
 ﻿using pwnctl.kernel.Attributes;
 using pwnctl.domain.BaseClasses;
 using System.Text.RegularExpressions;
-using pwnctl.domain.Services;
+using pwnctl.domain.Interfaces;
 
 namespace pwnctl.domain.Entities
 {
@@ -24,8 +24,8 @@ namespace pwnctl.domain.Entities
 
             Name = domain;
 
-            var suffix = PublicSuffixListService.Instance.GetPublicSuffix(Name);
-            ZoneDepth = Name.Substring(0, Name.Length - suffix.Suffix.Length - 1)
+            var suffix = PublicSuffixListService.Instance.GetSuffix(Name);
+            ZoneDepth = Name.Substring(0, Name.Length - suffix.Value.Length - 1)
                         .Split(".")
                         .Count();
         }
@@ -53,8 +53,8 @@ namespace pwnctl.domain.Entities
                 tmp = tmp.ParentDomain;
             }
 
-            var pubSuffix = PublicSuffixListService.Instance.GetPublicSuffix(domain.Name);
-            var word = registrationDomain.Name.Substring(0, registrationDomain.Name.Length - pubSuffix.Suffix.Length - 1);
+            var suffix = PublicSuffixListService.Instance.GetSuffix(domain.Name);
+            var word = registrationDomain.Name.Substring(0, registrationDomain.Name.Length - suffix.Value.Length - 1);
             domain.Keyword = new Keyword(registrationDomain, word);
 
             asset = domain;
@@ -69,14 +69,14 @@ namespace pwnctl.domain.Entities
 
         public string GetRegistrationDomain()
         {
-            var suffix = PublicSuffixListService.Instance.GetPublicSuffix(Name);
+            var suffix = PublicSuffixListService.Instance.GetSuffix(Name);
             if (suffix == null)
                 return null;
 
             return Name
-                    .Substring(0, Name.Length - suffix.Suffix.Length - 1)
+                    .Substring(0, Name.Length - suffix.Value.Length - 1)
                     .Split(".")
-                    .Last() + "." + suffix.Suffix;
+                    .Last() + "." + suffix.Value;
         }
 
         private static readonly Regex _domainRegex = new Regex("(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]");

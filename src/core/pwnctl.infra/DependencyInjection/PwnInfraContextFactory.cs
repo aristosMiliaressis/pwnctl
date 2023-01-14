@@ -1,7 +1,7 @@
 
 namespace pwnctl.infra.DependencyInjection;
 
-using pwnctl.domain.Services;
+using pwnctl.domain.Interfaces;
 using pwnctl.app;
 using pwnctl.infra.Configuration;
 using pwnctl.infra.Notifications;

@@ -9,7 +9,8 @@ namespace pwnctl.app.Assets
     {
         public static Asset Parse(string assetText)
         {
-            ArgumentNullException.ThrowIfNull(assetText, nameof(assetText));
+            if (string.IsNullOrEmpty(assetText))
+                throw new ArgumentException(assetText, nameof(assetText));
 
             assetText = assetText.Trim();
 

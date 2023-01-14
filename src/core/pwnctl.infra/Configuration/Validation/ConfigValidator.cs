@@ -167,8 +167,6 @@ public static class ConfigValidator
                 errorMessage = $"notification rule {rule.ShortName} Filter through exception";
                 return false;
             }
-
-            // TODO: validate topic
         }
 
         return true;
