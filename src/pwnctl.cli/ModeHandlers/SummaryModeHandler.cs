@@ -35,9 +35,10 @@ namespace pwnctl.cli.ModeHandlers
             }
 
             Console.WriteLine();
+            Console.WriteLine($"{"TASK".PadLeft(25)}  COUNT - TIME");
             foreach(var def in model.TaskDetails.OrderBy(t => t.Duration))
             {
-                Console.WriteLine($"{def.ShortName.PadLeft(25)}: {def.Count.ToString().PadLeft(5)} - {def.Duration}");
+                Console.WriteLine($"{def.ShortName.PadLeft(25)}: {def.Count.ToString().PadLeft(5)} - {def.Duration.ToString("hh\\:mm\\:ss")}");
             }
         }
 

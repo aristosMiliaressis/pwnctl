@@ -50,7 +50,7 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Commands
                 {
                     ShortName = def.ShortName,
                     Count = entries.Count,
-                    Duration = TimeSpan.FromSeconds(entries.Select(e => e.FinishedAt - e.StartedAt).Sum(e => e.Seconds))
+                    Duration = TimeSpan.FromSeconds(entries.Select(e => e.FinishedAt - e.StartedAt).Sum(e => e.TotalSeconds))
                 });
             }
 
