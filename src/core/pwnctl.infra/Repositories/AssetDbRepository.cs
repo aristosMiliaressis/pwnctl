@@ -53,12 +53,9 @@ namespace pwnctl.infra.Repositories
 
                     assetRef = _context.FindAsset(assetRef);
                     if (assetRef == null)
-                    {
-                        reference.SetValue(record.Asset, assetRef);
                         return;
-                    }
 
-                    await _context.Entry(assetRef).LoadReferencesRecursivelyAsync((type) => type.IsAssignableTo(typeof(Asset)));
+                    await _context.Entry(assetRef).LoadReferencesRecursivelyAsync();
 
                     reference.SetValue(record.Asset, assetRef);
                 });
@@ -73,7 +70,7 @@ namespace pwnctl.infra.Repositories
             {
                 record.FoundAt = DateTime.UtcNow;
 
-                _context.Entry(record.Asset).State = EntityState.Added; // TODO: Track "Domain" refs from Tests.cs
+                _context.Entry(record.Asset).State = EntityState.Added;
                 _context.Add(record);
 
                 await _context.SaveChangesAsync();

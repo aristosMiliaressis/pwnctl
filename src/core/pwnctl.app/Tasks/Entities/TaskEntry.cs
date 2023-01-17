@@ -26,7 +26,6 @@ namespace pwnctl.app.Tasks.Entities
         {
             State = TaskState.PENDING;
             Definition = definition;
-
             Record = record;
         }
 
@@ -103,9 +102,9 @@ namespace pwnctl.app.Tasks.Entities
 do
   if [[ ${{assetLine::1}} == '{{' ]];
   then
-    echo $assetLine | jq -c '.tags += {{""FoundBy"": ""{Definition.ShortName}""}}';
+    echo $assetLine | jq -c '.FoundBy = ""{Definition.ShortName}""';
   else
-    echo '{{""asset"":""'$assetLine'"", ""tags"":{{""FoundBy"":""{Definition.ShortName}""}}}}';
+    echo '{{""asset"":""'$assetLine'"", ""FoundBy"":""{Definition.ShortName}""}}';
   fi; 
 done".Replace("\r\n", "").Replace("\n", "");
     }

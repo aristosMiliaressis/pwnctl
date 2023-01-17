@@ -141,6 +141,7 @@ RUN git clone https://github.com/EnableSecurity/wafw00f.git \
     && cd wafw00f && python3 setup.py install
 RUN go install github.com/rverton/webanalyze/cmd/webanalyze@latest \
     && webanalyze -update
+RUN pip3 install s3scanner
 
 RUN curl https://api.github.com/repos/michenriksen/aquatone/releases/latest 2>/dev/null \
     | grep browser_download_url \

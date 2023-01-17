@@ -546,7 +546,7 @@
     "QueueName": "pwnctl-dlq.fifo",
     "ReceiveMessageWaitTimeSeconds": 20,
     "SqsManagedSseEnabled": true,
-    "VisibilityTimeout": 3600
+    "VisibilityTimeout": 7200
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete",
@@ -560,7 +560,7 @@
     "ContentBasedDeduplication": true,
     "FifoQueue": true,
     "MaximumMessageSize": 8192,
-    "MessageRetentionPeriod": 86400,
+    "MessageRetentionPeriod": 1209600,
     "QueueName": "pwnctl.fifo",
     "ReceiveMessageWaitTimeSeconds": 20,
     "RedrivePolicy": {
@@ -573,7 +573,7 @@
      "maxReceiveCount": 4
     },
     "SqsManagedSseEnabled": true,
-    "VisibilityTimeout": 3600
+    "VisibilityTimeout": 7200
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete",
@@ -932,7 +932,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "354e51a541b74f0dc2daa6dafec82011019247ff484112129d4d628a43a9aac1.zip"
+     "S3Key": "f0ae3b5d4d680c3cb9f3478b4ab37d4cbcc1cb707690e6370b73962c022ba4f7.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -945,7 +945,7 @@
       "PWNCTL_Aws__InVpc": "true",
       "PWNCTL_TaskQueue__QueueName": "pwnctl.fifo",
       "PWNCTL_TaskQueue__DLQName": "pwnctl-dlq.fifo",
-      "PWNCTL_TaskQueue__VisibilityTimeout": "3600",
+      "PWNCTL_TaskQueue__VisibilityTimeout": "7200",
       "PWNCTL_Logging__MinLevel": "Debug",
       "PWNCTL_Logging__FilePath": "/mnt/efs/",
       "PWNCTL_Logging__LogGroup": "/aws/lambda/PwnctlApi",
@@ -1014,7 +1014,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "PwnctlStack/PwnctlApi/Resource",
-    "aws:asset:path": "asset.354e51a541b74f0dc2daa6dafec82011019247ff484112129d4d628a43a9aac1.0",
+    "aws:asset:path": "asset.f0ae3b5d4d680c3cb9f3478b4ab37d4cbcc1cb707690e6370b73962c022ba4f7.0",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
@@ -1350,7 +1350,7 @@
        },
        {
         "Name": "PWNCTL_TaskQueue__VisibilityTimeout",
-        "Value": "3600"
+        "Value": "7200"
        },
        {
         "Name": "PWNCTL_Logging__FilePath",

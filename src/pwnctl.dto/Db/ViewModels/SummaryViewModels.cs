@@ -19,6 +19,19 @@ public sealed class SummaryViewModel
     public int InScopeEndpointCount { get; set; }
     public int InScopeParamCount { get; set; }
     public int InScopeEmailCount { get; set; }
+    public int PendingTaskCount { get; set; }
+    public int QueuedTaskCount { get; set; }
+    public int RunningTaskCount { get; set; }
+    public int FinishedTaskCount { get; set; }
     public DateTime? FirstTask { get; set; }
     public DateTime? LastTask { get; set; }
+
+    public List<TaskDefinitionDetails> TaskDetails { get; set; }
+
+    public class TaskDefinitionDetails 
+    {
+        public string ShortName { get; set; }
+        public int Count { get; set; }
+        public TimeSpan Duration { get; set; }
+    }
 }

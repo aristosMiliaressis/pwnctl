@@ -39,14 +39,8 @@ public sealed class AssetRecord : Entity<string>
     public NetRange NetRange { get; set; }
     public string NetRangeId { get; set; }
 
-    public Keyword Keyword { get; set; }
-    public string KeywordId { get; set; }
-
     public Email Email { get; set; }
     public string EmailId { get; set; }
-
-    public CloudService CloudService { get; set; }
-    public string CloudServiceId { get; set; }
 
     public Parameter Parameter { get; set; }
     public string ParameterId { get; set; }
@@ -60,6 +54,12 @@ public sealed class AssetRecord : Entity<string>
     {
         SubjectClass = AssetClass.Create(asset.GetType().Name);
         typeof(AssetRecord).GetProperty(SubjectClass.Class).SetValue(this, asset);
+    }
+
+    public AssetRecord(Asset asset, string foundBy)
+        : this(asset)
+    {
+        FoundBy = foundBy;
     }
 
     public void SetOwningProgram(Program program)

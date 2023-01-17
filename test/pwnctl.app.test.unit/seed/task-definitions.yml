@@ -47,4 +47,4 @@
   CommandTemplate: cloud-enum.sh {{Word}}
   IsActive: true
   Aggressiveness: 5
-  Subject: Keyword
+  Subject: Domain

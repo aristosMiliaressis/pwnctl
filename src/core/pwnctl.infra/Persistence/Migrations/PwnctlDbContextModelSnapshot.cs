@@ -27,9 +27,6 @@ namespace pwnctl.infra.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
-                    b.Property<string>("CloudServiceId")
-                        .HasColumnType("text");
-
                     b.Property<string>("DNSRecordId")
                         .HasColumnType("text");
 
@@ -54,9 +51,6 @@ namespace pwnctl.infra.Migrations
                     b.Property<bool>("InScope")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("KeywordId")
-                        .HasColumnType("text");
-
                     b.Property<string>("NetRangeId")
                         .HasColumnType("text");
 
@@ -74,8 +68,6 @@ namespace pwnctl.infra.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CloudServiceId");
-
                     b.HasIndex("DNSRecordId");
 
                     b.HasIndex("DomainId");
@@ -85,8 +77,6 @@ namespace pwnctl.infra.Migrations
                     b.HasIndex("EndpointId");
 
                     b.HasIndex("HostId");
-
-                    b.HasIndex("KeywordId");
 
                     b.HasIndex("NetRangeId");
 
@@ -115,8 +105,8 @@ namespace pwnctl.infra.Migrations
                     b.Property<string>("ShortName")
                         .HasColumnType("text");
 
-                    b.Property<string>("Topic")
-                        .HasColumnType("text");
+                    b.Property<int>("Topic")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -298,33 +288,6 @@ namespace pwnctl.infra.Migrations
                     b.ToTable("TaskEntries");
                 });
 
-            modelBuilder.Entity("pwnctl.domain.Entities.CloudService", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
-
-                    b.Property<string>("DomainId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Hostname")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Provider")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Service")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DomainId");
-
-                    b.HasIndex("Hostname")
-                        .IsUnique();
-
-                    b.ToTable("CloudService");
-                });
-
             modelBuilder.Entity("pwnctl.domain.Entities.DNSRecord", b =>
                 {
                     b.Property<string>("Id")
@@ -453,28 +416,6 @@ namespace pwnctl.infra.Migrations
                     b.ToTable("Hosts");
                 });
 
-            modelBuilder.Entity("pwnctl.domain.Entities.Keyword", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
-
-                    b.Property<string>("DomainId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Word")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DomainId")
-                        .IsUnique();
-
-                    b.HasIndex("Word")
-                        .IsUnique();
-
-                    b.ToTable("Keywords");
-                });
-
             modelBuilder.Entity("pwnctl.domain.Entities.NetRange", b =>
                 {
                     b.Property<string>("Id")
@@ -576,10 +517,6 @@ namespace pwnctl.infra.Migrations
 
             modelBuilder.Entity("pwnctl.app.Assets.Aggregates.AssetRecord", b =>
                 {
-                    b.HasOne("pwnctl.domain.Entities.CloudService", "CloudService")
-                        .WithMany()
-                        .HasForeignKey("CloudServiceId");
-
                     b.HasOne("pwnctl.domain.Entities.DNSRecord", "DNSRecord")
                         .WithMany()
                         .HasForeignKey("DNSRecordId");
@@ -599,10 +536,6 @@ namespace pwnctl.infra.Migrations
                     b.HasOne("pwnctl.domain.Entities.Host", "Host")
                         .WithMany()
                         .HasForeignKey("HostId");
-
-                    b.HasOne("pwnctl.domain.Entities.Keyword", "Keyword")
-                        .WithMany()
-                        .HasForeignKey("KeywordId");
 
                     b.HasOne("pwnctl.domain.Entities.NetRange", "NetRange")
                         .WithMany()
@@ -641,8 +574,6 @@ namespace pwnctl.infra.Migrations
                                 .HasForeignKey("AssetRecordId");
                         });
 
-                    b.Navigation("CloudService");
-
                     b.Navigation("DNSRecord");
 
                     b.Navigation("Domain");
@@ -652,8 +583,6 @@ namespace pwnctl.infra.Migrations
                     b.Navigation("Endpoint");
 
                     b.Navigation("Host");
-
-                    b.Navigation("Keyword");
 
                     b.Navigation("NetRange");
 
@@ -765,15 +694,6 @@ namespace pwnctl.infra.Migrations
                     b.Navigation("Record");
                 });
 
-            modelBuilder.Entity("pwnctl.domain.Entities.CloudService", b =>
-                {
-                    b.HasOne("pwnctl.domain.Entities.Domain", "Domain")
-                        .WithMany()
-                        .HasForeignKey("DomainId");
-
-                    b.Navigation("Domain");
-                });
-
             modelBuilder.Entity("pwnctl.domain.Entities.DNSRecord", b =>
                 {
                     b.HasOne("pwnctl.domain.Entities.Domain", "Domain")
@@ -814,21 +734,12 @@ namespace pwnctl.infra.Migrations
                         .HasForeignKey("ParentEndpointId");
 
                     b.HasOne("pwnctl.domain.Entities.Service", "Service")
-                        .WithMany()
+                        .WithMany("Endpoints")
                         .HasForeignKey("ServiceId");
 
                     b.Navigation("ParentEndpoint");
 
                     b.Navigation("Service");
-                });
-
-            modelBuilder.Entity("pwnctl.domain.Entities.Keyword", b =>
-                {
-                    b.HasOne("pwnctl.domain.Entities.Domain", "Domain")
-                        .WithOne()
-                        .HasForeignKey("pwnctl.domain.Entities.Keyword", "DomainId");
-
-                    b.Navigation("Domain");
                 });
 
             modelBuilder.Entity("pwnctl.domain.Entities.Parameter", b =>
@@ -843,11 +754,11 @@ namespace pwnctl.infra.Migrations
             modelBuilder.Entity("pwnctl.domain.Entities.Service", b =>
                 {
                     b.HasOne("pwnctl.domain.Entities.Domain", "Domain")
-                        .WithMany()
+                        .WithMany("Services")
                         .HasForeignKey("DomainId");
 
                     b.HasOne("pwnctl.domain.Entities.Host", "Host")
-                        .WithMany()
+                        .WithMany("Services")
                         .HasForeignKey("HostId");
 
                     b.Navigation("Domain");
@@ -879,6 +790,8 @@ namespace pwnctl.infra.Migrations
             modelBuilder.Entity("pwnctl.domain.Entities.Domain", b =>
                 {
                     b.Navigation("DNSRecords");
+
+                    b.Navigation("Services");
                 });
 
             modelBuilder.Entity("pwnctl.domain.Entities.Endpoint", b =>
@@ -889,6 +802,13 @@ namespace pwnctl.infra.Migrations
             modelBuilder.Entity("pwnctl.domain.Entities.Host", b =>
                 {
                     b.Navigation("AARecords");
+
+                    b.Navigation("Services");
+                });
+
+            modelBuilder.Entity("pwnctl.domain.Entities.Service", b =>
+                {
+                    b.Navigation("Endpoints");
                 });
 #pragma warning restore 612, 618
         }

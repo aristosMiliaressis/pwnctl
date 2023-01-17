@@ -18,6 +18,8 @@ namespace pwnctl.domain.Entities
         public string DomainId { get; private init; }
         public Domain Domain { get; init; }
 
+        public List<Endpoint> Endpoints { get; init; }
+
         public Service() { }
 
         public Service(Domain domain, ushort port, TransportProtocol l4Proto = TransportProtocol.TCP)

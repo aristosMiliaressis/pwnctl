@@ -20,6 +20,7 @@ namespace pwnctl.svc
         private readonly IHostApplicationLifetime _hostApplicationLifetime;
         private readonly TaskQueueService _queueService = TaskQueueServiceFactory.Create();
         private readonly AssetProcessor _processor = AssetProcessorFactory.Create();
+        private readonly PwnctlDbContext _context = new();
 
         public TaskConsumerService(IHostApplicationLifetime hostApplicationLifetime)
         {
@@ -34,79 +35,66 @@ namespace pwnctl.svc
         {
             PwnInfraContext.Logger.Information(LogSinks.File | LogSinks.Notification, $"{nameof(TaskConsumerService)} started.");
 
-            PwnctlDbContext context = new();
-
             while (!stoppingToken.IsCancellationRequested)
             {
-                var taskDTOs = await _queueService.ReceiveAsync(stoppingToken);
-                if (taskDTOs == null || !taskDTOs.Any())
+                var taskDTO = await _queueService.ReceiveAsync(stoppingToken);
+                if (taskDTO == null)
                 {
                     PwnInfraContext.Logger.Information("queue is empty");
                     break;
                 }
 
-                var taskDTO = taskDTOs[0];
-                var taskEntry = await context
+                var taskEntry = await _context
                                     .JoinedTaskRecordQueryable()
                                     .FirstOrDefaultAsync(r => r.Id == taskDTO.TaskId);
 
                 try
                 {
                     var commandCancellationToken = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
-                    commandCancellationToken.CancelAfter(TimeSpan.FromSeconds(AwsConstants.QueueVisibilityTimeoutInSec - 60));
+                    commandCancellationToken.CancelAfter(TimeSpan.FromSeconds(AwsConstants.QueueVisibilityTimeoutInSec - 300));
 
-                    var outputLines = await ExecuteTaskAsync(taskEntry, commandCancellationToken.Token);
-                    foreach (var line in outputLines.Where(a => !string.IsNullOrEmpty(a)))
-                    {
-                        await _processor.TryProcessAsync(line);
-
-                        var pendingTasks = await context.JoinedTaskRecordQueryable()
-                                    .Where(r => r.State == TaskState.PENDING)
-                                    .ToListAsync();
-
-                        pendingTasks.ForEach(async task =>
-                        {
-                            await _queueService.EnqueueAsync(new QueueTaskDTO(task));
-                            task.Queued();
-                        });
-                    }
-
-                    await context.SaveChangesAsync();
-                }
-                catch (TaskCanceledException ex)
-                {
-                    PwnInfraContext.Logger.Exception(ex);
-                    continue;
+                    await ExecuteTaskAsync(taskEntry, commandCancellationToken.Token);
                 }
                 catch (Exception ex)
                 {
                     PwnInfraContext.Logger.Exception(ex);
                 }
-
-                await _queueService.DequeueAsync(taskDTO);
+                finally
+                {
+                    await _queueService.DequeueAsync(taskDTO);
+                }
             }
 
             _hostApplicationLifetime.StopApplication();
         }
 
-        public static async Task<string[]> ExecuteTaskAsync(TaskEntry task, CancellationToken token = default)
+        public async Task ExecuteTaskAsync(TaskEntry task, CancellationToken token = default)
         {
-            string wrappedCommand = @$"{task.Command} | while read assetLine;
-do
-  if [[ ${{assetLine::1}} == '{{' ]];
-  then
-    echo $assetLine | jq -c '.tags += {{""FoundBy"": ""{task.Definition.ShortName}""}}';
-  else
-    echo '{{""asset"":""'$assetLine'"", ""tags"":{{""FoundBy"":""{task.Definition.ShortName}""}}}}';
-  fi;
-done".Replace("\r\n", "").Replace("\n", "");
-
             task.Started();
-            var process = await CommandExecutor.ExecuteAsync("/bin/bash", null, wrappedCommand, token);
-            var output = await process.StandardOutput.ReadToEndAsync();
-            task.Finished(process.ExitCode);
+            await _context.SaveChangesAsync(token);
 
-            return output.Split("\n");
+            var process = await CommandExecutor.ExecuteAsync("/bin/bash", null, task.WrappedCommand, token);
+            var output = await process.StandardOutput.ReadToEndAsync();
+
+            foreach (var line in output.Split("\n").Where(a => !string.IsNullOrEmpty(a)))
+            {
+                await _processor.TryProcessAsync(line);
+
+                var pendingTasks = await _context.JoinedTaskRecordQueryable()
+                            .Where(r => r.State == TaskState.PENDING)
+                            .ToListAsync();
+
+                pendingTasks.ForEach(async t =>
+                {
+                    await _queueService.EnqueueAsync(new QueueTaskDTO(t));
+                    t.Queued();
+                });
+
+                await _context.SaveChangesAsync();
+            }
+            
+            task.Finished(process.ExitCode);
+            await _context.SaveChangesAsync();
         }
     }
 }

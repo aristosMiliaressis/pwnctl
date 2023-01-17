@@ -16,7 +16,7 @@ namespace pwnctl.infra.Migrations
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: true),
-                    IsRegistrationDomain = table.Column<bool>(type: "boolean", nullable: false),
+                    ZoneDepth = table.Column<int>(type: "integer", nullable: false),
                     ParentDomainId = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
@@ -64,7 +64,7 @@ namespace pwnctl.infra.Migrations
                     ShortName = table.Column<string>(type: "text", nullable: true),
                     SubjectClass_Class = table.Column<string>(type: "text", nullable: true),
                     Filter = table.Column<string>(type: "text", nullable: true),
-                    Topic = table.Column<string>(type: "text", nullable: true)
+                    Topic = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -106,26 +106,6 @@ namespace pwnctl.infra.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CloudService",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "text", nullable: false),
-                    Hostname = table.Column<string>(type: "text", nullable: true),
-                    Service = table.Column<string>(type: "text", nullable: true),
-                    Provider = table.Column<string>(type: "text", nullable: true),
-                    DomainId = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CloudService", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_CloudService_Domains_DomainId",
-                        column: x => x.DomainId,
-                        principalTable: "Domains",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Emails",
                 columns: table => new
                 {
@@ -138,24 +118,6 @@ namespace pwnctl.infra.Migrations
                     table.PrimaryKey("PK_Emails", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Emails_Domains_DomainId",
-                        column: x => x.DomainId,
-                        principalTable: "Domains",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Keywords",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "text", nullable: false),
-                    Word = table.Column<string>(type: "text", nullable: true),
-                    DomainId = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Keywords", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Keywords_Domains_DomainId",
                         column: x => x.DomainId,
                         principalTable: "Domains",
                         principalColumn: "Id");
@@ -192,10 +154,9 @@ namespace pwnctl.infra.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
-                    Port = table.Column<int>(type: "integer", nullable: false),
                     Origin = table.Column<string>(type: "text", nullable: true),
+                    Port = table.Column<int>(type: "integer", nullable: false),
                     TransportProtocol = table.Column<int>(type: "integer", nullable: false),
-                    ApplicationProtocol = table.Column<string>(type: "text", nullable: true),
                     HostId = table.Column<string>(type: "text", nullable: true),
                     DomainId = table.Column<string>(type: "text", nullable: true)
                 },
@@ -336,20 +297,13 @@ namespace pwnctl.infra.Migrations
                     DomainId = table.Column<string>(type: "text", nullable: true),
                     DNSRecordId = table.Column<string>(type: "text", nullable: true),
                     NetRangeId = table.Column<string>(type: "text", nullable: true),
-                    KeywordId = table.Column<string>(type: "text", nullable: true),
                     EmailId = table.Column<string>(type: "text", nullable: true),
-                    CloudServiceId = table.Column<string>(type: "text", nullable: true),
                     ParameterId = table.Column<string>(type: "text", nullable: true),
                     VirtualHostId = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AssetRecords", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_AssetRecords_CloudService_CloudServiceId",
-                        column: x => x.CloudServiceId,
-                        principalTable: "CloudService",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_AssetRecords_DNSRecords_DNSRecordId",
                         column: x => x.DNSRecordId,
@@ -374,11 +328,6 @@ namespace pwnctl.infra.Migrations
                         name: "FK_AssetRecords_Hosts_HostId",
                         column: x => x.HostId,
                         principalTable: "Hosts",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_AssetRecords_Keywords_KeywordId",
-                        column: x => x.KeywordId,
-                        principalTable: "Keywords",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_AssetRecords_NetRanges_NetRangeId",
@@ -470,11 +419,6 @@ namespace pwnctl.infra.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_AssetRecords_CloudServiceId",
-                table: "AssetRecords",
-                column: "CloudServiceId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_AssetRecords_DNSRecordId",
                 table: "AssetRecords",
                 column: "DNSRecordId");
@@ -500,11 +444,6 @@ namespace pwnctl.infra.Migrations
                 column: "HostId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AssetRecords_KeywordId",
-                table: "AssetRecords",
-                column: "KeywordId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_AssetRecords_NetRangeId",
                 table: "AssetRecords",
                 column: "NetRangeId");
@@ -528,17 +467,6 @@ namespace pwnctl.infra.Migrations
                 name: "IX_AssetRecords_VirtualHostId",
                 table: "AssetRecords",
                 column: "VirtualHostId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CloudService_DomainId",
-                table: "CloudService",
-                column: "DomainId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CloudService_Hostname",
-                table: "CloudService",
-                column: "Hostname",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_DNSRecords_DomainId",
@@ -598,18 +526,6 @@ namespace pwnctl.infra.Migrations
                 name: "IX_Hosts_IP",
                 table: "Hosts",
                 column: "IP",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Keywords_DomainId",
-                table: "Keywords",
-                column: "DomainId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Keywords_Word",
-                table: "Keywords",
-                column: "Word",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -709,16 +625,10 @@ namespace pwnctl.infra.Migrations
                 name: "TaskDefinitions");
 
             migrationBuilder.DropTable(
-                name: "CloudService");
-
-            migrationBuilder.DropTable(
                 name: "DNSRecords");
 
             migrationBuilder.DropTable(
                 name: "Emails");
-
-            migrationBuilder.DropTable(
-                name: "Keywords");
 
             migrationBuilder.DropTable(
                 name: "NetRanges");

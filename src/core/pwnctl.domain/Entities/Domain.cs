@@ -13,7 +13,10 @@ namespace pwnctl.domain.Entities
         public Domain ParentDomain { get; private set; }
         public string ParentDomainId { get; private init; }
         public List<DNSRecord> DNSRecords { get; private init; }
-        public Keyword Keyword {get; private set; }
+        public List<Service> Services { get; private init; }
+        public string Word => Name.Replace($".{PublicSuffixListService.Instance.GetSuffix(Name).Value}", "")
+                                    .Split(".")
+                                    .Last();
 
         public Domain() {}
 
@@ -52,10 +55,6 @@ namespace pwnctl.domain.Entities
                 tmp.ParentDomain = new Domain(string.Join(".", tmp.Name.Split(".").Skip(1)));
                 tmp = tmp.ParentDomain;
             }
-
-            var suffix = PublicSuffixListService.Instance.GetSuffix(domain.Name);
-            var word = registrationDomain.Name.Substring(0, registrationDomain.Name.Length - suffix.Value.Length - 1);
-            domain.Keyword = new Keyword(registrationDomain, word);
 
             asset = domain;
 

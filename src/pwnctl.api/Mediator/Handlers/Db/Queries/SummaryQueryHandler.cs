@@ -35,8 +35,24 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Commands
             viewModel.InScopeEndpointCount = await context.AssetRecords.Where(r => r.SubjectClass.Class == nameof(domain.Entities.Endpoint) && r.InScope).CountAsync();
             viewModel.InScopeParamCount = await context.AssetRecords.Where(r => r.SubjectClass.Class == nameof(Parameter) && r.InScope).CountAsync();
             viewModel.InScopeEmailCount = await context.AssetRecords.Where(r => r.SubjectClass.Class == nameof(Email) && r.InScope).CountAsync();
+
+            viewModel.PendingTaskCount = await context.TaskEntries.Where(t => t.State == TaskState.PENDING).CountAsync();
+            viewModel.QueuedTaskCount = await context.TaskEntries.Where(t => t.State == TaskState.QUEUED).CountAsync();
+            viewModel.RunningTaskCount = await context.TaskEntries.Where(t => t.State == TaskState.RUNNING).CountAsync();
+            viewModel.FinishedTaskCount = await context.TaskEntries.Where(t => t.State == TaskState.FINISHED).CountAsync();
             viewModel.FirstTask = (await context.TaskEntries.Where(t => t.State != TaskState.PENDING).OrderBy(t => t.QueuedAt).FirstOrDefaultAsync())?.QueuedAt;
             viewModel.LastTask = (await context.TaskEntries.Where(t => t.State != TaskState.PENDING).OrderByDescending(t => t.QueuedAt).FirstOrDefaultAsync())?.QueuedAt;
+            viewModel.TaskDetails = new List<SummaryViewModel.TaskDefinitionDetails>();
+            foreach (var def in context.TaskDefinitions.ToList())
+            {
+                var entries = context.TaskEntries.Where(e => e.State == TaskState.FINISHED && e.DefinitionId == def.Id).ToList();
+                viewModel.TaskDetails.Add(new SummaryViewModel.TaskDefinitionDetails
+                {
+                    ShortName = def.ShortName,
+                    Count = entries.Count,
+                    Duration = TimeSpan.FromSeconds(entries.Select(e => e.FinishedAt - e.StartedAt).Sum(e => e.Seconds))
+                });
+            }
 
             return MediatedResponse<SummaryViewModel>.Success(viewModel);
         }

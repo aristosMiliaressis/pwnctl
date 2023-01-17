@@ -1,22 +1,21 @@
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using pwnctl.domain.BaseClasses;
+using pwnctl.infra.Persistence.IdGenerators;
 
 namespace pwnctl.infra.Persistence.Extensions
 {
     public static class EntityEntryExtensions
     {
-        public static async Task LoadReferencesRecursivelyAsync(this EntityEntry entry, Func<Type, bool> filter, CancellationToken token = default, List<Type> refChain = null)
+        public static async Task LoadReferencesRecursivelyAsync(this EntityEntry entry, CancellationToken token = default, List<Type> refChain = null)
         {
             if (entry == null)
                 return;
 
             // if reference chain is null(i.e recursive entry point) initialize the chain
-            if (refChain == null)
-                refChain = new List<Type>();
-
-            // create a copy of the reference chain, 
-            // this is done to mentain a separet chain 
-            // between every reqursive branch
-            refChain = new List<Type>(refChain);
+            // else create a copy, to mentain a separet chain between every reqursive branch
+            refChain = refChain == null
+                    ? new List<Type>()
+                    : new List<Type>(refChain);
 
             // if type exists in chain return to prevent infinit loop
             var type = entry.Entity.GetType();
@@ -24,26 +23,34 @@ namespace pwnctl.infra.Persistence.Extensions
                 return;
             refChain.Add(type);
 
+            if (!entry.IsKeySet)
+            {
+                var id = await new HashIdValueGenerator().NextAsync(entry);
+                var tmpEntry = entry.Context
+                            .ChangeTracker.Entries()
+                            .FirstOrDefault(e => e.Metadata.ClrType == entry.Entity.GetType()
+                                                && e.OriginalValues["Id"].Equals(id));
+                if (tmpEntry == null)
+                {
+                    entry.State = Microsoft.EntityFrameworkCore.EntityState.Added;
+                }
+                else entry = tmpEntry;
+            }
+
             foreach (var reference in entry.References)
             {
-                if (!filter(reference.Metadata.ClrType))
-                    continue;
-                
                 await reference.LoadAsync(token);
-                await reference.TargetEntry.LoadReferencesRecursivelyAsync(filter, token, refChain);
+                await reference.TargetEntry.LoadReferencesRecursivelyAsync(token, refChain);
             }
 
             foreach (var collection in entry.Collections)
             {
-                if (!filter(collection.Metadata.ClrType))
-                    continue;
-
                 await collection.LoadAsync(token);
 
                 var enumerator = collection.CurrentValue.GetEnumerator();
                 while (enumerator.MoveNext())
                 {
-                    await collection.FindEntry(enumerator.Current).LoadReferencesRecursivelyAsync(filter, token, refChain);
+                    await collection.FindEntry(enumerator.Current).LoadReferencesRecursivelyAsync(token, refChain);
                 }
             }
         }

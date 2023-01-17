@@ -5,11 +5,6 @@ namespace pwnctl.infra.Queueing
 {
     public sealed class MockTaskQueueService : TaskQueueService
     {
-        public Task DequeueAsync(QueueTaskDTO task, CancellationToken token = default)
-        {
-            return Task.CompletedTask;
-        }
-
         /// <summary>
         /// pushes a task to the pending queue.
         /// </summary>
@@ -19,9 +14,14 @@ namespace pwnctl.infra.Queueing
             return Task.FromResult(false);
         }
 
-        public Task<List<QueueTaskDTO>> ReceiveAsync(CancellationToken token = default)
+        public Task<QueueTaskDTO> ReceiveAsync(CancellationToken token = default)
         {
-            return Task.FromResult(new List<QueueTaskDTO>());
+            return Task.FromResult(new QueueTaskDTO());
+        }
+
+        public Task DequeueAsync(QueueTaskDTO task)
+        {
+            return Task.CompletedTask;
         }
     }
 }

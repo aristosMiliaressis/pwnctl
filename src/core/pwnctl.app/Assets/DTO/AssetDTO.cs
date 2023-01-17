@@ -12,7 +12,9 @@ namespace pwnctl.app.Assets.DTO
     {
         public string Asset { get; set; }
         public Dictionary<string, object> Tags { get; set; }
-        public Dictionary<string, string> Metadata { get; set; }
+        public string InScope { get; set; }
+        public string FoundAt { get; set; }
+        public string FoundBy { get; set; }
 
         public AssetDTO() {}
 
@@ -21,12 +23,9 @@ namespace pwnctl.app.Assets.DTO
             {
                 Asset = record.Asset.ToString();
                 Tags = record.Tags.ToDictionary(t => t.Name, t => (object)t.Value);
-                Metadata = new Dictionary<string, string>
-                {
-                    { nameof(AssetRecord.InScope), record.InScope.ToString() },
-                    { nameof(AssetRecord.FoundAt), record.FoundAt.ToString("yyyy-MM-ddTHH\\:mm\\:ss.ff") },
-                    { nameof(AssetRecord.FoundBy), record.FoundBy }
-                };
+                InScope = record.InScope.ToString();
+                FoundAt = record.FoundAt.ToString("yyyy-MM-ddTHH\\:mm\\:ss.ff");
+                FoundBy = record.FoundBy;
 
                 var properties = record.Asset.GetType()
                                     .GetProperties(BindingFlags.Public

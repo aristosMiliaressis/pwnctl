@@ -9,7 +9,7 @@ public interface TaskQueueService
     /// </summary>
     /// <param name="task"></param>
     Task<bool> EnqueueAsync(QueueTaskDTO task, CancellationToken token = default);
-    Task DequeueAsync(QueueTaskDTO task, CancellationToken token = default);
-    Task<List<QueueTaskDTO>> ReceiveAsync(CancellationToken token);
+    Task<QueueTaskDTO> ReceiveAsync(CancellationToken token = default);
+    Task DequeueAsync(QueueTaskDTO task);
 }
 

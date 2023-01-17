@@ -55,11 +55,9 @@ namespace pwnctl.app.Scope.Entities
             {
                 DNSRecord record => record.Host != null && Matches(record.Host) || record.Domain != null && Matches(record.Domain),
                 Domain domain => new Regex(Pattern).Matches(domain.Name).Count > 0,
-                CloudService svc => Matches(svc.Domain),
                 Email email => Matches(email.Domain),
                 Endpoint ep => Matches(ep.Service),
                 Host host => host.AARecords.Any(r => Matches(r.Domain)),
-                Keyword word => Matches(word.Domain),
                 Parameter param => Matches(param.Endpoint),
                 Service srv => srv.Host != null && Matches(srv.Host) || srv.Domain != null && Matches(srv.Domain),
                 _ => false

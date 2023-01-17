@@ -803,7 +803,7 @@
                     "queueName": "pwnctl-dlq.fifo",
                     "receiveMessageWaitTimeSeconds": 20,
                     "sqsManagedSseEnabled": true,
-                    "visibilityTimeout": 3600
+                    "visibilityTimeout": 7200
                   }
                 },
                 "constructInfo": {
@@ -830,7 +830,7 @@
                     "contentBasedDeduplication": true,
                     "fifoQueue": true,
                     "maximumMessageSize": 8192,
-                    "messageRetentionPeriod": 86400,
+                    "messageRetentionPeriod": 1209600,
                     "queueName": "pwnctl.fifo",
                     "receiveMessageWaitTimeSeconds": 20,
                     "redrivePolicy": {
@@ -843,7 +843,7 @@
                       "maxReceiveCount": 4
                     },
                     "sqsManagedSseEnabled": true,
-                    "visibilityTimeout": 3600
+                    "visibilityTimeout": 7200
                   }
                 },
                 "constructInfo": {
@@ -1351,7 +1351,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "354e51a541b74f0dc2daa6dafec82011019247ff484112129d4d628a43a9aac1.zip"
+                      "s3Key": "f0ae3b5d4d680c3cb9f3478b4ab37d4cbcc1cb707690e6370b73962c022ba4f7.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -1364,7 +1364,7 @@
                         "PWNCTL_Aws__InVpc": "true",
                         "PWNCTL_TaskQueue__QueueName": "pwnctl.fifo",
                         "PWNCTL_TaskQueue__DLQName": "pwnctl-dlq.fifo",
-                        "PWNCTL_TaskQueue__VisibilityTimeout": "3600",
+                        "PWNCTL_TaskQueue__VisibilityTimeout": "7200",
                         "PWNCTL_Logging__MinLevel": "Debug",
                         "PWNCTL_Logging__FilePath": "/mnt/efs/",
                         "PWNCTL_Logging__LogGroup": "/aws/lambda/PwnctlApi",
@@ -1904,7 +1904,7 @@
                           },
                           {
                             "name": "PWNCTL_TaskQueue__VisibilityTimeout",
-                            "value": "3600"
+                            "value": "7200"
                           },
                           {
                             "name": "PWNCTL_Logging__FilePath",

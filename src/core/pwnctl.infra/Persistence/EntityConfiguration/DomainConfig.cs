@@ -18,8 +18,6 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
             builder.HasOne(e => e.ParentDomain)
                 .WithMany()
                 .HasForeignKey(e => e.ParentDomainId);
-
-            builder.Ignore(e => e.Keyword);
         }
     }
 }

@@ -41,41 +41,47 @@ namespace pwnctl.app.Assets
 
         public async Task ProcessAsync(string assetText)
         {
-            Dictionary<string, object> tags = TagParser.Parse(ref assetText);
+            AssetDTO dto = TagParser.Parse(assetText);
 
-            Asset asset = AssetParser.Parse(assetText);
+            Asset asset = AssetParser.Parse(dto.Asset);
 
-            await ProcessAssetAsync(asset, tags);
+            // this is done twice to ...
+            await ProcessAssetAsync(asset, dto.Tags, dto.FoundBy); // TODO: do this in a loop
+            await ProcessAssetAsync(asset, dto.Tags, dto.FoundBy);
         }
 
-        private async Task ProcessAssetAsync(Asset asset, Dictionary<string, object> tags)
+        private async Task ProcessAssetAsync(Asset asset, Dictionary<string, object> tags, string foundBy, List<string> refChain = null)
         {
+            refChain = refChain == null
+                    ? new List<string>()
+                    : new List<string>(refChain);
+
+            // if type exists in chain return to prevent infinit loop
+            if (refChain.Contains(asset.Id))
+                return;
+            refChain.Add(asset.Id);
+
             // recursivly process all parsed assets
             // starting from the botton of the ref tree.
-            await asset.GetType()
-                    .GetProperties()
-                    .Where(p => p.PropertyType.IsAssignableTo(typeof(Asset)))
-                    .Select(rf => (Asset)rf.GetValue(asset))
-                    .Where(a => a != null)
+            await GetReferencedAssets(asset)
                     .ForEachAsync(async refAsset =>
                     {
-                        await ProcessAssetAsync(refAsset, tags == null || !tags.ContainsKey("FoundBy")
-                                        ? null 
-                                        : new Dictionary<string, object> { { "FoundBy", tags["FoundBy"] } });
+                        await ProcessAssetAsync(refAsset, null, foundBy, refChain);
                     });
 
             var record = await _assetRepository.FindRecordAsync(asset); 
             if (record == null)
             {
-                record = new AssetRecord(asset);
+                record = new AssetRecord(asset, foundBy);
             }
 
             record = await _assetRepository.MergeCurrentRecordWithDBRecord(record, asset);
-            var owningProgram = _programs.FirstOrDefault(program => program.Scope.Any(scope => scope.Matches(asset)));
 
-            record.SetOwningProgram(owningProgram);
             record.UpdateTags(tags);
 
+            var owningProgram = _programs.FirstOrDefault(program => program.Scope.Any(scope => scope.Matches(record.Asset)));
+            record.SetOwningProgram(owningProgram);
+            
             if (record.InScope)
             {
                 ProcessInScopeAsset(record);
@@ -104,6 +110,24 @@ namespace pwnctl.app.Assets
 
                 record.Tasks.Add(new TaskEntry(definition, record));
             }
+        }
+    
+        private List<Asset> GetReferencedAssets(Asset asset)
+        {
+            var assetProperties = asset.GetType().GetProperties();
+            List<Asset> assets = assetProperties
+                   .Where(p => p.PropertyType.IsAssignableTo(typeof(Asset)))
+                   .Select(rf => (Asset)rf.GetValue(asset))
+                   .Where(a => a != null)
+                   .ToList();
+
+            assets.AddRange(assetProperties
+                   .Where(p => p.PropertyType.IsGenericType
+                            && p.PropertyType.GetGenericArguments()[0].IsAssignableTo(typeof(Asset))
+                            && p.GetValue(asset) != null)
+                   .SelectMany(rf => (IEnumerable<Asset>)rf.GetValue(asset)));
+
+            return assets;
         }
     }
 }

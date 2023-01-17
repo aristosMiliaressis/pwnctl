@@ -104,7 +104,7 @@
   Filter: Tags["Title"].Contains("Internet Information Services")|| Tags["Title"].Contains("IIS")||Tags["Server"].Contains("IIS")||Tags["Server"].Contains("Microsoft-HTTPAPI")
 
 - ShortName: shortname_scanning_srv
-  CommandTemplate: shortname-check.sh {{Address}}
+  CommandTemplate: shortname-check.sh {{Origin}}
   Subject: Service
   Filter: Tags["Version"].Contains("IIS") || Tags["Version"].Contains("Microsoft HTTPAPI")
 
@@ -115,4 +115,10 @@
 
 - ShortName: cloud_enum
   CommandTemplate: cloud-enum.sh {{Word}}
-  Subject: Keyword
+  Subject: Domain
+  Filter: Domain.ZoneDepth == 1
+
+- ShortName: s3_scan
+  CommandTemplate: s3-scan.sh {{Url}}
+  Subject: Endpoint
+  Filter: Endpoint.Url.Contains("amazonaws.com") && Endpoint.Url.Contains("s3")

@@ -12,7 +12,8 @@ namespace pwnctl.domain.Entities
         public AddressFamily Version { get; init; }
 
         public List<DNSRecord> AARecords { get; internal set; } = new List<DNSRecord>();
-
+        public List<Service> Services { get; private init; }
+        
         public Host() {}
 
         public Host(IPAddress address)

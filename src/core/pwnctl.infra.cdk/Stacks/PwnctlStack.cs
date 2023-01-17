@@ -158,7 +158,7 @@ namespace pwnctl.infra.cdk.Stacks
                 ContentBasedDeduplication = true,
                 MaxMessageSizeBytes = 8192,
                 ReceiveMessageWaitTime = Duration.Seconds(20),
-                RetentionPeriod = Duration.Days(1),
+                RetentionPeriod = Duration.Days(14),
                 VisibilityTimeout = Duration.Seconds(AwsConstants.QueueVisibilityTimeoutInSec),
                 DeadLetterQueue = new DeadLetterQueue
                 {

@@ -37,7 +37,7 @@ public sealed class Tests
     {
         Asset asset = AssetParser.Parse("example.com");
         Assert.IsType<Domain>(asset);
-        Assert.NotNull(((Domain)asset).Keyword);
+        Assert.NotNull(((Domain)asset).Word);
 
         // parent domain parsing test
         asset = AssetParser.Parse("multi.level.sub.example.com");
@@ -48,7 +48,7 @@ public sealed class Tests
         Assert.Equal("level.sub.example.com", domain.ParentDomain.Name);
         Assert.Equal("sub.example.com", domain.ParentDomain.ParentDomain.Name);
         Assert.Equal("example.com", domain.ParentDomain.ParentDomain.ParentDomain.Name);
-        Assert.Equal("example", domain.Keyword.Word);
+        Assert.Equal("example", domain.Word);
 
         // fqdn parsing test
         asset = AssetParser.Parse("fqdn.example.com.");
@@ -57,7 +57,7 @@ public sealed class Tests
         domain = (Domain)asset;
         Assert.Equal("fqdn.example.com", domain.Name);
         Assert.Equal("example.com", domain.ParentDomain.Name);
-        Assert.Equal("example", domain.Keyword.Word);
+        Assert.Equal("example", domain.Word);
 
         // host
         asset = AssetParser.Parse("1.3.3.7");
@@ -178,8 +178,6 @@ public sealed class Tests
 
         // domain
         Assert.NotNull(programs.FirstOrDefault(program => program.Scope.Any(scope => scope.Matches(new Domain("tesla.com")))));
-        Assert.NotNull(programs.FirstOrDefault(program => program.Scope.Any(scope => scope.Matches(new Keyword(new Domain("tesla.com"), "tesla")))));
-        Assert.Null(programs.FirstOrDefault(program => program.Scope.Any(scope => scope.Matches(new Keyword(new Domain("tttesla.com"), "tttesla")))));
         Assert.Null(programs.FirstOrDefault(program => program.Scope.Any(scope => scope.Matches(new Domain("tttesla.com")))));
         Assert.Null(programs.FirstOrDefault(program => program.Scope.Any(scope => scope.Matches(new Domain("tesla.com.net")))));
         Assert.Null(programs.FirstOrDefault(program => program.Scope.Any(scope => scope.Matches(new Domain("tesla2.com")))));
@@ -199,9 +197,20 @@ public sealed class Tests
 
         // test for inscope host from domain relationship
         var processor = AssetProcessorFactory.Create();
+        await processor.ProcessAsync("xyz.tesla.com");
+        await processor.ProcessAsync("1.3.3.7:443");
+        await processor.ProcessAsync("https://1.3.3.7:443");
         await processor.ProcessAsync("xyz.tesla.com IN A 1.3.3.7");
         var record = context.AssetRecords.Include(r => r.Host).First(r => r.Host.IP == "1.3.3.7");
         Assert.True(record.InScope);
+
+        record = context.AssetRecords.Include(r => r.Service).First(r => r.Service.Origin == "tcp://1.3.3.7:443");
+        Assert.True(record.InScope);
+
+        record = context.AssetRecords.Include(r => r.Service).First(r => r.Endpoint.Url == "https://1.3.3.7:443/");
+        Assert.True(record.InScope);
+
+        // EVERY TIME SetOwningProgram, Load RefTree And recalculate inscope
     }
 
     [Fact]
@@ -254,9 +263,8 @@ public sealed class Tests
 
         var record = context.AssetRecords.Include(r => r.Domain).First(r => r.Domain.Name == "tesla.com");
         Assert.True(record.InScope);
+        Assert.Equal("tesla", record.Domain.Word);
 
-        record = context.AssetRecords.Include(r => r.Keyword).First(d => d.Keyword.Word == "tesla");
-        Assert.True(record.InScope);
         var cloudEnumTask = context.JoinedTaskRecordQueryable().First(t => t.Definition.ShortName == "cloud_enum");
         Assert.Equal("cloud-enum.sh tesla", cloudEnumTask.Command);
 
@@ -493,10 +501,12 @@ public sealed class Tests
 
         record = context.AssetRecords.Include(r => r.Tags).Include(r => r.Domain).FirstOrDefault(r => r.Domain.Name == "sub.example3.com");
         Assert.Equal("domain_resolution", record?.FoundBy);
+        Assert.Contains("test", record?.Tags.Select(t => t.Name));
         Assert.DoesNotContain("foundby", record?.Tags.Select(t => t.Name));
 
         record = context.AssetRecords.Include(r => r.Tags).Include(r => r.Domain).FirstOrDefault(r => r.Domain.Name == "example3.com");
         Assert.Equal("domain_resolution", record?.FoundBy);
+        Assert.DoesNotContain("test", record?.Tags.Select(t => t.Name));
         Assert.DoesNotContain("foundby", record?.Tags.Select(t => t.Name));
     }
 }

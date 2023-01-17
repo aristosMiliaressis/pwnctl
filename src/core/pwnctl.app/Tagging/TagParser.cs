@@ -1,24 +1,18 @@
 using System.Text.Json;
 using pwnctl.app;
+using pwnctl.app.Assets.Aggregates;
 using pwnctl.app.Assets.DTO;
 using pwnctl.app.Assets.Exceptions;
 
 public static class TagParser
 {
-    public static Dictionary<string, object> Parse(ref string assetText)
+    public static AssetDTO Parse(string assetText)
     {
-        Dictionary<string, object> tags = null;
-
         try
         {
-            if (assetText.Trim().StartsWith("{"))
-            {
-                var dto = PwnInfraContext.Serializer.Deserialize<AssetDTO>(assetText);
-                assetText = dto.Asset;
-                tags = dto.Tags;
-            }
-
-            return tags;
+            return (assetText.Trim().StartsWith("{"))
+                ? PwnInfraContext.Serializer.Deserialize<AssetDTO>(assetText)
+                : new AssetDTO { Asset = assetText, FoundBy = "input" };
         }
         catch (JsonException ex)
         {

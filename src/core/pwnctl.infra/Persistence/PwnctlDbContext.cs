@@ -52,9 +52,7 @@ namespace pwnctl.infra.Persistence
         public DbSet<Endpoint> Endpoints { get; set; }
         public DbSet<Parameter> Parameters { get; set; }
         public DbSet<Email> Emails { get; set; }
-        public DbSet<CloudService> CloudService { get; set; }
         public DbSet<Tag> Tags { get; set; }
-        public DbSet<Keyword> Keywords { get; set; }
         public DbSet<NotificationRule> NotificationRules { get; set; }
         
         public override int SaveChanges()

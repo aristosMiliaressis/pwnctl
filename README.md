@@ -186,7 +186,8 @@ tags are a way to store arbitary metadata relating to an asset, they can be used
 
 - ShortName: cloud_enum
   CommandTemplate: cloud-enum.sh {{Word}}
-  Subject: Keyword
+  Subject: Domain
+  Filter: Domain.ZoneDepth == 1
 ```
 
 ## Notification Configuration

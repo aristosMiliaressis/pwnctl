@@ -18,16 +18,14 @@ public static class ConfigValidator
 
     private static Dictionary<AssetClass, Asset> _mockAssets = new Dictionary<AssetClass, Asset>
     {
-        { AssetClass.Create(nameof(Domain)), new Domain() },
-        { AssetClass.Create(nameof(Endpoint)), new Endpoint() },
+        { AssetClass.Create(nameof(Domain)), new Domain("example.com") },
+        { AssetClass.Create(nameof(Endpoint)), new Endpoint("http", new Service(new Domain("example.com"), 80), "/") },
         { AssetClass.Create(nameof(Host)), new Host() },
         { AssetClass.Create(nameof(NetRange)), new NetRange() },
         { AssetClass.Create(nameof(Service)), new Service() },
         { AssetClass.Create(nameof(DNSRecord)), new DNSRecord() },
-        { AssetClass.Create(nameof(Keyword)), new Keyword() },
         { AssetClass.Create(nameof(Email)), new Email() },
         { AssetClass.Create(nameof(Parameter)), new Parameter() },
-        { AssetClass.Create(nameof(CloudService)), new CloudService() },
     };
 
     private static IDeserializer _deserializer = new DeserializerBuilder()

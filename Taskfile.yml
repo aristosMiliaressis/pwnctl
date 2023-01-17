@@ -54,7 +54,7 @@ tasks:
         cdk bootstrap aws://${accountId}/${region} -o src/core/pwnctl.infra.cdk/cdk.out
 
   deploy-app:
-    deps: [clean-cdk, build-api]
+    deps: [clean-cdk, build-api, install-cli-src]
     cmds:
       - cdk deploy -o src/core/pwnctl.infra.cdk/cdk.out
       - chmod +x ./bin/*

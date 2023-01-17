@@ -10,11 +10,6 @@ namespace pwnctl.infra.Queueing
     {
         private static readonly string _queueDirectory = Path.Combine(PwnInfraContext.Config.InstallPath , "queue/");
 
-        public Task DequeueAsync(QueueTaskDTO task, CancellationToken token = default)
-        {
-            throw new NotImplementedException();
-        }
-
         /// <summary>
         /// pushes a task to the pending queue.
         /// </summary>
@@ -26,7 +21,12 @@ namespace pwnctl.infra.Queueing
             return true;
         }
 
-        public Task<List<QueueTaskDTO>> ReceiveAsync(CancellationToken token = default)
+        public Task<QueueTaskDTO> ReceiveAsync(CancellationToken token = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DequeueAsync(QueueTaskDTO task)
         {
             throw new NotImplementedException();
         }

@@ -35,7 +35,7 @@ namespace pwnctl.infra.Queueing
         /// <param name="command"></param>
         public async Task<bool> EnqueueAsync(QueueTaskDTO task, CancellationToken token = default)
         {
-            PwnInfraContext.Logger.Debug("Enqueue: " + task.Command);
+            PwnInfraContext.Logger.Debug($"Enqueue: {task.TaskId} : {task.Command}");
 
             var request = new SendMessageRequest
             {
@@ -49,7 +49,7 @@ namespace pwnctl.infra.Queueing
             return true;
         }
 
-        public async Task<List<QueueTaskDTO>> ReceiveAsync(CancellationToken token = default)
+        public async Task<QueueTaskDTO> ReceiveAsync(CancellationToken token = default)
         {
             var receiveRequest = new ReceiveMessageRequest
             {
@@ -67,7 +67,8 @@ namespace pwnctl.infra.Queueing
             return messageResponse.Messages.Select(msg => 
             {
                 var task = PwnInfraContext.Serializer.Deserialize<QueueTaskDTO>(msg.Body);
-                
+                PwnInfraContext.Logger.Debug($"Received : {task.TaskId}, MessageId: {msg.MessageId}, ReceiptHandle: {msg.ReceiptHandle}");
+
                 task.Metadata = new Dictionary<string, string>
                 {
                     { nameof(msg.MessageId), msg.MessageId },
@@ -75,12 +76,14 @@ namespace pwnctl.infra.Queueing
                 };
 
                 return task;
-            }).ToList();
+            }).FirstOrDefault();
         }
 
-        public async Task DequeueAsync(QueueTaskDTO task, CancellationToken token = default)
+        public async Task DequeueAsync(QueueTaskDTO task)
         {
-            var response = await _sqsClient.DeleteMessageAsync(this[AwsConstants.QueueName], task.Metadata[nameof(Message.ReceiptHandle)], token);
+            PwnInfraContext.Logger.Debug($"Dequeueing : {task.TaskId}");
+
+            var response = await _sqsClient.DeleteMessageAsync(this[AwsConstants.QueueName], task.Metadata[nameof(Message.ReceiptHandle)], CancellationToken.None);
             if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
                 PwnInfraContext.Logger.Debug("DeleteMessage: " + PwnInfraContext.Serializer.Serialize(response));
         }
