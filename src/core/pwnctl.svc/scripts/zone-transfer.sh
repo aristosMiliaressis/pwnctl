@@ -6,6 +6,7 @@ temp=`mktemp`
 dnsrecon -t axfr -d $domain > $temp
 
 extract_records() {
+    echo "{\"Asset\":\"$domain\", \"Tags\":{\"zone_transfer\":\"true\"}}'
     temp2=`mktemp`
 
     cat $temp | grep -P '\[\*\] \t' | cut -f2- | xargs -I _ echo "$domain IN _" > $temp2

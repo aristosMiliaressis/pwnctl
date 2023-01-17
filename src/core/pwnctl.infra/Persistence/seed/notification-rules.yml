@@ -19,6 +19,11 @@
   Filter: Tags["s3-takeover"] == "true" || !string.IsNullOrEmpty(Tags["s3-public-perms"])
   Topic: misconfigs
 
+- ShortName: zone_transfer
+  Subject: Domain
+  Filter: Tags["zone_transfer"] == "true"
+  Topic: misconfigs
+
 - ShortName: node_debug
   Subject: Service
   Filter: Service.Port == 9228 || Service.Port == 9229
