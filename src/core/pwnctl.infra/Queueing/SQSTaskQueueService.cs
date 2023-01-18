@@ -39,7 +39,7 @@ namespace pwnctl.infra.Queueing
 
             var request = new SendMessageRequest
             {
-                MessageGroupId = Guid.NewGuid().ToString(),
+                MessageDeduplicationId = task.TaskId.ToString(),
                 QueueUrl = this[AwsConstants.QueueName],
                 MessageBody = PwnInfraContext.Serializer.Serialize(task)
             };
@@ -67,7 +67,7 @@ namespace pwnctl.infra.Queueing
             return messageResponse.Messages.Select(msg => 
             {
                 var task = PwnInfraContext.Serializer.Deserialize<QueueTaskDTO>(msg.Body);
-                PwnInfraContext.Logger.Debug($"Received : {task.TaskId}, MessageId: {msg.MessageId}, ReceiptHandle: {msg.ReceiptHandle}");
+                PwnInfraContext.Logger.Debug($"Received : {task.TaskId}, MessageId: {msg.MessageId}");
 
                 task.Metadata = new Dictionary<string, string>
                 {

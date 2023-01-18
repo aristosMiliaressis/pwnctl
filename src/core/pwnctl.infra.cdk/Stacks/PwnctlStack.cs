@@ -155,7 +155,6 @@ namespace pwnctl.infra.cdk.Stacks
             {
                 QueueName = AwsConstants.QueueName,
                 Encryption = QueueEncryption.SQS_MANAGED,
-                ContentBasedDeduplication = true,
                 MaxMessageSizeBytes = 8192,
                 ReceiveMessageWaitTime = Duration.Seconds(20),
                 RetentionPeriod = Duration.Days(14),
@@ -348,7 +347,7 @@ namespace pwnctl.infra.cdk.Stacks
             container.AddMountPoints(mountPoint);
         }
 
-        internal void CreateStepScalingPolicy(int maxInstances = 20, int stepDepth = 20)
+        internal void CreateStepScalingPolicy(int maxInstances = 40, int stepDepth = 10)
         {
             var scaling = FargateService.AutoScaleTaskCount(new EnableScalingProps { MinCapacity = 0, MaxCapacity = maxInstances });
 

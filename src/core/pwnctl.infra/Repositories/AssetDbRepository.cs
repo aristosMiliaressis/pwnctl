@@ -78,11 +78,11 @@ namespace pwnctl.infra.Repositories
                 return;
             }
 
+            _context.Update(record);
+
             _context.AddRange(record.Tags.Where(t => t.Id == default));
 
             _context.AddRange(record.Tasks.Where(t => t.Id == default));
-
-            _context.Update(record);
 
             await _context.SaveChangesAsync();
         }

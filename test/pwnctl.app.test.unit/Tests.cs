@@ -138,7 +138,7 @@ public sealed class Tests
         Assert.NotNull(((Email)asset).Domain);
 
         //NetRagne.RouteTo(ipv4|ipv6)
-        //Parameters/VirtualHosts/CloudServices
+        //Parameters/VirtualHosts
         // spfv1 vs spfv2?
         // PTR records
     }
@@ -197,9 +197,10 @@ public sealed class Tests
 
         // test for inscope host from domain relationship
         var processor = AssetProcessorFactory.Create();
-        await processor.ProcessAsync("xyz.tesla.com");
-        await processor.ProcessAsync("1.3.3.7:443");
+        
         await processor.ProcessAsync("https://1.3.3.7:443");
+        await processor.ProcessAsync("https://xyz.tesla.com:443");
+        await processor.ProcessAsync("https://xyz.tesla.com:443/api");
         await processor.ProcessAsync("xyz.tesla.com IN A 1.3.3.7");
         var record = context.AssetRecords.Include(r => r.Host).First(r => r.Host.IP == "1.3.3.7");
         Assert.True(record.InScope);
@@ -207,10 +208,14 @@ public sealed class Tests
         record = context.AssetRecords.Include(r => r.Service).First(r => r.Service.Origin == "tcp://1.3.3.7:443");
         Assert.True(record.InScope);
 
-        record = context.AssetRecords.Include(r => r.Service).First(r => r.Endpoint.Url == "https://1.3.3.7:443/");
+        record = context.AssetRecords.Include(r => r.Endpoint).First(r => r.Endpoint.Url == "https://1.3.3.7:443/");
         Assert.True(record.InScope);
 
-        // EVERY TIME SetOwningProgram, Load RefTree And recalculate inscope
+        record = context.AssetRecords.Include(r => r.Service).First(r => r.Service.Origin == "tcp://xyz.tesla.com:443");
+        Assert.True(record.InScope);
+
+        record = context.AssetRecords.Include(r => r.Endpoint).First(r => r.Endpoint.Url == "https://xyz.tesla.com:443/");
+        Assert.True(record.InScope);
     }
 
     [Fact]
@@ -276,13 +281,14 @@ public sealed class Tests
         record = context.AssetRecords.Include(r => r.Host).ThenInclude(h => h.AARecords).First(r => r.Host.IP == "31.3.3.7");
         Assert.True(record.InScope);
         Assert.NotNull(record.Host.AARecords.First());
-        // Assert.True(record.Host.AARecords.First().InScope);
-        // Assert.True(record.Host.AARecords.First().Domain.InScope);
         Assert.NotNull(programs.FirstOrDefault(program => program.Scope.Any(scope => scope.Matches(record.Host))));
 
-        await processor.ProcessAsync("85.25.105.204:65530");
-        record.Host = context.Hosts.First(h => h.IP == "85.25.105.204");
-        var service = context.Services.First(srv => srv.Origin == "tcp://85.25.105.204:65530");
+        record = context.AssetRecords.Include(r => r.DNSRecord).First(r => r.DNSRecord.Key == "tesla.com" && r.DNSRecord.Value == "31.3.3.7");
+        Assert.True(record.InScope);
+
+        await processor.ProcessAsync("6.6.6.6:65530");
+        record.Host = context.Hosts.First(h => h.IP == "6.6.6.6");
+        var service = context.Services.First(srv => srv.Origin == "tcp://6.6.6.6:65530");
     }
 
     [Fact]
