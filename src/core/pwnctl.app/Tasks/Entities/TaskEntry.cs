@@ -40,7 +40,9 @@ namespace pwnctl.app.Tasks.Entities
 
         public void Started()
         {
-            if (State != TaskState.QUEUED && State != TaskState.RUNNING)
+            if (State == TaskState.PENDING)
+                PwnInfraContext.Logger.Warning($"TaskEntry {Id} started from PENDING state.");
+            else if (State == TaskState.FINISHED)
                 throw new TaskStateException(State, TaskState.RUNNING);
 
             State = TaskState.RUNNING;

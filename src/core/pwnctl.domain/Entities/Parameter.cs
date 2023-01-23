@@ -36,7 +36,11 @@ namespace pwnctl.domain.Entities
 
         public override string ToString()
         {
-            throw new NotImplementedException();
+            return Type switch
+            {
+                ParamType.Query => $"{Endpoint.Url}?{Name}=",
+                _ => throw new NotImplementedException()
+            };
         }
     }
 }

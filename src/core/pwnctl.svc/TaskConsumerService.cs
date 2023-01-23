@@ -1,17 +1,17 @@
 using pwnctl.app;
 using pwnctl.app.Assets;
-using pwnctl.app.Logging;
+using pwnctl.app.Queueing.DTO;
 using pwnctl.app.Queueing.Interfaces;
+using pwnctl.app.Logging;
+using pwnctl.app.Tasks.Entities;
 using pwnctl.app.Tasks.Enums;
 using pwnctl.infra;
 using pwnctl.infra.Aws;
 using pwnctl.infra.Commands;
+using pwnctl.infra.Queueing;
 using pwnctl.infra.Persistence;
 using pwnctl.infra.Persistence.Extensions;
-using pwnctl.infra.Queueing;
 using Microsoft.EntityFrameworkCore;
-using pwnctl.app.Queueing.DTO;
-using pwnctl.app.Tasks.Entities;
 
 namespace pwnctl.svc
 {
@@ -37,31 +37,38 @@ namespace pwnctl.svc
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                var taskDTO = await _queueService.ReceiveAsync(stoppingToken);
-                if (taskDTO == null)
-                {
-                    PwnInfraContext.Logger.Information("queue is empty");
-                    break;
-                }
-
-                var taskEntry = await _context
-                                    .JoinedTaskRecordQueryable()
-                                    .FirstOrDefaultAsync(r => r.Id == taskDTO.TaskId);
-
                 try
                 {
-                    var commandCancellationToken = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
-                    commandCancellationToken.CancelAfter(TimeSpan.FromSeconds(AwsConstants.QueueVisibilityTimeoutInSec - 300));
+                    var taskDTO = await _queueService.ReceiveAsync(stoppingToken);
+                    if (taskDTO == null)
+                    {
+                        PwnInfraContext.Logger.Information("queue is empty");
+                        break;
+                    }
 
-                    await ExecuteTaskAsync(taskEntry, commandCancellationToken.Token);
+                    var taskEntry = await _context
+                                        .JoinedTaskRecordQueryable()
+                                        .FirstOrDefaultAsync(r => r.Id == taskDTO.TaskId);
+
+                    try
+                    {
+                        var commandCancellationToken = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
+                        commandCancellationToken.CancelAfter(TimeSpan.FromSeconds(AwsConstants.QueueVisibilityTimeoutInSec - 300));
+
+                        await ExecuteTaskAsync(taskEntry, commandCancellationToken.Token);
+                    }
+                    catch (Exception ex)
+                    {
+                        PwnInfraContext.Logger.Exception(ex);
+                    }
+                    finally
+                    {
+                        await _queueService.DequeueAsync(taskDTO);
+                    }
                 }
                 catch (Exception ex)
                 {
                     PwnInfraContext.Logger.Exception(ex);
-                }
-                finally
-                {
-                    await _queueService.DequeueAsync(taskDTO);
                 }
             }
 
@@ -84,15 +91,16 @@ namespace pwnctl.svc
                             .Where(r => r.State == TaskState.PENDING)
                             .ToListAsync();
 
-                pendingTasks.ForEach(async t =>
+                foreach (var t in pendingTasks)
                 {
-                    await _queueService.EnqueueAsync(new QueueTaskDTO(t));
                     t.Queued();
-                });
-
-                await _context.SaveChangesAsync();
+                    await _queueService.EnqueueAsync(new QueueTaskDTO(t));
+                    await _context.SaveChangesAsync();
+                }
             }
-            
+
+            PwnInfraContext.Logger.Error(await process.StandardError.ReadToEndAsync());
+
             task.Finished(process.ExitCode);
             await _context.SaveChangesAsync();
         }

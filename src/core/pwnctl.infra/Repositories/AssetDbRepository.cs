@@ -22,16 +22,18 @@ namespace pwnctl.infra.Repositories
 
         public async Task<AssetRecord> FindRecordAsync(Asset asset)
         {
-            if (asset.Id == default)
-            {
-                asset = _context.FindAsset(asset);
-                if (asset == null)
-                    return null;
-            }
-
             return await _context.AssetRecords
                             .Include(r => r.Tags)
-                            .FirstOrDefaultAsync(r => r.Id == asset.Id);
+                            .Include(r => r.NetRange)
+                            .Include(r => r.Host)
+                            .Include(r => r.Service)
+                            .Include(r => r.Domain)
+                            .Include(r => r.DNSRecord)
+                            .Include(r => r.VirtualHost)
+                            .Include(r => r.Endpoint)
+                            .Include(r => r.Parameter)
+                            .Include(r => r.Email)
+                            .FirstOrDefaultAsync(r => r.Id == asset.UID);
         }
 
         public TaskEntry FindTaskEntry(Asset asset, TaskDefinition def)
@@ -42,23 +44,27 @@ namespace pwnctl.infra.Repositories
 
         public async Task<AssetRecord> MergeCurrentRecordWithDBRecord(AssetRecord record, Asset asset)
         {
-            await asset.GetType()
+            var assetReferences = asset.GetType()
                 .GetProperties()
-                .Where(p => p.PropertyType.IsAssignableTo(typeof(Asset)))
-                .ForEachAsync(async reference =>
+                .Where(p => p.PropertyType.IsAssignableTo(typeof(Asset)));
+
+            foreach (var reference in assetReferences)
+            {
+                var assetRef = (Asset)reference.GetValue(asset);
+                if (assetRef == null)
+                    continue;
+
+                var existingAsset = _context.FindAsset(assetRef);
+                if (existingAsset == null)
                 {
-                    var assetRef = (Asset)reference.GetValue(asset);
-                    if (assetRef == null)
-                        return;
-
-                    assetRef = _context.FindAsset(assetRef);
-                    if (assetRef == null)
-                        return;
-
-                    await _context.Entry(assetRef).LoadReferencesRecursivelyAsync();
-
                     reference.SetValue(record.Asset, assetRef);
-                });
+                    continue;
+                }
+
+                await _context.Entry(existingAsset).LoadReferencesRecursivelyAsync();
+
+                reference.SetValue(record.Asset, existingAsset);
+            };
 
             return record;
         }

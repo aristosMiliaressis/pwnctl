@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3176ec52b4e56c4b715e75446800e0b4878f973dac348511450384525dde8006.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/aa5e629cc1f18ba9924e5278cdc419be5c9da677225037b39f0e049a40a6d970.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -309,16 +309,16 @@
             "data": "PwnctlDef172B08D3"
           }
         ],
-        "/PwnctlStack/PwnctlLogs/Resource": [
+        "/PwnctlStack/PwnctlWorkerLogs/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PwnctlLogs2C02661E"
+            "data": "PwnctlWorkerLogs5EE39235"
           }
         ],
-        "/PwnctlStack/PwnctlLogs/Policy/ResourcePolicy": [
+        "/PwnctlStack/PwnctlWorkerLogs/Policy/ResourcePolicy": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PwnctlLogsPolicyResourcePolicy3B67505D"
+            "data": "PwnctlWorkerLogsPolicyResourcePolicy3DBB1391"
           }
         ],
         "/PwnctlStack/PwnctlCluster/Resource": [

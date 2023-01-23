@@ -7,7 +7,7 @@ using pwnctl.app.Assets.Aggregates;
 
 namespace pwnctl.infra.Persistence.IdGenerators
 {
-    public sealed class HashIdValueGenerator : StringValueGenerator, IDisposable
+    public sealed class HashIdValueGenerator : StringValueGenerator
     {
         public override string Next(EntityEntry entry) => GenerateHashId(entry.Entity);
         protected override object NextValue(EntityEntry entry) => GenerateHashId(entry.Entity);
@@ -26,17 +26,9 @@ namespace pwnctl.infra.Persistence.IdGenerators
                 asset = entity as Asset;
             }
 
-            var bytes = Encoding.UTF8.GetBytes(asset.ToString());
-            return Convert.ToHexString(_md5.ComputeHash(bytes));         
+            return asset.UID;         
         }
 
         public override bool GeneratesTemporaryValues => false;
-
-        public void Dispose()
-        {
-            _md5.Dispose();
-        }
-
-        private MD5 _md5 = MD5.Create();
     }
 }

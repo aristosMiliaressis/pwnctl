@@ -16,8 +16,8 @@ namespace pwnctl.app.Assets
         private readonly List<NotificationRule> _notificationRules;
         private readonly List<Program> _programs;
 
-        public AssetProcessor(AssetRepository assetRepository, 
-            List<TaskDefinition> definitions, List<NotificationRule> rules, List<Program> programs)
+        public AssetProcessor(AssetRepository assetRepository, List<Program> programs,
+                            List<TaskDefinition> definitions, List<NotificationRule> rules)
         {
             _assetRepository = assetRepository;
             _taskDefinitions = definitions;
@@ -57,19 +57,18 @@ namespace pwnctl.app.Assets
                     : new List<string>(refChain);
 
             // if type exists in chain return to prevent infinit loop
-            if (refChain.Contains(asset.Id))
+            if (refChain.Contains(asset.UID))
                 return;
-            refChain.Add(asset.Id);
+            refChain.Add(asset.UID);
 
             // recursivly process all parsed assets
             // starting from the botton of the ref tree.
-            await GetReferencedAssets(asset)
-                    .ForEachAsync(async refAsset =>
-                    {
-                        await ProcessAssetAsync(refAsset, null, foundBy, refChain);
-                    });
+            foreach (var refAsset in GetReferencedAssets(asset))
+            {
+                await ProcessAssetAsync(refAsset, null, foundBy, refChain);
+            }
 
-            var record = await _assetRepository.FindRecordAsync(asset); 
+            var record = await _assetRepository.FindRecordAsync(asset);
             if (record == null)
             {
                 record = new AssetRecord(asset, foundBy);
@@ -81,25 +80,15 @@ namespace pwnctl.app.Assets
 
             var owningProgram = _programs.FirstOrDefault(program => program.Scope.Any(scope => scope.Matches(record.Asset)));
             record.SetOwningProgram(owningProgram);
-            
-            if (record.InScope)
-            {
-                ProcessInScopeAsset(record);
-            }
 
-            await _assetRepository.SaveAsync(record);
-        }
-
-        private void ProcessInScopeAsset(AssetRecord record)
-        {
-            foreach (var rule in _notificationRules.Where(rule => rule.Check(record)))
+            foreach (var rule in _notificationRules.Where(rule => (record.InScope || rule.CheckOutOfScope) && rule.Check(record)))
             {
                 PwnInfraContext.NotificationSender.Send(record.Asset, rule);
             }
 
-            var matchingTasks = record.OwningProgram.Policy
-                                    .GetAllowedTasks(_taskDefinitions)
-                                    .Where(def => def.Matches(record));
+            var matchingTasks = _taskDefinitions.Where(def => ((def.MatchOutOfScope && def.Matches(record)) 
+                                                            || (record.InScope && record.OwningProgram.Policy.Allows(def)
+                                                              ) && def.Matches(record)));
 
             foreach (var definition in matchingTasks)
             {
@@ -110,8 +99,10 @@ namespace pwnctl.app.Assets
 
                 record.Tasks.Add(new TaskEntry(definition, record));
             }
+
+            await _assetRepository.SaveAsync(record);
         }
-    
+
         private List<Asset> GetReferencedAssets(Asset asset)
         {
             var assetProperties = asset.GetType().GetProperties();

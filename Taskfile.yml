@@ -65,6 +65,10 @@ tasks:
     cmds:
       - rm -rf src/core/pwnctl.infra.cdk/cdk.out
 
+  get-logs:
+    cmds:
+      - awslogs get -s 60m -G --timestamp /aws/ecs/pwnctl
+
   destroy:
     cmds:
       - cdk destroy -o src/core/pwnctl.infra.cdk/cdk.out

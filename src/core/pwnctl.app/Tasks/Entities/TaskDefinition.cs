@@ -12,6 +12,7 @@ namespace pwnctl.app.Tasks.Entities
         public int Aggressiveness { get; private init; }
         public AssetClass SubjectClass { get; private set; }
         public string Filter { get; private init; }
+        public bool MatchOutOfScope { get; private init; }
 
         public string Subject { init { SubjectClass = AssetClass.Create(value); } }
 

@@ -134,60 +134,6 @@ tags are a way to store arbitary metadata relating to an asset, they can be used
   Filter: Endpoint.Path == "/"
   Subject: Endpoint
 
-- ShortName: wafw00f
-  CommandTemplate: wafw00f.sh {{Url}}
-  Filter: Endpoint.Path == "/"
-  Subject: Endpoint
-
-- ShortName: grab_url_metadata
-  CommandTemplate: grab-url-metadata.sh {{Url}}
-  Filter: Endpoint.Path == "/"
-  Subject: Endpoint
-
-- ShortName: webanalyze
-  CommandTemplate: webanalyze.sh {{Url}}
-  Filter: Endpoint.Path == "/"
-  Subject: Endpoint
-
-- ShortName: screenshot
-  CommandTemplate: screenshot.sh {{Url}}
-  Filter: Endpoint.Path == "/"
-  Subject: Endpoint
-
-- ShortName: webcrawl
-  CommandTemplate: webcrawl.sh '{{Url}}'
-  Filter: Endpoint.Path == "/" || Tags["Content-Type"].Contains("/html") || Tags["Content-Type"].Contains("/xhtml")
-  Subject: Endpoint
-
-- ShortName: link_finder
-  CommandTemplate: link-finder.sh {{Url}}
-  Filter: Endpoint.Extension == "js" || Endpoint.Extension == "jsm" || Tags["Content-Type"].Contains("/javascript")
-  Subject: Endpoint
-
-- ShortName: cors_check
-  CommandTemplate: check-cors.sh {{Url}}
-  Subject: Endpoint
-  Filter: Endpoint.Path == "/" || Tags["Content-Type"].Contains("/json") || Tags["Content-Type"].Contains("/xml")
-
-- ShortName: shortname_scanning
-  CommandTemplate: shortname-check.sh {{Url}}
-  Subject: Endpoint
-  Filter: Tags["Title"].Contains("Internet Information Services")
-
-- ShortName: shortname_scanning
-  CommandTemplate: shortname-check.sh {{Origin}}
-  Subject: Service
-  Filter: Tags["Version"].Contains("IIS") || Tags["Version"].Contains("Microsoft HTTPAPI")
-
-- ShortName: zone_walking
-  CommandTemplate: ldns-walk {{Key}} | tail -n +2 | cut -d ' ' -f 1
-  Filter: DNSRecord.Type == pwnctl.domain.Enums.DnsRecordType.NSEC
-  Subject: DNSRecord
-
-- ShortName: cloud_enum
-  CommandTemplate: cloud-enum.sh {{Word}}
-  Subject: Domain
-  Filter: Domain.ZoneDepth == 1
 ```
 
 ## Notification Configuration

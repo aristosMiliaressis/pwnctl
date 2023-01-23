@@ -7,7 +7,7 @@
   Subject: NetRange
 
 - ShortName: domain_resolution
-  CommandTemplate: dig +short {{Name}} | awk '{print "{{Name}} IN A " $1}'
+  CommandTemplate: resolve.sh {{Name}}
   Subject: Domain
 
 - ShortName: httpx
@@ -119,6 +119,19 @@
   Filter: Domain.ZoneDepth == 1
 
 - ShortName: s3_scan
+  CommandTemplate: s3-scan.sh {{Name}}
+  Subject: Domain
+  Filter: Domain.Name.Contains("amazonaws.com") && Domain.Name.Contains("s3")
+  MatchOutOfScope: true
+
+- ShortName: s3_scan_url
   CommandTemplate: s3-scan.sh {{Url}}
   Subject: Endpoint
   Filter: Endpoint.Url.Contains("amazonaws.com") && Endpoint.Url.Contains("s3")
+  MatchOutOfScope: true
+
+- ShortName: elb_takeover
+  CommandTemplate: dig {{Name}} | grep -q 'status. NXDOMAIN' && echo "{\"Asset\":\"{{Name}}\",\"Tags\"{\"elb-takeover\":\"true\"}}"
+  Subject: Domain
+  Filter: Domain.Name.Contains("elasticbeanstalk.com")
+  MatchOutOfScope: true

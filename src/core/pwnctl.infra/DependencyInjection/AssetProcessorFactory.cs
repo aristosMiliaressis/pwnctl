@@ -21,6 +21,6 @@ public static class AssetProcessorFactory
         
         var programs = context.ListPrograms();
         
-        return new AssetProcessor(assetRepository, definitions, rules, programs);
+        return new AssetProcessor(assetRepository, programs, definitions, rules);
     }
 }

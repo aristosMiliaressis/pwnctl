@@ -1,6 +1,8 @@
 using MediatR;
 using FluentValidation;
 using pwnctl.dto.Mediator;
+using pwnctl.app;
+using System.Net;
 
 namespace pwnctl.api.Mediator.Pipelines
 {
@@ -41,9 +43,14 @@ namespace pwnctl.api.Mediator.Pipelines
             {
                 response = await next();
             }
-            catch (Exception ex) when (ex is ValidationException)
+            catch (ValidationException ex)
             {
                 response = (TResponse)MediatedResponse.Error(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                PwnInfraContext.Logger.Exception(ex);
+                response = (TResponse)MediatedResponse.Create(HttpStatusCode.InternalServerError);
             }
 
             return response;

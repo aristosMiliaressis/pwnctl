@@ -20,7 +20,7 @@ namespace pwnctl.infra.Configuration
                                                 .AddReferences(typeof(Tag).Assembly)
                                                 .AddReferences(Assembly.GetAssembly(typeof(System.Linq.Enumerable)))
                                                 .AddReferences(Assembly.GetAssembly(typeof(System.Collections.Generic.IEnumerable<>)))
-                                                .WithImports("System.Collections.Generic");
+                                                .WithImports("System.Collections.Generic", "pwnctl.domain.Enums");
 
             var funcType = typeof(Func<,,>).MakeGenericType(record.Asset.GetType(), typeof(AssetRecord), typeof(bool));
             var evalMethod = typeof(CSharpScript).GetMethods(BindingFlags.Public | BindingFlags.Static)

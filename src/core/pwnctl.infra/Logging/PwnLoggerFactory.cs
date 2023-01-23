@@ -16,7 +16,9 @@ namespace pwnctl.infra.Logging
     {
         public static AppLogger Create(AppConfig config, NotificationSender sender)
         {
-            return new PwnLogger(LogSinks.File, sender,
+            var defaultSink = EnvironmentVariables.InVpc ? LogSinks.Console : LogSinks.File;
+
+            return new PwnLogger(defaultSink, sender,
                         fileLogger: CreateFileLogger(config),
                         consoleLogger: CreateConsoleLogger(config));
         }
@@ -44,10 +46,11 @@ namespace pwnctl.infra.Logging
         {
             return new LoggerConfiguration()
                     .MinimumLevel.Is(Enum.Parse<LogEventLevel>(config.Logging.MinLevel))
-                    .WriteTo.Console()
+                    .WriteTo.Console(outputTemplate: _consoleOutputTemplate)
                     .CreateLogger();
         }
 
         private static string _outputTemplate = $"[{{Timestamp:yyyy-MM-dd HH:mm:ss.fff}} {EnvironmentVariables.HOSTNAME} {{Level:u3}}] {{Message:lj}}\n";
+        private static string _consoleOutputTemplate = $"[{{Level:u3}}] {{Message:lj}}\n";
     }
 }

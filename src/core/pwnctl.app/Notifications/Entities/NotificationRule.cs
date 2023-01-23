@@ -11,6 +11,7 @@ namespace pwnctl.app.Notifications.Entities
         public AssetClass SubjectClass { get; private set; }
         public string Filter { get; private init; }
         public NotificationTopic Topic { get; private init; }
+        public bool CheckOutOfScope { get; private init; }
 
         public string Subject { init { SubjectClass = AssetClass.Create(value); } }
 

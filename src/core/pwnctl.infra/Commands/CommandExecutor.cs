@@ -12,6 +12,7 @@ public static class CommandExecutor
         var psi = new ProcessStartInfo();
         psi.FileName = fileName;
         psi.Arguments = args;
+        psi.RedirectStandardError = true;
         psi.RedirectStandardOutput = true;
         psi.RedirectStandardInput = true;
         psi.UseShellExecute = false;
@@ -32,8 +33,6 @@ public static class CommandExecutor
         }
         
         await process.WaitForExitAsync(token);
-
-        PwnInfraContext.Logger.Debug($"ExitCode: {process.ExitCode}, ExitTime: {process.ExitTime}");
 
         return process;
     }

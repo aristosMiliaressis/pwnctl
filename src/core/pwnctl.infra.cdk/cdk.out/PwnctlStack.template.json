@@ -932,7 +932,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "cffc4ad3f378505a5d269ba41b81ceab9ce79705eac1efc2879158c52299dcd3.zip"
+     "S3Key": "f6e126600415850157e47f940a5bf11533544cc8785003890e8fe741e776e99f.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -981,7 +981,7 @@
      }
     ],
     "Handler": "pwnctl.api",
-    "MemorySize": 1536,
+    "MemorySize": 3072,
     "Runtime": "dotnet6",
     "Timeout": 60,
     "VpcConfig": {
@@ -1014,7 +1014,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "PwnctlStack/PwnctlApi/Resource",
-    "aws:asset:path": "asset.cffc4ad3f378505a5d269ba41b81ceab9ce79705eac1efc2879158c52299dcd3.0",
+    "aws:asset:path": "asset.f6e126600415850157e47f940a5bf11533544cc8785003890e8fe741e776e99f.0",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
@@ -1301,7 +1301,7 @@
        "Effect": "Allow",
        "Resource": {
         "Fn::GetAtt": [
-         "PwnctlLogs2C02661E",
+         "PwnctlWorkerLogs5EE39235",
          "Arn"
         ]
        }
@@ -1363,7 +1363,7 @@
        {
         "Name": "PWNCTL_Logging__LogGroup",
         "Value": {
-         "Ref": "PwnctlLogs2C02661E"
+         "Ref": "PwnctlWorkerLogs5EE39235"
         }
        },
        {
@@ -1377,7 +1377,7 @@
        "LogDriver": "awslogs",
        "Options": {
         "awslogs-group": {
-         "Ref": "PwnctlLogs2C02661E"
+         "Ref": "PwnctlWorkerLogs5EE39235"
         },
         "awslogs-stream-prefix": "/aws/ecs",
         "awslogs-region": {
@@ -1396,7 +1396,7 @@
       "StopTimeout": 120
      }
     ],
-    "Cpu": "256",
+    "Cpu": "1024",
     "ExecutionRoleArn": {
      "Fn::GetAtt": [
       "PwnctlRole3D3A5C97",
@@ -1404,7 +1404,7 @@
      ]
     },
     "Family": "PwnctlStackPwnctlDef78C9F95D",
-    "Memory": "1024",
+    "Memory": "3072",
     "NetworkMode": "awsvpc",
     "RequiresCompatibilities": [
      "FARGATE"
@@ -1438,7 +1438,7 @@
     "aws:cdk:path": "PwnctlStack/PwnctlDef/Resource"
    }
   },
-  "PwnctlLogs2C02661E": {
+  "PwnctlWorkerLogs5EE39235": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
     "LogGroupName": "/aws/ecs/pwnctl",
@@ -1447,10 +1447,10 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete",
    "Metadata": {
-    "aws:cdk:path": "PwnctlStack/PwnctlLogs/Resource"
+    "aws:cdk:path": "PwnctlStack/PwnctlWorkerLogs/Resource"
    }
   },
-  "PwnctlLogsPolicyResourcePolicy3B67505D": {
+  "PwnctlWorkerLogsPolicyResourcePolicy3DBB1391": {
    "Type": "AWS::Logs::ResourcePolicy",
    "Properties": {
     "PolicyDocument": {
@@ -1460,7 +1460,7 @@
        "{\"Statement\":[{\"Action\":[\"logs:CreateLogStream\",\"logs:PutLogEvents\"],\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"ecs-tasks.amazonaws.com\"},\"Resource\":\"",
        {
         "Fn::GetAtt": [
-         "PwnctlLogs2C02661E",
+         "PwnctlWorkerLogs5EE39235",
          "Arn"
         ]
        },
@@ -1468,10 +1468,10 @@
       ]
      ]
     },
-    "PolicyName": "PwnctlStackPwnctlLogsPolicy875CDDEC"
+    "PolicyName": "PwnctlStackPwnctlWorkerLogsPolicy09C92628"
    },
    "Metadata": {
-    "aws:cdk:path": "PwnctlStack/PwnctlLogs/Policy/ResourcePolicy"
+    "aws:cdk:path": "PwnctlStack/PwnctlWorkerLogs/Policy/ResourcePolicy"
    }
   },
   "PwnctlCluster79F67FB0": {
@@ -1606,52 +1606,52 @@
      "MetricAggregationType": "Average",
      "StepAdjustments": [
       {
-       "MetricIntervalLowerBound": -20,
+       "MetricIntervalLowerBound": -10,
        "MetricIntervalUpperBound": 0,
        "ScalingAdjustment": 9
       },
       {
-       "MetricIntervalLowerBound": -40,
-       "MetricIntervalUpperBound": -20,
+       "MetricIntervalLowerBound": -20,
+       "MetricIntervalUpperBound": -10,
        "ScalingAdjustment": 8
       },
       {
-       "MetricIntervalLowerBound": -60,
-       "MetricIntervalUpperBound": -40,
+       "MetricIntervalLowerBound": -30,
+       "MetricIntervalUpperBound": -20,
        "ScalingAdjustment": 7
       },
       {
-       "MetricIntervalLowerBound": -80,
-       "MetricIntervalUpperBound": -60,
+       "MetricIntervalLowerBound": -40,
+       "MetricIntervalUpperBound": -30,
        "ScalingAdjustment": 6
       },
       {
-       "MetricIntervalLowerBound": -100,
-       "MetricIntervalUpperBound": -80,
+       "MetricIntervalLowerBound": -50,
+       "MetricIntervalUpperBound": -40,
        "ScalingAdjustment": 5
       },
       {
-       "MetricIntervalLowerBound": -120,
-       "MetricIntervalUpperBound": -100,
+       "MetricIntervalLowerBound": -60,
+       "MetricIntervalUpperBound": -50,
        "ScalingAdjustment": 4
       },
       {
-       "MetricIntervalLowerBound": -140,
-       "MetricIntervalUpperBound": -120,
+       "MetricIntervalLowerBound": -70,
+       "MetricIntervalUpperBound": -60,
        "ScalingAdjustment": 3
       },
       {
-       "MetricIntervalLowerBound": -160,
-       "MetricIntervalUpperBound": -140,
+       "MetricIntervalLowerBound": -80,
+       "MetricIntervalUpperBound": -70,
        "ScalingAdjustment": 2
       },
       {
-       "MetricIntervalLowerBound": -180,
-       "MetricIntervalUpperBound": -160,
+       "MetricIntervalLowerBound": -90,
+       "MetricIntervalUpperBound": -80,
        "ScalingAdjustment": 1
       },
       {
-       "MetricIntervalUpperBound": -180,
+       "MetricIntervalUpperBound": -90,
        "ScalingAdjustment": 0
       }
      ]
@@ -1687,7 +1687,7 @@
     "Namespace": "AWS/SQS",
     "Period": 300,
     "Statistic": "Average",
-    "Threshold": 181
+    "Threshold": 91
    },
    "Metadata": {
     "aws:cdk:path": "PwnctlStack/PwnctlSvc/TaskCount/Target/ScaleOutPolicy/LowerAlarm/Resource"
@@ -1708,56 +1708,56 @@
      "StepAdjustments": [
       {
        "MetricIntervalLowerBound": 0,
-       "MetricIntervalUpperBound": 20,
+       "MetricIntervalUpperBound": 10,
        "ScalingAdjustment": 10
       },
       {
-       "MetricIntervalLowerBound": 20,
-       "MetricIntervalUpperBound": 40,
+       "MetricIntervalLowerBound": 10,
+       "MetricIntervalUpperBound": 20,
        "ScalingAdjustment": 11
       },
       {
-       "MetricIntervalLowerBound": 40,
-       "MetricIntervalUpperBound": 60,
+       "MetricIntervalLowerBound": 20,
+       "MetricIntervalUpperBound": 30,
        "ScalingAdjustment": 12
       },
       {
-       "MetricIntervalLowerBound": 60,
-       "MetricIntervalUpperBound": 80,
+       "MetricIntervalLowerBound": 30,
+       "MetricIntervalUpperBound": 40,
        "ScalingAdjustment": 13
       },
       {
-       "MetricIntervalLowerBound": 80,
-       "MetricIntervalUpperBound": 100,
+       "MetricIntervalLowerBound": 40,
+       "MetricIntervalUpperBound": 50,
        "ScalingAdjustment": 14
       },
       {
-       "MetricIntervalLowerBound": 100,
-       "MetricIntervalUpperBound": 120,
+       "MetricIntervalLowerBound": 50,
+       "MetricIntervalUpperBound": 60,
        "ScalingAdjustment": 15
       },
       {
-       "MetricIntervalLowerBound": 120,
-       "MetricIntervalUpperBound": 140,
+       "MetricIntervalLowerBound": 60,
+       "MetricIntervalUpperBound": 70,
        "ScalingAdjustment": 16
       },
       {
-       "MetricIntervalLowerBound": 140,
-       "MetricIntervalUpperBound": 160,
+       "MetricIntervalLowerBound": 70,
+       "MetricIntervalUpperBound": 80,
        "ScalingAdjustment": 17
       },
       {
-       "MetricIntervalLowerBound": 160,
-       "MetricIntervalUpperBound": 180,
+       "MetricIntervalLowerBound": 80,
+       "MetricIntervalUpperBound": 90,
        "ScalingAdjustment": 18
       },
       {
-       "MetricIntervalLowerBound": 180,
-       "MetricIntervalUpperBound": 200,
+       "MetricIntervalLowerBound": 90,
+       "MetricIntervalUpperBound": 100,
        "ScalingAdjustment": 19
       },
       {
-       "MetricIntervalLowerBound": 200,
+       "MetricIntervalLowerBound": 100,
        "ScalingAdjustment": 20
       }
      ]
@@ -1793,7 +1793,7 @@
     "Namespace": "AWS/SQS",
     "Period": 300,
     "Statistic": "Average",
-    "Threshold": 181
+    "Threshold": 91
    },
    "Metadata": {
     "aws:cdk:path": "PwnctlStack/PwnctlSvc/TaskCount/Target/ScaleOutPolicy/UpperAlarm/Resource"

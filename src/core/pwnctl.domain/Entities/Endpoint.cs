@@ -29,14 +29,7 @@ namespace pwnctl.domain.Entities
             }
         }
 
-        public string Extension
-        {
-            get
-            {
-                return Filename == null ? null : Filename.Split(".").Last();
-            }
-        }
-
+        public string Extension => Filename == null ? null : Filename.Split(".").Last();
 
         public Endpoint() {}
         
@@ -44,15 +37,19 @@ namespace pwnctl.domain.Entities
         {
             Scheme = scheme;
             Service = service;
-            Path = string.IsNullOrEmpty(path) ? "/" : path;
-            Url = $"{Service.Origin.Replace("tcp", scheme)}{path}" + (path.EndsWith("/") ? "" : "/");
+            Path = path.EndsWith("/") ? path.Substring(0, path.Length - 1) : path;
+            Path = string.IsNullOrEmpty(Path) ? "/" : Path;
+            
+            string hostSegment = Service.Host != null ? Service.Host.IP : Service.Domain.Name;
+            string portSegment = (scheme == "http" && Service.Port == 80) || (scheme == "https" && Service.Port == 443) ? "" : (":" + Service.Port);
+            Url = $"{Scheme}://{hostSegment}{portSegment}{Path}";
         }
 
         public static bool TryParse(string assetText, out Asset asset)
         {
             asset = null;
 
-            if (!assetText.Contains("://"))
+            if (!assetText.Contains("://") || !assetText.ToLower().StartsWith("http"))
                 return false;
 
             var uri = new Uri(assetText);

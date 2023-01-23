@@ -1351,7 +1351,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "cffc4ad3f378505a5d269ba41b81ceab9ce79705eac1efc2879158c52299dcd3.zip"
+                      "s3Key": "f6e126600415850157e47f940a5bf11533544cc8785003890e8fe741e776e99f.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -1400,7 +1400,7 @@
                       }
                     ],
                     "handler": "pwnctl.api",
-                    "memorySize": 1536,
+                    "memorySize": 3072,
                     "runtime": "dotnet6",
                     "timeout": 60,
                     "vpcConfig": {
@@ -1811,7 +1811,7 @@
                               "Effect": "Allow",
                               "Resource": {
                                 "Fn::GetAtt": [
-                                  "PwnctlLogs2C02661E",
+                                  "PwnctlWorkerLogs5EE39235",
                                   "Arn"
                                 ]
                               }
@@ -1871,7 +1871,7 @@
                           "logDriver": "awslogs",
                           "options": {
                             "awslogs-group": {
-                              "Ref": "PwnctlLogs2C02661E"
+                              "Ref": "PwnctlWorkerLogs5EE39235"
                             },
                             "awslogs-stream-prefix": "/aws/ecs",
                             "awslogs-region": {
@@ -1917,7 +1917,7 @@
                           {
                             "name": "PWNCTL_Logging__LogGroup",
                             "value": {
-                              "Ref": "PwnctlLogs2C02661E"
+                              "Ref": "PwnctlWorkerLogs5EE39235"
                             }
                           },
                           {
@@ -1927,7 +1927,7 @@
                         ]
                       }
                     ],
-                    "cpu": "256",
+                    "cpu": "1024",
                     "executionRoleArn": {
                       "Fn::GetAtt": [
                         "PwnctlRole3D3A5C97",
@@ -1935,7 +1935,7 @@
                       ]
                     },
                     "family": "PwnctlStackPwnctlDef78C9F95D",
-                    "memory": "1024",
+                    "memory": "3072",
                     "networkMode": "awsvpc",
                     "requiresCompatibilities": [
                       "FARGATE"
@@ -1985,13 +1985,13 @@
               "version": "2.51.1"
             }
           },
-          "PwnctlLogs": {
-            "id": "PwnctlLogs",
-            "path": "PwnctlStack/PwnctlLogs",
+          "PwnctlWorkerLogs": {
+            "id": "PwnctlWorkerLogs",
+            "path": "PwnctlStack/PwnctlWorkerLogs",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "PwnctlStack/PwnctlLogs/Resource",
+                "path": "PwnctlStack/PwnctlWorkerLogs/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
                   "aws:cdk:cloudformation:props": {
@@ -2006,11 +2006,11 @@
               },
               "Policy": {
                 "id": "Policy",
-                "path": "PwnctlStack/PwnctlLogs/Policy",
+                "path": "PwnctlStack/PwnctlWorkerLogs/Policy",
                 "children": {
                   "ResourcePolicy": {
                     "id": "ResourcePolicy",
-                    "path": "PwnctlStack/PwnctlLogs/Policy/ResourcePolicy",
+                    "path": "PwnctlStack/PwnctlWorkerLogs/Policy/ResourcePolicy",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Logs::ResourcePolicy",
                       "aws:cdk:cloudformation:props": {
@@ -2021,7 +2021,7 @@
                               "{\"Statement\":[{\"Action\":[\"logs:CreateLogStream\",\"logs:PutLogEvents\"],\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"ecs-tasks.amazonaws.com\"},\"Resource\":\"",
                               {
                                 "Fn::GetAtt": [
-                                  "PwnctlLogs2C02661E",
+                                  "PwnctlWorkerLogs5EE39235",
                                   "Arn"
                                 ]
                               },
@@ -2029,7 +2029,7 @@
                             ]
                           ]
                         },
-                        "policyName": "PwnctlStackPwnctlLogsPolicy875CDDEC"
+                        "policyName": "PwnctlStackPwnctlWorkerLogsPolicy09C92628"
                       }
                     },
                     "constructInfo": {
@@ -2253,52 +2253,52 @@
                                       "metricAggregationType": "Average",
                                       "stepAdjustments": [
                                         {
-                                          "metricIntervalLowerBound": -20,
+                                          "metricIntervalLowerBound": -10,
                                           "metricIntervalUpperBound": 0,
                                           "scalingAdjustment": 9
                                         },
                                         {
-                                          "metricIntervalLowerBound": -40,
-                                          "metricIntervalUpperBound": -20,
+                                          "metricIntervalLowerBound": -20,
+                                          "metricIntervalUpperBound": -10,
                                           "scalingAdjustment": 8
                                         },
                                         {
-                                          "metricIntervalLowerBound": -60,
-                                          "metricIntervalUpperBound": -40,
+                                          "metricIntervalLowerBound": -30,
+                                          "metricIntervalUpperBound": -20,
                                           "scalingAdjustment": 7
                                         },
                                         {
-                                          "metricIntervalLowerBound": -80,
-                                          "metricIntervalUpperBound": -60,
+                                          "metricIntervalLowerBound": -40,
+                                          "metricIntervalUpperBound": -30,
                                           "scalingAdjustment": 6
                                         },
                                         {
-                                          "metricIntervalLowerBound": -100,
-                                          "metricIntervalUpperBound": -80,
+                                          "metricIntervalLowerBound": -50,
+                                          "metricIntervalUpperBound": -40,
                                           "scalingAdjustment": 5
                                         },
                                         {
-                                          "metricIntervalLowerBound": -120,
-                                          "metricIntervalUpperBound": -100,
+                                          "metricIntervalLowerBound": -60,
+                                          "metricIntervalUpperBound": -50,
                                           "scalingAdjustment": 4
                                         },
                                         {
-                                          "metricIntervalLowerBound": -140,
-                                          "metricIntervalUpperBound": -120,
+                                          "metricIntervalLowerBound": -70,
+                                          "metricIntervalUpperBound": -60,
                                           "scalingAdjustment": 3
                                         },
                                         {
-                                          "metricIntervalLowerBound": -160,
-                                          "metricIntervalUpperBound": -140,
+                                          "metricIntervalLowerBound": -80,
+                                          "metricIntervalUpperBound": -70,
                                           "scalingAdjustment": 2
                                         },
                                         {
-                                          "metricIntervalLowerBound": -180,
-                                          "metricIntervalUpperBound": -160,
+                                          "metricIntervalLowerBound": -90,
+                                          "metricIntervalUpperBound": -80,
                                           "scalingAdjustment": 1
                                         },
                                         {
-                                          "metricIntervalUpperBound": -180,
+                                          "metricIntervalUpperBound": -90,
                                           "scalingAdjustment": 0
                                         }
                                       ]
@@ -2349,7 +2349,7 @@
                                     "namespace": "AWS/SQS",
                                     "period": 300,
                                     "statistic": "Average",
-                                    "threshold": 181
+                                    "threshold": 91
                                   }
                                 },
                                 "constructInfo": {
@@ -2385,56 +2385,56 @@
                                       "stepAdjustments": [
                                         {
                                           "metricIntervalLowerBound": 0,
-                                          "metricIntervalUpperBound": 20,
+                                          "metricIntervalUpperBound": 10,
                                           "scalingAdjustment": 10
                                         },
                                         {
-                                          "metricIntervalLowerBound": 20,
-                                          "metricIntervalUpperBound": 40,
+                                          "metricIntervalLowerBound": 10,
+                                          "metricIntervalUpperBound": 20,
                                           "scalingAdjustment": 11
                                         },
                                         {
-                                          "metricIntervalLowerBound": 40,
-                                          "metricIntervalUpperBound": 60,
+                                          "metricIntervalLowerBound": 20,
+                                          "metricIntervalUpperBound": 30,
                                           "scalingAdjustment": 12
                                         },
                                         {
-                                          "metricIntervalLowerBound": 60,
-                                          "metricIntervalUpperBound": 80,
+                                          "metricIntervalLowerBound": 30,
+                                          "metricIntervalUpperBound": 40,
                                           "scalingAdjustment": 13
                                         },
                                         {
-                                          "metricIntervalLowerBound": 80,
-                                          "metricIntervalUpperBound": 100,
+                                          "metricIntervalLowerBound": 40,
+                                          "metricIntervalUpperBound": 50,
                                           "scalingAdjustment": 14
                                         },
                                         {
-                                          "metricIntervalLowerBound": 100,
-                                          "metricIntervalUpperBound": 120,
+                                          "metricIntervalLowerBound": 50,
+                                          "metricIntervalUpperBound": 60,
                                           "scalingAdjustment": 15
                                         },
                                         {
-                                          "metricIntervalLowerBound": 120,
-                                          "metricIntervalUpperBound": 140,
+                                          "metricIntervalLowerBound": 60,
+                                          "metricIntervalUpperBound": 70,
                                           "scalingAdjustment": 16
                                         },
                                         {
-                                          "metricIntervalLowerBound": 140,
-                                          "metricIntervalUpperBound": 160,
+                                          "metricIntervalLowerBound": 70,
+                                          "metricIntervalUpperBound": 80,
                                           "scalingAdjustment": 17
                                         },
                                         {
-                                          "metricIntervalLowerBound": 160,
-                                          "metricIntervalUpperBound": 180,
+                                          "metricIntervalLowerBound": 80,
+                                          "metricIntervalUpperBound": 90,
                                           "scalingAdjustment": 18
                                         },
                                         {
-                                          "metricIntervalLowerBound": 180,
-                                          "metricIntervalUpperBound": 200,
+                                          "metricIntervalLowerBound": 90,
+                                          "metricIntervalUpperBound": 100,
                                           "scalingAdjustment": 19
                                         },
                                         {
-                                          "metricIntervalLowerBound": 200,
+                                          "metricIntervalLowerBound": 100,
                                           "scalingAdjustment": 20
                                         }
                                       ]
@@ -2485,7 +2485,7 @@
                                     "namespace": "AWS/SQS",
                                     "period": 300,
                                     "statistic": "Average",
-                                    "threshold": 181
+                                    "threshold": 91
                                   }
                                 },
                                 "constructInfo": {

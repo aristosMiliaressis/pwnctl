@@ -16,31 +16,40 @@ namespace pwnctl.app.Scope.Entities
         {
             List<TaskDefinition> allowedTasks = new();
 
-            var whitelist = Whitelist?.Split(",") ?? new string[0];
-            var blacklist = Blacklist?.Split(",") ?? new string[0];
-
             foreach (var definition in definitions)
             {
-                if (blacklist.Contains(definition.ShortName))
-                {
-                    continue;
-                }
-                else if (whitelist.Contains(definition.ShortName))
-                {
-                    allowedTasks.Add(definition);
-                    continue;
-                }
-                else if (definition.IsActive && !AllowActive)
-                {
-                    continue;
-                }
-                else if (definition.Aggressiveness <= MaxAggressiveness)
+                if (Allows(definition))
                 {
                     allowedTasks.Add(definition);
                 }
             }
 
             return allowedTasks;
+        }
+
+        public bool Allows(TaskDefinition definition)
+        {
+            var whitelist = Whitelist?.Split(",") ?? new string[0];
+            var blacklist = Blacklist?.Split(",") ?? new string[0];
+
+            if (blacklist.Contains(definition.ShortName))
+            {
+                return false;
+            }
+            else if (whitelist.Contains(definition.ShortName))
+            {
+                return true;
+            }
+            else if (definition.IsActive && !AllowActive)
+            {
+                return false;
+            }
+            else if (definition.Aggressiveness <= MaxAggressiveness)
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

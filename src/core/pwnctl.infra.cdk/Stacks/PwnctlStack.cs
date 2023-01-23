@@ -155,6 +155,7 @@ namespace pwnctl.infra.cdk.Stacks
             {
                 QueueName = AwsConstants.QueueName,
                 Encryption = QueueEncryption.SQS_MANAGED,
+                ContentBasedDeduplication = true,
                 MaxMessageSizeBytes = 8192,
                 ReceiveMessageWaitTime = Duration.Seconds(20),
                 RetentionPeriod = Duration.Days(14),
@@ -199,7 +200,7 @@ namespace pwnctl.infra.cdk.Stacks
             var function = new Function(this, AwsConstants.LambdaName, new FunctionProps
             {
                 Runtime = Runtime.DOTNET_6,
-                MemorySize = 1536,
+                MemorySize = 3072,
                 Timeout = Duration.Seconds(60),
                 Code = Code.FromAsset(Path.Join("src", "pwnctl.api", "bin", "Release", "net6.0")),
                 Handler = "pwnctl.api",
@@ -281,8 +282,8 @@ namespace pwnctl.infra.cdk.Stacks
 
             TaskDefinition = new FargateTaskDefinition(this, AwsConstants.TaskDefinitionId, new FargateTaskDefinitionProps
             {
-                Cpu = 256,
-                MemoryLimitMiB = 1024,
+                Cpu = 1024,
+                MemoryLimitMiB = 3072,
                 TaskRole = ecsTaskExecutionRole,
                 ExecutionRole = ecsTaskExecutionRole,
                 Volumes = new ECS.Volume[]
@@ -347,7 +348,7 @@ namespace pwnctl.infra.cdk.Stacks
             container.AddMountPoints(mountPoint);
         }
 
-        internal void CreateStepScalingPolicy(int maxInstances = 40, int stepDepth = 10)
+        internal void CreateStepScalingPolicy(int maxInstances = 20, int stepDepth = 10)
         {
             var scaling = FargateService.AutoScaleTaskCount(new EnableScalingProps { MinCapacity = 0, MaxCapacity = maxInstances });
 

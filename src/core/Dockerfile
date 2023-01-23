@@ -13,6 +13,7 @@ RUN apt-get update \
     make \
     moreutils \
     nano \
+    openssl \
     sudo \
     unzip \
     wget

@@ -14,10 +14,28 @@
   Filter: Tags["shortname-misconfig"] == "true"
   Topic: misconfigs
 
+- ShortName: shortname_misconfig_srv
+  Subject: Service
+  Filter: Tags["shortname-misconfig"] == "true"
+  Topic: misconfigs
+
+- ShortName: elb_takeover
+  Subject: Domain
+  Filter: Tags["elb-takeover"] == "true"
+  Topic: misconfigs
+  CheckOutOfScope: true
+
 - ShortName: s3_misconfig
+  Subject: Domain
+  Filter: Tags["s3-takeover"] == "true" || !string.IsNullOrEmpty(Tags["s3-public-perms"])
+  Topic: misconfigs
+  CheckOutOfScope: true
+
+- ShortName: s3_misconfig_url
   Subject: Endpoint
   Filter: Tags["s3-takeover"] == "true" || !string.IsNullOrEmpty(Tags["s3-public-perms"])
   Topic: misconfigs
+  CheckOutOfScope: true
 
 - ShortName: zone_transfer
   Subject: Domain

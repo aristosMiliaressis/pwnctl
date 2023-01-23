@@ -46,7 +46,7 @@ generate_brute_gueses | anew $potential_subs_file > /dev/null
 
 resolve_domains \
 	| tee $valid_subs_file \
-	| xargs -I {} -n1 echo'{"Asset":"{}", "Tags":{"tool":"directory_brute"}}'
+	| xargs -I {} -n1 echo'{"Asset":"{}", "Tags":{"tool":"dictionary_brute"}}'
 
 generate_wordlist_alts 
 

@@ -53,7 +53,7 @@ namespace pwnctl.app.Scope.Entities
         {
             return asset switch
             {
-                DNSRecord record => record.Host != null && Matches(record.Host) || record.Domain != null && Matches(record.Domain),
+                DNSRecord record => new Regex(Pattern).Matches(record.Key).Count > 0,
                 Domain domain => new Regex(Pattern).Matches(domain.Name).Count > 0,
                 Email email => Matches(email.Domain),
                 Endpoint ep => Matches(ep.Service),

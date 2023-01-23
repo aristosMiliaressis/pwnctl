@@ -12,6 +12,8 @@ namespace pwnctl.domain.Entities
 
         [EqualityComponent]
         public string Key {get; init;}
+
+        [EqualityComponent]
         public string Value { get; init; }
 
         public string HostId { get; private init; }
@@ -27,24 +29,20 @@ namespace pwnctl.domain.Entities
         public DNSRecord(DnsRecordType type, string key, string value)
         {
             Type = type;
-            Key = key;
             Value = value;
 
-            if (Host.TryParse(key, out Asset host))
-            {
-                Host = (Host)host;
-            }
-            else if (Domain.TryParse(key, out Asset domain))
+            if (Domain.TryParse(key, out Asset domain))
             {
                 Domain = (Domain)domain;
+                Key = Domain.Name;
             }
 
-            if (Host.TryParse(value, out host))
+            if (Host.TryParse(value, out Asset host))
             {
                 Host = (Host)host;
                 Host.AARecords = new List<DNSRecord> { this };
             }
-            else if (Domain.TryParse(value, out Asset domain))
+            else if (Domain.TryParse(value, out domain))
             {
                 Domain = (Domain)domain;
             }

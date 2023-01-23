@@ -4,6 +4,7 @@ using Amazon.SQS.Model;
 using pwnctl.app;
 using pwnctl.app.Queueing.Interfaces;
 using pwnctl.app.Queueing.DTO;
+using System.Net;
 
 namespace pwnctl.infra.Queueing
 {
@@ -39,12 +40,24 @@ namespace pwnctl.infra.Queueing
 
             var request = new SendMessageRequest
             {
-                MessageDeduplicationId = task.TaskId.ToString(),
+                MessageGroupId = task.TaskId.ToString(),
                 QueueUrl = this[AwsConstants.QueueName],
                 MessageBody = PwnInfraContext.Serializer.Serialize(task)
             };
 
-            await _sqsClient.SendMessageAsync(request, token);
+            try
+            {
+                var response = await _sqsClient.SendMessageAsync(request, token);
+                if (response.HttpStatusCode != HttpStatusCode.OK)
+                {
+                    PwnInfraContext.Logger.Warning(PwnInfraContext.Serializer.Serialize(response));
+                    PwnInfraContext.Logger.Warning($"HttpStatusCode: {response.HttpStatusCode}");
+                }
+            }
+            catch (Exception ex)
+            {
+                PwnInfraContext.Logger.Exception(ex);
+            }
 
             return true;
         }
@@ -57,35 +70,53 @@ namespace pwnctl.infra.Queueing
                 MaxNumberOfMessages = 1
             };
 
-            var messageResponse = await _sqsClient.ReceiveMessageAsync(receiveRequest, token);
-            if (messageResponse.HttpStatusCode != System.Net.HttpStatusCode.OK)
+            try
             {
-                PwnInfraContext.Logger.Warning(PwnInfraContext.Serializer.Serialize(messageResponse));
-                PwnInfraContext.Logger.Warning($"HttpStatusCode: {messageResponse.HttpStatusCode}");
-            }
-
-            return messageResponse.Messages.Select(msg => 
-            {
-                var task = PwnInfraContext.Serializer.Deserialize<QueueTaskDTO>(msg.Body);
-                PwnInfraContext.Logger.Debug($"Received : {task.TaskId}, MessageId: {msg.MessageId}");
-
-                task.Metadata = new Dictionary<string, string>
+                var messageResponse = await _sqsClient.ReceiveMessageAsync(receiveRequest, token);
+                if (messageResponse.HttpStatusCode != HttpStatusCode.OK)
                 {
-                    { nameof(msg.MessageId), msg.MessageId },
-                    { nameof(msg.ReceiptHandle), msg.ReceiptHandle }
-                };
+                    PwnInfraContext.Logger.Warning(PwnInfraContext.Serializer.Serialize(messageResponse));
+                    PwnInfraContext.Logger.Warning($"HttpStatusCode: {messageResponse.HttpStatusCode}");
+                }
 
-                return task;
-            }).FirstOrDefault();
+                return messageResponse.Messages.Select(msg => 
+                {
+                    var task = PwnInfraContext.Serializer.Deserialize<QueueTaskDTO>(msg.Body);
+                    PwnInfraContext.Logger.Debug($"Received : {task.TaskId}, MessageId: {msg.MessageId}");
+
+                    task.Metadata = new Dictionary<string, string>
+                    {
+                        { nameof(msg.MessageId), msg.MessageId },
+                        { nameof(msg.ReceiptHandle), msg.ReceiptHandle }
+                    };
+
+                    return task;
+                }).FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                PwnInfraContext.Logger.Exception(ex);
+                return null;
+            }
         }
 
         public async Task DequeueAsync(QueueTaskDTO task)
         {
             PwnInfraContext.Logger.Debug($"Dequeueing : {task.TaskId}");
 
-            var response = await _sqsClient.DeleteMessageAsync(this[AwsConstants.QueueName], task.Metadata[nameof(Message.ReceiptHandle)], CancellationToken.None);
-            if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
-                PwnInfraContext.Logger.Debug("DeleteMessage: " + PwnInfraContext.Serializer.Serialize(response));
+            try
+            {
+                var response = await _sqsClient.DeleteMessageAsync(this[AwsConstants.QueueName], task.Metadata[nameof(Message.ReceiptHandle)], CancellationToken.None);
+                if (response.HttpStatusCode != HttpStatusCode.OK)
+                {
+                    PwnInfraContext.Logger.Warning(PwnInfraContext.Serializer.Serialize(response));
+                    PwnInfraContext.Logger.Warning($"HttpStatusCode: {response.HttpStatusCode}");
+                }
+            }
+            catch (Exception ex)
+            {
+                PwnInfraContext.Logger.Exception(ex);
+            }
         }
     }
 }

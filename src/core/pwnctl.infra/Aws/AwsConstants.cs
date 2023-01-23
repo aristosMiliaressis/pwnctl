@@ -17,7 +17,7 @@ public static class AwsConstants
     public const string EfsId = "PwnctlFs";
     public const string EfsMountPoint = "/mnt/efs";
     public const string EcsClusterName = "PwnctlCluster";
-    public const string EcsLogGroupId = "PwnctlLogs";
+    public const string EcsLogGroupId = "PwnctlWorkerLogs";
     public const string EcsRoleName = "PwnctlRole";
     public const string TaskDefinitionId = "PwnctlDef";
     public const string ContainerName = "pwnctl";

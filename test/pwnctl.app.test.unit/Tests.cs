@@ -78,7 +78,7 @@ public sealed class Tests
         Assert.NotNull(((Service)asset).Host);
 
         // transport protocol parsing test
-        asset = AssetParser.Parse("76.24.104.208:U161");
+        asset = AssetParser.Parse("udp://76.24.104.208:161");
         Assert.IsType<Service>(asset);
         Assert.NotNull(((Service)asset).Host);
         Assert.Equal(TransportProtocol.UDP, ((Service)asset).TransportProtocol);
@@ -111,6 +111,14 @@ public sealed class Tests
         Assert.IsType<Endpoint>(asset);
         Assert.NotNull(((Endpoint)asset).Service);
         Assert.NotNull(((Endpoint)asset).ParentEndpoint);
+
+        // TODO: protocol relative url parsing
+        // asset = AssetParser.Parse("//prurl.example.com/test");
+        // Assert.IsType<Endpoint>(asset);
+
+        // TODO: UNC parsing
+        // asset = AssetParser.Parse("\\unc.example.com:8443");
+        // Assert.IsType<Endpoint>(asset);
 
         // parameter
         asset = AssetParser.Parse("https://xyz.example.com:8443/api/token?_u=xxx");
@@ -158,7 +166,7 @@ public sealed class Tests
     }
 
     [Fact]
-    public async Task ScopeChecking_Tests()
+    public void ScopeChecking_Tests()
     {
         PwnctlDbContext context = new();
 
@@ -194,28 +202,6 @@ public sealed class Tests
         Assert.NotNull(programs.FirstOrDefault(program => program.Scope.Any(scope => scope.Matches(new DNSRecord(DnsRecordType.A, "xyz.tesla.com", "1.3.3.7")))));
         Assert.NotNull(programs.FirstOrDefault(program => program.Scope.Any(scope => scope.Matches(new DNSRecord(DnsRecordType.A, "example.com", "172.16.17.15")))));
         Assert.Null(programs.FirstOrDefault(program => program.Scope.Any(scope => scope.Matches(new DNSRecord(DnsRecordType.A, "example.com", "172.16.16.15")))));
-
-        // test for inscope host from domain relationship
-        var processor = AssetProcessorFactory.Create();
-        
-        await processor.ProcessAsync("https://1.3.3.7:443");
-        await processor.ProcessAsync("https://xyz.tesla.com:443");
-        await processor.ProcessAsync("https://xyz.tesla.com:443/api");
-        await processor.ProcessAsync("xyz.tesla.com IN A 1.3.3.7");
-        var record = context.AssetRecords.Include(r => r.Host).First(r => r.Host.IP == "1.3.3.7");
-        Assert.True(record.InScope);
-
-        record = context.AssetRecords.Include(r => r.Service).First(r => r.Service.Origin == "tcp://1.3.3.7:443");
-        Assert.True(record.InScope);
-
-        record = context.AssetRecords.Include(r => r.Endpoint).First(r => r.Endpoint.Url == "https://1.3.3.7:443/");
-        Assert.True(record.InScope);
-
-        record = context.AssetRecords.Include(r => r.Service).First(r => r.Service.Origin == "tcp://xyz.tesla.com:443");
-        Assert.True(record.InScope);
-
-        record = context.AssetRecords.Include(r => r.Endpoint).First(r => r.Endpoint.Url == "https://xyz.tesla.com:443/");
-        Assert.True(record.InScope);
     }
 
     [Fact]
@@ -289,6 +275,52 @@ public sealed class Tests
         await processor.ProcessAsync("6.6.6.6:65530");
         record.Host = context.Hosts.First(h => h.IP == "6.6.6.6");
         var service = context.Services.First(srv => srv.Origin == "tcp://6.6.6.6:65530");
+
+        await processor.TryProcessAsync("sub.tesla.com");
+        var domain = context.Domains.First(a => a.Name == "sub.tesla.com");
+        context.AssetRecords.First(a => a.Id == domain.Id);
+        domain = context.Domains.First(a => a.Name == "tesla.com");
+        context.AssetRecords.First(a => a.Id == domain.Id);
+
+        await processor.ProcessAsync("https://1.3.3.7:443");
+        await processor.ProcessAsync("https://xyz.tesla.com:443");
+        await processor.ProcessAsync("https://xyz.tesla.com:443/api");
+        await processor.ProcessAsync("xyz.tesla.com. IN A 1.3.3.7");
+        record = context.AssetRecords.Include(r => r.DNSRecord).First(r => r.DNSRecord.Key == "xyz.tesla.com" && r.DNSRecord.Value == "1.3.3.7");
+        Assert.True(record.InScope);
+
+        record = context.AssetRecords.Include(r => r.Host).First(r => r.Host.IP == "1.3.3.7");
+        Assert.True(record.InScope);
+
+        record = context.AssetRecords.Include(r => r.Service).First(r => r.Service.Origin == "tcp://1.3.3.7:443");
+        Assert.True(record.InScope);
+
+        record = context.AssetRecords.Include(r => r.Endpoint).First(r => r.Endpoint.Url == "https://1.3.3.7/");
+        Assert.True(record.InScope);
+
+        record = context.AssetRecords.Include(r => r.Service).First(r => r.Service.Origin == "tcp://xyz.tesla.com:443");
+        Assert.True(record.InScope);
+
+        record = context.AssetRecords.Include(r => r.Endpoint).First(r => r.Endpoint.Url == "https://xyz.tesla.com/");
+        Assert.True(record.InScope);
+
+        await processor.ProcessAsync("https://abc.tesla.com");
+        record = context.AssetRecords.Include(r => r.Endpoint).First(r => r.Endpoint.Url == "https://abc.tesla.com/");
+        Assert.True(record.InScope);
+        var serv = context.Services.First(s => s.Origin == "tcp://abc.tesla.com:443");
+        Assert.NotNull(serv);
+
+        record = context.AssetRecords.Include(r => r.Service).First(r => r.Id == serv.Id);
+        Assert.True(record.InScope);
+        Assert.Equal("tcp://abc.tesla.com:443", record.Service.Origin);
+
+        await processor.ProcessAsync("{\"Asset\":\"https://qwe.tesla.com\",\"FoundBy\":\"httpx\"}");
+        serv = context.Services.First(s => s.Origin == "tcp://qwe.tesla.com:443");
+        Assert.NotNull(serv);
+
+        record = context.AssetRecords.Include(r => r.Service).First(r => r.Id == serv.Id);
+        Assert.True(record.InScope);
+        Assert.Equal("tcp://qwe.tesla.com:443", record.Service.Origin);
     }
 
     [Fact]
@@ -318,7 +350,7 @@ public sealed class Tests
 
         // Task.Command interpolation test
         var hakrawlerTask = context.JoinedTaskRecordQueryable().First(t => t.Definition.ShortName == "hakrawler");
-        Assert.Equal("hakrawler -plain -h 'User-Agent: Mozilla/5.0' https://172.16.17.15:443/api/token/", hakrawlerTask.Command);
+        Assert.Equal("hakrawler -plain -h 'User-Agent: Mozilla/5.0' https://172.16.17.15/api/token", hakrawlerTask.Command);
 
         // TaskDefinition.Filter pass test
         await processor.ProcessAsync("https://172.16.17.15/");
@@ -350,6 +382,8 @@ public sealed class Tests
         Assert.Equal("cloud-enum.sh tesla", cloudEnumTask.Command);
 
         // TODO: AllowActive = false test, csv black&whitelist test
+        // TODO: test TaskDefinition.MatchOutOfScope
+        // TODO: test NotificationRule.CheckOutOfScope
     }
 
     [Fact]
@@ -373,7 +407,7 @@ public sealed class Tests
         var endpointRecord = context.AssetRecords
                                 .Include(r => r.Tags)
                                 .Include(r => r.Endpoint)
-                                .First(r => r.Endpoint.Url == "https://example.com:443/");
+                                .First(r => r.Endpoint.Url == "https://example.com/");
 
         var ctTag = endpointRecord.Tags.First(t => t.Name == "content-type");
         Assert.Equal("text/html", ctTag.Value);
@@ -393,7 +427,7 @@ public sealed class Tests
 
         await processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(exampleUrl));
 
-        endpointRecord = (await repository.ListEndpointsAsync()).Where(t => ((Endpoint)t.Asset).Url == "https://example.com:443/").First();
+        endpointRecord = repository.ListEndpointsAsync().Result.First(t => t.Endpoint.Url == "https://example.com/");
 
         srvTag = endpointRecord.Tags.First(t => t.Name == "server");
         Assert.Equal("IIS", srvTag.Value);
@@ -422,7 +456,7 @@ public sealed class Tests
 
         // process same asset twice and make sure tasks are only assigned once
         await processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl));
-        endpointRecord = (await repository.ListEndpointsAsync()).Where(ep => ((Endpoint)ep.Asset).Url == "https://iis.tesla.com:443/").First();
+        endpointRecord = repository.ListEndpointsAsync().Result.First(ep => ep.Endpoint.Url == "https://iis.tesla.com/");
         var tasks = context.JoinedTaskRecordQueryable().Where(t => t.Record.Id == endpointRecord.Asset.Id).ToList();
         Assert.True(!tasks.GroupBy(t => t.DefinitionId).Any(g => g.Count() > 1));
         srvTag = endpointRecord.Tags.First(t => t.Name == "protocol");
@@ -441,7 +475,7 @@ public sealed class Tests
 
         // test Tag filter
         await processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(apacheTeslaUrl));
-        endpointRecord = (await repository.ListEndpointsAsync()).Where(ep => ((Endpoint)ep.Asset).Url == "https://apache.tesla.com:443/").First();
+        endpointRecord = repository.ListEndpointsAsync().Result.First(r => r.Endpoint.Url == "https://apache.tesla.com/");
         tasks = context.JoinedTaskRecordQueryable().Where(t => t.Record.Id == endpointRecord.Id).ToList();
         Assert.DoesNotContain(tasks, t => t.Definition.ShortName == "shortname_scanner");
 
@@ -454,7 +488,7 @@ public sealed class Tests
         };
 
         await processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(sshService));
-        var service = context.Services.Where(ep => ep.Origin == "tcp://1.3.3.7:22").First();
+        var service = context.Services.First(ep => ep.Origin == "tcp://1.3.3.7:22");
         //Assert.Equal("ssh", service.ApplicationProtocol);
     }
 

@@ -25,6 +25,7 @@ uploadDirectory() {
 }
 
 ./src/core/pwnctl.svc/scripts/get-psl.sh deployment/
+curl -s https://raw.githubusercontent.com/proabiral/Fresh-Resolvers/master/resolvers.txt | shuf -n 25 > deployment/resolvers_top25.txt
 
 uploadDirectory ./deployment
 uploadDirectory ./src/core/pwnctl.infra/Persistence/seed /seed

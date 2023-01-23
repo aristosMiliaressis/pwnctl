@@ -33,7 +33,6 @@ namespace pwnctl.domain.Entities
         public Service(Host host, ushort port, TransportProtocol l4Proto = TransportProtocol.TCP)
         {
             Host = host;
-            HostId = null;
             TransportProtocol = l4Proto;
             Port = port;
             Origin = l4Proto.ToString().ToLower() + "://" + host.IP + ":" + port;
@@ -41,17 +40,19 @@ namespace pwnctl.domain.Entities
 
         public static bool TryParse(string assetText, out Asset asset)
         {
+            asset = null;
+            var protocol = TransportProtocol.TCP;
+
+            if (assetText.Contains("://"))
+            {
+                if (!Enum.TryParse<TransportProtocol>(assetText.ToUpper().Split("://")[0], out protocol))
+                    return false;
+                assetText = assetText.Split("://")[1];
+            }
+
             string strPort = assetText.Split(':').Last();
             
             assetText = assetText.Substring(0, assetText.Length - strPort.Length - 1);
-
-            var protocol = strPort[0] switch // TODO: replace this with scheme tcp://, udp:// sctp://
-            {
-                'U' => TransportProtocol.UDP,
-                'T' => TransportProtocol.TCP,
-                'S' => TransportProtocol.SCTP,
-                _ => TransportProtocol.TCP
-            };
 
             if (!char.IsDigit(strPort[0]))
                 strPort = strPort.Substring(1);

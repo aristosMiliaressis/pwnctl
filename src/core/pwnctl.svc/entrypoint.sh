@@ -19,7 +19,7 @@ fi
 # if no resolvers list generate new one
 if [ ! -f "/mnt/efs/resolvers_top25.txt" ] 
 then
-    get-valid-resolvers.sh >> "${PWNCTL_Logging__FilePath}/pwnctl.log"
+    get-valid-resolvers.sh
     cp /opt/wordlists/dns/resolvers_top25.txt /mnt/efs/resolvers_top25.txt
 # else if list is older than 6 hours take it but move it out of efs so next task will have to regenerate it
 elif [ $(((`date +%s` - `stat -L --format %Y /mnt/efs/resolvers_top25.txt`))) -gt $((60*60*24)) ]
