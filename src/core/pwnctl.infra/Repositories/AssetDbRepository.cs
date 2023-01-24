@@ -158,6 +158,24 @@ namespace pwnctl.infra.Repositories
                             .ToListAsync();
         }
 
+        public async Task<List<AssetRecord>> ListParametersAsync()
+        {
+            return await _context.AssetRecords
+                            .Include(e => e.Tags)
+                            .Include(e => e.Tasks)
+                            .Include(e => e.Parameter)
+                                .ThenInclude(e => e.Endpoint)
+                                .ThenInclude(e => e.Service)
+                                .ThenInclude(s => s.Host)
+                            .Include(e => e.Parameter)
+                                .ThenInclude(e => e.Endpoint)
+                                .ThenInclude(e => e.Service)
+                                .ThenInclude(s => s.Domain)
+                            .Where(r => r.SubjectClass.Class == nameof(Parameter))
+                            .AsNoTracking()
+                            .ToListAsync();
+        }
+
         public async Task<List<AssetRecord>> ListServicesAsync()
         {
             return await _context.AssetRecords

@@ -63,6 +63,9 @@ namespace pwnctl.cli.ModeHandlers
             var emails = await client.Send(new ListEmailsQuery());
             WriteToFile(Path.Combine(path, "emails.json"), emails.Emails);
 
+            var parameters = await client.Send(new ListParametersQuery());
+            WriteToFile(Path.Combine(path, "parameters.json"), parameters.Parameters);
+
             var tasks = await client.Send(new ListTasksQuery());
             foreach (var task in tasks.Tasks)
             {

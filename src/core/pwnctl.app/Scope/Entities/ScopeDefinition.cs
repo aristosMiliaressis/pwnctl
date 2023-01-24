@@ -41,8 +41,10 @@ namespace pwnctl.app.Scope.Entities
             {
                 NetRange net => NetRange.RoutesTo(net.FirstAddress, Pattern),
                 Host host => NetRange.RoutesTo(host.IP, Pattern),
+                Email email => Matches(email.Domain),
                 DNSRecord record => record.Host != null && Matches(record.Host),
                 Endpoint ep => Matches(ep.Service),
+                VirtualHost vh => Matches(vh.Service),
                 Parameter param => Matches(param.Endpoint),
                 Service srv => srv.Host != null && Matches(srv.Host),
                 _ => false
@@ -56,6 +58,7 @@ namespace pwnctl.app.Scope.Entities
                 DNSRecord record => new Regex(Pattern).Matches(record.Key).Count > 0,
                 Domain domain => new Regex(Pattern).Matches(domain.Name).Count > 0,
                 Email email => Matches(email.Domain),
+                VirtualHost vh => Matches(vh.Service),
                 Endpoint ep => Matches(ep.Service),
                 Host host => host.AARecords.Any(r => Matches(r.Domain)),
                 Parameter param => Matches(param.Endpoint),
