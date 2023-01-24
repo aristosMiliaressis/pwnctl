@@ -282,8 +282,8 @@ namespace pwnctl.infra.cdk.Stacks
 
             TaskDefinition = new FargateTaskDefinition(this, AwsConstants.TaskDefinitionId, new FargateTaskDefinitionProps
             {
-                Cpu = 1024,
-                MemoryLimitMiB = 3072,
+                Cpu = 2048,
+                MemoryLimitMiB = 4096,
                 TaskRole = ecsTaskExecutionRole,
                 ExecutionRole = ecsTaskExecutionRole,
                 Volumes = new ECS.Volume[]

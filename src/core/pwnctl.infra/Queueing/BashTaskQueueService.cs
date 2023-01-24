@@ -30,5 +30,10 @@ namespace pwnctl.infra.Queueing
         {
             throw new NotImplementedException();
         }
+
+        public Task ChangeMessageVisibilityAsync(QueueTaskDTO task, int visibilityTimeout, CancellationToken token = default)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -27,49 +27,44 @@ namespace pwnctl.svc
             _hostApplicationLifetime = hostApplicationLifetime;
             _hostApplicationLifetime.ApplicationStopping.Register(() => 
             {
-                PwnInfraContext.Logger.Information(LogSinks.File|LogSinks.Notification, $"{nameof(TaskConsumerService)} stoped.");
+                PwnInfraContext.Logger.Information(LogSinks.Console|LogSinks.Notification, $"{nameof(TaskConsumerService)} stoped.");
             });
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            PwnInfraContext.Logger.Information(LogSinks.File | LogSinks.Notification, $"{nameof(TaskConsumerService)} started.");
+            PwnInfraContext.Logger.Information(LogSinks.Console | LogSinks.Notification, $"{nameof(TaskConsumerService)} started.");
 
             while (!stoppingToken.IsCancellationRequested)
             {
+                var taskDTO = await _queueService.ReceiveAsync(stoppingToken);
+                if (taskDTO == null)
+                {
+                    PwnInfraContext.Logger.Information("queue is empty");
+                    break;
+                }
+
+                var taskEntry = await _context
+                                    .JoinedTaskRecordQueryable()
+                                    .FirstOrDefaultAsync(r => r.Id == taskDTO.TaskId);
+
                 try
                 {
-                    var taskDTO = await _queueService.ReceiveAsync(stoppingToken);
-                    if (taskDTO == null)
-                    {
-                        PwnInfraContext.Logger.Information("queue is empty");
-                        break;
-                    }
+                    var timer = new System.Timers.Timer(1000 * (AwsConstants.QueueVisibilityTimeoutInSec - 60));
+                    timer.Elapsed += async (_, _) => 
+                        await _queueService.ChangeMessageVisibilityAsync(taskDTO, AwsConstants.QueueVisibilityTimeoutInSec);
+                    timer.Start();
 
-                    var taskEntry = await _context
-                                        .JoinedTaskRecordQueryable()
-                                        .FirstOrDefaultAsync(r => r.Id == taskDTO.TaskId);
-
-                    try
-                    {
-                        var commandCancellationToken = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
-                        commandCancellationToken.CancelAfter(TimeSpan.FromSeconds(AwsConstants.QueueVisibilityTimeoutInSec - 300));
-
-                        await ExecuteTaskAsync(taskEntry, commandCancellationToken.Token);
-                    }
-                    catch (Exception ex)
-                    {
-                        PwnInfraContext.Logger.Exception(ex);
-                    }
-                    finally
-                    {
-                        await _queueService.DequeueAsync(taskDTO);
-                    }
+                    await ExecuteTaskAsync(taskEntry, stoppingToken);
                 }
                 catch (Exception ex)
                 {
                     PwnInfraContext.Logger.Exception(ex);
+                    await _queueService.ChangeMessageVisibilityAsync(taskDTO, 0);
+                    continue;
                 }
+
+                await _queueService.DequeueAsync(taskDTO);
             }
 
             _hostApplicationLifetime.StopApplication();

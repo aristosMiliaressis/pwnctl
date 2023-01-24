@@ -118,5 +118,29 @@ namespace pwnctl.infra.Queueing
                 PwnInfraContext.Logger.Exception(ex);
             }
         }
+
+        public async Task ChangeMessageVisibilityAsync(QueueTaskDTO task, int visibilityTimeout, CancellationToken token = default)
+        {
+            var request = new ChangeMessageVisibilityRequest
+            {
+                QueueUrl = this[AwsConstants.QueueName],
+                ReceiptHandle = task.Metadata[nameof(Message.ReceiptHandle)],
+                VisibilityTimeout = visibilityTimeout
+            };
+
+            try
+            {
+                var response = await _sqsClient.ChangeMessageVisibilityAsync(request, token);
+                if (response.HttpStatusCode != HttpStatusCode.OK)
+                {
+                    PwnInfraContext.Logger.Warning(PwnInfraContext.Serializer.Serialize(response));
+                    PwnInfraContext.Logger.Warning($"HttpStatusCode: {response.HttpStatusCode}");
+                }
+            }
+            catch (Exception ex)
+            {
+                PwnInfraContext.Logger.Exception(ex);
+            }
+        }
     }
 }

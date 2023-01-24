@@ -803,7 +803,7 @@
                     "queueName": "pwnctl-dlq.fifo",
                     "receiveMessageWaitTimeSeconds": 20,
                     "sqsManagedSseEnabled": true,
-                    "visibilityTimeout": 7200
+                    "visibilityTimeout": 3600
                   }
                 },
                 "constructInfo": {
@@ -843,7 +843,7 @@
                       "maxReceiveCount": 4
                     },
                     "sqsManagedSseEnabled": true,
-                    "visibilityTimeout": 7200
+                    "visibilityTimeout": 3600
                   }
                 },
                 "constructInfo": {
@@ -1351,7 +1351,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "f6e126600415850157e47f940a5bf11533544cc8785003890e8fe741e776e99f.zip"
+                      "s3Key": "7a2ab726b062eade40d230b85f0a92264f19c5271ba773c1f6d09ec7dd54d117.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -1364,7 +1364,7 @@
                         "PWNCTL_Aws__InVpc": "true",
                         "PWNCTL_TaskQueue__QueueName": "pwnctl.fifo",
                         "PWNCTL_TaskQueue__DLQName": "pwnctl-dlq.fifo",
-                        "PWNCTL_TaskQueue__VisibilityTimeout": "7200",
+                        "PWNCTL_TaskQueue__VisibilityTimeout": "3600",
                         "PWNCTL_Logging__MinLevel": "Debug",
                         "PWNCTL_Logging__FilePath": "/mnt/efs/",
                         "PWNCTL_Logging__LogGroup": "/aws/lambda/PwnctlApi",
@@ -1904,7 +1904,7 @@
                           },
                           {
                             "name": "PWNCTL_TaskQueue__VisibilityTimeout",
-                            "value": "7200"
+                            "value": "3600"
                           },
                           {
                             "name": "PWNCTL_Logging__FilePath",
@@ -1927,7 +1927,7 @@
                         ]
                       }
                     ],
-                    "cpu": "1024",
+                    "cpu": "2048",
                     "executionRoleArn": {
                       "Fn::GetAtt": [
                         "PwnctlRole3D3A5C97",
@@ -1935,7 +1935,7 @@
                       ]
                     },
                     "family": "PwnctlStackPwnctlDef78C9F95D",
-                    "memory": "3072",
+                    "memory": "4096",
                     "networkMode": "awsvpc",
                     "requiresCompatibilities": [
                       "FARGATE"

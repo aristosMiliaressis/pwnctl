@@ -2,19 +2,14 @@
 
 url=$1
 temp=`mktemp`
-temp2=`mktemp`
 RESOLVERS=$(cat /opt/wordlists/dns/resolvers_top25.txt| tr '\n' ',')
 
 echo $url | gau --threads 10 --timeout 25 --blacklist png,jpg,jpeg,gif,ico,svg,ttf,woff,woff2,eot,css,pdf \
-    | unfurl format %s://%a%p%?%q > $temp
+    | unfurl format %s://%a%p%?%q | tee $temp \
+    | xargs -I {} -n1 echo '{"Asset":"{}", "Tags":{"tool":"gau"}}'
 
 echo $url | waybackurls \
-    | unfurl format %s://%a%p%?%q >> $temp
+    | unfurl format %s://%a%p%?%q | tee -a $temp \
+    | xargs -I {} -n1 echo '{"Asset":"{}", "Tags":{"tool":"waybackurls"}}'
 
-cat $temp | sort -u \
-    | httpx -r $RESOLVERS -maxhr 15 -fc 404 -nc -silent -sc -ct -cl -location -json -o $temp2 2>&1 >/dev/null
-
-cat $temp2 | jq -c '{Asset:.url, tags:{Status:.["status-code"], "Content-Type":.["content-type"], "Content-Length":.["content-length"],location:.location}}'
-
-rm $temp2
 rm $temp

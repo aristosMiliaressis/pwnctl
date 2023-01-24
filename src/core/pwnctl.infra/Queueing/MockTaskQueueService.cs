@@ -23,5 +23,10 @@ namespace pwnctl.infra.Queueing
         {
             return Task.CompletedTask;
         }
+
+        public Task ChangeMessageVisibilityAsync(QueueTaskDTO task, int visibilityTimeout, CancellationToken token = default)
+        {
+            return Task.CompletedTask;
+        }
     }
 }
