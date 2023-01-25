@@ -14,7 +14,7 @@ namespace pwnctl.domain.Entities
         public string ParentDomainId { get; private init; }
         public List<DNSRecord> DNSRecords { get; private init; }
         public List<Service> Services { get; private init; }
-        public string Word => Name.Replace($".{PublicSuffixListService.Instance.GetSuffix(Name).Value}", "")
+        public string Word => Name.Replace($".{PublicSuffixRepository.Instance.GetSuffix(Name).Value}", "")
                                     .Split(".")
                                     .Last();
 
@@ -27,7 +27,7 @@ namespace pwnctl.domain.Entities
 
             Name = domain;
 
-            var suffix = PublicSuffixListService.Instance.GetSuffix(Name);
+            var suffix = PublicSuffixRepository.Instance.GetSuffix(Name);
             ZoneDepth = Name.Substring(0, Name.Length - suffix.Value.Length - 1)
                         .Split(".")
                         .Count();
@@ -68,7 +68,7 @@ namespace pwnctl.domain.Entities
 
         public string GetRegistrationDomain()
         {
-            var suffix = PublicSuffixListService.Instance.GetSuffix(Name);
+            var suffix = PublicSuffixRepository.Instance.GetSuffix(Name);
             if (suffix == null)
                 return null;
 

@@ -121,6 +121,8 @@ namespace pwnctl.infra.Queueing
 
         public async Task ChangeMessageVisibilityAsync(QueueTaskDTO task, int visibilityTimeout, CancellationToken token = default)
         {
+            PwnInfraContext.Logger.Debug($"ChangeMessageVisibilityAsync : {task.TaskId} {visibilityTimeout}");
+
             var request = new ChangeMessageVisibilityRequest
             {
                 QueueUrl = this[AwsConstants.QueueName],

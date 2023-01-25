@@ -35,6 +35,9 @@
     <Content Include="seed\*.*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content> 
+    <Content Include="wordlists\*.*">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content> 
   </ItemGroup>
 
 </Project>

@@ -15,9 +15,7 @@ then
     fi
 fi
 
-cd /opt/tools/IIS-ShortName-Scanner/
-java -jar iis_shortname_scanner.jar 2 20 $url > $temp
-
-cat $temp | grep 'Result: Vulnerable' >/dev/null && echo "{\"Asset\":\"$url\", \"tags\":{\"shortname-misconfig\":\"true\"}}"
+sns --check -u $url | grep -q VULNERABLE \
+     && echo "{\"Asset\":\"$url\", \"tags\":{\"shortname-misconfig\":\"true\"}}"
 
 rm $temp

@@ -13,7 +13,8 @@ public static class PwnInfraContextInitializer
 {
     public static void Setup()
     {
-        PublicSuffixListService.Instance = new FsPublicSuffixListService();
+        PublicSuffixRepository.Instance = new FsPublicSuffixRepository();
+        CloudServiceRepository.Instance = new FsCloudServiceRepository();
 
         var config = PwnConfigFactory.Create();
         var sender = new DiscordNotificationSender();

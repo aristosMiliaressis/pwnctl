@@ -19,12 +19,6 @@
   Filter: Tags["shortname-misconfig"] == "true"
   Topic: misconfigs
 
-- ShortName: elb_takeover
-  Subject: Domain
-  Filter: Tags["elb-takeover"] == "true"
-  Topic: misconfigs
-  CheckOutOfScope: true
-
 - ShortName: s3_misconfig
   Subject: Domain
   Filter: Tags["s3-takeover"] == "true" || !string.IsNullOrEmpty(Tags["s3-public-perms"])
@@ -36,6 +30,16 @@
   Filter: Tags["s3-takeover"] == "true" || !string.IsNullOrEmpty(Tags["s3-public-perms"])
   Topic: misconfigs
   CheckOutOfScope: true
+
+- ShortName: cname_takeover_check
+  Subject: DNSRecord
+  Filter: '!string.IsNullOrEmpty(Tags["cname-takeover"])'
+  Topic: misconfigs
+  
+- ShortName: second_order_takeover
+  Subject: DNSRecord
+  Filter: '!string.IsNullOrEmpty(Tags["second-order-takeover"])'
+  Topic: misconfigs
 
 - ShortName: zone_transfer
   Subject: Domain

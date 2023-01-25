@@ -2,9 +2,9 @@ namespace pwnctl.domain.Interfaces;
 
 using pwnctl.domain.ValueObjects;
 
-public interface PublicSuffixListService
+public interface PublicSuffixRepository
 {
-    static PublicSuffixListService Instance { get; set; }
+    static PublicSuffixRepository Instance { get; set; }
 
     PublicSuffix GetSuffix(string name);
 }

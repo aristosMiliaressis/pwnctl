@@ -4,7 +4,7 @@ using pwnctl.infra.Configuration;
 
 namespace pwnctl.infra.Repositories
 {
-    public sealed class FsPublicSuffixListService : PublicSuffixListService
+    public sealed class FsPublicSuffixRepository : PublicSuffixRepository
     {
         private static string _publicSuffixDataFile = $"{EnvironmentVariables.InstallPath}/public_suffix_list.dat";
 

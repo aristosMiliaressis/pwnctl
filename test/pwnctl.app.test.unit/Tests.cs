@@ -157,12 +157,18 @@ public sealed class Tests
         var exampleDomain = new Domain("xyz.example.com");
 
         Assert.Equal("example.com", exampleDomain.GetRegistrationDomain());
-        Assert.Equal("com", PublicSuffixListService.Instance.GetSuffix(exampleDomain.Name).Value);
+        Assert.Equal("com", PublicSuffixRepository.Instance.GetSuffix(exampleDomain.Name).Value);
 
         var exampleSubDomain = new Domain("sub.example.azurewebsites.net");
 
         Assert.Equal("example.azurewebsites.net", exampleSubDomain.GetRegistrationDomain());
-        Assert.Equal("azurewebsites.net", PublicSuffixListService.Instance.GetSuffix(exampleSubDomain.Name).Value);
+        Assert.Equal("azurewebsites.net", PublicSuffixRepository.Instance.GetSuffix(exampleSubDomain.Name).Value);
+
+        var ep1 = new Endpoint("https", new Service(new Domain("example.com"), 443), "/");
+        var ep2 = new Endpoint("https", new Service(new Domain("example.s3.amazonaws.com"), 443), "/");
+
+        Assert.False(CloudServiceRepository.Instance.IsCloudService(ep1));
+        Assert.True(CloudServiceRepository.Instance.IsCloudService(ep2));
     }
 
     [Fact]
@@ -381,6 +387,10 @@ public sealed class Tests
         var cloudEnumTask = context.JoinedTaskRecordQueryable().First(t => t.Definition.ShortName == "cloud_enum");
         Assert.Equal("cloud-enum.sh tesla", cloudEnumTask.Command);
 
+        await processor.ProcessAsync("https://tesla.s3.amazonaws.com");
+        var record = context.AssetRecords.Include(r => r.Endpoint).First(r => r.Endpoint.Url == "https://tesla.s3.amazonaws.com/");
+        Assert.True(context.JoinedTaskRecordQueryable().Any(t => t.Definition.ShortName == "second_order_takeover"));
+
         // TODO: AllowActive = false test, csv black&whitelist test
         // TODO: test TaskDefinition.MatchOutOfScope
         // TODO: test NotificationRule.CheckOutOfScope
@@ -526,8 +536,8 @@ public sealed class Tests
             await processor.ProcessAsync(line);
         }
 
-        record = context.AssetRecords.Include(r => r.Tags).Include(r => r.Domain).FirstOrDefault(r => r.Domain.Name == "example2.com");
-        //Assert.Equal("domain_resolution", record?.FoundBy);
+        record = context.AssetRecords.Include(r => r.Tags).Include(r => r.Domain).First(r => r.Domain.Name == "example2.com");
+        Assert.Equal("domain_resolution", record?.FoundBy);
         Assert.DoesNotContain("foundby", record?.Tags.Select(t => t.Name));
 
         var jsonAltInputTestCmd = task.WrappedCommand.Replace(task.Command, "echo '{\"Asset\":\"sub.example3.com\",\"tags\":{\"test\":\"tag\"}}'");

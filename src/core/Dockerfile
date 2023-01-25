@@ -118,7 +118,6 @@ RUN git clone https://github.com/blechschmidt/massdns.git \
     && ln -s /opt/tools/massdns/scripts/subbrute.py /usr/local/bin/
 RUN git clone https://github.com/vortexau/dnsvalidator.git \
     && cd dnsvalidator && python3 setup.py install
-RUN git clone https://github.com/irsdl/IIS-ShortName-Scanner.git
 RUN git clone https://github.com/s0md3v/Corsy.git \
     && pip3 install -r Corsy/requirements.txt \
     && chmod +x Corsy/corsy.py \
@@ -140,8 +139,9 @@ RUN git clone https://github.com/xnl-h4ck3r/xnLinkFinder.git \
     && python3 setup.py install
 RUN git clone https://github.com/EnableSecurity/wafw00f.git \
     && cd wafw00f && python3 setup.py install
-RUN go install github.com/rverton/webanalyze/cmd/webanalyze@latest \
-    && webanalyze -update
+RUN go install github.com/rverton/webanalyze/cmd/webanalyze@latest
+RUN go install github.com/sw33tLie/sns@latest
+RUN go install github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
 RUN pip3 install s3scanner
 
 RUN curl https://api.github.com/repos/michenriksen/aquatone/releases/latest 2>/dev/null \
@@ -179,6 +179,7 @@ FROM base AS release
 
 COPY --from=build /publish/svc /opt/pwnctl-svc
 COPY pwnctl.svc/wordlists/ /opt/wordlists/
+COPY pwnctl.svc/nuclei_templates/ /opt/nuclei_templates/
 COPY pwnctl.svc/scripts/* /opt/scripts/
 RUN chmod -R +x /opt/scripts \
     && mv /opt/scripts/* /usr/local/bin/

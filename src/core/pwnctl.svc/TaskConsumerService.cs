@@ -94,7 +94,9 @@ namespace pwnctl.svc
                 }
             }
 
-            PwnInfraContext.Logger.Error(await process.StandardError.ReadToEndAsync());
+            string stderr = await process.StandardError.ReadToEndAsync();
+            if (!string.IsNullOrEmpty(stderr))
+                PwnInfraContext.Logger.Error(stderr);
 
             task.Finished(process.ExitCode);
             await _context.SaveChangesAsync();

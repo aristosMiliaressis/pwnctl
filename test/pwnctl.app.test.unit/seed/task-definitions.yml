@@ -48,3 +48,14 @@
   IsActive: true
   Aggressiveness: 5
   Subject: Domain
+
+- ShortName: cname_takeover_check
+  CommandTemplate: nuclei -t /opt/nuclei-templates/cname_takeovers
+  Subject: DNSRecord
+  Filter: DNSRecord.Type == DnsRecordType.CNAME
+
+- ShortName: second_order_takeover
+  CommandTemplate: nuclei -t /opt/nuclei-templates/cname_takeovers
+  Subject: Endpoint
+  Filter: CloudServiceRepository.Instance.IsCloudService(Endpoint)
+  MatchOutOfScope: true

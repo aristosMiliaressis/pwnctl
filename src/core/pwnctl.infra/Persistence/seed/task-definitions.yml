@@ -130,8 +130,13 @@
   Filter: Endpoint.Url.Contains("amazonaws.com") && Endpoint.Url.Contains("s3")
   MatchOutOfScope: true
 
-- ShortName: elb_takeover
-  CommandTemplate: dig {{Name}} | grep -q 'status. NXDOMAIN' && echo "{\"Asset\":\"{{Name}}\",\"Tags\"{\"elb-takeover\":\"true\"}}"
-  Subject: Domain
-  Filter: Domain.Name.Contains("elasticbeanstalk.com")
+- ShortName: cname_takeover_check
+  CommandTemplate: nuclei -t /opt/nuclei-templates/cname_takeovers
+  Subject: DNSRecord
+  Filter: DNSRecord.Type == DnsRecordType.CNAME
+
+- ShortName: second_order_takeover
+  CommandTemplate: nuclei -t /opt/nuclei-templates/cname_takeovers
+  Subject: Endpoint
+  Filter: CloudServiceRepository.Instance.IsCloudService(Endpoint)
   MatchOutOfScope: true
