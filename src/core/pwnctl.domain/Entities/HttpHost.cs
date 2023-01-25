@@ -2,9 +2,9 @@
 
 namespace pwnctl.domain.Entities
 {
-    public sealed class HttpHost : Asset // TODO: Add bool 
+    public sealed class HttpHost : Asset
     {
-        public string Name { get; private init; } // TODO: remove
+        public string Name { get; private init; }
         public NetworkSocket Socket { get; private init; }
         public string ServiceId { get; private init; }
 

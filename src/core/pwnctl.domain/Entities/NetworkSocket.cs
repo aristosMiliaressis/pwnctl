@@ -7,7 +7,7 @@ namespace pwnctl.domain.Entities
     public sealed class NetworkSocket : Asset
     {
         [EqualityComponent]
-        public string Address { get; init; } //TODO: Host
+        public string Address { get; init; }
 
         public ushort Port { get; init; }
         public TransportProtocol TransportProtocol { get; init; }

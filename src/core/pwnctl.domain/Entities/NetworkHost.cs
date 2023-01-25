@@ -3,9 +3,6 @@ using pwnctl.domain.BaseClasses;
 using System.Net.Sockets;
 using System.Net;
 
-// (25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?(\.|$)){4}
-//\b(?:[A-F0-9]{1,4}:){7}[A-F0-9]{1,4}\b
-
 namespace pwnctl.domain.Entities
 {
     public sealed class NetworkHost : Asset

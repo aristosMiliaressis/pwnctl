@@ -8,7 +8,7 @@ namespace pwnctl.domain.Entities
     public sealed class Email : Asset
     {
         [EqualityComponent]
-        public string Address { get; init; } // TODO: Rename to Local Part & add Address =>
+        public string Address { get; init; }
         public DomainName DomainName { get; private init; }
         public string DomainId { get; private init; }
 

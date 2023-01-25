@@ -7,7 +7,7 @@ namespace pwnctl.domain.Entities
     public sealed class HttpEndpoint : Asset
     {
         [EqualityComponent]
-        public string Url { get; init; } // make it => Socket.Address & omit 80 & 443 ports
+        public string Url { get; init; }
 
         public string SocketAddressId { get; private init; }
         public NetworkSocket Socket { get; init; }
