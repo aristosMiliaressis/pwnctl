@@ -39,14 +39,14 @@ namespace pwnctl.app.Scope.Entities
         {
             return asset switch
             {
-                NetRange net => NetRange.RoutesTo(net.FirstAddress, Pattern),
-                Host host => NetRange.RoutesTo(host.IP, Pattern),
-                Email email => Matches(email.Domain),
-                DNSRecord record => record.Host != null && Matches(record.Host),
-                Endpoint ep => Matches(ep.Service),
-                VirtualHost vh => Matches(vh.Service),
-                Parameter param => Matches(param.Endpoint),
-                Service srv => srv.Host != null && Matches(srv.Host),
+                NetworkRange net => NetworkRange.RoutesTo(net.FirstAddress, Pattern),
+                NetworkHost host => NetworkRange.RoutesTo(host.IP, Pattern),
+                Email email => Matches(email.DomainName),
+                DomainNameRecord record => record.NetworkHost != null && Matches(record.NetworkHost),
+                HttpEndpoint ep => Matches(ep.Socket),
+                HttpHost vh => Matches(vh.Socket),
+                HttpParameter param => Matches(param.Endpoint),
+                NetworkSocket srv => srv.NetworkHost != null && Matches(srv.NetworkHost),
                 _ => false
             };
         }
@@ -55,14 +55,14 @@ namespace pwnctl.app.Scope.Entities
         {
             return asset switch
             {
-                DNSRecord record => new Regex(Pattern).Matches(record.Key).Count > 0,
-                Domain domain => new Regex(Pattern).Matches(domain.Name).Count > 0,
-                Email email => Matches(email.Domain),
-                VirtualHost vh => Matches(vh.Service),
-                Endpoint ep => Matches(ep.Service),
-                Host host => host.AARecords.Any(r => Matches(r.Domain)),
-                Parameter param => Matches(param.Endpoint),
-                Service srv => srv.Host != null && Matches(srv.Host) || srv.Domain != null && Matches(srv.Domain),
+                DomainNameRecord record => new Regex(Pattern).Matches(record.Key).Count > 0,
+                DomainName domain => new Regex(Pattern).Matches(domain.Name).Count > 0,
+                Email email => Matches(email.DomainName),
+                HttpHost vh => Matches(vh.Socket),
+                HttpEndpoint ep => Matches(ep.Socket),
+                NetworkHost host => host.AARecords.Any(r => Matches(r.DomainName)),
+                HttpParameter param => Matches(param.Endpoint),
+                NetworkSocket srv => srv.NetworkHost != null && Matches(srv.NetworkHost) || srv.DomainName != null && Matches(srv.DomainName),
                 _ => false
             };
         }
@@ -71,8 +71,8 @@ namespace pwnctl.app.Scope.Entities
         {
             return asset switch
             {
-                Endpoint ep => new Regex(Pattern).Matches(ep.Url).Count > 0,
-                Parameter param => Matches(param.Endpoint),
+                HttpEndpoint ep => new Regex(Pattern).Matches(ep.Url).Count > 0,
+                HttpParameter param => Matches(param.Endpoint),
                 _ => false
             };
         }

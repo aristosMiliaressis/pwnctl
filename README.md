@@ -14,7 +14,7 @@ the target scope is onboarded trough the cli or api, than it is recursivly scann
 ## `$ pwnctl process`
 
 1. reads from stdin line by line
-2. classifies lines into asset classes (NetRange/Host/Domain/Service/DNSRecord/Endpoint/Parameter)
+2. classifies lines into asset classes (NetworkRange/NetworkHost/DomainName/NetworkSocket/DomainNameRecord/HttpEndpoint/HttpParameter)
 3. checks if it exists in db
 4. if not adds it
 5. checks if it is in scope according to `ScopeDefinitions`
@@ -25,11 +25,11 @@ the target scope is onboarded trough the cli or api, than it is recursivly scann
 
 ### In Scope checking rules
 
-- Domains are in scope if there is a matching DomainRegex type ScopeDefinition
-- Hosts are in scope if there is a matching CIDR ScopeDefinition
-- Hosts are in scope if an A record is found linking them to an in scope domain
-- Endpoints are in scope if there is a matching UrlRegex type ScopeDefinition
-- DNSRecords/Services/Endpoints/Parameters are in scope if they are related to an in scope domain or host
+- DomainNames are in scope if there is a matching DomainRegex type ScopeDefinition
+- NetworkHosts are in scope if there is a matching CIDR ScopeDefinition
+- NetworkHosts are in scope if an A record is found linking them to an in scope domain
+- HttpEndpoints are in scope if there is a matching UrlRegex type ScopeDefinition
+- DomainNameRecords/NetworkSockets/HttpEndpoints/HttpParameters are in scope if they are related to an in scope domain or host
 
 ### Scope Configuration
 
@@ -71,69 +71,68 @@ tags are a way to store arbitary metadata relating to an asset, they can be used
 ```YAML
 - ShortName: ping_sweep
   CommandTemplate: ping-sweep.sh {{CIDR}}
-  Subject: NetRange
+  Subject: NetworkRange
 
 - ShortName: reverse_range_lookup
   CommandTemplate: reverse-range-lookup.sh {{CIDR}}
-  Subject: NetRange
+  Subject: NetworkRange
 
 - ShortName: domain_resolution
   CommandTemplate: dig +short {{Name}} | awk '{print "{{Name}} IN A " $1}'
-  Subject: Domain
+  Subject: DomainName
 
 - ShortName: httpx
   CommandTemplate: echo {{Name}} | httpx -silent
-  Subject: Domain
+  Subject: DomainName
 
 - ShortName: zone_trasfer
   CommandTemplate: zone-transfer.sh {{Name}}
-  Subject: Domain
+  Subject: DomainName
 
 - ShortName: sub_enum
   CommandTemplate: sub-enum.sh {{Name}}
-  Filter: Domain.ZoneDepth <= 2
-  Subject: Domain
+  Filter: DomainName.ZoneDepth <= 2
+  Subject: DomainName
 
 - ShortName: tld_brute
   CommandTemplate: tld-brute.sh {{Name}}
-  Subject: Domain
-  Filter: Domain.ZoneDepth == 1
+  Subject: DomainName
+  Filter: DomainName.ZoneDepth == 1
 
 - ShortName: asn_lookup
   CommandTemplate: asn-lookup.sh {{IP}}
-  Subject: Host
+  Subject: NetworkHost
 
 - ShortName: reverse_lookup
   CommandTemplate: dig +short -x {{IP}}
-  Subject: Host
+  Subject: NetworkHost
 
 - ShortName: tcp_scan
   CommandTemplate: tcp-scan.sh {{IP}}
-  Subject: Host
+  Subject: NetworkHost
 
 - ShortName: udp_scan
   CommandTemplate: udp-scan.sh {{IP}}
-  Subject: Host
+  Subject: NetworkHost
 
 - ShortName: get_alt_names
   CommandTemplate: get-alt-names.sh {{IP}}
-  Subject: Host
+  Subject: NetworkHost
 
 - ShortName: get_all_urls
   CommandTemplate: get-all-urls.sh {{Url}}
-  Subject: Endpoint
-  Filter: Endpoint.Path == "/"
+  Subject: HttpEndpoint
+  Filter: HttpEndpoint.Path == "/"
 
 - ShortName: dir_brute_common
   CommandTemplate: dir-brute.sh {{Url}} /opt/wordlists/common.txt
-  Filter: Endpoint.Path == "/"
-  Subject: Endpoint
+  Filter: HttpEndpoint.Path == "/"
+  Subject: HttpEndpoint
 
 - ShortName: file_brute_config
   CommandTemplate: file-brute.sh {{Url}} /opt/wordlists/config.txt
-  Filter: Endpoint.Path == "/"
-  Subject: Endpoint
-
+  Filter: HttpEndpoint.Path == "/"
+  Subject: HttpEndpoint
 ```
 
 ## Notification Configuration
@@ -145,28 +144,28 @@ tags are a way to store arbitary metadata relating to an asset, they can be used
 **`notification-rules.yml`**
 ```YAML
 - ShortName: default_creds
-  Subject: Service
+  Subject: NetworkSocket
   Filter: Tags["vuln-default-creds"] == "true"
   Topic: misconfigs
   
 - ShortName: cors_misconfig
-  Subject: Endpoint
+  Subject: HttpEndpoint
   Filter: Tags["cors-misconfig"] == "true"
   Topic: misconfigs
 
 - ShortName: shortname_misconfig
-  Subject: Endpoint
+  Subject: HttpEndpoint
   Filter: Tags["shortname-misconfig"] == "true"
   Topic: misconfigs
 
 - ShortName: node_debug
-  Subject: Service
-  Filter: Service.Port == 9228 || Service.Port == 9229
+  Subject: NetworkSocket
+  Filter: NetworkSocket.Port == 9228 || NetworkSocket.Port == 9229
   Topic: misconfigs
 
 - ShortName: docker_api
-  Subject: Service
-  Filter: Service.Port == 2735 || Service.Port == 2736
+  Subject: NetworkSocket
+  Filter: NetworkSocket.Port == 2735 || NetworkSocket.Port == 2736
   Topic: misconfigs
 ```
 

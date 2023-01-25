@@ -1,142 +1,142 @@
 - ShortName: ping_sweep
   CommandTemplate: ping-sweep.sh {{CIDR}}
-  Subject: NetRange
+  Subject: NetworkRange
 
 - ShortName: reverse_range_lookup
   CommandTemplate: reverse-range-lookup.sh {{CIDR}}
-  Subject: NetRange
+  Subject: NetworkRange
 
 - ShortName: domain_resolution
   CommandTemplate: resolve.sh {{Name}}
-  Subject: Domain
+  Subject: DomainName
 
 - ShortName: httpx
   CommandTemplate: echo {{Name}} | httpx -silent
-  Subject: Domain
+  Subject: DomainName
 
 - ShortName: zone_trasfer
   CommandTemplate: zone-transfer.sh {{Name}}
-  Subject: Domain
+  Subject: DomainName
 
 - ShortName: sub_enum
   CommandTemplate: sub-enum.sh {{Name}}
-  Filter: Domain.ZoneDepth <= 2
-  Subject: Domain
+  Filter: DomainName.ZoneDepth <= 2
+  Subject: DomainName
 
 - ShortName: tld_brute
   CommandTemplate: tld-brute.sh {{Name}}
-  Subject: Domain
-  Filter: Domain.ZoneDepth == 1
+  Subject: DomainName
+  Filter: DomainName.ZoneDepth == 1
 
 - ShortName: asn_lookup
   CommandTemplate: asn-lookup.sh {{IP}}
-  Subject: Host
+  Subject: NetworkHost
 
 - ShortName: reverse_lookup
   CommandTemplate: dig +short -x {{IP}}
-  Subject: Host
+  Subject: NetworkHost
 
 - ShortName: tcp_scan
   CommandTemplate: tcp-scan.sh {{IP}}
-  Subject: Host
+  Subject: NetworkHost
 
 - ShortName: udp_scan
   CommandTemplate: udp-scan.sh {{IP}}
-  Subject: Host
+  Subject: NetworkHost
 
 - ShortName: get_alt_names
   CommandTemplate: get-alt-names.sh {{IP}}
-  Subject: Host
+  Subject: NetworkHost
 
 - ShortName: get_all_urls
   CommandTemplate: get-all-urls.sh {{Url}}
-  Subject: Endpoint
-  Filter: Endpoint.Path == "/"
+  Subject: HttpEndpoint
+  Filter: HttpEndpoint.Path == "/"
 
 - ShortName: dir_brute_common
   CommandTemplate: dir-brute.sh {{Url}} /opt/wordlists/common.txt
-  Filter: Endpoint.Path == "/"
-  Subject: Endpoint
+  Filter: HttpEndpoint.Path == "/"
+  Subject: HttpEndpoint
 
 - ShortName: file_brute_config
   CommandTemplate: file-brute.sh {{Url}} /opt/wordlists/config.txt
-  Filter: Endpoint.Path == "/"
-  Subject: Endpoint
+  Filter: HttpEndpoint.Path == "/"
+  Subject: HttpEndpoint
 
 - ShortName: wafw00f
   CommandTemplate: wafw00f.sh {{Url}}
-  Filter: Endpoint.Path == "/"
-  Subject: Endpoint
+  Filter: HttpEndpoint.Path == "/"
+  Subject: HttpEndpoint
 
 - ShortName: grab_url_metadata
   CommandTemplate: grab-url-metadata.sh {{Url}}
-  Filter: Endpoint.Path == "/"
-  Subject: Endpoint
+  Filter: HttpEndpoint.Path == "/"
+  Subject: HttpEndpoint
 
 - ShortName: webanalyze
   CommandTemplate: webanalyze.sh {{Url}}
-  Filter: Endpoint.Path == "/"
-  Subject: Endpoint
+  Filter: HttpEndpoint.Path == "/"
+  Subject: HttpEndpoint
 
 - ShortName: screenshot
   CommandTemplate: screenshot.sh {{Url}}
-  Filter: Endpoint.Path == "/"
-  Subject: Endpoint
+  Filter: HttpEndpoint.Path == "/"
+  Subject: HttpEndpoint
 
 - ShortName: webcrawl
   CommandTemplate: webcrawl.sh '{{Url}}'
-  Filter: Endpoint.Path == "/" || Tags["Content-Type"].Contains("/html") || Tags["Content-Type"].Contains("/xhtml")
-  Subject: Endpoint
+  Filter: HttpEndpoint.Path == "/" || Tags["Content-Type"].Contains("/html") || Tags["Content-Type"].Contains("/xhtml")
+  Subject: HttpEndpoint
 
 - ShortName: link_finder
   CommandTemplate: link-finder.sh {{Url}}
-  Filter: Endpoint.Extension == "js" || Endpoint.Extension == "jsm" || Tags["Content-Type"].Contains("/javascript")
-  Subject: Endpoint
+  Filter: HttpEndpoint.Extension == "js" || HttpEndpoint.Extension == "jsm" || Tags["Content-Type"].Contains("/javascript")
+  Subject: HttpEndpoint
 
 - ShortName: cors_check
   CommandTemplate: check-cors.sh {{Url}}
-  Subject: Endpoint
-  Filter: Endpoint.Path == "/" || Tags["Content-Type"].Contains("/json") || Tags["Content-Type"].Contains("/xml")
+  Subject: HttpEndpoint
+  Filter: HttpEndpoint.Path == "/" || Tags["Content-Type"].Contains("/json") || Tags["Content-Type"].Contains("/xml")
 
 - ShortName: shortname_scanning
   CommandTemplate: shortname-check.sh {{Url}}
-  Subject: Endpoint
+  Subject: HttpEndpoint
   Filter: Tags["Title"].Contains("Internet Information Services")|| Tags["Title"].Contains("IIS")||Tags["Server"].Contains("IIS")||Tags["Server"].Contains("Microsoft-HTTPAPI")
 
 - ShortName: shortname_scanning_srv
-  CommandTemplate: shortname-check.sh {{Origin}}
-  Subject: Service
+  CommandTemplate: shortname-check.sh {{Address}}
+  Subject: NetworkSocket
   Filter: Tags["Version"].Contains("IIS") || Tags["Version"].Contains("Microsoft HTTPAPI")
 
 - ShortName: zone_walking
   CommandTemplate: ldns-walk {{Key}} | tail -n +2 | cut -d ' ' -f 1
-  Filter: DNSRecord.Type == pwnctl.domain.Enums.DnsRecordType.NSEC
-  Subject: DNSRecord
+  Filter: DomainNameRecord.Type == pwnctl.domain.Enums.DnsRecordType.NSEC
+  Subject: DomainNameRecord
 
 - ShortName: cloud_enum
   CommandTemplate: cloud-enum.sh {{Word}}
-  Subject: Domain
-  Filter: Domain.ZoneDepth == 1
+  Subject: DomainName
+  Filter: DomainName.ZoneDepth == 1
 
 - ShortName: s3_scan
   CommandTemplate: s3-scan.sh {{Name}}
-  Subject: Domain
-  Filter: Domain.Name.Contains("amazonaws.com") && Domain.Name.Contains("s3")
+  Subject: DomainName
+  Filter: DomainName.Name.Contains("amazonaws.com") && DomainName.Name.Contains("s3")
   MatchOutOfScope: true
 
 - ShortName: s3_scan_url
   CommandTemplate: s3-scan.sh {{Url}}
-  Subject: Endpoint
-  Filter: Endpoint.Url.Contains("amazonaws.com") && Endpoint.Url.Contains("s3")
+  Subject: HttpEndpoint
+  Filter: HttpEndpoint.Url.Contains("amazonaws.com") && HttpEndpoint.Url.Contains("s3")
   MatchOutOfScope: true
 
 - ShortName: cname_takeover_check
   CommandTemplate: nuclei -t /opt/nuclei-templates/cname_takeovers
-  Subject: DNSRecord
-  Filter: DNSRecord.Type == DnsRecordType.CNAME
+  Subject: DomainNameRecord
+  Filter: DomainNameRecord.Type == DomainNameRecord.CNAME
 
 - ShortName: second_order_takeover
   CommandTemplate: nuclei -t /opt/nuclei-templates/cname_takeovers
-  Subject: Endpoint
-  Filter: CloudServiceRepository.Instance.IsCloudService(Endpoint)
+  Subject: HttpEndpoint
+  Filter: CloudServiceRepository.Instance.IsCloudService(HttpEndpoint)
   MatchOutOfScope: true

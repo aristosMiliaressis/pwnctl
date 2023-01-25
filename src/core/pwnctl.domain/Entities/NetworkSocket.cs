@@ -4,38 +4,38 @@ using pwnctl.domain.Enums;
 
 namespace pwnctl.domain.Entities
 {
-    public sealed class Service : Asset
+    public sealed class NetworkSocket : Asset
     {
         [EqualityComponent]
-        public string Origin { get; init; }
+        public string Address { get; init; } //TODO: Host
 
         public ushort Port { get; init; }
         public TransportProtocol TransportProtocol { get; init; }
 
-        public string HostId { get; private init; }
-        public Host Host { get; init; }
+        public string NetworkHostId { get; private init; }
+        public NetworkHost NetworkHost { get; init; }
 
-        public string DomainId { get; private init; }
-        public Domain Domain { get; init; }
+        public string DomainNameId { get; private init; }
+        public DomainName DomainName { get; init; }
 
-        public List<Endpoint> Endpoints { get; init; }
+        public List<HttpEndpoint> Endpoints { get; init; }
 
-        public Service() { }
+        public NetworkSocket() { }
 
-        public Service(Domain domain, ushort port, TransportProtocol l4Proto = TransportProtocol.TCP)
+        public NetworkSocket(DomainName domain, ushort port, TransportProtocol l4Proto = TransportProtocol.TCP)
         {
-            Domain = domain;
+            DomainName = domain;
             TransportProtocol = l4Proto;
             Port = port;
-            Origin = l4Proto.ToString().ToLower() + "://" + domain.Name + ":" + port;
+            Address = l4Proto.ToString().ToLower() + "://" + domain.Name + ":" + port;
         }
 
-        public Service(Host host, ushort port, TransportProtocol l4Proto = TransportProtocol.TCP)
+        public NetworkSocket(NetworkHost host, ushort port, TransportProtocol l4Proto = TransportProtocol.TCP)
         {
-            Host = host;
+            NetworkHost = host;
             TransportProtocol = l4Proto;
             Port = port;
-            Origin = l4Proto.ToString().ToLower() + "://" + host.IP + ":" + port;
+            Address = l4Proto.ToString().ToLower() + "://" + host.IP + ":" + port;
         }
 
         public static bool TryParse(string assetText, out Asset asset)
@@ -59,16 +59,16 @@ namespace pwnctl.domain.Entities
 
             var port = ushort.Parse(strPort);
 
-            if (Host.TryParse(assetText, out Asset host))
+            if (NetworkHost.TryParse(assetText, out Asset host))
             {
-                var service = new Service((Host)host, port, protocol);
+                var service = new NetworkSocket((NetworkHost)host, port, protocol);
 
                 asset = service;
                 return true;
             }
-            else if (Domain.TryParse(assetText, out Asset domain))
+            else if (DomainName.TryParse(assetText, out Asset domain))
             {
-                var service = new Service((Domain)domain, port, protocol);
+                var service = new NetworkSocket((DomainName)domain, port, protocol);
                 asset = service;
                 return true;
             }
@@ -79,7 +79,7 @@ namespace pwnctl.domain.Entities
 
         public override string ToString()
         {
-            return Origin;
+            return Address;
         }
     }
 }

@@ -21,32 +21,32 @@ public sealed class AssetRecord : Entity<string>
     public Program OwningProgram { get; private set; }
     public AssetClass SubjectClass { get; private set; }
 
-    public Host Host { get; set; }
-    public string HostId { get; set; }
+    public NetworkHost NetworkHost { get; set; }
+    public string NetworkHostId { get; set; }
 
-    public Service Service { get; set; }
-    public string ServiceId { get; set; }
+    public NetworkSocket NetworkSocket { get; set; }
+    public string NetworkSocketId { get; set; }
 
-    public Endpoint Endpoint { get; set; }
-    public string EndpointId { get; set; }
+    public HttpEndpoint HttpEndpoint { get; set; }
+    public string HttpEndpointId { get; set; }
 
-    public Domain Domain { get; set; }
-    public string DomainId { get; set; }
+    public DomainName DomainName { get; set; }
+    public string DomainNameId { get; set; }
 
-    public DNSRecord DNSRecord { get; set; }
-    public string DNSRecordId { get; set; }
+    public DomainNameRecord DomainNameRecord { get; set; }
+    public string DomainNameRecordId { get; set; }
 
-    public NetRange NetRange { get; set; }
-    public string NetRangeId { get; set; }
+    public NetworkRange NetworkRange { get; set; }
+    public string NetworkRangeId { get; set; }
 
     public Email Email { get; set; }
     public string EmailId { get; set; }
 
-    public Parameter Parameter { get; set; }
-    public string ParameterId { get; set; }
+    public HttpParameter HttpParameter { get; set; }
+    public string HttpParameterId { get; set; }
 
-    public VirtualHost VirtualHost { get; set; }
-    public string VirtualHostId { get; set; }
+    public HttpHost HttpHost { get; set; }
+    public string HttpHostId { get; set; }
 
     private AssetRecord() {}
 

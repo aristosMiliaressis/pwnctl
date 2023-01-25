@@ -2,17 +2,17 @@
 
 namespace pwnctl.domain.Entities
 {
-    public sealed class VirtualHost : Asset
+    public sealed class HttpHost : Asset // TODO: Add bool 
     {
-        public string Name { get; private init; }
-        public Service Service { get; private init; }
+        public string Name { get; private init; } // TODO: remove
+        public NetworkSocket Socket { get; private init; }
         public string ServiceId { get; private init; }
 
-        private VirtualHost() {}
+        private HttpHost() {}
 
-        public VirtualHost(Service service, string name)
+        public HttpHost(NetworkSocket address, string name)
         {
-            Service = service;
+            Socket = address;
             Name = name;
         }
 

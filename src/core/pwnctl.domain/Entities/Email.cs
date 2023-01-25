@@ -8,16 +8,16 @@ namespace pwnctl.domain.Entities
     public sealed class Email : Asset
     {
         [EqualityComponent]
-        public string Address { get; init; }
-        public Domain Domain { get; private init; }
+        public string Address { get; init; } // TODO: Rename to Local Part & add Address =>
+        public DomainName DomainName { get; private init; }
         public string DomainId { get; private init; }
 
         public Email() { }
 
-        public Email(Domain domain, string address)
+        public Email(DomainName domain, string address)
         {
             Address = address;
-            Domain = domain;
+            DomainName = domain;
         }
 
         public static bool TryParse(string assetText, out Asset asset)
@@ -34,15 +34,15 @@ namespace pwnctl.domain.Entities
 
             // for some reason MailKit parses IPv4 as valid email address so if it is ip return false
             if (IPAddress.TryParse(assetText, out IPAddress _)
-             || NetRange.TryParse(assetText, out Asset _))
+             || NetworkRange.TryParse(assetText, out Asset _))
                 return false;
 
             if (!MailboxAddress.TryParse(assetText, out MailboxAddress address))
                 return false;
 
-            var domain = new Domain(address.Domain);
+            var domain = new DomainName(address.Domain);
 
-            asset = new Email(domain, address.Address);
+            asset = new Email(domain, address.Address); // TODO: https://www.rfc-editor.org/rfc/rfc822
 
             return true;
         }

@@ -43,7 +43,7 @@ namespace pwnctl.infra.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "NetRanges",
+                name: "NetworkRanges",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
@@ -52,7 +52,7 @@ namespace pwnctl.infra.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_NetRanges", x => x.Id);
+                    table.PrimaryKey("PK_NetworkRanges", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -64,7 +64,8 @@ namespace pwnctl.infra.Migrations
                     ShortName = table.Column<string>(type: "text", nullable: true),
                     SubjectClass_Class = table.Column<string>(type: "text", nullable: true),
                     Filter = table.Column<string>(type: "text", nullable: true),
-                    Topic = table.Column<int>(type: "integer", nullable: false)
+                    Topic = table.Column<int>(type: "integer", nullable: false),
+                    CheckOutOfScope = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -98,7 +99,8 @@ namespace pwnctl.infra.Migrations
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
                     Aggressiveness = table.Column<int>(type: "integer", nullable: false),
                     SubjectClass_Class = table.Column<string>(type: "text", nullable: true),
-                    Filter = table.Column<string>(type: "text", nullable: true)
+                    Filter = table.Column<string>(type: "text", nullable: true),
+                    MatchOutOfScope = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -150,27 +152,27 @@ namespace pwnctl.infra.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Services",
+                name: "Sockets",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
-                    Origin = table.Column<string>(type: "text", nullable: true),
+                    Address = table.Column<string>(type: "text", nullable: true),
                     Port = table.Column<int>(type: "integer", nullable: false),
                     TransportProtocol = table.Column<int>(type: "integer", nullable: false),
-                    HostId = table.Column<string>(type: "text", nullable: true),
-                    DomainId = table.Column<string>(type: "text", nullable: true)
+                    NetworkHostId = table.Column<string>(type: "text", nullable: true),
+                    DomainNameId = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Services", x => x.Id);
+                    table.PrimaryKey("PK_Sockets", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Services_Domains_DomainId",
-                        column: x => x.DomainId,
+                        name: "FK_Sockets_Domains_DomainNameId",
+                        column: x => x.DomainNameId,
                         principalTable: "Domains",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Services_Hosts_HostId",
-                        column: x => x.HostId,
+                        name: "FK_Sockets_Hosts_NetworkHostId",
+                        column: x => x.NetworkHostId,
                         principalTable: "Hosts",
                         principalColumn: "Id");
                 });
@@ -196,33 +198,33 @@ namespace pwnctl.infra.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Endpoints",
+                name: "HttpEndpoints",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
                     Url = table.Column<string>(type: "text", nullable: true),
-                    ServiceId = table.Column<string>(type: "text", nullable: true),
+                    SocketAddressId = table.Column<string>(type: "text", nullable: true),
                     ParentEndpointId = table.Column<string>(type: "text", nullable: true),
                     Scheme = table.Column<string>(type: "text", nullable: true),
                     Path = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Endpoints", x => x.Id);
+                    table.PrimaryKey("PK_HttpEndpoints", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Endpoints_Endpoints_ParentEndpointId",
+                        name: "FK_HttpEndpoints_HttpEndpoints_ParentEndpointId",
                         column: x => x.ParentEndpointId,
-                        principalTable: "Endpoints",
+                        principalTable: "HttpEndpoints",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Endpoints_Services_ServiceId",
-                        column: x => x.ServiceId,
-                        principalTable: "Services",
+                        name: "FK_HttpEndpoints_Sockets_SocketAddressId",
+                        column: x => x.SocketAddressId,
+                        principalTable: "Sockets",
                         principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
-                name: "VirtualHosts",
+                name: "HttpHosts",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
@@ -231,11 +233,11 @@ namespace pwnctl.infra.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_VirtualHosts", x => x.Id);
+                    table.PrimaryKey("PK_HttpHosts", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_VirtualHosts_Services_ServiceId",
+                        name: "FK_HttpHosts_Sockets_ServiceId",
                         column: x => x.ServiceId,
-                        principalTable: "Services",
+                        principalTable: "Sockets",
                         principalColumn: "Id");
                 });
 
@@ -261,7 +263,7 @@ namespace pwnctl.infra.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Parameters",
+                name: "HttpParameters",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
@@ -273,11 +275,11 @@ namespace pwnctl.infra.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Parameters", x => x.Id);
+                    table.PrimaryKey("PK_HttpParameters", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Parameters_Endpoints_EndpointId",
+                        name: "FK_HttpParameters_HttpEndpoints_EndpointId",
                         column: x => x.EndpointId,
-                        principalTable: "Endpoints",
+                        principalTable: "HttpEndpoints",
                         principalColumn: "Id");
                 });
 
@@ -291,27 +293,27 @@ namespace pwnctl.infra.Migrations
                     InScope = table.Column<bool>(type: "boolean", nullable: false),
                     OwningProgramId = table.Column<int>(type: "integer", nullable: true),
                     SubjectClass_Class = table.Column<string>(type: "text", nullable: true),
-                    HostId = table.Column<string>(type: "text", nullable: true),
-                    ServiceId = table.Column<string>(type: "text", nullable: true),
-                    EndpointId = table.Column<string>(type: "text", nullable: true),
-                    DomainId = table.Column<string>(type: "text", nullable: true),
-                    DNSRecordId = table.Column<string>(type: "text", nullable: true),
-                    NetRangeId = table.Column<string>(type: "text", nullable: true),
+                    NetworkHostId = table.Column<string>(type: "text", nullable: true),
+                    NetworkSocketId = table.Column<string>(type: "text", nullable: true),
+                    HttpEndpointId = table.Column<string>(type: "text", nullable: true),
+                    DomainNameId = table.Column<string>(type: "text", nullable: true),
+                    DomainNameRecordId = table.Column<string>(type: "text", nullable: true),
+                    NetworkRangeId = table.Column<string>(type: "text", nullable: true),
                     EmailId = table.Column<string>(type: "text", nullable: true),
-                    ParameterId = table.Column<string>(type: "text", nullable: true),
-                    VirtualHostId = table.Column<string>(type: "text", nullable: true)
+                    HttpParameterId = table.Column<string>(type: "text", nullable: true),
+                    HttpHostId = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AssetRecords", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AssetRecords_DNSRecords_DNSRecordId",
-                        column: x => x.DNSRecordId,
+                        name: "FK_AssetRecords_DNSRecords_DomainNameRecordId",
+                        column: x => x.DomainNameRecordId,
                         principalTable: "DNSRecords",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_AssetRecords_Domains_DomainId",
-                        column: x => x.DomainId,
+                        name: "FK_AssetRecords_Domains_DomainNameId",
+                        column: x => x.DomainNameId,
                         principalTable: "Domains",
                         principalColumn: "Id");
                     table.ForeignKey(
@@ -320,24 +322,29 @@ namespace pwnctl.infra.Migrations
                         principalTable: "Emails",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_AssetRecords_Endpoints_EndpointId",
-                        column: x => x.EndpointId,
-                        principalTable: "Endpoints",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_AssetRecords_Hosts_HostId",
-                        column: x => x.HostId,
+                        name: "FK_AssetRecords_Hosts_NetworkHostId",
+                        column: x => x.NetworkHostId,
                         principalTable: "Hosts",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_AssetRecords_NetRanges_NetRangeId",
-                        column: x => x.NetRangeId,
-                        principalTable: "NetRanges",
+                        name: "FK_AssetRecords_HttpEndpoints_HttpEndpointId",
+                        column: x => x.HttpEndpointId,
+                        principalTable: "HttpEndpoints",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_AssetRecords_Parameters_ParameterId",
-                        column: x => x.ParameterId,
-                        principalTable: "Parameters",
+                        name: "FK_AssetRecords_HttpHosts_HttpHostId",
+                        column: x => x.HttpHostId,
+                        principalTable: "HttpHosts",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_AssetRecords_HttpParameters_HttpParameterId",
+                        column: x => x.HttpParameterId,
+                        principalTable: "HttpParameters",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_AssetRecords_NetworkRanges_NetworkRangeId",
+                        column: x => x.NetworkRangeId,
+                        principalTable: "NetworkRanges",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_AssetRecords_Programs_OwningProgramId",
@@ -345,14 +352,9 @@ namespace pwnctl.infra.Migrations
                         principalTable: "Programs",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_AssetRecords_Services_ServiceId",
-                        column: x => x.ServiceId,
-                        principalTable: "Services",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_AssetRecords_VirtualHosts_VirtualHostId",
-                        column: x => x.VirtualHostId,
-                        principalTable: "VirtualHosts",
+                        name: "FK_AssetRecords_Sockets_NetworkSocketId",
+                        column: x => x.NetworkSocketId,
+                        principalTable: "Sockets",
                         principalColumn: "Id");
                 });
 
@@ -419,14 +421,14 @@ namespace pwnctl.infra.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_AssetRecords_DNSRecordId",
+                name: "IX_AssetRecords_DomainNameId",
                 table: "AssetRecords",
-                column: "DNSRecordId");
+                column: "DomainNameId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AssetRecords_DomainId",
+                name: "IX_AssetRecords_DomainNameRecordId",
                 table: "AssetRecords",
-                column: "DomainId");
+                column: "DomainNameRecordId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AssetRecords_EmailId",
@@ -434,39 +436,39 @@ namespace pwnctl.infra.Migrations
                 column: "EmailId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AssetRecords_EndpointId",
+                name: "IX_AssetRecords_HttpEndpointId",
                 table: "AssetRecords",
-                column: "EndpointId");
+                column: "HttpEndpointId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AssetRecords_HostId",
+                name: "IX_AssetRecords_HttpHostId",
                 table: "AssetRecords",
-                column: "HostId");
+                column: "HttpHostId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AssetRecords_NetRangeId",
+                name: "IX_AssetRecords_HttpParameterId",
                 table: "AssetRecords",
-                column: "NetRangeId");
+                column: "HttpParameterId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AssetRecords_NetworkHostId",
+                table: "AssetRecords",
+                column: "NetworkHostId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AssetRecords_NetworkRangeId",
+                table: "AssetRecords",
+                column: "NetworkRangeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AssetRecords_NetworkSocketId",
+                table: "AssetRecords",
+                column: "NetworkSocketId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AssetRecords_OwningProgramId",
                 table: "AssetRecords",
                 column: "OwningProgramId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AssetRecords_ParameterId",
-                table: "AssetRecords",
-                column: "ParameterId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AssetRecords_ServiceId",
-                table: "AssetRecords",
-                column: "ServiceId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AssetRecords_VirtualHostId",
-                table: "AssetRecords",
-                column: "VirtualHostId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DNSRecords_DomainId",
@@ -479,9 +481,9 @@ namespace pwnctl.infra.Migrations
                 column: "HostId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DNSRecords_Type_Key",
+                name: "IX_DNSRecords_Type_Key_Value",
                 table: "DNSRecords",
-                columns: new[] { "Type", "Key" },
+                columns: new[] { "Type", "Key", "Value" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -507,42 +509,47 @@ namespace pwnctl.infra.Migrations
                 column: "DomainId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Endpoints_ParentEndpointId",
-                table: "Endpoints",
-                column: "ParentEndpointId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Endpoints_ServiceId",
-                table: "Endpoints",
-                column: "ServiceId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Endpoints_Url",
-                table: "Endpoints",
-                column: "Url",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Hosts_IP",
                 table: "Hosts",
                 column: "IP",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_NetRanges_FirstAddress_NetPrefixBits",
-                table: "NetRanges",
-                columns: new[] { "FirstAddress", "NetPrefixBits" },
+                name: "IX_HttpEndpoints_ParentEndpointId",
+                table: "HttpEndpoints",
+                column: "ParentEndpointId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_HttpEndpoints_SocketAddressId",
+                table: "HttpEndpoints",
+                column: "SocketAddressId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_HttpEndpoints_Url",
+                table: "HttpEndpoints",
+                column: "Url",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Parameters_EndpointId",
-                table: "Parameters",
+                name: "IX_HttpHosts_ServiceId",
+                table: "HttpHosts",
+                column: "ServiceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_HttpParameters_EndpointId",
+                table: "HttpParameters",
                 column: "EndpointId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Parameters_Url_Name_Type",
-                table: "Parameters",
+                name: "IX_HttpParameters_Url_Name_Type",
+                table: "HttpParameters",
                 columns: new[] { "Url", "Name", "Type" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NetworkRanges_FirstAddress_NetPrefixBits",
+                table: "NetworkRanges",
+                columns: new[] { "FirstAddress", "NetPrefixBits" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -557,20 +564,20 @@ namespace pwnctl.infra.Migrations
                 column: "ProgramId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Services_DomainId",
-                table: "Services",
-                column: "DomainId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Services_HostId",
-                table: "Services",
-                column: "HostId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Services_Origin",
-                table: "Services",
-                column: "Origin",
+                name: "IX_Sockets_Address",
+                table: "Sockets",
+                column: "Address",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Sockets_DomainNameId",
+                table: "Sockets",
+                column: "DomainNameId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Sockets_NetworkHostId",
+                table: "Sockets",
+                column: "NetworkHostId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tags_AssetRecordId",
@@ -597,11 +604,6 @@ namespace pwnctl.infra.Migrations
                 name: "IX_TaskEntries_RecordId",
                 table: "TaskEntries",
                 column: "RecordId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_VirtualHosts_ServiceId",
-                table: "VirtualHosts",
-                column: "ServiceId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -631,25 +633,25 @@ namespace pwnctl.infra.Migrations
                 name: "Emails");
 
             migrationBuilder.DropTable(
-                name: "NetRanges");
+                name: "HttpHosts");
 
             migrationBuilder.DropTable(
-                name: "Parameters");
+                name: "HttpParameters");
+
+            migrationBuilder.DropTable(
+                name: "NetworkRanges");
 
             migrationBuilder.DropTable(
                 name: "Programs");
 
             migrationBuilder.DropTable(
-                name: "VirtualHosts");
-
-            migrationBuilder.DropTable(
-                name: "Endpoints");
+                name: "HttpEndpoints");
 
             migrationBuilder.DropTable(
                 name: "OperationalPolicies");
 
             migrationBuilder.DropTable(
-                name: "Services");
+                name: "Sockets");
 
             migrationBuilder.DropTable(
                 name: "Domains");

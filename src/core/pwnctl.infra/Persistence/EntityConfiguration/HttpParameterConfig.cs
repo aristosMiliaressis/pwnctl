@@ -5,19 +5,19 @@ using pwnctl.infra.Persistence.IdGenerators;
 
 namespace pwnctl.infra.Persistence.EntityConfiguration
 {
-    public sealed class ParameterConfig : IEntityTypeConfiguration<Parameter>
+    public sealed class HttpParameterConfig : IEntityTypeConfiguration<HttpParameter>
     {
-        public void Configure(EntityTypeBuilder<Parameter> builder)
+        public void Configure(EntityTypeBuilder<HttpParameter> builder)
         {
             builder.Property(c => c.Id).HasValueGenerator<HashIdValueGenerator>();
 
             builder.HasKey(p => p.Id);
 
             builder.HasOne(p => p.Endpoint)
-                .WithMany(e => e.Parameters)
+                .WithMany(e => e.HttpParameters)
                 .HasForeignKey(p => p.EndpointId);
 
-            builder.HasIndex(nameof(Parameter.Url), nameof(Parameter.Name), nameof(Parameter.Type)).IsUnique();
+            builder.HasIndex(nameof(HttpParameter.Url), nameof(HttpParameter.Name), nameof(HttpParameter.Type)).IsUnique();
         }
     }
 }

@@ -5,22 +5,22 @@ using pwnctl.domain.Interfaces;
 
 namespace pwnctl.domain.Entities
 {
-    public sealed class Domain : Asset
+    public sealed class DomainName : Asset
     {
         [EqualityComponent]
         public string Name { get; init; }
         public int ZoneDepth { get; private init; }
-        public Domain ParentDomain { get; private set; }
+        public DomainName ParentDomain { get; private set; }
         public string ParentDomainId { get; private init; }
-        public List<DNSRecord> DNSRecords { get; private init; }
-        public List<Service> Services { get; private init; }
+        public List<DomainNameRecord> DNSRecords { get; private init; }
+        public List<NetworkSocket> Sockets { get; private init; }
         public string Word => Name.Replace($".{PublicSuffixRepository.Instance.GetSuffix(Name).Value}", "")
                                     .Split(".")
                                     .Last();
 
-        public Domain() {}
+        public DomainName() {}
 
-        public Domain(string domain)
+        public DomainName(string domain)
         {
             // support FQDN notation ending with a dot.
             domain = domain.EndsWith(".") ? domain.Substring(0, domain.Length - 1) : domain;
@@ -46,13 +46,13 @@ namespace pwnctl.domain.Entities
             if (!_domainRegex.Match(assetText).Success)
                 return false;
 
-            var domain = new Domain(assetText);
+            var domain = new DomainName(assetText);
 
             var tmp = domain;
-            var registrationDomain = new Domain(domain.GetRegistrationDomain());
+            var registrationDomain = new DomainName(domain.GetRegistrationDomain());
             while (tmp.Name != registrationDomain.Name)
             {
-                tmp.ParentDomain = new Domain(string.Join(".", tmp.Name.Split(".").Skip(1)));
+                tmp.ParentDomain = new DomainName(string.Join(".", tmp.Name.Split(".").Skip(1)));
                 tmp = tmp.ParentDomain;
             }
 

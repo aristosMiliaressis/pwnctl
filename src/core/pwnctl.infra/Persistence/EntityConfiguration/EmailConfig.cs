@@ -15,7 +15,7 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
 
             builder.HasIndex(nameof(Email.Address)).IsUnique();
 
-            builder.HasOne(e => e.Domain)
+            builder.HasOne(e => e.DomainName)
                 .WithMany()
                 .HasForeignKey(e => e.DomainId);
         }

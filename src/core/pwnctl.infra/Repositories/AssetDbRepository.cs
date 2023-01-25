@@ -24,14 +24,14 @@ namespace pwnctl.infra.Repositories
         {
             return await _context.AssetRecords
                             .Include(r => r.Tags)
-                            .Include(r => r.NetRange)
-                            .Include(r => r.Host)
-                            .Include(r => r.Service)
-                            .Include(r => r.Domain)
-                            .Include(r => r.DNSRecord)
-                            .Include(r => r.VirtualHost)
-                            .Include(r => r.Endpoint)
-                            .Include(r => r.Parameter)
+                            .Include(r => r.NetworkRange)
+                            .Include(r => r.NetworkHost)
+                            .Include(r => r.NetworkSocket)
+                            .Include(r => r.DomainName)
+                            .Include(r => r.DomainNameRecord)
+                            .Include(r => r.HttpHost)
+                            .Include(r => r.HttpEndpoint)
+                            .Include(r => r.HttpParameter)
                             .Include(r => r.Email)
                             .FirstOrDefaultAsync(r => r.Id == asset.UID);
         }
@@ -98,9 +98,9 @@ namespace pwnctl.infra.Repositories
             return await _context.AssetRecords
                             .Include(e => e.Tags)
                             .Include(e => e.Tasks)
-                            .Include(e => e.Host)
+                            .Include(e => e.NetworkHost)
                                 .ThenInclude(e => e.AARecords)
-                            .Where(r => r.SubjectClass.Class == nameof(Host))
+                            .Where(r => r.SubjectClass.Class == nameof(NetworkHost))
                             .AsNoTracking()
                             .ToListAsync();
         }
@@ -110,9 +110,9 @@ namespace pwnctl.infra.Repositories
             return await _context.AssetRecords
                             .Include(e => e.Tags)
                             .Include(e => e.Tasks)
-                            .Include(e => e.Domain)
+                            .Include(e => e.DomainName)
                                 .ThenInclude(e => e.ParentDomain)
-                            .Where(r => r.SubjectClass.Class == nameof(Domain))
+                            .Where(r => r.SubjectClass.Class == nameof(DomainName))
                             .AsNoTracking()
                             .ToListAsync();
         }
@@ -122,11 +122,11 @@ namespace pwnctl.infra.Repositories
             return await _context.AssetRecords
                             .Include(e => e.Tags)
                             .Include(e => e.Tasks)
-                            .Include(e => e.DNSRecord)
-                                .ThenInclude(e => e.Domain)
-                            .Include(e => e.DNSRecord)
-                                .ThenInclude(e => e.Host)
-                            .Where(r => r.SubjectClass.Class == nameof(DNSRecord))
+                            .Include(e => e.DomainNameRecord)
+                                .ThenInclude(e => e.DomainName)
+                            .Include(e => e.DomainNameRecord)
+                                .ThenInclude(e => e.NetworkHost)
+                            .Where(r => r.SubjectClass.Class == nameof(DomainNameRecord))
                             .AsNoTracking()
                             .ToListAsync();
         }
@@ -136,13 +136,13 @@ namespace pwnctl.infra.Repositories
             return await _context.AssetRecords
                             .Include(e => e.Tags)
                             .Include(e => e.Tasks)
-                            .Include(e => e.Endpoint)
-                                .ThenInclude(e => e.Service)
-                                    .ThenInclude(s => s.Host)
-                            .Include(e => e.Endpoint)
-                                .ThenInclude(e => e.Service)
-                                    .ThenInclude(s => s.Domain)
-                            .Where(r => r.SubjectClass.Class == nameof(Endpoint))
+                            .Include(e => e.HttpEndpoint)
+                                .ThenInclude(e => e.Socket)
+                                    .ThenInclude(s => s.NetworkHost)
+                            .Include(e => e.HttpEndpoint)
+                                .ThenInclude(e => e.Socket)
+                                    .ThenInclude(s => s.DomainName)
+                            .Where(r => r.SubjectClass.Class == nameof(HttpEndpoint))
                             .AsNoTracking()
                             .ToListAsync();
         }
@@ -152,8 +152,8 @@ namespace pwnctl.infra.Repositories
             return await _context.AssetRecords
                             .Include(e => e.Tags)
                             .Include(e => e.Tasks)
-                            .Include(e => e.NetRange)
-                            .Where(r => r.SubjectClass.Class == nameof(NetRange))
+                            .Include(e => e.NetworkRange)
+                            .Where(r => r.SubjectClass.Class == nameof(NetworkRange))
                             .AsNoTracking()
                             .ToListAsync();
         }
@@ -163,15 +163,15 @@ namespace pwnctl.infra.Repositories
             return await _context.AssetRecords
                             .Include(e => e.Tags)
                             .Include(e => e.Tasks)
-                            .Include(e => e.Parameter)
+                            .Include(e => e.HttpParameter)
                                 .ThenInclude(e => e.Endpoint)
-                                .ThenInclude(e => e.Service)
-                                .ThenInclude(s => s.Host)
-                            .Include(e => e.Parameter)
+                                .ThenInclude(e => e.Socket)
+                                .ThenInclude(s => s.NetworkHost)
+                            .Include(e => e.HttpParameter)
                                 .ThenInclude(e => e.Endpoint)
-                                .ThenInclude(e => e.Service)
-                                .ThenInclude(s => s.Domain)
-                            .Where(r => r.SubjectClass.Class == nameof(Parameter))
+                                .ThenInclude(e => e.Socket)
+                                .ThenInclude(s => s.DomainName)
+                            .Where(r => r.SubjectClass.Class == nameof(HttpParameter))
                             .AsNoTracking()
                             .ToListAsync();
         }
@@ -181,11 +181,11 @@ namespace pwnctl.infra.Repositories
             return await _context.AssetRecords
                             .Include(e => e.Tags)
                             .Include(e => e.Tasks)
-                            .Include(e => e.Service)
-                                .ThenInclude(s => s.Host)
-                            .Include(e => e.Service)
-                                .ThenInclude(s => s.Domain)
-                            .Where(r => r.SubjectClass.Class == nameof(Service))
+                            .Include(e => e.NetworkSocket)
+                                .ThenInclude(s => s.NetworkHost)
+                            .Include(e => e.NetworkSocket)
+                                .ThenInclude(s => s.DomainName)
+                            .Where(r => r.SubjectClass.Class == nameof(NetworkSocket))
                             .AsNoTracking()
                             .ToListAsync();
         }
@@ -196,7 +196,7 @@ namespace pwnctl.infra.Repositories
                             .Include(e => e.Tags)
                             .Include(e => e.Tasks)
                             .Include(e => e.Email)
-                                .ThenInclude(e => e.Domain)
+                                .ThenInclude(e => e.DomainName)
                             .Where(r => r.SubjectClass.Class == nameof(Email))
                             .AsNoTracking()
                             .ToListAsync();

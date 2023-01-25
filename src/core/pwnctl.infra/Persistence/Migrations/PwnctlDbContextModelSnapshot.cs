@@ -27,16 +27,13 @@ namespace pwnctl.infra.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
-                    b.Property<string>("DNSRecordId")
+                    b.Property<string>("DomainNameId")
                         .HasColumnType("text");
 
-                    b.Property<string>("DomainId")
+                    b.Property<string>("DomainNameRecordId")
                         .HasColumnType("text");
 
                     b.Property<string>("EmailId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("EndpointId")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("FoundAt")
@@ -45,48 +42,51 @@ namespace pwnctl.infra.Migrations
                     b.Property<string>("FoundBy")
                         .HasColumnType("text");
 
-                    b.Property<string>("HostId")
+                    b.Property<string>("HttpEndpointId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("HttpHostId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("HttpParameterId")
                         .HasColumnType("text");
 
                     b.Property<bool>("InScope")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("NetRangeId")
+                    b.Property<string>("NetworkHostId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("NetworkRangeId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("NetworkSocketId")
                         .HasColumnType("text");
 
                     b.Property<int?>("OwningProgramId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("ParameterId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ServiceId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("VirtualHostId")
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("DNSRecordId");
+                    b.HasIndex("DomainNameId");
 
-                    b.HasIndex("DomainId");
+                    b.HasIndex("DomainNameRecordId");
 
                     b.HasIndex("EmailId");
 
-                    b.HasIndex("EndpointId");
+                    b.HasIndex("HttpEndpointId");
 
-                    b.HasIndex("HostId");
+                    b.HasIndex("HttpHostId");
 
-                    b.HasIndex("NetRangeId");
+                    b.HasIndex("HttpParameterId");
+
+                    b.HasIndex("NetworkHostId");
+
+                    b.HasIndex("NetworkRangeId");
+
+                    b.HasIndex("NetworkSocketId");
 
                     b.HasIndex("OwningProgramId");
-
-                    b.HasIndex("ParameterId");
-
-                    b.HasIndex("ServiceId");
-
-                    b.HasIndex("VirtualHostId");
 
                     b.ToTable("AssetRecords");
                 });
@@ -294,7 +294,31 @@ namespace pwnctl.infra.Migrations
                     b.ToTable("TaskEntries");
                 });
 
-            modelBuilder.Entity("pwnctl.domain.Entities.DNSRecord", b =>
+            modelBuilder.Entity("pwnctl.domain.Entities.DomainName", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ParentDomainId")
+                        .HasColumnType("text");
+
+                    b.Property<int>("ZoneDepth")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.HasIndex("ParentDomainId");
+
+                    b.ToTable("Domains");
+                });
+
+            modelBuilder.Entity("pwnctl.domain.Entities.DomainNameRecord", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -326,30 +350,6 @@ namespace pwnctl.infra.Migrations
                     b.ToTable("DNSRecords");
                 });
 
-            modelBuilder.Entity("pwnctl.domain.Entities.Domain", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ParentDomainId")
-                        .HasColumnType("text");
-
-                    b.Property<int>("ZoneDepth")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.HasIndex("ParentDomainId");
-
-                    b.ToTable("Domains");
-                });
-
             modelBuilder.Entity("pwnctl.domain.Entities.Email", b =>
                 {
                     b.Property<string>("Id")
@@ -371,7 +371,7 @@ namespace pwnctl.infra.Migrations
                     b.ToTable("Emails");
                 });
 
-            modelBuilder.Entity("pwnctl.domain.Entities.Endpoint", b =>
+            modelBuilder.Entity("pwnctl.domain.Entities.HttpEndpoint", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -385,7 +385,7 @@ namespace pwnctl.infra.Migrations
                     b.Property<string>("Scheme")
                         .HasColumnType("text");
 
-                    b.Property<string>("ServiceId")
+                    b.Property<string>("SocketAddressId")
                         .HasColumnType("text");
 
                     b.Property<string>("Url")
@@ -395,53 +395,33 @@ namespace pwnctl.infra.Migrations
 
                     b.HasIndex("ParentEndpointId");
 
-                    b.HasIndex("ServiceId");
+                    b.HasIndex("SocketAddressId");
 
                     b.HasIndex("Url")
                         .IsUnique();
 
-                    b.ToTable("Endpoints");
+                    b.ToTable("HttpEndpoints");
                 });
 
-            modelBuilder.Entity("pwnctl.domain.Entities.Host", b =>
+            modelBuilder.Entity("pwnctl.domain.Entities.HttpHost", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
-                    b.Property<string>("IP")
+                    b.Property<string>("Name")
                         .HasColumnType("text");
 
-                    b.Property<int>("Version")
-                        .HasColumnType("integer");
+                    b.Property<string>("ServiceId")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IP")
-                        .IsUnique();
+                    b.HasIndex("ServiceId");
 
-                    b.ToTable("Hosts");
+                    b.ToTable("HttpHosts");
                 });
 
-            modelBuilder.Entity("pwnctl.domain.Entities.NetRange", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
-
-                    b.Property<string>("FirstAddress")
-                        .HasColumnType("text");
-
-                    b.Property<int>("NetPrefixBits")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FirstAddress", "NetPrefixBits")
-                        .IsUnique();
-
-                    b.ToTable("NetRanges");
-                });
-
-            modelBuilder.Entity("pwnctl.domain.Entities.Parameter", b =>
+            modelBuilder.Entity("pwnctl.domain.Entities.HttpParameter", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -468,21 +448,59 @@ namespace pwnctl.infra.Migrations
                     b.HasIndex("Url", "Name", "Type")
                         .IsUnique();
 
-                    b.ToTable("Parameters");
+                    b.ToTable("HttpParameters");
                 });
 
-            modelBuilder.Entity("pwnctl.domain.Entities.Service", b =>
+            modelBuilder.Entity("pwnctl.domain.Entities.NetworkHost", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
-                    b.Property<string>("DomainId")
+                    b.Property<string>("IP")
                         .HasColumnType("text");
 
-                    b.Property<string>("HostId")
+                    b.Property<int>("Version")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IP")
+                        .IsUnique();
+
+                    b.ToTable("Hosts");
+                });
+
+            modelBuilder.Entity("pwnctl.domain.Entities.NetworkRange", b =>
+                {
+                    b.Property<string>("Id")
                         .HasColumnType("text");
 
-                    b.Property<string>("Origin")
+                    b.Property<string>("FirstAddress")
+                        .HasColumnType("text");
+
+                    b.Property<int>("NetPrefixBits")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FirstAddress", "NetPrefixBits")
+                        .IsUnique();
+
+                    b.ToTable("NetworkRanges");
+                });
+
+            modelBuilder.Entity("pwnctl.domain.Entities.NetworkSocket", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Address")
+                        .HasColumnType("text");
+
+                    b.Property<string>("DomainNameId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("NetworkHostId")
                         .HasColumnType("text");
 
                     b.Property<int>("Port")
@@ -493,75 +511,57 @@ namespace pwnctl.infra.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DomainId");
-
-                    b.HasIndex("HostId");
-
-                    b.HasIndex("Origin")
+                    b.HasIndex("Address")
                         .IsUnique();
 
-                    b.ToTable("Services");
-                });
+                    b.HasIndex("DomainNameId");
 
-            modelBuilder.Entity("pwnctl.domain.Entities.VirtualHost", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
+                    b.HasIndex("NetworkHostId");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ServiceId")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ServiceId");
-
-                    b.ToTable("VirtualHosts");
+                    b.ToTable("Sockets");
                 });
 
             modelBuilder.Entity("pwnctl.app.Assets.Aggregates.AssetRecord", b =>
                 {
-                    b.HasOne("pwnctl.domain.Entities.DNSRecord", "DNSRecord")
+                    b.HasOne("pwnctl.domain.Entities.DomainName", "DomainName")
                         .WithMany()
-                        .HasForeignKey("DNSRecordId");
+                        .HasForeignKey("DomainNameId");
 
-                    b.HasOne("pwnctl.domain.Entities.Domain", "Domain")
+                    b.HasOne("pwnctl.domain.Entities.DomainNameRecord", "DomainNameRecord")
                         .WithMany()
-                        .HasForeignKey("DomainId");
+                        .HasForeignKey("DomainNameRecordId");
 
                     b.HasOne("pwnctl.domain.Entities.Email", "Email")
                         .WithMany()
                         .HasForeignKey("EmailId");
 
-                    b.HasOne("pwnctl.domain.Entities.Endpoint", "Endpoint")
+                    b.HasOne("pwnctl.domain.Entities.HttpEndpoint", "HttpEndpoint")
                         .WithMany()
-                        .HasForeignKey("EndpointId");
+                        .HasForeignKey("HttpEndpointId");
 
-                    b.HasOne("pwnctl.domain.Entities.Host", "Host")
+                    b.HasOne("pwnctl.domain.Entities.HttpHost", "HttpHost")
                         .WithMany()
-                        .HasForeignKey("HostId");
+                        .HasForeignKey("HttpHostId");
 
-                    b.HasOne("pwnctl.domain.Entities.NetRange", "NetRange")
+                    b.HasOne("pwnctl.domain.Entities.HttpParameter", "HttpParameter")
                         .WithMany()
-                        .HasForeignKey("NetRangeId");
+                        .HasForeignKey("HttpParameterId");
+
+                    b.HasOne("pwnctl.domain.Entities.NetworkHost", "NetworkHost")
+                        .WithMany()
+                        .HasForeignKey("NetworkHostId");
+
+                    b.HasOne("pwnctl.domain.Entities.NetworkRange", "NetworkRange")
+                        .WithMany()
+                        .HasForeignKey("NetworkRangeId");
+
+                    b.HasOne("pwnctl.domain.Entities.NetworkSocket", "NetworkSocket")
+                        .WithMany()
+                        .HasForeignKey("NetworkSocketId");
 
                     b.HasOne("pwnctl.app.Scope.Entities.Program", "OwningProgram")
                         .WithMany()
                         .HasForeignKey("OwningProgramId");
-
-                    b.HasOne("pwnctl.domain.Entities.Parameter", "Parameter")
-                        .WithMany()
-                        .HasForeignKey("ParameterId");
-
-                    b.HasOne("pwnctl.domain.Entities.Service", "Service")
-                        .WithMany()
-                        .HasForeignKey("ServiceId");
-
-                    b.HasOne("pwnctl.domain.Entities.VirtualHost", "VirtualHost")
-                        .WithMany()
-                        .HasForeignKey("VirtualHostId");
 
                     b.OwnsOne("pwnctl.domain.ValueObjects.AssetClass", "SubjectClass", b1 =>
                         {
@@ -580,27 +580,27 @@ namespace pwnctl.infra.Migrations
                                 .HasForeignKey("AssetRecordId");
                         });
 
-                    b.Navigation("DNSRecord");
+                    b.Navigation("DomainName");
 
-                    b.Navigation("Domain");
+                    b.Navigation("DomainNameRecord");
 
                     b.Navigation("Email");
 
-                    b.Navigation("Endpoint");
+                    b.Navigation("HttpEndpoint");
 
-                    b.Navigation("Host");
+                    b.Navigation("HttpHost");
 
-                    b.Navigation("NetRange");
+                    b.Navigation("HttpParameter");
+
+                    b.Navigation("NetworkHost");
+
+                    b.Navigation("NetworkRange");
+
+                    b.Navigation("NetworkSocket");
 
                     b.Navigation("OwningProgram");
 
-                    b.Navigation("Parameter");
-
-                    b.Navigation("Service");
-
                     b.Navigation("SubjectClass");
-
-                    b.Navigation("VirtualHost");
                 });
 
             modelBuilder.Entity("pwnctl.app.Notifications.Entities.NotificationRule", b =>
@@ -700,85 +700,85 @@ namespace pwnctl.infra.Migrations
                     b.Navigation("Record");
                 });
 
-            modelBuilder.Entity("pwnctl.domain.Entities.DNSRecord", b =>
+            modelBuilder.Entity("pwnctl.domain.Entities.DomainName", b =>
                 {
-                    b.HasOne("pwnctl.domain.Entities.Domain", "Domain")
-                        .WithMany("DNSRecords")
-                        .HasForeignKey("DomainId");
-
-                    b.HasOne("pwnctl.domain.Entities.Host", "Host")
-                        .WithMany("AARecords")
-                        .HasForeignKey("HostId");
-
-                    b.Navigation("Domain");
-
-                    b.Navigation("Host");
-                });
-
-            modelBuilder.Entity("pwnctl.domain.Entities.Domain", b =>
-                {
-                    b.HasOne("pwnctl.domain.Entities.Domain", "ParentDomain")
+                    b.HasOne("pwnctl.domain.Entities.DomainName", "ParentDomain")
                         .WithMany()
                         .HasForeignKey("ParentDomainId");
 
                     b.Navigation("ParentDomain");
                 });
 
+            modelBuilder.Entity("pwnctl.domain.Entities.DomainNameRecord", b =>
+                {
+                    b.HasOne("pwnctl.domain.Entities.DomainName", "DomainName")
+                        .WithMany("DNSRecords")
+                        .HasForeignKey("DomainId");
+
+                    b.HasOne("pwnctl.domain.Entities.NetworkHost", "NetworkHost")
+                        .WithMany("AARecords")
+                        .HasForeignKey("HostId");
+
+                    b.Navigation("DomainName");
+
+                    b.Navigation("NetworkHost");
+                });
+
             modelBuilder.Entity("pwnctl.domain.Entities.Email", b =>
                 {
-                    b.HasOne("pwnctl.domain.Entities.Domain", "Domain")
+                    b.HasOne("pwnctl.domain.Entities.DomainName", "DomainName")
                         .WithMany()
                         .HasForeignKey("DomainId");
 
-                    b.Navigation("Domain");
+                    b.Navigation("DomainName");
                 });
 
-            modelBuilder.Entity("pwnctl.domain.Entities.Endpoint", b =>
+            modelBuilder.Entity("pwnctl.domain.Entities.HttpEndpoint", b =>
                 {
-                    b.HasOne("pwnctl.domain.Entities.Endpoint", "ParentEndpoint")
+                    b.HasOne("pwnctl.domain.Entities.HttpEndpoint", "ParentEndpoint")
                         .WithMany()
                         .HasForeignKey("ParentEndpointId");
 
-                    b.HasOne("pwnctl.domain.Entities.Service", "Service")
+                    b.HasOne("pwnctl.domain.Entities.NetworkSocket", "Socket")
                         .WithMany("Endpoints")
-                        .HasForeignKey("ServiceId");
+                        .HasForeignKey("SocketAddressId");
 
                     b.Navigation("ParentEndpoint");
 
-                    b.Navigation("Service");
+                    b.Navigation("Socket");
                 });
 
-            modelBuilder.Entity("pwnctl.domain.Entities.Parameter", b =>
+            modelBuilder.Entity("pwnctl.domain.Entities.HttpHost", b =>
                 {
-                    b.HasOne("pwnctl.domain.Entities.Endpoint", "Endpoint")
-                        .WithMany("Parameters")
+                    b.HasOne("pwnctl.domain.Entities.NetworkSocket", "Socket")
+                        .WithMany()
+                        .HasForeignKey("ServiceId");
+
+                    b.Navigation("Socket");
+                });
+
+            modelBuilder.Entity("pwnctl.domain.Entities.HttpParameter", b =>
+                {
+                    b.HasOne("pwnctl.domain.Entities.HttpEndpoint", "Endpoint")
+                        .WithMany("HttpParameters")
                         .HasForeignKey("EndpointId");
 
                     b.Navigation("Endpoint");
                 });
 
-            modelBuilder.Entity("pwnctl.domain.Entities.Service", b =>
+            modelBuilder.Entity("pwnctl.domain.Entities.NetworkSocket", b =>
                 {
-                    b.HasOne("pwnctl.domain.Entities.Domain", "Domain")
-                        .WithMany("Services")
-                        .HasForeignKey("DomainId");
+                    b.HasOne("pwnctl.domain.Entities.DomainName", "DomainName")
+                        .WithMany("Sockets")
+                        .HasForeignKey("DomainNameId");
 
-                    b.HasOne("pwnctl.domain.Entities.Host", "Host")
-                        .WithMany("Services")
-                        .HasForeignKey("HostId");
+                    b.HasOne("pwnctl.domain.Entities.NetworkHost", "NetworkHost")
+                        .WithMany("Sockets")
+                        .HasForeignKey("NetworkHostId");
 
-                    b.Navigation("Domain");
+                    b.Navigation("DomainName");
 
-                    b.Navigation("Host");
-                });
-
-            modelBuilder.Entity("pwnctl.domain.Entities.VirtualHost", b =>
-                {
-                    b.HasOne("pwnctl.domain.Entities.Service", "Service")
-                        .WithMany()
-                        .HasForeignKey("ServiceId");
-
-                    b.Navigation("Service");
+                    b.Navigation("NetworkHost");
                 });
 
             modelBuilder.Entity("pwnctl.app.Assets.Aggregates.AssetRecord", b =>
@@ -793,26 +793,26 @@ namespace pwnctl.infra.Migrations
                     b.Navigation("Scope");
                 });
 
-            modelBuilder.Entity("pwnctl.domain.Entities.Domain", b =>
+            modelBuilder.Entity("pwnctl.domain.Entities.DomainName", b =>
                 {
                     b.Navigation("DNSRecords");
 
-                    b.Navigation("Services");
+                    b.Navigation("Sockets");
                 });
 
-            modelBuilder.Entity("pwnctl.domain.Entities.Endpoint", b =>
+            modelBuilder.Entity("pwnctl.domain.Entities.HttpEndpoint", b =>
                 {
-                    b.Navigation("Parameters");
+                    b.Navigation("HttpParameters");
                 });
 
-            modelBuilder.Entity("pwnctl.domain.Entities.Host", b =>
+            modelBuilder.Entity("pwnctl.domain.Entities.NetworkHost", b =>
                 {
                     b.Navigation("AARecords");
 
-                    b.Navigation("Services");
+                    b.Navigation("Sockets");
                 });
 
-            modelBuilder.Entity("pwnctl.domain.Entities.Service", b =>
+            modelBuilder.Entity("pwnctl.domain.Entities.NetworkSocket", b =>
                 {
                     b.Navigation("Endpoints");
                 });

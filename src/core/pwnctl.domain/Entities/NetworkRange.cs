@@ -4,7 +4,7 @@ using System.Net;
 
 namespace pwnctl.domain.Entities
 {
-    public sealed class NetRange : Asset
+    public sealed class NetworkRange : Asset
     {
         [EqualityComponent]
         public string FirstAddress { get; init; }
@@ -13,9 +13,9 @@ namespace pwnctl.domain.Entities
 
         public string CIDR => $"{FirstAddress}/{NetPrefixBits}";
 
-        public NetRange() {}
+        public NetworkRange() {}
         
-        public NetRange(IPAddress firstAddress, ushort netPrefix)
+        public NetworkRange(IPAddress firstAddress, ushort netPrefix)
         {
             FirstAddress = firstAddress.ToString();
             NetPrefixBits = netPrefix;
@@ -27,7 +27,7 @@ namespace pwnctl.domain.Entities
             {
                 var firstAddress = IPAddress.Parse(assetText.Split("/")[0]);
                 var netPrefixBits = ushort.Parse(assetText.Split("/")[1]);
-                var netRange = new NetRange(firstAddress, netPrefixBits);
+                var netRange = new NetworkRange(firstAddress, netPrefixBits);
 
                 asset = netRange;
                 return true;

@@ -3,20 +3,23 @@ using pwnctl.domain.BaseClasses;
 using System.Net.Sockets;
 using System.Net;
 
+// (25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?(\.|$)){4}
+//\b(?:[A-F0-9]{1,4}:){7}[A-F0-9]{1,4}\b
+
 namespace pwnctl.domain.Entities
 {
-    public sealed class Host : Asset
+    public sealed class NetworkHost : Asset
     {
         [EqualityComponent]
         public string IP { get; init; }
         public AddressFamily Version { get; init; }
 
-        public List<DNSRecord> AARecords { get; internal set; } = new List<DNSRecord>();
-        public List<Service> Services { get; private init; }
+        public List<DomainNameRecord> AARecords { get; internal set; } = new List<DomainNameRecord>();
+        public List<NetworkSocket> Sockets { get; private init; }
         
-        public Host() {}
+        public NetworkHost() {}
 
-        public Host(IPAddress address)
+        public NetworkHost(IPAddress address)
         {
             IP = address.ToString();
             Version = address.AddressFamily;
@@ -36,7 +39,7 @@ namespace pwnctl.domain.Entities
 
             if (IPAddress.TryParse(assetText, out IPAddress address))
             {
-                var host = new Host(address);
+                var host = new NetworkHost(address);
                 asset = host;
                 return true;
             }

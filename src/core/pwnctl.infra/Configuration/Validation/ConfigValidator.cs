@@ -14,18 +14,18 @@ using YamlDotNet.Serialization.NamingConventions;
 
 public static class ConfigValidator
 {
-    private static readonly Regex _shortNameCharSet = new Regex("^[a-zA-Z0-9_]+$");
+    private static readonly Regex _shortNameCharSet = new Regex("^[a-zA-Z0-9_]{0,64}$");
 
     private static Dictionary<AssetClass, Asset> _mockAssets = new Dictionary<AssetClass, Asset>
     {
-        { AssetClass.Create(nameof(Domain)), new Domain("example.com") },
-        { AssetClass.Create(nameof(Endpoint)), new Endpoint("http", new Service(new Domain("example.com"), 80), "/") },
-        { AssetClass.Create(nameof(Host)), new Host() },
-        { AssetClass.Create(nameof(NetRange)), new NetRange() },
-        { AssetClass.Create(nameof(Service)), new Service() },
-        { AssetClass.Create(nameof(DNSRecord)), new DNSRecord() },
+        { AssetClass.Create(nameof(DomainName)), new DomainName("example.com") },
+        { AssetClass.Create(nameof(HttpEndpoint)), new HttpEndpoint("http", new NetworkSocket(new DomainName("example.com"), 80), "/") },
+        { AssetClass.Create(nameof(NetworkHost)), new NetworkHost() },
+        { AssetClass.Create(nameof(NetworkRange)), new NetworkRange() },
+        { AssetClass.Create(nameof(NetworkSocket)), new NetworkSocket() },
+        { AssetClass.Create(nameof(DomainNameRecord)), new DomainNameRecord() },
         { AssetClass.Create(nameof(Email)), new Email() },
-        { AssetClass.Create(nameof(Parameter)), new Parameter() },
+        { AssetClass.Create(nameof(HttpParameter)), new HttpParameter() },
     };
 
     private static IDeserializer _deserializer = new DeserializerBuilder()

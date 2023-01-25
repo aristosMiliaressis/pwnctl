@@ -11,7 +11,7 @@ namespace pwnctl.infra.Repositories
         private static string _cloudServiceDataFile = $"{EnvironmentVariables.InstallPath}/wordlists/cloud-services.json";
         private List<CloudService> _services;
 
-        public bool IsCloudService(Endpoint endpoint)
+        public bool IsCloudService(HttpEndpoint endpoint)
         {
             if (_services == null)
                 _services = PwnInfraContext.Serializer.Deserialize<List<CloudService>>(File.ReadAllText(_cloudServiceDataFile));

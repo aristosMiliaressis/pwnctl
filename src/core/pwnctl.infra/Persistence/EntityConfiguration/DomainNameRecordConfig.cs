@@ -5,9 +5,9 @@ using pwnctl.infra.Persistence.IdGenerators;
 
 namespace pwnctl.infra.Persistence.EntityConfiguration
 {
-    public sealed class DNSRecordConfig : IEntityTypeConfiguration<DNSRecord>
+    public sealed class DomainNameRecordConfig : IEntityTypeConfiguration<DomainNameRecord>
     {
-        public void Configure(EntityTypeBuilder<DNSRecord> builder)
+        public void Configure(EntityTypeBuilder<DomainNameRecord> builder)
         {
             builder.Property(e => e.Id).HasValueGenerator<HashIdValueGenerator>();
 
@@ -15,15 +15,15 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
 
             builder.Ignore(e => e.SPFHosts);
 
-            builder.HasOne(e => e.Domain)
+            builder.HasOne(e => e.DomainName)
                 .WithMany(e => e.DNSRecords)
                 .HasForeignKey(e => e.DomainId);
 
-            builder.HasOne(e => e.Host)
+            builder.HasOne(e => e.NetworkHost)
                 .WithMany(e => e.AARecords)
                 .HasForeignKey(e => e.HostId);
 
-            builder.HasIndex(nameof(DNSRecord.Type), nameof(DNSRecord.Key), nameof(DNSRecord.Value)).IsUnique();
+            builder.HasIndex(nameof(DomainNameRecord.Type), nameof(DomainNameRecord.Key), nameof(DomainNameRecord.Value)).IsUnique();
         }
     }
 }

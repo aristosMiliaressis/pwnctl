@@ -16,13 +16,13 @@ namespace pwnctl.cli.ModeHandlers
             var client = new PwnctlApiClient();
             var model = await client.Send(new SummaryQuery());
 
-            Console.WriteLine($"NetRanges: {model.NetRangeCount}, InScope: {model.InScopeRangesCount}");
+            Console.WriteLine($"NetworkRanges: {model.NetworkRangeCount}, InScope: {model.InScopeRangesCount}");
             Console.WriteLine($"Hosts: {model.HostCount}, InScope: {model.InsCopeHostCount}");
             Console.WriteLine($"Domains: {model.DomainCount}, InScope: {model.InScopeDomainCount}");
             Console.WriteLine($"DNSRecords: {model.RecordCount}, InScope: {model.InScopeRecordCount}");
-            Console.WriteLine($"Services: {model.ServiceCount}, InScope: {model.InScopeServiceCount}");
-            Console.WriteLine($"Endpoints: {model.EndpointCount}, InScope: {model.InScopeEndpointCount}");
-            Console.WriteLine($"Parameters: {model.ParamCount}, InScope: {model.InScopeParamCount}");
+            Console.WriteLine($"Sockets: {model.SocketCount}, InScope: {model.InScopeServiceCount}");
+            Console.WriteLine($"HttpEndpoints: {model.HttpEndpointCount}, InScope: {model.InScopeEndpointCount}");
+            Console.WriteLine($"HttpParameters: {model.HttpParamCount}, InScope: {model.InScopeParamCount}");
             Console.WriteLine($"Emais: {model.EmailCount}, InScope: {model.InScopeEmailCount}");
             Console.WriteLine($"Tags: {model.TagCount}");
             Console.WriteLine();

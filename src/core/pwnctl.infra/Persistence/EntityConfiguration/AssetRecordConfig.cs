@@ -15,15 +15,15 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
 
             builder.OwnsOne(r => r.SubjectClass).Property(s => s.Class).IsRequired();
 
-            builder.HasOne(r => r.Domain).WithMany().HasForeignKey(r => r.DomainId).IsRequired(false);
-            builder.HasOne(r => r.Host).WithMany().HasForeignKey(r => r.HostId).IsRequired(false);
-            builder.HasOne(r => r.Endpoint).WithMany().HasForeignKey(r => r.EndpointId).IsRequired(false);
-            builder.HasOne(r => r.NetRange).WithMany().HasForeignKey(r => r.NetRangeId).IsRequired(false);
-            builder.HasOne(r => r.Service).WithMany().HasForeignKey(r => r.ServiceId).IsRequired(false);
-            builder.HasOne(r => r.DNSRecord).WithMany().HasForeignKey(r => r.DNSRecordId).IsRequired(false);
+            builder.HasOne(r => r.DomainName).WithMany().HasForeignKey(r => r.DomainNameId).IsRequired(false);
+            builder.HasOne(r => r.NetworkHost).WithMany().HasForeignKey(r => r.NetworkHostId).IsRequired(false);
+            builder.HasOne(r => r.NetworkRange).WithMany().HasForeignKey(r => r.NetworkRangeId).IsRequired(false);
+            builder.HasOne(r => r.NetworkSocket).WithMany().HasForeignKey(r => r.NetworkSocketId).IsRequired(false);
+            builder.HasOne(r => r.DomainNameRecord).WithMany().HasForeignKey(r => r.DomainNameRecordId).IsRequired(false);
             builder.HasOne(r => r.Email).WithMany().HasForeignKey(r => r.EmailId).IsRequired(false);
-            builder.HasOne(r => r.Parameter).WithMany().HasForeignKey(r => r.ParameterId).IsRequired(false);
-            builder.HasOne(r => r.VirtualHost).WithMany().HasForeignKey(r => r.VirtualHostId).IsRequired(false);
+            builder.HasOne(r => r.HttpHost).WithMany().HasForeignKey(r => r.HttpHostId).IsRequired(false);
+            builder.HasOne(r => r.HttpEndpoint).WithMany().HasForeignKey(r => r.HttpEndpointId).IsRequired(false);
+            builder.HasOne(r => r.HttpParameter).WithMany().HasForeignKey(r => r.HttpParameterId).IsRequired(false);
 
             builder.HasMany(r => r.Tasks);
             builder.HasMany(r => r.Tags);

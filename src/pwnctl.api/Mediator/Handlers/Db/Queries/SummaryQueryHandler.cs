@@ -18,22 +18,22 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Commands
 
             PwnctlDbContext context = new();
 
-            viewModel.NetRangeCount = await context.NetRanges.CountAsync();
+            viewModel.NetworkRangeCount = await context.NetworkRanges.CountAsync();
             viewModel.HostCount = await context.Hosts.CountAsync();
             viewModel.DomainCount = await context.Domains.CountAsync();
             viewModel.RecordCount = await context.DNSRecords.CountAsync();
-            viewModel.ServiceCount = await context.Services.CountAsync();
-            viewModel.EndpointCount = await context.Endpoints.CountAsync();
-            viewModel.ParamCount = await context.Parameters.CountAsync();
+            viewModel.SocketCount = await context.Sockets.CountAsync();
+            viewModel.HttpEndpointCount = await context.HttpEndpoints.CountAsync();
+            viewModel.HttpParamCount = await context.HttpParameters.CountAsync();
             viewModel.EmailCount = await context.Emails.CountAsync();
             viewModel.TagCount = await context.Tags.CountAsync();
-            viewModel.InScopeRangesCount = await context.AssetRecords.Where(r => r.SubjectClass.Class == nameof(NetRange) && r.InScope).CountAsync();
+            viewModel.InScopeRangesCount = await context.AssetRecords.Where(r => r.SubjectClass.Class == nameof(NetworkRange) && r.InScope).CountAsync();
             viewModel.InsCopeHostCount = await context.Hosts.CountAsync();
-            viewModel.InScopeDomainCount = await context.AssetRecords.Where(r => r.SubjectClass.Class == nameof(Domain) && r.InScope).CountAsync();
-            viewModel.InScopeRecordCount = await context.AssetRecords.Where(r => r.SubjectClass.Class == nameof(DNSRecord) && r.InScope).CountAsync();
-            viewModel.InScopeServiceCount = await context.AssetRecords.Where(r => r.SubjectClass.Class == nameof(Service) && r.InScope).CountAsync();
-            viewModel.InScopeEndpointCount = await context.AssetRecords.Where(r => r.SubjectClass.Class == nameof(domain.Entities.Endpoint) && r.InScope).CountAsync();
-            viewModel.InScopeParamCount = await context.AssetRecords.Where(r => r.SubjectClass.Class == nameof(Parameter) && r.InScope).CountAsync();
+            viewModel.InScopeDomainCount = await context.AssetRecords.Where(r => r.SubjectClass.Class == nameof(DomainName) && r.InScope).CountAsync();
+            viewModel.InScopeRecordCount = await context.AssetRecords.Where(r => r.SubjectClass.Class == nameof(DomainNameRecord) && r.InScope).CountAsync();
+            viewModel.InScopeServiceCount = await context.AssetRecords.Where(r => r.SubjectClass.Class == nameof(NetworkSocket) && r.InScope).CountAsync();
+            viewModel.InScopeEndpointCount = await context.AssetRecords.Where(r => r.SubjectClass.Class == nameof(domain.Entities.HttpEndpoint) && r.InScope).CountAsync();
+            viewModel.InScopeParamCount = await context.AssetRecords.Where(r => r.SubjectClass.Class == nameof(HttpParameter) && r.InScope).CountAsync();
             viewModel.InScopeEmailCount = await context.AssetRecords.Where(r => r.SubjectClass.Class == nameof(Email) && r.InScope).CountAsync();
 
             viewModel.PendingTaskCount = await context.TaskEntries.Where(t => t.State == TaskState.PENDING).CountAsync();

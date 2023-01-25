@@ -5,7 +5,7 @@ using pwnctl.domain.Enums;
 
 namespace pwnctl.domain.Entities
 {
-    public sealed class DNSRecord : Asset
+    public sealed class DomainNameRecord : Asset
     {
         [EqualityComponent]
         public DnsRecordType Type { get; init; }
@@ -19,32 +19,32 @@ namespace pwnctl.domain.Entities
         public string HostId { get; private init; }
         public string DomainId { get; private init; }
 
-        public Host Host { get; private init; }
-        public Domain Domain { get; private init; }
+        public NetworkHost NetworkHost { get; private init; }
+        public DomainName DomainName { get; private init; }
 
-        public List<Host> SPFHosts { get; private set; }
+        public List<NetworkHost> SPFHosts { get; private set; }
 
-        public DNSRecord() {}
+        public DomainNameRecord() {}
         
-        public DNSRecord(DnsRecordType type, string key, string value)
+        public DomainNameRecord(DnsRecordType type, string key, string value)
         {
             Type = type;
             Value = value;
 
-            if (Domain.TryParse(key, out Asset domain))
+            if (DomainName.TryParse(key, out Asset domain))
             {
-                Domain = (Domain)domain;
-                Key = Domain.Name;
+                DomainName = (DomainName)domain;
+                Key = DomainName.Name;
             }
 
-            if (Host.TryParse(value, out Asset host))
+            if (NetworkHost.TryParse(value, out Asset host))
             {
-                Host = (Host)host;
-                Host.AARecords = new List<DNSRecord> { this };
+                NetworkHost = (NetworkHost)host;
+                NetworkHost.AARecords = new List<DomainNameRecord> { this };
             }
-            else if (Domain.TryParse(value, out domain))
+            else if (DomainName.TryParse(value, out domain))
             {
-                Domain = (Domain)domain;
+                DomainName = (DomainName)domain;
             }
         }
 
@@ -56,11 +56,11 @@ namespace pwnctl.domain.Entities
             if (parts.Length >= 4 && parts[1] == "IN"
              && Enum.GetNames(typeof(DnsRecordType)).Contains(parts[2]))
             {
-                var record = new DNSRecord(Enum.Parse<DnsRecordType>(parts[2]), parts[0], string.Join(" ", parts.Skip(3)));
+                var record = new DomainNameRecord(Enum.Parse<DnsRecordType>(parts[2]), parts[0], string.Join(" ", parts.Skip(3)));
 
                 if (record.Type == DnsRecordType.TXT && record.Value.Contains("spf"))
                 {
-                    record.SPFHosts = DNSRecord.ParseSPFString(record.Value);
+                    record.SPFHosts = DomainNameRecord.ParseSPFString(record.Value);
                 }
 
                 asset = record;
@@ -71,13 +71,13 @@ namespace pwnctl.domain.Entities
             return false;
         }
 
-        public static List<Host> ParseSPFString(string spf)
+        public static List<NetworkHost> ParseSPFString(string spf)
         {
             return spf.Split("ip")
                     .Skip(1)
                     .Select(p => string.Join(":", p.Split(":").Skip(1)).Trim().Split(" ")[0])
                     .Where(ip => IPAddress.TryParse(ip, out IPAddress address))
-                    .Select(ip => new Host(IPAddress.Parse(ip)))
+                    .Select(ip => new NetworkHost(IPAddress.Parse(ip)))
                     .ToList();
         }
 

@@ -1,247 +1,247 @@
 - ShortName: default_creds
-  Subject: Service
+  Subject: NetworkSocket
   Filter: Tags["vuln-default-creds"] == "true"
   Topic: misconfigs
 
 - ShortName: cors_misconfig
-  Subject: Endpoint
+  Subject: HttpEndpoint
   Filter: Tags["cors-misconfig"] == "true"
   Topic: misconfigs
 
 - ShortName: shortname_misconfig
-  Subject: Endpoint
+  Subject: HttpEndpoint
   Filter: Tags["shortname-misconfig"] == "true"
   Topic: misconfigs
 
 - ShortName: shortname_misconfig_srv
-  Subject: Service
+  Subject: NetworkSocket
   Filter: Tags["shortname-misconfig"] == "true"
   Topic: misconfigs
 
 - ShortName: elb_takeover
-  Subject: Domain
+  Subject: DomainName
   Filter: Tags["elb-takeover"] == "true"
   Topic: misconfigs
   CheckOutOfScope: true
 
 - ShortName: s3_misconfig
-  Subject: Domain
+  Subject: DomainName
   Filter: Tags["s3-takeover"] == "true" || !string.IsNullOrEmpty(Tags["s3-public-perms"])
   Topic: misconfigs
   CheckOutOfScope: true
 
 - ShortName: s3_misconfig_url
-  Subject: Endpoint
+  Subject: HttpEndpoint
   Filter: Tags["s3-takeover"] == "true" || !string.IsNullOrEmpty(Tags["s3-public-perms"])
   Topic: misconfigs
   CheckOutOfScope: true
 
 - ShortName: cname_takeover_check
-  Subject: DNSRecord
+  Subject: DomainNameRecord
   Filter: '!string.IsNullOrEmpty(Tags["cname-takeover"])'
   Topic: misconfigs
   
 - ShortName: second_order_takeover
-  Subject: DNSRecord
+  Subject: DomainNameRecord
   Filter: '!string.IsNullOrEmpty(Tags["second-order-takeover"])'
   Topic: misconfigs
 
 - ShortName: zone_transfer
-  Subject: Domain
+  Subject: DomainName
   Filter: Tags["zone_transfer"] == "true"
   Topic: misconfigs
 
 - ShortName: node_debug
-  Subject: Service
-  Filter: Service.Port == 9228 || Service.Port == 9229
+  Subject: NetworkSocket
+  Filter: NetworkSocket.Port == 9228 || NetworkSocket.Port == 9229
   Topic: misconfigs
 
 - ShortName: docker_api
-  Subject: Service
-  Filter: Service.Port == 2735 || Service.Port == 2736
+  Subject: NetworkSocket
+  Filter: NetworkSocket.Port == 2735 || NetworkSocket.Port == 2736
   Topic: misconfigs
 
 - ShortName: docker_registry
-  Subject: Service
-  Filter: Service.Port == 5000
+  Subject: NetworkSocket
+  Filter: NetworkSocket.Port == 5000
   Topic: misconfigs
 
 - ShortName: kubelete_api
-  Subject: Service
-  Filter: Service.Port == 10250
+  Subject: NetworkSocket
+  Filter: NetworkSocket.Port == 10250
   Topic: misconfigs
 
 - ShortName: kube_scheduler
-  Subject: Service
-  Filter: Service.Port == 10259
+  Subject: NetworkSocket
+  Filter: NetworkSocket.Port == 10259
   Topic: misconfigs
 
 - ShortName: kube_controller_manager
-  Subject: Service
-  Filter: Service.Port == 10257
+  Subject: NetworkSocket
+  Filter: NetworkSocket.Port == 10257
   Topic: misconfigs
 
 - ShortName: etcd
-  Subject: Service
-  Filter: Service.Port == 2379 || Service.Port == 2380
+  Subject: NetworkSocket
+  Filter: NetworkSocket.Port == 2379 || NetworkSocket.Port == 2380
   Topic: misconfigs
 
 - ShortName: hadoop
-  Subject: Service
-  Filter: new List<int> {50030,50060,50070,50075,50090}.Contains(Service.Port)
+  Subject: NetworkSocket
+  Filter: new List<int> {50030,50060,50070,50075,50090}.Contains(NetworkSocket.Port)
   Topic: misconfigs
 
 - ShortName: mongodb
-  Subject: Service
-  Filter: Service.Port == 27017 || Service.Port == 27018
+  Subject: NetworkSocket
+  Filter: NetworkSocket.Port == 27017 || NetworkSocket.Port == 27018
   Topic: misconfigs
 
 - ShortName: clusterfs
-  Subject: Service
-  Filter: new List<int> {24007,24008,24009,49152}.Contains(Service.Port)
+  Subject: NetworkSocket
+  Filter: new List<int> {24007,24008,24009,49152}.Contains(NetworkSocket.Port)
   Topic: misconfigs
 
 - ShortName: rabbitmq
-  Subject: Service
-  Filter: Service.Port == 15672
+  Subject: NetworkSocket
+  Filter: NetworkSocket.Port == 15672
   Topic: misconfigs
 
 - ShortName: memcached
-  Subject: Service
-  Filter: Service.Port == 11211
+  Subject: NetworkSocket
+  Filter: NetworkSocket.Port == 11211
   Topic: misconfigs
 
 - ShortName: elasticsearch
-  Subject: Service
-  Filter: Service.Port == 9200
+  Subject: NetworkSocket
+  Filter: NetworkSocket.Port == 9200
   Topic: misconfigs
 
 - ShortName: raw_printing
-  Subject: Service
-  Filter: Service.Port == 9100
+  Subject: NetworkSocket
+  Filter: NetworkSocket.Port == 9100
   Topic: misconfigs
 
 - ShortName: cassandra
-  Subject: Service
-  Filter: Service.Port == 9042 || Service.Port == 9160
+  Subject: NetworkSocket
+  Filter: NetworkSocket.Port == 9042 || NetworkSocket.Port == 9160
   Topic: misconfigs
 
 - ShortName: hsqldb
-  Subject: Service
-  Filter: Service.Port == 9001
+  Subject: NetworkSocket
+  Filter: NetworkSocket.Port == 9001
   Topic: misconfigs
 
 - ShortName: fastcgi
-  Subject: Service
-  Filter: Service.Port == 9000
+  Subject: NetworkSocket
+  Filter: NetworkSocket.Port == 9000
   Topic: misconfigs
 
 - ShortName: splunkd
-  Subject: Service
-  Filter: Service.Port == 8089
+  Subject: NetworkSocket
+  Filter: NetworkSocket.Port == 8089
   Topic: misconfigs
 
 - ShortName: influxdb
-  Subject: Service
-  Filter: Service.Port == 8086
+  Subject: NetworkSocket
+  Filter: NetworkSocket.Port == 8086
   Topic: misconfigs
 
 - ShortName: apache_jserv
-  Subject: Service
-  Filter: Service.Port == 8009
+  Subject: NetworkSocket
+  Filter: NetworkSocket.Port == 8009
   Topic: misconfigs
 
 - ShortName: redis
-  Subject: Service
-  Filter: Service.Port == 6379
+  Subject: NetworkSocket
+  Filter: NetworkSocket.Port == 6379
   Topic: misconfigs
 
 - ShortName: x11
-  Subject: Service
-  Filter: Service.Port == 6000
+  Subject: NetworkSocket
+  Filter: NetworkSocket.Port == 6000
   Topic: misconfigs
 
 - ShortName: ms_omi
-  Subject: Service
-  Filter: Service.Port == 5985 || Service.Port == 5986
+  Subject: NetworkSocket
+  Filter: NetworkSocket.Port == 5985 || NetworkSocket.Port == 5986
   Topic: misconfigs
 
 - ShortName: couchdb
-  Subject: Service
-  Filter: Service.Port == 5984 || Service.Port == 6984
+  Subject: NetworkSocket
+  Filter: NetworkSocket.Port == 5984 || NetworkSocket.Port == 6984
   Topic: misconfigs
 
 - ShortName: amqp
-  Subject: Service
-  Filter: Service.Port == 5671 || Service.Port == 5672
+  Subject: NetworkSocket
+  Filter: NetworkSocket.Port == 5671 || NetworkSocket.Port == 5672
   Topic: misconfigs
 
 - ShortName: kibana
-  Subject: Service
-  Filter: Service.Port == 5601
+  Subject: NetworkSocket
+  Filter: NetworkSocket.Port == 5601
   Topic: misconfigs
 
 - ShortName: android_debug_bridge
-  Subject: Service
-  Filter: Service.Port == 5555
+  Subject: NetworkSocket
+  Filter: NetworkSocket.Port == 5555
   Topic: misconfigs
 
 - ShortName: redshift
-  Subject: Service
-  Filter: Service.Port == 5439
+  Subject: NetworkSocket
+  Filter: NetworkSocket.Port == 5439
   Topic: misconfigs
 
 - ShortName: postgresql
-  Subject: Service
-  Filter: Service.Port == 5432 || Service.Port == 5433
+  Subject: NetworkSocket
+  Filter: NetworkSocket.Port == 5432 || NetworkSocket.Port == 5433
   Topic: misconfigs
 
 - ShortName: cisco_smart_install
-  Subject: Service
-  Filter: Service.Port == 4786
+  Subject: NetworkSocket
+  Filter: NetworkSocket.Port == 4786
   Topic: misconfigs
 
 - ShortName: epmd
-  Subject: Service
-  Filter: Service.Port == 4369
+  Subject: NetworkSocket
+  Filter: NetworkSocket.Port == 4369
   Topic: misconfigs
 
 - ShortName: subversion
-  Subject: Service
-  Filter: Service.Port == 3690
+  Subject: NetworkSocket
+  Filter: NetworkSocket.Port == 3690
   Topic: misconfigs
 
 - ShortName: mysql
-  Subject: Service
-  Filter: Service.Port == 3306
+  Subject: NetworkSocket
+  Filter: NetworkSocket.Port == 3306
   Topic: misconfigs
 
 - ShortName: sap_router
-  Subject: Service
-  Filter: Service.Port == 3299
+  Subject: NetworkSocket
+  Filter: NetworkSocket.Port == 3299
   Topic: misconfigs
 
 - ShortName: iscsi
-  Subject: Service
-  Filter: Service.Port == 3260
+  Subject: NetworkSocket
+  Filter: NetworkSocket.Port == 3260
   Topic: misconfigs
 
 - ShortName: mqtt
-  Subject: Service
-  Filter: Service.Port == 1883
+  Subject: NetworkSocket
+  Filter: NetworkSocket.Port == 1883
   Topic: misconfigs
 
 - ShortName: oracle
-  Subject: Service
-  Filter: Service.Port >1520 && Service.Port < 1530
+  Subject: NetworkSocket
+  Filter: NetworkSocket.Port >1520 && NetworkSocket.Port < 1530
   Topic: misconfigs
 
 - ShortName: mssql
-  Subject: Service
-  Filter: Service.Port == 1433
+  Subject: NetworkSocket
+  Filter: NetworkSocket.Port == 1433
   Topic: misconfigs
 
 - ShortName: ipsec
-  Subject: Service
-  Filter: Service.Port == 500
+  Subject: NetworkSocket
+  Filter: NetworkSocket.Port == 500
   Topic: misconfigs

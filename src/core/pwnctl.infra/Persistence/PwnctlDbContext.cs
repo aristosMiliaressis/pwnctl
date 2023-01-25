@@ -37,24 +37,24 @@ namespace pwnctl.infra.Persistence
         {
         }
 
-        public DbSet<Program> Programs { get; set; }
+        public DbSet<NetworkHost> Hosts { get; set; }
+        public DbSet<NetworkRange> NetworkRanges { get; set; }
+        public DbSet<NetworkSocket> Sockets { get; set; }
+        public DbSet<DomainName> Domains { get; set; }
+        public DbSet<DomainNameRecord> DNSRecords { get; set; }
+        public DbSet<HttpHost> HttpHosts { get; set; }
+        public DbSet<HttpEndpoint> HttpEndpoints { get; set; }
+        public DbSet<HttpParameter> HttpParameters { get; set; }
+        public DbSet<Email> Emails { get; set; }
+        public DbSet<TaskDefinition> TaskDefinitions { get; set; }
+        public DbSet<NotificationRule> NotificationRules { get; set; }
         public DbSet<ScopeDefinition> ScopeDefinitions { get; set; }
         public DbSet<OperationalPolicy> OperationalPolicies { get; set; }
-        public DbSet<TaskEntry> TaskEntries { get; set; }
-        public DbSet<TaskDefinition> TaskDefinitions { get; set; }
+        public DbSet<Program> Programs { get; set; }
         public DbSet<AssetRecord> AssetRecords { get; set; }
-        public DbSet<Domain> Domains { get; set; }
-        public DbSet<NetRange> NetRanges { get; set; }
-        public DbSet<Host> Hosts { get; set; }
-        public DbSet<VirtualHost> VirtualHosts { get; set; }
-        public DbSet<DNSRecord> DNSRecords { get; set; }
-        public DbSet<Service> Services { get; set; }
-        public DbSet<Endpoint> Endpoints { get; set; }
-        public DbSet<Parameter> Parameters { get; set; }
-        public DbSet<Email> Emails { get; set; }
         public DbSet<Tag> Tags { get; set; }
-        public DbSet<NotificationRule> NotificationRules { get; set; }
-        
+        public DbSet<TaskEntry> TaskEntries { get; set; }
+
         public override int SaveChanges()
         {
             this.ConvertDateTimesToUtc();

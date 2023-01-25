@@ -4,12 +4,12 @@ using pwnctl.domain.Enums;
 
 namespace pwnctl.domain.Entities
 {
-    public sealed class Parameter : Asset
+    public sealed class HttpParameter : Asset
     {
-        public Endpoint Endpoint { get; private init; }
+        public HttpEndpoint Endpoint { get; private init; }
         public string EndpointId { get; private init; }
         [EqualityComponent]
-        public string Url { get; init; }
+        public string Url { get; init; } // TODO : 
 
         [EqualityComponent]
         public string Name { get; init; }
@@ -18,9 +18,9 @@ namespace pwnctl.domain.Entities
 
         public string UrlEncodedCsValues { get; private init; }
 
-        public Parameter() {}
+        public HttpParameter() {}
         
-        public Parameter(Endpoint endpoint, string name, ParamType type, string urlEncodedCsValues)
+        public HttpParameter(HttpEndpoint endpoint, string name, ParamType type, string urlEncodedCsValues)
         {
             Endpoint = endpoint;
             Url = endpoint.Url;

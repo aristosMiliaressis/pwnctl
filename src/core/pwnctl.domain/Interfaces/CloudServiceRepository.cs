@@ -6,5 +6,5 @@ public interface CloudServiceRepository
 {
     static CloudServiceRepository Instance { get; set; }
 
-    bool IsCloudService(Endpoint endpoint);
+    bool IsCloudService(HttpEndpoint endpoint);
 }
