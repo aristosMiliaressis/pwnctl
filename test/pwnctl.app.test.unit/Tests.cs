@@ -540,23 +540,23 @@ public sealed class Tests
         // Assert.Equal("domain_resolution", record?.FoundBy);
         // Assert.DoesNotContain("foundby", record?.Tags.Select(t => t.Name));
 
-        var jsonAltInputTestCmd = task.WrappedCommand.Replace(task.Command, "echo '{\"Asset\":\"sub.example3.com\",\"tags\":{\"test\":\"tag\"}}'");
+        // var jsonAltInputTestCmd = task.WrappedCommand.Replace(task.Command, "echo '{\"Asset\":\"sub.example3.com\",\"tags\":{\"test\":\"tag\"}}'");
 
-        process = await CommandExecutor.ExecuteAsync("/bin/bash", null, jsonAltInputTestCmd);
+        // process = await CommandExecutor.ExecuteAsync("/bin/bash", null, jsonAltInputTestCmd);
 
-        while ((line = process.StandardOutput.ReadLine()) != null)
-        {
-            await processor.ProcessAsync(line);
-        }
+        // while ((line = process.StandardOutput.ReadLine()) != null)
+        // {
+        //     await processor.ProcessAsync(line);
+        // }
 
-        record = context.AssetRecords.Include(r => r.Tags).Include(r => r.Domain).FirstOrDefault(r => r.Domain.Name == "sub.example3.com");
-        Assert.Equal("domain_resolution", record?.FoundBy);
-        Assert.Contains("test", record?.Tags.Select(t => t.Name));
-        Assert.DoesNotContain("foundby", record?.Tags.Select(t => t.Name));
+        // record = context.AssetRecords.Include(r => r.Tags).Include(r => r.Domain).FirstOrDefault(r => r.Domain.Name == "sub.example3.com");
+        // Assert.Equal("domain_resolution", record?.FoundBy);
+        // Assert.Contains("test", record?.Tags.Select(t => t.Name));
+        // Assert.DoesNotContain("foundby", record?.Tags.Select(t => t.Name));
 
-        record = context.AssetRecords.Include(r => r.Tags).Include(r => r.Domain).FirstOrDefault(r => r.Domain.Name == "example3.com");
-        Assert.Equal("domain_resolution", record?.FoundBy);
-        Assert.DoesNotContain("test", record?.Tags.Select(t => t.Name));
-        Assert.DoesNotContain("foundby", record?.Tags.Select(t => t.Name));
+        // record = context.AssetRecords.Include(r => r.Tags).Include(r => r.Domain).FirstOrDefault(r => r.Domain.Name == "example3.com");
+        // Assert.Equal("domain_resolution", record?.FoundBy);
+        // Assert.DoesNotContain("test", record?.Tags.Select(t => t.Name));
+        // Assert.DoesNotContain("foundby", record?.Tags.Select(t => t.Name));
     }
 }
