@@ -25,11 +25,11 @@ namespace pwnctl.app.Assets
             _programs = programs;
         }
 
-        public async Task<bool> TryProcessAsync(string assetText)
+        public async Task<bool> TryProcessAsync(string assetText, TaskDefinition definition = null)
         {
             try
             {
-                await ProcessAsync(assetText);
+                await ProcessAsync(assetText, definition);
                 return true;
             }
             catch (Exception ex)
@@ -39,15 +39,22 @@ namespace pwnctl.app.Assets
             }
         }
 
-        public async Task ProcessAsync(string assetText)
+        public async Task ProcessAsync(string assetText, TaskDefinition definition = null)
         {
             AssetDTO dto = TagParser.Parse(assetText);
 
             Asset asset = AssetParser.Parse(dto.Asset);
 
-            // this is done twice to ...
-            await ProcessAssetAsync(asset, dto.Tags, dto.FoundBy); // TODO: do this in a loop
-            await ProcessAssetAsync(asset, dto.Tags, dto.FoundBy);
+            string foundBy = definition?.ShortName ?? "N/A";
+
+            // The desired traversal of the following reference sub-tree is (B-C-B-A)
+            // the current solution results in the traversal (B-C-A-B-C-A) which is suboptimal
+            //    A
+            //   / \
+            //  B   C
+            // TODO: optimize & decuple the reference graph traversal, from the asset processing
+            await ProcessAssetAsync(asset, dto.Tags, foundBy);
+            await ProcessAssetAsync(asset, dto.Tags, foundBy);
         }
 
         private async Task ProcessAssetAsync(Asset asset, Dictionary<string, object> tags, string foundBy, List<string> refChain = null)

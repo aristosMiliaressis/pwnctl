@@ -16,6 +16,6 @@ public sealed class QueueTaskDTO
     public QueueTaskDTO(TaskEntry entry)
     {
         TaskId = entry.Id;
-        Command = entry.WrappedCommand;
+        Command = entry.Command;
     }
 }

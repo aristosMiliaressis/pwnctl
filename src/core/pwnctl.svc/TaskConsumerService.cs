@@ -75,12 +75,12 @@ namespace pwnctl.svc
             task.Started();
             await _context.SaveChangesAsync(token);
 
-            var process = await CommandExecutor.ExecuteAsync("/bin/bash", null, task.WrappedCommand, token);
+            var process = await CommandExecutor.ExecuteAsync("/bin/bash", null, task.Command, token);
             var output = await process.StandardOutput.ReadToEndAsync();
 
             foreach (var line in output.Split("\n").Where(a => !string.IsNullOrEmpty(a)))
             {
-                await _processor.TryProcessAsync(line);
+                await _processor.TryProcessAsync(line, task.Definition);
 
                 var pendingTasks = await _context.JoinedTaskRecordQueryable()
                             .Where(r => r.State == TaskState.PENDING)
