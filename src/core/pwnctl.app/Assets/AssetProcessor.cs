@@ -57,16 +57,16 @@ namespace pwnctl.app.Assets
             await ProcessAssetAsync(asset, dto.Tags, foundBy);
         }
 
-        private async Task ProcessAssetAsync(Asset asset, Dictionary<string, object> tags, string foundBy, List<string> refChain = null)
+        private async Task ProcessAssetAsync(Asset asset, Dictionary<string, object> tags, string foundBy, List<Asset> refChain = null)
         {
             refChain = refChain == null
-                    ? new List<string>()
-                    : new List<string>(refChain);
+                    ? new List<Asset>()
+                    : new List<Asset>(refChain);
 
             // if type exists in chain return to prevent infinit loop
-            if (refChain.Contains(asset.UID))
+            if (refChain.Contains(asset))
                 return;
-            refChain.Add(asset.UID);
+            refChain.Add(asset);
 
             // recursivly process all parsed assets
             // starting from the botton of the ref tree.

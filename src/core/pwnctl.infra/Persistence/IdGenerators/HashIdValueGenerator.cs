@@ -9,12 +9,18 @@ namespace pwnctl.infra.Persistence.IdGenerators
 {
     public sealed class HashIdValueGenerator : StringValueGenerator
     {
+        private static MD5 _md5 = MD5.Create();
         public override string Next(EntityEntry entry) => GenerateHashId(entry.Entity);
         protected override object NextValue(EntityEntry entry) => GenerateHashId(entry.Entity);
 
         private string GenerateHashId(object entity)
         {
-            Asset asset  = null;
+            return HashIdValueGenerator.Generate(entity);        
+        }
+
+        public static string Generate(object entity)
+        {
+            Asset asset = null;
 
             if (entity is AssetRecord)
             {
@@ -26,7 +32,7 @@ namespace pwnctl.infra.Persistence.IdGenerators
                 asset = entity as Asset;
             }
 
-            return asset.UID;         
+            return Convert.ToHexString(_md5.ComputeHash(Encoding.UTF8.GetBytes(asset.ToString())));
         }
 
         public override bool GeneratesTemporaryValues => false;

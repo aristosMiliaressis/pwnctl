@@ -1,13 +1,14 @@
-using pwnctl.app.Common.Extensions;
-using pwnctl.infra.Persistence;
-using pwnctl.infra.Persistence.Extensions;
 using pwnctl.domain.BaseClasses;
 using pwnctl.domain.Entities;
-using pwnctl.app.Assets.Interfaces;
-using Microsoft.EntityFrameworkCore;
-using pwnctl.app.Tasks.Entities;
 using pwnctl.app.Assets.Aggregates;
-using pwnctl.kernel.Extensions;
+using pwnctl.app.Assets.Interfaces;
+using pwnctl.app.Common.Extensions;
+using pwnctl.app.Tasks.Entities;
+using pwnctl.infra.Persistence;
+using pwnctl.infra.Persistence.Extensions;
+using pwnctl.infra.Persistence.IdGenerators;
+
+using Microsoft.EntityFrameworkCore;
 
 namespace pwnctl.infra.Repositories
 {
@@ -33,7 +34,7 @@ namespace pwnctl.infra.Repositories
                             .Include(r => r.HttpEndpoint)
                             .Include(r => r.HttpParameter)
                             .Include(r => r.Email)
-                            .FirstOrDefaultAsync(r => r.Id == asset.UID);
+                            .FirstOrDefaultAsync(r => r.Id == HashIdValueGenerator.Generate(asset));
         }
 
         public TaskEntry FindTaskEntry(Asset asset, TaskDefinition def)
