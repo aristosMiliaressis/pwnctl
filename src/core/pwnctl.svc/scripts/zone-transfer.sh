@@ -23,6 +23,6 @@ extract_records() {
     rm $temp2
 }
 
-cat $temp | grep 'Zone Transfer was successful' >/dev/null && extract_records
+cat $temp | grep -q 'Zone Transfer was successful' && extract_records
 
 rm $temp

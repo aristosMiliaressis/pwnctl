@@ -16,10 +16,10 @@ scan_svc() {
 
 while read service; 
 do 
-    for scope in $(echo $service | jq -c .Scope)
+    for scope in $(echo $service | jq -c .Scope[])
     do
         scopeType=$(echo $scope | jq -r .Type)
-        if [[ $scopeType == "DomainRegex" ]]
+        if [[ $scopeType == "0" ]]
         then
             [[ $(echo $input | unfurl domains) =~ $(echo $scope | jq -r .Pattern) ]] && scan_svc "$service"
         fi

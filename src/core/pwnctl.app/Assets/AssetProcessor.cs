@@ -47,7 +47,7 @@ namespace pwnctl.app.Assets
 
             string foundBy = definition?.ShortName ?? "N/A";
 
-            // The desired traversal of the following reference sub-tree is (B-C-B-A)
+            // The desired traversal of the following reference sub-tree is (B-C-A-B-C)
             // the current solution results in the traversal (B-C-A-B-C-A) which is suboptimal
             //    A
             //   / \
