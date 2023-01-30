@@ -131,12 +131,12 @@
   MatchOutOfScope: true
 
 - ShortName: cname_takeover_check
-  CommandTemplate: nuclei -t /opt/nuclei-templates/cname_takeovers
+  CommandTemplate: cloud_misconfig_scan.sh {{Value}}
   Subject: DomainNameRecord
   Filter: DomainNameRecord.Type == DomainNameRecord.CNAME
 
 - ShortName: second_order_takeover
-  CommandTemplate: nuclei -t /opt/nuclei-templates/cname_takeovers
+  CommandTemplate: cloud_misconfig_scan.sh {{Url}}
   Subject: HttpEndpoint
   Filter: CloudServiceRepository.Instance.IsCloudService(HttpEndpoint)
   MatchOutOfScope: true

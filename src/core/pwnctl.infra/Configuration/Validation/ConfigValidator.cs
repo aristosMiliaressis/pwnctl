@@ -43,8 +43,9 @@ public static class ConfigValidator
             var taskText = File.ReadAllText(fileName);
             taskDefinitions = _deserializer.Deserialize<List<TaskDefinition>>(taskText);
         }
-        catch
+        catch (Exception ex)
         {
+            PwnInfraContext.Logger.Error(ex.ToRecursiveExInfo());
             errorMessage = $"Deserialization of {fileName} failed";
             return false;
         }

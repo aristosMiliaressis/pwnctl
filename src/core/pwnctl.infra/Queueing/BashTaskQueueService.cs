@@ -1,6 +1,5 @@
 ﻿using pwnctl.infra.Commands;
 using pwnctl.app.Queueing.Interfaces;
-using pwnctl.app.Tasks.DTO;
 using pwnctl.app;
 using pwnctl.app.Queueing.DTO;
 

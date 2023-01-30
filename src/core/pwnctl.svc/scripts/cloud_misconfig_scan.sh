@@ -9,7 +9,7 @@ scan_svc() {
         
         nuclei -nc -silent -t "/opt/nuclei_templates/$template" -u $input \
             | while read output; do \
-                [[ $output =~ $expr ]] && echo "{\"Asset\":\"$input\", \"Tags\":{\"${BASH_REMATCH[2]}\":\"${BASH_REMATCH[1]}\"}}"; \
+                [[ $output =~ $expr ]] && echo "{\"Asset\":\"$input\", \"Tags\":{\"cloud_misconfig\":\"${BASH_REMATCH[1]}\"}}"; \
             done
     done
 }

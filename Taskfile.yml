@@ -67,7 +67,7 @@ tasks:
 
   get-logs:
     cmds:
-      - awslogs get -s 60m -G --timestamp /aws/ecs/pwnctl
+      - awslogs get -s 1440m -G --timestamp /aws/ecs/pwnctl
 
   destroy:
     cmds:

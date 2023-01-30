@@ -1,6 +1,5 @@
 using System.Text.Json;
 using pwnctl.app;
-using pwnctl.app.Assets.Aggregates;
 using pwnctl.app.Assets.DTO;
 using pwnctl.app.Assets.Exceptions;
 

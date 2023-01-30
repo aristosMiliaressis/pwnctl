@@ -28,24 +28,5 @@ namespace pwnctl.app.Tasks.Entities
 
             return PwnInfraContext.FilterEvaluator.Evaluate(Filter, record);
         }
-
-        // Extrapolate list of parameter names from CommandTemplate
-        public List<string> Parameters
-        { 
-            get
-            {
-                List<string> _params = new();
-
-                foreach (var seg in CommandTemplate.Split("}}"))
-                {
-                    if (!seg.Contains("{{"))
-                        continue;
-
-                    _params.Add(seg.Split("{{")[1]);
-                }
-
-                return _params;
-            }
-        }
     }
 }

@@ -10,7 +10,8 @@ namespace pwnctl.infra.Notifications
     {
         public void Send(Asset asset, NotificationRule rule)
         {
-            Send($"{asset} triggered rule {rule.ShortName}", rule.Topic);
+            Send(rule.GetText(asset), rule.Topic);
+
         }
 
         public void Send(string message, NotificationTopic topic)

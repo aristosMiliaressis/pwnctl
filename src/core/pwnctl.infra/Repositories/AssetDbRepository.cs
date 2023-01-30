@@ -2,7 +2,7 @@ using pwnctl.domain.BaseClasses;
 using pwnctl.domain.Entities;
 using pwnctl.app.Assets.Aggregates;
 using pwnctl.app.Assets.Interfaces;
-using pwnctl.app.Common.Extensions;
+using pwnctl.app.Common;
 using pwnctl.app.Tasks.Entities;
 using pwnctl.infra.Persistence;
 using pwnctl.infra.Persistence.Extensions;

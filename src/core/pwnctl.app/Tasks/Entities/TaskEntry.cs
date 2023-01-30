@@ -3,6 +3,7 @@ using pwnctl.app.Assets.Aggregates;
 using pwnctl.app.Tasks.Enums;
 using pwnctl.app.Tasks.Exceptions;
 using System.Text.Json.Serialization;
+using pwnctl.app.Common.Extensions;
 
 namespace pwnctl.app.Tasks.Entities
 {
@@ -59,44 +60,8 @@ namespace pwnctl.app.Tasks.Entities
             FinishedAt = DateTime.UtcNow;
         }
 
-        [JsonIgnore]
-        public List<string> Arguments
-        {
-            get
-            {
-                List<string> arguments = new();
-
-                var assetType = Record.Asset.GetType();
-
-                foreach (var param in Definition.Parameters)
-                {
-                    var prop = assetType.GetProperty(param);
-                    if (prop == null)
-                        throw new CommandInterpolationException($"Property {param} not found on type {assetType.Name}");
-
-                    var arg = prop.GetValue(Record.Asset);
-
-                    arguments.Add((string)arg);
-                }
-
-                return arguments;
-            }
-        }
-
         // Interpolate asset arguments into CommandTemplate
         [JsonIgnore]
-        public string Command {
-            get
-            {
-                string command = Definition.CommandTemplate;
-
-                foreach (var arg in Arguments.Distinct())
-                {
-                    command = command.Replace("{{" + command.Split("{{")[1].Split("}}")[0] + "}}", arg);
-                }
-
-                return command;
-            }
-        }
+        public string Command => Definition.CommandTemplate.Interpolate(Record.Asset);
     }
 }

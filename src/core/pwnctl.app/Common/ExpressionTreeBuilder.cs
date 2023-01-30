@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Linq.Expressions;
 using pwnctl.app.Tagging.Entities;
 
-namespace pwnctl.app.Common.Extensions
+namespace pwnctl.app.Common
 {
     public static class ExpressionTreeBuilder
     {

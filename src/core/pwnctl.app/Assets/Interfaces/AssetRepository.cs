@@ -1,5 +1,4 @@
 using pwnctl.app.Assets.Aggregates;
-using pwnctl.app.Tagging.Entities;
 using pwnctl.app.Tasks.Entities;
 using pwnctl.domain.BaseClasses;
 

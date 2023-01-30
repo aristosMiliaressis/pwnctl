@@ -2,7 +2,6 @@
 using pwnctl.app.Assets.Interfaces;
 using pwnctl.app.Tasks.Entities;
 using pwnctl.app.Notifications.Entities;
-using pwnctl.kernel.Extensions;
 using pwnctl.app.Assets.Aggregates;
 using pwnctl.app.Scope.Entities;
 using pwnctl.app.Assets.DTO;

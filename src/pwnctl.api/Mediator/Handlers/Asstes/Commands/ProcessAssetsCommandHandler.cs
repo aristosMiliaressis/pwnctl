@@ -1,4 +1,3 @@
-using pwnctl.app;
 using pwnctl.infra.Persistence;
 using pwnctl.infra;
 using pwnctl.dto.Assets.Commands;

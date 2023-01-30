@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using pwnctl.domain.BaseClasses;
 using pwnctl.infra.Persistence.IdGenerators;
 
 namespace pwnctl.infra.Persistence.Extensions

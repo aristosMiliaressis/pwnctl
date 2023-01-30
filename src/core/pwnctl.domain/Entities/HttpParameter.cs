@@ -9,7 +9,7 @@ namespace pwnctl.domain.Entities
         public HttpEndpoint Endpoint { get; private init; }
         public string EndpointId { get; private init; }
         [EqualityComponent]
-        public string Url { get; init; } // TODO : 
+        public string Url { get; init; }
 
         [EqualityComponent]
         public string Name { get; init; }

@@ -4,7 +4,7 @@ using pwnctl.app.Tasks.Entities;
 using pwnctl.app.Scope.Entities;
 using System.Reflection;
 using System.Linq.Expressions;
-using pwnctl.app.Common.Extensions;
+using pwnctl.app.Common;
 using pwnctl.kernel.BaseClasses;
 
 namespace pwnctl.infra.Persistence.Extensions
@@ -66,7 +66,7 @@ namespace pwnctl.infra.Persistence.Extensions
             return (Asset)context.FirstFromLambda(lambda);
         }
 
-        public static Entity FirstFromLambda(this DbContext context, LambdaExpression lambda) // TODO: make async
+        public static Entity FirstFromLambda(this DbContext context, LambdaExpression lambda)
         {
             var type = lambda.Parameters.First().Type;
 
@@ -81,7 +81,7 @@ namespace pwnctl.infra.Persistence.Extensions
             return (Entity)firstOrDefaultMethod.Invoke(null, new object[] { filteredQueryable });
         }
 
-        public static Entity FirstNotTrackedFromLambda(this DbContext context, LambdaExpression lambda) // TODO: make async
+        public static Entity FirstNotTrackedFromLambda(this DbContext context, LambdaExpression lambda)
         {
             var type = lambda.Parameters.First().Type;
 
