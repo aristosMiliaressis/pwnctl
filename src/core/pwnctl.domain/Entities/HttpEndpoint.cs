@@ -49,16 +49,21 @@ namespace pwnctl.domain.Entities
         {
             asset = null;
 
-            if (!assetText.Contains("://") || !assetText.ToLower().StartsWith("http"))
+            if (!(assetText.ToLower().StartsWith("http") && assetText.Contains("://"))
+                && !assetText.StartsWith("//"))
                 return false;
 
             var uri = new Uri(assetText);
 
-            var address = NetworkHost.TryParse(uri.Host, out Asset host)
-                    ? new NetworkSocket((NetworkHost)host, (ushort)uri.Port)
-                    : new NetworkSocket(new DomainName(uri.Host), (ushort)uri.Port);
+            // if url is protocol relative, treat it as an https url
+            string scheme = uri.Port == -1 ? "https" : uri.Scheme;
+            ushort port = (ushort) (uri.Port == -1 ? 443 : uri.Port);
 
-            var endpoint = new HttpEndpoint(uri.Scheme, address, uri.AbsolutePath);
+            var socket = NetworkHost.TryParse(uri.Host, out Asset host)
+                    ? new NetworkSocket((NetworkHost)host, port)
+                    : new NetworkSocket(new DomainName(uri.Host), port);
+
+            var endpoint = new HttpEndpoint(scheme, socket, uri.AbsolutePath);
 
             var _params = uri.GetComponents(UriComponents.Query, UriFormat.SafeUnescaped)
                 .Split("&")

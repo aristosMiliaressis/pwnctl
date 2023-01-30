@@ -112,13 +112,13 @@ public sealed class Tests
         Assert.NotNull(((HttpEndpoint)asset).Socket);
         Assert.NotNull(((HttpEndpoint)asset).ParentEndpoint);
 
-        // TODO: protocol relative url parsing
-        // asset = AssetParser.Parse("//prurl.example.com/test");
-        // Assert.IsType<Endpoint>(asset);
+        // protocol relative url parsing
+        asset = AssetParser.Parse("//prurl.example.com/test");
+        Assert.IsType<HttpEndpoint>(asset);
 
         // TODO: UNC parsing
         // asset = AssetParser.Parse("\\unc.example.com:8443");
-        // Assert.IsType<Endpoint>(asset);
+        // Assert.IsType<HttpEndpoint>(asset);
 
         // parameter
         asset = AssetParser.Parse("https://xyz.example.com:8443/api/token?_u=xxx");
