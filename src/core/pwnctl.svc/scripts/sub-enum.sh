@@ -6,16 +6,30 @@
 domain=$1
 dict='/opt/wordlists/subdomains-top-20000.txt'
 DNS_RESOLVERS_FILE='/opt/wordlists/dns/resolvers_top25.txt'
+GITHUB_TOKENS_FILE='/mnt/efs/github.tokens'
 
 potential_subs_file=`mktemp`
 valid_subs_file=`mktemp`
 amass_temp=`mktemp`
-trap "rm $potential_subs_file $valid_subs_file $amass_temp" EXIT 
+gh_temp=`mktemp`
+trap "rm $potential_subs_file $valid_subs_file $amass_temp $gh_temp" EXIT 
 
 passive_subdomain_enum() {
     amass enum -d $domain -nolocaldb -nocolor -passive -silent -json $amass_temp
 
-	cat $amass_temp | jq -r .name
+	cat $amass_temp \
+		| jq -r .name \
+		| tee $potential_subs_file \
+		| xargs -I {} -n1 echo '{"Asset":"{}", "Tags":{"tool":"amass"}}'
+
+	if [ -f $GITHUB_TOKENS_FILE ]
+	then 
+		github-subdomains -d $domain -o $gh_temp -t $GITHUB_TOKENS_FILE >/dev/null
+
+		cat $gh_temp \
+			| tee $potential_subs_file \
+			| xargs -I {} -n1 echo '{"Asset":"{}", "Tags":{"tool":"github-subdomains"}}'
+	fi
 }
 
 generate_brute_gueses() {
@@ -41,9 +55,7 @@ generate_ai_learned_alts() {
 	cd - >/dev/null
 }
 
-passive_subdomain_enum \
-	| tee $potential_subs_file \
-	| xargs -I {} -n1 echo '{"Asset":"{}", "Tags":{"tool":"amass"}}'
+passive_subdomain_enum
 
 generate_brute_gueses | anew $potential_subs_file > /dev/null
 
