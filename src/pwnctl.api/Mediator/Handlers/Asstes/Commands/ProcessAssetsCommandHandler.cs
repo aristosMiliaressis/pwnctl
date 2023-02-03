@@ -11,9 +11,9 @@ using pwnctl.app.Queueing.DTO;
 
 namespace pwnctl.api.Mediator.Handlers.Assets.Commands
 {
-    public sealed class ProcessAssetsCommandHandler : IRequestHandler<ProcessAssetsCommand, MediatedResponse<List<QueueTaskDTO>>>
+    public sealed class ProcessAssetsCommandHandler : IRequestHandler<ProcessAssetsCommand, MediatedResponse<List<QueuedTaskDTO>>>
     {
-        public async Task<MediatedResponse<List<QueueTaskDTO>>> Handle(ProcessAssetsCommand command, CancellationToken cancellationToken)
+        public async Task<MediatedResponse<List<QueuedTaskDTO>>> Handle(ProcessAssetsCommand command, CancellationToken cancellationToken)
         {
             var context = new PwnctlDbContext();
 
@@ -34,7 +34,7 @@ namespace pwnctl.api.Mediator.Handlers.Assets.Commands
             pendingTasks.ForEach(task => task.Queued());
             await context.SaveChangesAsync(cancellationToken);
 
-            return MediatedResponse<List<QueueTaskDTO>>.Success(pendingTasks.Select(t => new QueueTaskDTO(t)).ToList());
+            return MediatedResponse<List<QueuedTaskDTO>>.Success(pendingTasks.Select(t => new QueuedTaskDTO(t)).ToList());
         }
     }
 }

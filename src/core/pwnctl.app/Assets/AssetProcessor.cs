@@ -78,12 +78,11 @@ namespace pwnctl.app.Assets
                 record = new AssetRecord(asset, foundByTask);
             }
 
-            record = await _assetRepository.MergeCurrentRecordWithDBRecord(record, asset);
-
+            record = await _assetRepository.UpdateRecordReferences(record, asset);
             record.UpdateTags(tags);
 
-            var owningProgram = _programs.FirstOrDefault(program => program.Scope.Any(scope => scope.Matches(record.Asset)));
-            record.SetOwningProgram(owningProgram);
+            var program = _programs.FirstOrDefault(program => program.Scope.Any(scope => scope.Matches(record.Asset)));
+            record.SetOwningProgram(program);
 
             foreach (var rule in _notificationRules.Where(rule => (record.InScope || rule.CheckOutOfScope) && rule.Check(record)))
             {
@@ -91,8 +90,8 @@ namespace pwnctl.app.Assets
             }
 
             var matchingTasks = _taskDefinitions.Where(def => ((def.MatchOutOfScope && def.Matches(record)) 
-                                                            || (record.InScope && record.OwningProgram.Policy.Allows(def)
-                                                              ) && def.Matches(record)));
+                                                            || (record.InScope && record.OwningProgram.Policy.Allows(def)) 
+                                                            && def.Matches(record)));
 
             foreach (var definition in matchingTasks)
             {

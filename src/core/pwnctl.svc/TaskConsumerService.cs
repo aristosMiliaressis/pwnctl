@@ -48,9 +48,14 @@ namespace pwnctl.svc
                                     .JoinedTaskRecordQueryable()
                                     .FirstOrDefaultAsync(r => r.Id == taskDTO.TaskId);
 
+                // create a linked token that cancels the task when the timeout passes or 
+                // when a SIGTERM is received due to an ECS scale in event
                 var cts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
                 cts.CancelAfter(TimeSpan.FromHours(2));
 
+                // Change the message visibility if the visibility window is exheeded
+                // this allows us to keep a smaller vid\sibility window without effecting 
+                // the max task timeout.
                 var timer = new System.Timers.Timer(1000 * (AwsConstants.QueueVisibilityTimeoutInSec - 60));
                 timer.Elapsed += async (_, _) =>
                     await _queueService.ChangeMessageVisibilityAsync(taskDTO, AwsConstants.QueueVisibilityTimeoutInSec);
@@ -63,6 +68,8 @@ namespace pwnctl.svc
                 catch (Exception ex)
                 {
                     PwnInfraContext.Logger.Exception(ex);
+
+                    // return the task to the queue, if this occures to many times it will be put in the dead letter queue
                     await _queueService.ChangeMessageVisibilityAsync(taskDTO, 0);
                     continue;
                 }
@@ -96,7 +103,7 @@ namespace pwnctl.svc
                 foreach (var t in pendingTasks)
                 {
                     t.Queued();
-                    await _queueService.EnqueueAsync(new QueueTaskDTO(t));
+                    await _queueService.EnqueueAsync(new QueuedTaskDTO(t));
                     await _context.SaveChangesAsync();
                 }
             }

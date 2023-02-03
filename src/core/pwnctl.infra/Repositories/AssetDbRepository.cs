@@ -44,7 +44,7 @@ namespace pwnctl.infra.Repositories
             return (TaskEntry)_context.FirstNotTrackedFromLambda(lambda);
         }
 
-        public async Task<AssetRecord> MergeCurrentRecordWithDBRecord(AssetRecord record, Asset asset)
+        public async Task<AssetRecord> UpdateRecordReferences(AssetRecord record, Asset asset)
         {
             var assetReferences = asset.GetType()
                 .GetProperties()
@@ -58,10 +58,7 @@ namespace pwnctl.infra.Repositories
 
                 var existingAsset = _context.FindAsset(assetRef);
                 if (existingAsset == null)
-                {
-                    reference.SetValue(record.Asset, assetRef);
                     continue;
-                }
 
                 await _context.Entry(existingAsset).LoadReferencesRecursivelyAsync();
 

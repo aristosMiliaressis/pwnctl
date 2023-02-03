@@ -9,8 +9,6 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
     {
         public void Configure(EntityTypeBuilder<NetworkSocket> builder)
         {
-            builder.ToTable("network_sockets");
-
             builder.Property(c => c.Id).HasValueGenerator<HashIdValueGenerator>();
 
             builder.HasKey(e => e.Id);

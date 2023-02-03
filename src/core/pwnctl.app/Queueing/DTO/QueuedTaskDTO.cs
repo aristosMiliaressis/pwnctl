@@ -3,7 +3,7 @@ using pwnctl.app.Tasks.Entities;
 
 namespace pwnctl.app.Queueing.DTO;
 
-public sealed class QueueTaskDTO
+public sealed class QueuedTaskDTO
 {
     public int TaskId { get; init; }
     public string Command { get; init; }
@@ -11,9 +11,9 @@ public sealed class QueueTaskDTO
     [JsonIgnore]
     public Dictionary<string, string> Metadata { get; set; }
 
-    public QueueTaskDTO() { }
+    public QueuedTaskDTO() { }
 
-    public QueueTaskDTO(TaskEntry entry)
+    public QueuedTaskDTO(TaskEntry entry)
     {
         TaskId = entry.Id;
         Command = entry.Command;

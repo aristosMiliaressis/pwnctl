@@ -5,7 +5,7 @@ using pwnctl.app.Tasks.DTO;
 using pwnctl.app.Tasks.Entities;
 using pwnctl.dto.Mediator;
 
-public sealed class ProcessAssetsCommand : MediatedRequest<List<QueueTaskDTO>>
+public sealed class ProcessAssetsCommand : MediatedRequest<List<QueuedTaskDTO>>
 {
     public static string Route => "/assets";
     public static HttpMethod Verb => HttpMethod.Post;

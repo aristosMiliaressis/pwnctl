@@ -90,7 +90,7 @@ namespace pwnctl.infra.Migrations
 
                     b.HasIndex("OwningProgramId");
 
-                    b.ToTable("asset_records", (string)null);
+                    b.ToTable("AssetRecords");
                 });
 
             modelBuilder.Entity("pwnctl.app.Notifications.Entities.NotificationRule", b =>
@@ -118,7 +118,7 @@ namespace pwnctl.infra.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("notification_rules", (string)null);
+                    b.ToTable("NotificationRules");
                 });
 
             modelBuilder.Entity("pwnctl.app.Scope.Entities.OperationalPolicy", b =>
@@ -143,7 +143,7 @@ namespace pwnctl.infra.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("operation_policies", (string)null);
+                    b.ToTable("OperationalPolicies");
                 });
 
             modelBuilder.Entity("pwnctl.app.Scope.Entities.Program", b =>
@@ -168,7 +168,7 @@ namespace pwnctl.infra.Migrations
                     b.HasIndex("PolicyId")
                         .IsUnique();
 
-                    b.ToTable("programs", (string)null);
+                    b.ToTable("Programs");
                 });
 
             modelBuilder.Entity("pwnctl.app.Scope.Entities.ScopeDefinition", b =>
@@ -192,7 +192,7 @@ namespace pwnctl.infra.Migrations
 
                     b.HasIndex("ProgramId");
 
-                    b.ToTable("scope_definitions", (string)null);
+                    b.ToTable("ScopeDefinitions");
                 });
 
             modelBuilder.Entity("pwnctl.app.Tagging.Entities.Tag", b =>
@@ -222,7 +222,7 @@ namespace pwnctl.infra.Migrations
                     b.HasIndex("RecordId", "Name")
                         .IsUnique();
 
-                    b.ToTable("tags", (string)null);
+                    b.ToTable("Tags");
                 });
 
             modelBuilder.Entity("pwnctl.app.Tasks.Entities.TaskDefinition", b =>
@@ -253,7 +253,7 @@ namespace pwnctl.infra.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("task_definitions", (string)null);
+                    b.ToTable("TaskDefinitions");
                 });
 
             modelBuilder.Entity("pwnctl.app.Tasks.Entities.TaskEntry", b =>
@@ -296,7 +296,7 @@ namespace pwnctl.infra.Migrations
 
                     b.HasIndex("RecordId");
 
-                    b.ToTable("task_entries", (string)null);
+                    b.ToTable("TaskEntries");
                 });
 
             modelBuilder.Entity("pwnctl.domain.Entities.DomainName", b =>
@@ -320,7 +320,7 @@ namespace pwnctl.infra.Migrations
 
                     b.HasIndex("ParentDomainId");
 
-                    b.ToTable("domain_names", (string)null);
+                    b.ToTable("Domains");
                 });
 
             modelBuilder.Entity("pwnctl.domain.Entities.DomainNameRecord", b =>
@@ -352,7 +352,7 @@ namespace pwnctl.infra.Migrations
                     b.HasIndex("Type", "Key", "Value")
                         .IsUnique();
 
-                    b.ToTable("domain_name_records", (string)null);
+                    b.ToTable("DNSRecords");
                 });
 
             modelBuilder.Entity("pwnctl.domain.Entities.Email", b =>
@@ -373,7 +373,7 @@ namespace pwnctl.infra.Migrations
 
                     b.HasIndex("DomainId");
 
-                    b.ToTable("emails", (string)null);
+                    b.ToTable("Emails");
                 });
 
             modelBuilder.Entity("pwnctl.domain.Entities.HttpEndpoint", b =>
@@ -405,7 +405,7 @@ namespace pwnctl.infra.Migrations
                     b.HasIndex("Url")
                         .IsUnique();
 
-                    b.ToTable("http_endpoints", (string)null);
+                    b.ToTable("HttpEndpoints");
                 });
 
             modelBuilder.Entity("pwnctl.domain.Entities.HttpHost", b =>
@@ -423,7 +423,7 @@ namespace pwnctl.infra.Migrations
 
                     b.HasIndex("ServiceId");
 
-                    b.ToTable("http_hosts", (string)null);
+                    b.ToTable("HttpHosts");
                 });
 
             modelBuilder.Entity("pwnctl.domain.Entities.HttpParameter", b =>
@@ -453,7 +453,7 @@ namespace pwnctl.infra.Migrations
                     b.HasIndex("Url", "Name", "Type")
                         .IsUnique();
 
-                    b.ToTable("http_parameters", (string)null);
+                    b.ToTable("HttpParameters");
                 });
 
             modelBuilder.Entity("pwnctl.domain.Entities.NetworkHost", b =>
@@ -472,7 +472,7 @@ namespace pwnctl.infra.Migrations
                     b.HasIndex("IP")
                         .IsUnique();
 
-                    b.ToTable("network_hosts", (string)null);
+                    b.ToTable("Hosts");
                 });
 
             modelBuilder.Entity("pwnctl.domain.Entities.NetworkRange", b =>
@@ -491,7 +491,7 @@ namespace pwnctl.infra.Migrations
                     b.HasIndex("FirstAddress", "NetPrefixBits")
                         .IsUnique();
 
-                    b.ToTable("network_ranges", (string)null);
+                    b.ToTable("NetworkRanges");
                 });
 
             modelBuilder.Entity("pwnctl.domain.Entities.NetworkSocket", b =>
@@ -523,7 +523,7 @@ namespace pwnctl.infra.Migrations
 
                     b.HasIndex("NetworkHostId");
 
-                    b.ToTable("network_sockets", (string)null);
+                    b.ToTable("Sockets");
                 });
 
             modelBuilder.Entity("pwnctl.app.Assets.Aggregates.AssetRecord", b =>
@@ -583,7 +583,7 @@ namespace pwnctl.infra.Migrations
 
                             b1.HasKey("AssetRecordId");
 
-                            b1.ToTable("asset_records");
+                            b1.ToTable("AssetRecords");
 
                             b1.WithOwner()
                                 .HasForeignKey("AssetRecordId");
@@ -627,7 +627,7 @@ namespace pwnctl.infra.Migrations
 
                             b1.HasKey("NotificationRuleId");
 
-                            b1.ToTable("notification_rules");
+                            b1.ToTable("NotificationRules");
 
                             b1.WithOwner()
                                 .HasForeignKey("NotificationRuleId");
@@ -681,7 +681,7 @@ namespace pwnctl.infra.Migrations
 
                             b1.HasKey("TaskDefinitionId");
 
-                            b1.ToTable("task_definitions");
+                            b1.ToTable("TaskDefinitions");
 
                             b1.WithOwner()
                                 .HasForeignKey("TaskDefinitionId");

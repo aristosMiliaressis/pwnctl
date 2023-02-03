@@ -9,8 +9,6 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
     {
         public void Configure(EntityTypeBuilder<AssetRecord> builder)
         {
-            builder.ToTable("asset_records");
-
             builder.Property(r => r.Id).HasValueGenerator<HashIdValueGenerator>();
             
             builder.HasKey(r => r.Id);

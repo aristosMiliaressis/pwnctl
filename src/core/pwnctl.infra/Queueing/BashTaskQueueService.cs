@@ -13,24 +13,24 @@ namespace pwnctl.infra.Queueing
         /// pushes a task to the pending queue.
         /// </summary>
         /// <param name="command"></param>
-        public async Task<bool> EnqueueAsync(QueueTaskDTO task, CancellationToken token = default)
+        public async Task<bool> EnqueueAsync(QueuedTaskDTO task, CancellationToken token = default)
         {
             await CommandExecutor.ExecuteAsync("job-queue.sh", $"-w {PwnInfraContext.Config.TaskQueue.WorkerCount} -q {_queueDirectory}", task.Command, token);
 
             return true;
         }
 
-        public Task<QueueTaskDTO> ReceiveAsync(CancellationToken token = default)
+        public Task<QueuedTaskDTO> ReceiveAsync(CancellationToken token = default)
         {
             throw new NotImplementedException();
         }
 
-        public Task DequeueAsync(QueueTaskDTO task)
+        public Task DequeueAsync(QueuedTaskDTO task)
         {
             throw new NotImplementedException();
         }
 
-        public Task ChangeMessageVisibilityAsync(QueueTaskDTO task, int visibilityTimeout, CancellationToken token = default)
+        public Task ChangeMessageVisibilityAsync(QueuedTaskDTO task, int visibilityTimeout, CancellationToken token = default)
         {
             throw new NotImplementedException();
         }

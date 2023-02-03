@@ -34,7 +34,7 @@ namespace pwnctl.infra.Queueing
         /// pushes a task to the pending queue.
         /// </summary>
         /// <param name="command"></param>
-        public async Task<bool> EnqueueAsync(QueueTaskDTO task, CancellationToken token = default)
+        public async Task<bool> EnqueueAsync(QueuedTaskDTO task, CancellationToken token = default)
         {
             PwnInfraContext.Logger.Debug($"Enqueue: {task.TaskId} : {task.Command}");
 
@@ -62,7 +62,7 @@ namespace pwnctl.infra.Queueing
             return true;
         }
 
-        public async Task<QueueTaskDTO> ReceiveAsync(CancellationToken token = default)
+        public async Task<QueuedTaskDTO> ReceiveAsync(CancellationToken token = default)
         {
             var receiveRequest = new ReceiveMessageRequest
             {
@@ -81,7 +81,7 @@ namespace pwnctl.infra.Queueing
 
                 return messageResponse.Messages.Select(msg => 
                 {
-                    var task = PwnInfraContext.Serializer.Deserialize<QueueTaskDTO>(msg.Body);
+                    var task = PwnInfraContext.Serializer.Deserialize<QueuedTaskDTO>(msg.Body);
                     PwnInfraContext.Logger.Debug($"Received : {task.TaskId}, MessageId: {msg.MessageId}");
 
                     task.Metadata = new Dictionary<string, string>
@@ -100,7 +100,7 @@ namespace pwnctl.infra.Queueing
             }
         }
 
-        public async Task DequeueAsync(QueueTaskDTO task)
+        public async Task DequeueAsync(QueuedTaskDTO task)
         {
             PwnInfraContext.Logger.Debug($"Dequeueing : {task.TaskId}");
 
@@ -119,7 +119,7 @@ namespace pwnctl.infra.Queueing
             }
         }
 
-        public async Task ChangeMessageVisibilityAsync(QueueTaskDTO task, int visibilityTimeout, CancellationToken token = default)
+        public async Task ChangeMessageVisibilityAsync(QueuedTaskDTO task, int visibilityTimeout, CancellationToken token = default)
         {
             PwnInfraContext.Logger.Debug($"ChangeMessageVisibilityAsync : {task.TaskId} {visibilityTimeout}");
 

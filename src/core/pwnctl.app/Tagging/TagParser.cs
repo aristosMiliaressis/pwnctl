@@ -9,7 +9,7 @@ public static class TagParser
     {
         try
         {
-            return (assetText.Trim().StartsWith("{"))
+            return assetText.Trim().StartsWith("{")
                 ? PwnInfraContext.Serializer.Deserialize<AssetDTO>(assetText)
                 : new AssetDTO { Asset = assetText, FoundBy = "input" };
         }

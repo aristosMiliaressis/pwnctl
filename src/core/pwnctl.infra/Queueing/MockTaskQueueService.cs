@@ -9,22 +9,22 @@ namespace pwnctl.infra.Queueing
         /// pushes a task to the pending queue.
         /// </summary>
         /// <param name="task"></param>
-        public Task<bool> EnqueueAsync(QueueTaskDTO task, CancellationToken token = default)
+        public Task<bool> EnqueueAsync(QueuedTaskDTO task, CancellationToken token = default)
         {
             return Task.FromResult(false);
         }
 
-        public Task<QueueTaskDTO> ReceiveAsync(CancellationToken token = default)
+        public Task<QueuedTaskDTO> ReceiveAsync(CancellationToken token = default)
         {
-            return Task.FromResult(new QueueTaskDTO());
+            return Task.FromResult(new QueuedTaskDTO());
         }
 
-        public Task DequeueAsync(QueueTaskDTO task)
+        public Task DequeueAsync(QueuedTaskDTO task)
         {
             return Task.CompletedTask;
         }
 
-        public Task ChangeMessageVisibilityAsync(QueueTaskDTO task, int visibilityTimeout, CancellationToken token = default)
+        public Task ChangeMessageVisibilityAsync(QueuedTaskDTO task, int visibilityTimeout, CancellationToken token = default)
         {
             return Task.CompletedTask;
         }

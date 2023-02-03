@@ -8,8 +8,6 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
     {
         public void Configure(EntityTypeBuilder<Tag> builder)
         {
-            builder.ToTable("tags");
-
             builder.HasKey(t => t.Id);
 
             builder.HasOne(t => t.Record)

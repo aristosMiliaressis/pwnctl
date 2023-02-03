@@ -8,7 +8,7 @@ namespace pwnctl.app.Assets.Interfaces
     {
         Task<AssetRecord> FindRecordAsync(Asset asset);
         TaskEntry FindTaskEntry(Asset asset, TaskDefinition def);
-        Task<AssetRecord> MergeCurrentRecordWithDBRecord(AssetRecord record, Asset asset);
+        Task<AssetRecord> UpdateRecordReferences(AssetRecord record, Asset asset);
         Task SaveAsync(AssetRecord asset);
 
         Task<List<AssetRecord>> ListHostsAsync();
