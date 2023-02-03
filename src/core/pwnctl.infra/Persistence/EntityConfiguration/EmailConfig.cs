@@ -9,6 +9,8 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
     {
         public void Configure(EntityTypeBuilder<Email> builder)
         {
+            builder.ToTable("emails");
+
             builder.Property(c => c.Id).HasValueGenerator<HashIdValueGenerator>();
 
             builder.HasKey(t => t.Id);

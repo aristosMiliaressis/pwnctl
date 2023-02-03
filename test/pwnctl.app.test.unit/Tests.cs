@@ -98,6 +98,11 @@ public sealed class Tests
         Assert.NotNull(((DomainNameRecord)asset).DomainName);
         Assert.NotNull(((DomainNameRecord)asset).NetworkHost);
 
+        asset = AssetParser.Parse("zzz.example.com      IN         A            31.3.3.8");
+        Assert.IsType<DomainNameRecord>(asset);
+        Assert.NotNull(((DomainNameRecord)asset).DomainName);
+        Assert.NotNull(((DomainNameRecord)asset).NetworkHost);
+
         // spf record parsing
         var spfRecord = "tesla.com IN TXT \"v = spf1 ip4:2.2.2.2 ipv4: 3.3.3.3 ipv6:FD00:DEAD:BEEF:64:34::2 include: spf.protection.outlook.com include:servers.mcsv.net - all\"";
         asset = AssetParser.Parse(spfRecord);
@@ -511,46 +516,72 @@ public sealed class Tests
 
         var definition = context.TaskDefinitions.FirstOrDefault(t => t.ShortName == "domain_resolution");
         
-        var record = new AssetRecord(new DomainName("example.com"));
+        var record = new AssetRecord(new DomainName("example.com.cn"));
         var task = new TaskEntry(definition, record);
+        context.Add(task);
+        context.SaveChanges();
 
         var process = await CommandExecutor.ExecuteAsync("/bin/bash", null, "echo example.com");
 
         string? line = "";
         while ((line = process.StandardOutput.ReadLine()) != null)
         {
-            await processor.ProcessAsync(line, definition);
+            await processor.ProcessAsync(line, task);
         }
 
-        record = context.AssetRecords.Include(r => r.Tags).Include(r => r.DomainName).FirstOrDefault(r => r.DomainName.Name == "example.com");
-        Assert.Equal("domain_resolution", record?.FoundBy);
+        record = context.AssetRecords
+                        .Include(r => r.Tags)
+                        .Include(r => r.FoundByTask)
+                            .ThenInclude(r => r.Definition)
+                        .Include(r => r.DomainName)
+                        .FirstOrDefault(r => r.DomainName.Name == "example.com");
+
+        Assert.Equal("domain_resolution", record?.FoundByTask.Definition.ShortName);
         Assert.DoesNotContain("foundby", record?.Tags.Select(t => t.Name));
 
         process = await CommandExecutor.ExecuteAsync("/bin/bash", null, "echo '{\"Asset\":\"example2.com\"}'");
 
         while ((line = process.StandardOutput.ReadLine()) != null)
         {
-            await processor.ProcessAsync(line, definition);
+            await processor.ProcessAsync(line, task);
         }
 
-        record = context.AssetRecords.Include(r => r.Tags).Include(r => r.DomainName).First(r => r.DomainName.Name == "example2.com");
-        Assert.Equal("domain_resolution", record?.FoundBy);
+        record = context.AssetRecords
+                        .Include(r => r.Tags)
+                        .Include(r => r.FoundByTask)
+                            .ThenInclude(r => r.Definition)
+                        .Include(r => r.DomainName)
+                        .First(r => r.DomainName.Name == "example2.com");
+
+        Assert.Equal("domain_resolution", record?.FoundByTask.Definition.ShortName);
         Assert.DoesNotContain("foundby", record?.Tags.Select(t => t.Name));
 
         process = await CommandExecutor.ExecuteAsync("/bin/bash", null, "echo '{\"Asset\":\"sub.example3.com\",\"tags\":{\"test\":\"tag\"}}'");
 
         while ((line = process.StandardOutput.ReadLine()) != null)
         {
-            await processor.ProcessAsync(line, definition);
+            await processor.ProcessAsync(line, task);
         }
 
-        record = context.AssetRecords.Include(r => r.Tags).Include(r => r.DomainName).FirstOrDefault(r => r.DomainName.Name == "sub.example3.com");
-        Assert.Equal("domain_resolution", record?.FoundBy);
+        record = context.AssetRecords
+                        .Include(r => r.Tags)
+                        .Include(r => r.FoundByTask)
+                            .ThenInclude(r => r.Definition)
+                        .Include(r => r.DomainName)
+                        .FirstOrDefault(r => r.DomainName.Name == "sub.example3.com");
+        
+        Assert.Equal("domain_resolution", record?.FoundByTask.Definition.ShortName);
         Assert.Contains("test", record?.Tags.Select(t => t.Name));
         Assert.DoesNotContain("foundby", record?.Tags.Select(t => t.Name));
 
-        record = context.AssetRecords.Include(r => r.Tags).Include(r => r.DomainName).FirstOrDefault(r => r.DomainName.Name == "example3.com");
-        Assert.Equal("domain_resolution", record?.FoundBy);
+        record = context.AssetRecords
+                        .Include(r => r.Tags)
+                        .Include(r => r.FoundByTask)
+                            .ThenInclude(r => r.Definition)
+                        .Include(r => r.DomainName)
+                        .FirstOrDefault(r => r.DomainName.Name == "example3.com");
+
+        Assert.Equal("domain_resolution", record?.FoundByTask.Definition.ShortName);
         Assert.DoesNotContain("test", record?.Tags.Select(t => t.Name));
         Assert.DoesNotContain("foundby", record?.Tags.Select(t => t.Name));
     }

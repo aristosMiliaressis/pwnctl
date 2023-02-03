@@ -9,6 +9,8 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
     {
         public void Configure(EntityTypeBuilder<DomainNameRecord> builder)
         {
+            builder.ToTable("domain_name_records");
+
             builder.Property(e => e.Id).HasValueGenerator<HashIdValueGenerator>();
 
             builder.HasKey(e => e.Id);

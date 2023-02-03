@@ -3,7 +3,7 @@
 input=$1
 
 scan_svc() {
-    for template in $(echo $1 | jq -c -r .Templates[])
+    for template in $(echo $1 | jq -c -r .Templates[] 2>/dev/null)
     do
         expr='^\[(\S+)\] \[(\S+)\].*';
         

@@ -25,6 +25,7 @@ namespace pwnctl.infra.Repositories
         {
             return await _context.AssetRecords
                             .Include(r => r.Tags)
+                            .Include(r => r.FoundByTask)
                             .Include(r => r.NetworkRange)
                             .Include(r => r.NetworkHost)
                             .Include(r => r.NetworkSocket)
@@ -97,6 +98,8 @@ namespace pwnctl.infra.Repositories
         public async Task<List<AssetRecord>> ListHostsAsync()
         {
             return await _context.AssetRecords
+                            .Include(e => e.FoundByTask)
+                                .ThenInclude(e => e.Definition)
                             .Include(e => e.Tags)
                             .Include(e => e.Tasks)
                             .Include(e => e.NetworkHost)
@@ -109,6 +112,8 @@ namespace pwnctl.infra.Repositories
         public async Task<List<AssetRecord>> ListDomainsAsync()
         {
             return await _context.AssetRecords
+                            .Include(e => e.FoundByTask)
+                                .ThenInclude(e => e.Definition)
                             .Include(e => e.Tags)
                             .Include(e => e.Tasks)
                             .Include(e => e.DomainName)
@@ -121,6 +126,8 @@ namespace pwnctl.infra.Repositories
         public async Task<List<AssetRecord>> ListDNSRecordsAsync()
         {
             return await _context.AssetRecords
+                            .Include(e => e.FoundByTask)
+                                .ThenInclude(e => e.Definition)
                             .Include(e => e.Tags)
                             .Include(e => e.Tasks)
                             .Include(e => e.DomainNameRecord)
@@ -135,6 +142,8 @@ namespace pwnctl.infra.Repositories
         public async Task<List<AssetRecord>> ListEndpointsAsync()
         {
             return await _context.AssetRecords
+                            .Include(e => e.FoundByTask)
+                                .ThenInclude(e => e.Definition)
                             .Include(e => e.Tags)
                             .Include(e => e.Tasks)
                             .Include(e => e.HttpEndpoint)
@@ -151,6 +160,8 @@ namespace pwnctl.infra.Repositories
         public async Task<List<AssetRecord>> ListNetRangesAsync()
         {
             return await _context.AssetRecords
+                            .Include(e => e.FoundByTask)
+                                .ThenInclude(e => e.Definition)
                             .Include(e => e.Tags)
                             .Include(e => e.Tasks)
                             .Include(e => e.NetworkRange)
@@ -162,6 +173,8 @@ namespace pwnctl.infra.Repositories
         public async Task<List<AssetRecord>> ListParametersAsync()
         {
             return await _context.AssetRecords
+                            .Include(e => e.FoundByTask)
+                                .ThenInclude(e => e.Definition)
                             .Include(e => e.Tags)
                             .Include(e => e.Tasks)
                             .Include(e => e.HttpParameter)
@@ -180,6 +193,8 @@ namespace pwnctl.infra.Repositories
         public async Task<List<AssetRecord>> ListServicesAsync()
         {
             return await _context.AssetRecords
+                            .Include(e => e.FoundByTask)
+                                .ThenInclude(e => e.Definition)
                             .Include(e => e.Tags)
                             .Include(e => e.Tasks)
                             .Include(e => e.NetworkSocket)
@@ -194,6 +209,8 @@ namespace pwnctl.infra.Repositories
         public async Task<List<AssetRecord>> ListEmailsAsync()
         {
             return await _context.AssetRecords
+                            .Include(e => e.FoundByTask)
+                                .ThenInclude(e => e.Definition)
                             .Include(e => e.Tags)
                             .Include(e => e.Tasks)
                             .Include(e => e.Email)

@@ -9,6 +9,8 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
     {
         public void Configure(EntityTypeBuilder<HttpParameter> builder)
         {
+            builder.ToTable("http_parameters");
+
             builder.Property(c => c.Id).HasValueGenerator<HashIdValueGenerator>();
 
             builder.HasKey(p => p.Id);

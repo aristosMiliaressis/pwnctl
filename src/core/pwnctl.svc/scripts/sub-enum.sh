@@ -5,14 +5,13 @@
 
 domain=$1
 dict='/opt/wordlists/subdomains-top-20000.txt'
-DNS_RESOLVERS_FILE='/opt/wordlists/dns/resolvers_top25.txt'
+DNS_RESOLVERS_FILE='/opt/wordlists/dns/resolvers_top25.txt' # https://github.com/blechschmidt/massdns/blob/master/lists/resolvers.txt
 GITHUB_TOKENS_FILE='/mnt/efs/github.tokens'
 
 potential_subs_file=`mktemp`
 valid_subs_file=`mktemp`
 amass_temp=`mktemp`
-gh_temp=`mktemp`
-trap "rm $potential_subs_file $valid_subs_file $amass_temp $gh_temp" EXIT 
+trap "rm $potential_subs_file $valid_subs_file $amass_temp" EXIT 
 
 passive_subdomain_enum() {
     amass enum -d $domain -nolocaldb -nocolor -passive -silent -json $amass_temp
@@ -24,10 +23,8 @@ passive_subdomain_enum() {
 
 	if [ -f $GITHUB_TOKENS_FILE ]
 	then 
-		github-subdomains -d $domain -o $gh_temp -t $GITHUB_TOKENS_FILE >/dev/null
-
-		cat $gh_temp \
-			| tee $potential_subs_file \
+		github-subdomains -raw -d $domain -t $GITHUB_TOKENS_FILE \
+			| anew $potential_subs_file \
 			| xargs -I {} -n1 echo '{"Asset":"{}", "Tags":{"tool":"github-subdomains"}}'
 	fi
 }

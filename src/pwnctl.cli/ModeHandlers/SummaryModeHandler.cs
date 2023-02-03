@@ -17,10 +17,10 @@ namespace pwnctl.cli.ModeHandlers
             var model = await client.Send(new SummaryQuery());
 
             Console.WriteLine($"NetworkRanges: {model.NetworkRangeCount}, InScope: {model.InScopeRangesCount}");
-            Console.WriteLine($"Hosts: {model.HostCount}, InScope: {model.InsCopeHostCount}");
-            Console.WriteLine($"Domains: {model.DomainCount}, InScope: {model.InScopeDomainCount}");
-            Console.WriteLine($"DNSRecords: {model.RecordCount}, InScope: {model.InScopeRecordCount}");
-            Console.WriteLine($"Sockets: {model.SocketCount}, InScope: {model.InScopeServiceCount}");
+            Console.WriteLine($"NetworkHosts: {model.HostCount}, InScope: {model.InsCopeHostCount}");
+            Console.WriteLine($"NetworkSockets: {model.SocketCount}, InScope: {model.InScopeServiceCount}");
+            Console.WriteLine($"DomainNames: {model.DomainCount}, InScope: {model.InScopeDomainCount}");
+            Console.WriteLine($"DomainNameRecords: {model.RecordCount}, InScope: {model.InScopeRecordCount}");
             Console.WriteLine($"HttpEndpoints: {model.HttpEndpointCount}, InScope: {model.InScopeEndpointCount}");
             Console.WriteLine($"HttpParameters: {model.HttpParamCount}, InScope: {model.InScopeParamCount}");
             Console.WriteLine($"Emais: {model.EmailCount}, InScope: {model.InScopeEmailCount}");

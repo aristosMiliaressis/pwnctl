@@ -51,7 +51,7 @@ namespace pwnctl.domain.Entities
         public static bool TryParse(string assetText, out Asset asset)
         {
             assetText = assetText.Replace("\t", " ");
-            var parts = assetText.Split(" ");
+            var parts = assetText.Split(" ").Where(p => !string.IsNullOrWhiteSpace(p)).ToArray();
 
             if (parts.Length >= 4 && parts[1] == "IN"
              && Enum.GetNames(typeof(DnsRecordType)).Contains(parts[2]))

@@ -9,6 +9,8 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
     {
         public void Configure(EntityTypeBuilder<Program> builder)
         {
+            builder.ToTable("programs");
+
             builder.HasKey(p => p.Id);
 
             builder.HasMany(p => p.Scope)
@@ -26,6 +28,8 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
     {
         public void Configure(EntityTypeBuilder<ScopeDefinition> builder)
         {
+            builder.ToTable("scope_definitions");
+
             builder.HasKey(p => p.Id);
         }
     }
@@ -35,6 +39,8 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
     {
         public void Configure(EntityTypeBuilder<OperationalPolicy> builder)
         {
+            builder.ToTable("operation_policies");
+
             builder.HasKey(p => p.Id);
         }
     }
@@ -43,6 +49,8 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
     {
         public void Configure(EntityTypeBuilder<NotificationRule> builder)
         {
+            builder.ToTable("notification_rules");
+
             builder.HasKey(r => r.Id);
 
             builder.OwnsOne(r => r.SubjectClass).Property(s => s.Class).IsRequired();

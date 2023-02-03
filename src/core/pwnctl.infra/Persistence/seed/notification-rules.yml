@@ -32,13 +32,13 @@
   CheckOutOfScope: true
 
 - ShortName: cname_takeover_check
-  Subject: DomainNameRecord
-  Filter: '!string.IsNullOrEmpty(Tags["cname-takeover"])'
+  Subject: DomainName
+  Filter: '!string.IsNullOrEmpty(Tags["cloud_misconfig"])'
   Topic: misconfigs
   
 - ShortName: second_order_takeover
-  Subject: DomainNameRecord
-  Filter: '!string.IsNullOrEmpty(Tags["second-order-takeover"])'
+  Subject: HttpEndpoint
+  Filter: '!string.IsNullOrEmpty(Tags["cloud_misconfig"])'
   Topic: misconfigs
 
 - ShortName: zone_transfer

@@ -24,11 +24,11 @@ namespace pwnctl.app.Assets
             _programs = programs;
         }
 
-        public async Task<bool> TryProcessAsync(string assetText, TaskDefinition definition = null)
+        public async Task<bool> TryProcessAsync(string assetText, TaskEntry foundByTask = null)
         {
             try
             {
-                await ProcessAsync(assetText, definition);
+                await ProcessAsync(assetText, foundByTask);
                 return true;
             }
             catch (Exception ex)
@@ -38,13 +38,11 @@ namespace pwnctl.app.Assets
             }
         }
 
-        public async Task ProcessAsync(string assetText, TaskDefinition definition = null)
+        public async Task ProcessAsync(string assetText, TaskEntry foundByTask = null)
         {
             AssetDTO dto = TagParser.Parse(assetText);
 
             Asset asset = AssetParser.Parse(dto.Asset);
-
-            string foundBy = definition?.ShortName ?? "N/A";
 
             // The desired traversal of the following reference sub-tree is (B-C-A-B-C)
             // the current solution results in the traversal (B-C-A-B-C-A) which is suboptimal
@@ -52,11 +50,11 @@ namespace pwnctl.app.Assets
             //   / \
             //  B   C
             // TODO: optimize & decuple the reference graph traversal, from the asset processing
-            await ProcessAssetAsync(asset, dto.Tags, foundBy);
-            await ProcessAssetAsync(asset, dto.Tags, foundBy);
+            await ProcessAssetAsync(asset, dto.Tags, foundByTask);
+            await ProcessAssetAsync(asset, dto.Tags, foundByTask);
         }
 
-        private async Task ProcessAssetAsync(Asset asset, Dictionary<string, object> tags, string foundBy, List<Asset> refChain = null)
+        private async Task ProcessAssetAsync(Asset asset, Dictionary<string, object> tags, TaskEntry foundByTask, List<Asset> refChain = null)
         {
             refChain = refChain == null
                     ? new List<Asset>()
@@ -71,13 +69,13 @@ namespace pwnctl.app.Assets
             // starting from the botton of the ref tree.
             foreach (var refAsset in GetReferencedAssets(asset))
             {
-                await ProcessAssetAsync(refAsset, null, foundBy, refChain);
+                await ProcessAssetAsync(refAsset, null, foundByTask, refChain);
             }
 
             var record = await _assetRepository.FindRecordAsync(asset);
             if (record == null)
             {
-                record = new AssetRecord(asset, foundBy);
+                record = new AssetRecord(asset, foundByTask);
             }
 
             record = await _assetRepository.MergeCurrentRecordWithDBRecord(record, asset);

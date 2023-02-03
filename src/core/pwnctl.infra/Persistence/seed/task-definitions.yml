@@ -133,7 +133,7 @@
 - ShortName: cname_takeover_check
   CommandTemplate: cloud_misconfig_scan.sh {{Value}}
   Subject: DomainNameRecord
-  Filter: DomainNameRecord.Type == DomainNameRecord.CNAME
+  Filter: DomainNameRecord.Type == pwnctl.domain.Enums.DnsRecordType.CNAME
 
 - ShortName: second_order_takeover
   CommandTemplate: cloud_misconfig_scan.sh {{Url}}

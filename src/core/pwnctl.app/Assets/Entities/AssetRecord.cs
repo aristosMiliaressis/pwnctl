@@ -13,7 +13,8 @@ public sealed class AssetRecord : Entity<string>
     public Asset Asset =>(Asset)typeof(AssetRecord).GetProperty(SubjectClass.Class).GetValue(this);
     
     public DateTime FoundAt { get; set; }
-    public string FoundBy { get; set; }
+    public TaskEntry FoundByTask { get; set; }
+    public int? FoundByTaskId { get; set; }
     public bool InScope { get; set; }
 
     public List<Tag> Tags { get; private init; } = new List<Tag>();
@@ -56,10 +57,10 @@ public sealed class AssetRecord : Entity<string>
         typeof(AssetRecord).GetProperty(SubjectClass.Class).SetValue(this, asset);
     }
 
-    public AssetRecord(Asset asset, string foundBy)
+    public AssetRecord(Asset asset, TaskEntry foundBy)
         : this(asset)
     {
-        FoundBy = foundBy;
+        FoundByTaskId = foundBy?.Id;
     }
 
     public void SetOwningProgram(Program program)

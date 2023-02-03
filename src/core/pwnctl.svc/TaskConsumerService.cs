@@ -48,20 +48,27 @@ namespace pwnctl.svc
                                     .JoinedTaskRecordQueryable()
                                     .FirstOrDefaultAsync(r => r.Id == taskDTO.TaskId);
 
+                var cts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
+                cts.CancelAfter(TimeSpan.FromHours(2));
+
+                var timer = new System.Timers.Timer(1000 * (AwsConstants.QueueVisibilityTimeoutInSec - 60));
+                timer.Elapsed += async (_, _) =>
+                    await _queueService.ChangeMessageVisibilityAsync(taskDTO, AwsConstants.QueueVisibilityTimeoutInSec);
+                timer.Start();
+
                 try
                 {
-                    var timer = new System.Timers.Timer(1000 * (AwsConstants.QueueVisibilityTimeoutInSec - 60));
-                    timer.Elapsed += async (_, _) => 
-                        await _queueService.ChangeMessageVisibilityAsync(taskDTO, AwsConstants.QueueVisibilityTimeoutInSec);
-                    timer.Start();
-
-                    await ExecuteTaskAsync(taskEntry, stoppingToken);
+                    await ExecuteTaskAsync(taskEntry, cts.Token);
                 }
                 catch (Exception ex)
                 {
                     PwnInfraContext.Logger.Exception(ex);
                     await _queueService.ChangeMessageVisibilityAsync(taskDTO, 0);
                     continue;
+                }
+                finally
+                {
+                    timer.Dispose();
                 }
 
                 await _queueService.DequeueAsync(taskDTO);
@@ -80,7 +87,7 @@ namespace pwnctl.svc
 
             foreach (var line in output.Split("\n").Where(a => !string.IsNullOrEmpty(a)))
             {
-                await _processor.TryProcessAsync(line, task.Definition);
+                await _processor.TryProcessAsync(line, task);
 
                 var pendingTasks = await _context.JoinedTaskRecordQueryable()
                             .Where(r => r.State == TaskState.PENDING)

@@ -1351,7 +1351,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "5268d52183d146bdaf3b6c3742d3f673bf879295da215e251b7311c75c854975.zip"
+                      "s3Key": "bfbbef91d20701cca27e0ef940fc685ddea89383e3375cd73971ebf2d81c2b3d.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -1402,7 +1402,7 @@
                     "handler": "pwnctl.api",
                     "memorySize": 3072,
                     "runtime": "dotnet6",
-                    "timeout": 60,
+                    "timeout": 120,
                     "vpcConfig": {
                       "subnetIds": [
                         {

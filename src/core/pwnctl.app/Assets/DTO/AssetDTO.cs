@@ -25,7 +25,7 @@ namespace pwnctl.app.Assets.DTO
                 Tags = record.Tags.ToDictionary(t => t.Name, t => (object)t.Value);
                 InScope = record.InScope.ToString();
                 FoundAt = record.FoundAt.ToString("yyyy-MM-ddTHH\\:mm\\:ss.ff");
-                FoundBy = record.FoundBy;
+                FoundBy = record?.FoundByTask?.Definition?.ShortName ?? "N/A";
 
                 var properties = record.Asset.GetType()
                                     .GetProperties(BindingFlags.Public

@@ -9,6 +9,8 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
     {
         public void Configure(EntityTypeBuilder<NetworkHost> builder)
         {
+            builder.ToTable("network_hosts");
+
             builder.Property(c => c.Id).HasValueGenerator<HashIdValueGenerator>();
 
             builder.HasKey(e => e.Id);

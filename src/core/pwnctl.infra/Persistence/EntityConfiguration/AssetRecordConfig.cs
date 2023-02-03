@@ -9,6 +9,8 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
     {
         public void Configure(EntityTypeBuilder<AssetRecord> builder)
         {
+            builder.ToTable("asset_records");
+
             builder.Property(r => r.Id).HasValueGenerator<HashIdValueGenerator>();
             
             builder.HasKey(r => r.Id);
@@ -24,6 +26,8 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
             builder.HasOne(r => r.HttpHost).WithMany().HasForeignKey(r => r.HttpHostId).IsRequired(false);
             builder.HasOne(r => r.HttpEndpoint).WithMany().HasForeignKey(r => r.HttpEndpointId).IsRequired(false);
             builder.HasOne(r => r.HttpParameter).WithMany().HasForeignKey(r => r.HttpParameterId).IsRequired(false);
+
+            builder.HasOne(r => r.FoundByTask).WithMany().HasForeignKey(r => r.FoundByTaskId).IsRequired(false);
 
             builder.HasMany(r => r.Tasks);
             builder.HasMany(r => r.Tags);

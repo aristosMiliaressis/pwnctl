@@ -5,6 +5,11 @@ then
     cp "/mnt/efs/amass.ini" /etc/amass/config.ini
 fi
 
+if test -f "/mnt/efs/.gau.toml"; 
+then
+    cp "/mnt/efs/.gau.toml" $HOME/.gau.toml
+fi
+
 if test -f "/mnt/efs/provider-config.yaml"; 
 then
     mkdir -p $HOME/.config/notify/
