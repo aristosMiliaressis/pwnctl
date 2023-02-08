@@ -36,6 +36,10 @@
   CommandTemplate: dig +short -x {{IP}}
   Subject: NetworkHost
 
+- ShortName: os_fingerprint
+  CommandTemplate: os-fingerprint.sh {{IP}}
+  Subject: NetworkHost
+
 - ShortName: tcp_scan
   CommandTemplate: tcp-scan.sh {{IP}}
   Subject: NetworkHost

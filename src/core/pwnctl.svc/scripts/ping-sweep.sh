@@ -1,10 +1,11 @@
 #!/bin/bash
 
-rand=`mktemp`
 cidr=$1
 
-nmap -sn $cidr -oG $rand >/dev/null
-
-cat $rand | grep 'Status: Up' | cut -f 2 -d ' '
-
-rm $rand
+sudo nmap -n -sn -PO -PE $cidr -vv \
+    | grep 'Host is up' -B 1 \
+    | tr '\n' ' ' \
+    | sed 's/Nmap scan report/\nNmap scan report/g' \
+    | cut -d ' ' -f 5,12 \
+    | grep . \
+    | jq -cnR '[inputs | split(" ") | {"Asset": .[0], "Tags":{"ttl": .[1]}}] | .[]'
