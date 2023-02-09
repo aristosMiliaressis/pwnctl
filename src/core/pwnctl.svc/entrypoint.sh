@@ -10,6 +10,11 @@ then
     cp "/mnt/efs/.gau.toml" $HOME/.gau.toml
 fi
 
+if test -f "/mnt/efs/whoisxml.conf"; 
+then
+    cp "/mnt/efs/whoisxml.conf" $HOME/.config/whoisxml.conf
+fi
+
 if test -f "/mnt/efs/provider-config.yaml"; 
 then
     mkdir -p $HOME/.config/notify/

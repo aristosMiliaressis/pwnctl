@@ -7,10 +7,8 @@ namespace pwnctl.infra.Configuration
     {
         public static AppConfig Create()
         {
-            var installPath = EnvironmentVariables.InstallPath ?? "/etc/pwnctl";
-
             IConfigurationBuilder builder = new ConfigurationBuilder()
-                                        .SetBasePath(Path.GetFullPath(installPath))
+                                        .SetBasePath(Path.GetFullPath(EnvironmentVariables.InstallPath))
                                         .AddIniFile("config.ini", optional: true, reloadOnChange: true)
                                         .AddEnvironmentVariables(prefix: "PWNCTL_");
          

@@ -9,3 +9,26 @@ TaskDefinitions:
     CommandTemplate: reverse-range-lookup.sh {{CIDR}}
     Subject: NetworkRange
 
+  - ShortName: asn_lookup
+    CommandTemplate: asn-lookup.sh {{IP}}
+    Subject: NetworkHost
+
+  - ShortName: reverse_dns_lookup
+    CommandTemplate: dig +short -x {{IP}}
+    Subject: NetworkHost
+
+  - ShortName: os_fingerprint
+    CommandTemplate: os-fingerprint.sh {{IP}}
+    Subject: NetworkHost
+
+  - ShortName: tcp_scan
+    CommandTemplate: tcp-scan.sh {{IP}}
+    Subject: NetworkHost
+
+  - ShortName: udp_scan
+    CommandTemplate: udp-scan.sh {{IP}}
+    Subject: NetworkHost
+
+  - ShortName: get_alt_names
+    CommandTemplate: get-alt-names.sh {{IP}}
+    Subject: NetworkHost

@@ -79,7 +79,7 @@ namespace pwnctl.infra.Persistence
 #endif
                 optionsBuilder = optionsBuilder.ReplaceService<StringValueGenerator, HashIdValueGenerator>();
 
-                if (PwnInfraContext.Config.IsTestRun)
+                if (EnvironmentVariables.IsTestRun)
                 {
                     optionsBuilder.UseSqlite($"Data Source={EnvironmentVariables.InstallPath}/pwnctl.db", 
                                             x => x.MigrationsHistoryTable("__EFMigrationHistory"));

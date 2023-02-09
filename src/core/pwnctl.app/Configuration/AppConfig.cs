@@ -2,8 +2,6 @@ namespace pwnctl.app.Configuration;
 
 public sealed class AppConfig
 {
-    public string InstallPath { get; set; }
-    public bool IsTestRun { get; set; }
     public DbSettings Db { get; set; } = new DbSettings();
     public TaskQueueSettings TaskQueue { get; set; } = new TaskQueueSettings();
     public LogSettings Logging { get; set; } = new LogSettings();

@@ -22,7 +22,7 @@ namespace pwnctl.infra.Persistence
         {
             PwnctlDbContext context = new();
 
-            if (PwnInfraContext.Config.IsTestRun)
+            if (EnvironmentVariables.IsTestRun)
             {
                 await context.Database.EnsureDeletedAsync();
             }
@@ -53,7 +53,7 @@ namespace pwnctl.infra.Persistence
             Matcher matcher = new();
             matcher.AddInclude("*.td.yml");
 
-            foreach (string taskFile in matcher.GetResultsInFullPath($"{PwnInfraContext.Config.InstallPath}/seed/"))
+            foreach (string taskFile in matcher.GetResultsInFullPath($"{EnvironmentVariables.InstallPath}/seed/"))
             {
                 if (!File.Exists(taskFile))
                 {
@@ -92,7 +92,7 @@ namespace pwnctl.infra.Persistence
             Matcher matcher = new();
             matcher.AddInclude("*.nr.yml");
 
-            foreach (string notificationFile in matcher.GetResultsInFullPath($"{PwnInfraContext.Config.InstallPath}/seed/"))
+            foreach (string notificationFile in matcher.GetResultsInFullPath($"{EnvironmentVariables.InstallPath}/seed/"))
             {
                 if (!File.Exists(notificationFile))
                 {
@@ -118,7 +118,7 @@ namespace pwnctl.infra.Persistence
             Matcher matcher = new();
             matcher.AddInclude("target-*.yml");
 
-            foreach (string file in matcher.GetResultsInFullPath($"{PwnInfraContext.Config.InstallPath}/seed/")) 
+            foreach (string file in matcher.GetResultsInFullPath($"{EnvironmentVariables.InstallPath}/seed/")) 
             {
                 var programText = File.ReadAllText(file);
                 var target = _deserializer.Deserialize<TargetFile>(programText);
