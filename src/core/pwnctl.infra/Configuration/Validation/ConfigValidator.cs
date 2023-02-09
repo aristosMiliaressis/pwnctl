@@ -37,11 +37,11 @@ public static class ConfigValidator
     {
         errorMessage = null;
 
-        List<TaskDefinition> taskDefinitions;
+        TaskDefinitionFile file;
         try
         {
             var taskText = File.ReadAllText(fileName);
-            taskDefinitions = _deserializer.Deserialize<List<TaskDefinition>>(taskText);
+            file = _deserializer.Deserialize<TaskDefinitionFile>(taskText);
         }
         catch (Exception ex)
         {
@@ -49,20 +49,32 @@ public static class ConfigValidator
             errorMessage = $"Deserialization of {fileName} failed";
             return false;
         }
-        
-        if (!taskDefinitions.Any())
+
+        if (!file.Profiles.Any())
+        {
+            errorMessage = $"At least one profile is required";
+            return false;
+        }
+
+        if (file.Profiles.Any(p => p == null || !_shortNameCharSet.Match(p).Success))
+        {
+            errorMessage = $"Illegal Character in profile";
+            return false;
+        }
+
+        if (!file.TaskDefinitions.Any())
         {
             errorMessage = $"At least one task definition is required";
             return false;
         }
 
-        if (taskDefinitions.Select(d => d.ShortName).Distinct().Count() != taskDefinitions.Count())
+        if (file.TaskDefinitions.Select(d => d.ShortName).Distinct().Count() != file.TaskDefinitions.Count())
         {
             errorMessage = "Duplicate ShortName";
             return false;
         }
 
-        foreach (var definition in taskDefinitions)
+        foreach (var definition in file.TaskDefinitions)
         {
             if (string.IsNullOrEmpty(definition.ShortName))
             {

@@ -1,5 +1,5 @@
 Name: EXAMPLE BB TARGET
-Platform: HackerOne
+TaskProfile: "all"
 Policy:
     Whitelist: ffuf_common
     Blacklist: subfinder

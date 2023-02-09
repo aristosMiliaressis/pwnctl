@@ -15,12 +15,10 @@ public static class AssetProcessorFactory
 
         var assetRepository = new AssetDbRepository(context);
 
-        var definitions = context.TaskDefinitions.ToList();
-
         var rules = context.NotificationRules.AsNoTracking().ToList();
         
         var programs = context.ListPrograms();
         
-        return new AssetProcessor(assetRepository, programs, definitions, rules);
+        return new AssetProcessor(assetRepository, rules, programs);
     }
 }

@@ -11,15 +11,12 @@ namespace pwnctl.app.Assets
     public sealed class AssetProcessor
     {
         private readonly AssetRepository _assetRepository;
-        private readonly List<TaskDefinition> _taskDefinitions;
         private readonly List<NotificationRule> _notificationRules;
         private readonly List<Program> _programs;
 
-        public AssetProcessor(AssetRepository assetRepository, List<Program> programs,
-                            List<TaskDefinition> definitions, List<NotificationRule> rules)
+        public AssetProcessor(AssetRepository assetRepository, List<NotificationRule> rules, List<Program> programs)
         {
             _assetRepository = assetRepository;
-            _taskDefinitions = definitions;
             _notificationRules = rules;
             _programs = programs;
         }
@@ -89,11 +86,10 @@ namespace pwnctl.app.Assets
                 PwnInfraContext.NotificationSender.Send(record.Asset, rule);
             }
 
-            var matchingTasks = _taskDefinitions.Where(def => ((def.MatchOutOfScope && def.Matches(record)) 
-                                                            || (record.InScope && record.OwningProgram.Policy.Allows(def)) 
-                                                            && def.Matches(record)));
+            var allowedTasks = record?.Program?.GetAllowedTasks() ?? new List<TaskDefinition>();
+            allowedTasks.AddRange(_programs.First().TaskProfile.TaskDefinitions.Where(d => d.MatchOutOfScope));
 
-            foreach (var definition in matchingTasks)
+            foreach (var definition in allowedTasks.Where(def => def.Matches(record)))
             {
                 // only queue tasks once per definition/asset pair
                 var task = _assetRepository.FindTaskEntry(record.Asset, definition);

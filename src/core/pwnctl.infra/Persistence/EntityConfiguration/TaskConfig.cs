@@ -29,4 +29,17 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
             builder.OwnsOne(d => d.SubjectClass).Property(s => s.Class).IsRequired();
         }
     }
+
+    public sealed class TaskProfileConfig : IEntityTypeConfiguration<TaskProfile>
+    {
+        public void Configure(EntityTypeBuilder<TaskProfile> builder)
+        {
+            builder.HasKey(d => d.Id);
+
+            builder.HasMany(p => p.TaskDefinitions)
+              .WithOne(d => d.Profile)
+              .HasForeignKey(d => d.ProfileId)
+              .OnDelete(DeleteBehavior.Cascade);
+        }
+    }
 }

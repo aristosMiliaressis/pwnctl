@@ -8,6 +8,7 @@ using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 using pwnctl.infra.Configuration.Validation.Exceptions;
 using pwnctl.infra.Configuration.Validation;
+using pwnctl.infra.Configuration;
 
 namespace pwnctl.infra.Persistence
 {
@@ -62,9 +63,22 @@ namespace pwnctl.infra.Persistence
             }
 
             var taskText = File.ReadAllText(taskFile);
-            var taskDefinitions = _deserializer.Deserialize<List<TaskDefinition>>(taskText);
+            var file = _deserializer.Deserialize<TaskDefinitionFile>(taskText);
 
-            context.TaskDefinitions.AddRange(taskDefinitions);
+            foreach (var profileName in file.Profiles)
+            {
+                var profile = context.TaskProfiles.FirstOrDefault(p => p.ShortName == profileName);
+                if (profile == null)
+                {
+                    profile = new TaskProfile(profileName, file.TaskDefinitions);
+                    context.Add(profile);
+                    continue;
+                }
+
+                profile.TaskDefinitions.AddRange(file.TaskDefinitions);
+                context.Update(profile);
+            }
+
             await context.SaveChangesAsync();
         }
 
@@ -94,13 +108,17 @@ namespace pwnctl.infra.Persistence
             Matcher matcher = new();
             matcher.AddInclude("target-*.yml");
 
-            foreach (string file in matcher.GetResultsInFullPath($"{PwnInfraContext.Config.InstallPath}/seed/"))
+            foreach (string file in matcher.GetResultsInFullPath($"{PwnInfraContext.Config.InstallPath}/seed/")) 
             {
                 var programText = File.ReadAllText(file);
-                var program = _deserializer.Deserialize<Program>(programText);
+                var target = _deserializer.Deserialize<TargetFile>(programText);
+                var profile = context.TaskProfiles.FirstOrDefault(p => p.ShortName == target.TaskProfile);
+                if (profile == null)
+                {
+                    throw new ConfigValidationException(file, $"Task Profile {target.TaskProfile} not found");
+                }
 
-                context.ScopeDefinitions.AddRange(program.Scope);
-                context.OperationalPolicies.Add(program.Policy);
+                var program = new Program(target.Name, profile, target.Policy, target.Scope);
                 context.Programs.Add(program);
                 await context.SaveChangesAsync();
             }

@@ -14,6 +14,8 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
             builder.HasKey(r => r.Id);
 
             builder.OwnsOne(r => r.SubjectClass).Property(s => s.Class).IsRequired();
+            
+            builder.HasOne(r => r.Program).WithMany(p => p.Assets).HasForeignKey(r => r.ProgramId).IsRequired(false);
 
             builder.HasOne(r => r.DomainName).WithMany().HasForeignKey(r => r.DomainNameId).IsRequired(false);
             builder.HasOne(r => r.NetworkHost).WithMany().HasForeignKey(r => r.NetworkHostId).IsRequired(false);

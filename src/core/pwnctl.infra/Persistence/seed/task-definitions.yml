@@ -1,146 +1,143 @@
-- ShortName: ping_sweep
-  CommandTemplate: ping-sweep.sh {{CIDR}}
-  Subject: NetworkRange
+Profiles: [ "all" ]
 
-- ShortName: reverse_range_lookup
-  CommandTemplate: reverse-range-lookup.sh {{CIDR}}
-  Subject: NetworkRange
+TaskDefinitions:
+  - ShortName: ping_sweep
+    CommandTemplate: ping-sweep.sh {{CIDR}}
+    Subject: NetworkRange
 
-- ShortName: domain_resolution
-  CommandTemplate: resolve.sh {{Name}}
-  Subject: DomainName
+  - ShortName: reverse_range_lookup
+    CommandTemplate: reverse-range-lookup.sh {{CIDR}}
+    Subject: NetworkRange
 
-- ShortName: httpx
-  CommandTemplate: echo {{Name}} | httpx -silent
-  Subject: DomainName
+  - ShortName: asn_lookup
+    CommandTemplate: asn-lookup.sh {{IP}}
+    Subject: NetworkHost
 
-- ShortName: zone_trasfer
-  CommandTemplate: zone-transfer.sh {{Name}}
-  Subject: DomainName
+  - ShortName: reverse_dns_lookup
+    CommandTemplate: dig +short -x {{IP}}
+    Subject: NetworkHost
 
-- ShortName: sub_enum
-  CommandTemplate: sub-enum.sh {{Name}}
-  Filter: DomainName.ZoneDepth <= 2
-  Subject: DomainName
+  - ShortName: os_fingerprint
+    CommandTemplate: os-fingerprint.sh {{IP}}
+    Subject: NetworkHost
 
-- ShortName: tld_brute
-  CommandTemplate: tld-brute.sh {{Name}}
-  Subject: DomainName
-  Filter: DomainName.ZoneDepth == 1
+  - ShortName: tcp_scan
+    CommandTemplate: tcp-scan.sh {{IP}}
+    Subject: NetworkHost
 
-- ShortName: asn_lookup
-  CommandTemplate: asn-lookup.sh {{IP}}
-  Subject: NetworkHost
+  - ShortName: udp_scan
+    CommandTemplate: udp-scan.sh {{IP}}
+    Subject: NetworkHost
 
-- ShortName: reverse_lookup
-  CommandTemplate: dig +short -x {{IP}}
-  Subject: NetworkHost
+  - ShortName: get_alt_names
+    CommandTemplate: get-alt-names.sh {{IP}}
+    Subject: NetworkHost
 
-- ShortName: os_fingerprint
-  CommandTemplate: os-fingerprint.sh {{IP}}
-  Subject: NetworkHost
+  - ShortName: domain_resolution
+    CommandTemplate: resolve.sh {{Name}}
+    Subject: DomainName
 
-- ShortName: tcp_scan
-  CommandTemplate: tcp-scan.sh {{IP}}
-  Subject: NetworkHost
+  - ShortName: httpx
+    CommandTemplate: echo {{Name}} | httpx -silent
+    Subject: DomainName
 
-- ShortName: udp_scan
-  CommandTemplate: udp-scan.sh {{IP}}
-  Subject: NetworkHost
+  - ShortName: zone_trasfer
+    CommandTemplate: zone-transfer.sh {{Name}}
+    Subject: DomainName
 
-- ShortName: get_alt_names
-  CommandTemplate: get-alt-names.sh {{IP}}
-  Subject: NetworkHost
+  - ShortName: sub_enum
+    CommandTemplate: sub-enum.sh {{Name}}
+    Filter: DomainName.ZoneDepth <= 2
+    Subject: DomainName
 
-- ShortName: get_all_urls
-  CommandTemplate: get-all-urls.sh {{Url}}
-  Subject: HttpEndpoint
-  Filter: HttpEndpoint.Path == "/"
+  - ShortName: tld_brute
+    CommandTemplate: tld-brute.sh {{Name}}
+    Subject: DomainName
+    Filter: DomainName.ZoneDepth == 1
 
-- ShortName: dir_brute_common
-  CommandTemplate: dir-brute.sh {{Url}} /opt/wordlists/common.txt
-  Filter: HttpEndpoint.Path == "/"
-  Subject: HttpEndpoint
+  - ShortName: get_all_urls
+    CommandTemplate: get-all-urls.sh {{Url}}
+    Subject: HttpEndpoint
+    Filter: HttpEndpoint.Path == "/"
 
-- ShortName: file_brute_config
-  CommandTemplate: file-brute.sh {{Url}} /opt/wordlists/config.txt
-  Filter: HttpEndpoint.Path == "/"
-  Subject: HttpEndpoint
+  - ShortName: dir_brute_common
+    CommandTemplate: dir-brute.sh {{Url}} /opt/wordlists/common.txt
+    Filter: HttpEndpoint.Path == "/"
+    Subject: HttpEndpoint
 
-- ShortName: wafw00f
-  CommandTemplate: wafw00f.sh {{Url}}
-  Filter: HttpEndpoint.Path == "/"
-  Subject: HttpEndpoint
+  - ShortName: file_brute_config
+    CommandTemplate: file-brute.sh {{Url}} /opt/wordlists/config.txt
+    Filter: HttpEndpoint.Path == "/"
+    Subject: HttpEndpoint
 
-- ShortName: grab_url_metadata
-  CommandTemplate: grab-url-metadata.sh {{Url}}
-  Filter: HttpEndpoint.Path == "/"
-  Subject: HttpEndpoint
+  - ShortName: wafw00f
+    CommandTemplate: wafw00f.sh {{Url}}
+    Filter: HttpEndpoint.Path == "/"
+    Subject: HttpEndpoint
 
-- ShortName: webanalyze
-  CommandTemplate: webanalyze.sh {{Url}}
-  Filter: HttpEndpoint.Path == "/"
-  Subject: HttpEndpoint
+  - ShortName: grab_url_metadata
+    CommandTemplate: grab-url-metadata.sh {{Url}}
+    Filter: HttpEndpoint.Path == "/"
+    Subject: HttpEndpoint
 
-- ShortName: screenshot
-  CommandTemplate: screenshot.sh {{Url}}
-  Filter: HttpEndpoint.Path == "/"
-  Subject: HttpEndpoint
+  - ShortName: webanalyze
+    CommandTemplate: webanalyze.sh {{Url}}
+    Filter: HttpEndpoint.Path == "/"
+    Subject: HttpEndpoint
 
-- ShortName: webcrawl
-  CommandTemplate: webcrawl.sh '{{Url}}'
-  Filter: HttpEndpoint.Path == "/" || Tags["Content-Type"].Contains("/html") || Tags["Content-Type"].Contains("/xhtml")
-  Subject: HttpEndpoint
+  - ShortName: screenshot
+    CommandTemplate: screenshot.sh {{Url}}
+    Filter: HttpEndpoint.Path == "/"
+    Subject: HttpEndpoint
 
-- ShortName: link_finder
-  CommandTemplate: link-finder.sh {{Url}}
-  Filter: HttpEndpoint.Extension == "js" || HttpEndpoint.Extension == "jsm" || Tags["Content-Type"].Contains("/javascript")
-  Subject: HttpEndpoint
+  - ShortName: webcrawl
+    CommandTemplate: webcrawl.sh '{{Url}}'
+    Filter: HttpEndpoint.Path == "/" || Tags["Content-Type"].Contains("/html") || Tags["Content-Type"].Contains("/xhtml")
+    Subject: HttpEndpoint
 
-- ShortName: cors_check
-  CommandTemplate: check-cors.sh {{Url}}
-  Subject: HttpEndpoint
-  Filter: HttpEndpoint.Path == "/" || Tags["Content-Type"].Contains("/json") || Tags["Content-Type"].Contains("/xml")
+  - ShortName: link_finder
+    CommandTemplate: link-finder.sh {{Url}}
+    Filter: HttpEndpoint.Extension == "js" || HttpEndpoint.Extension == "jsm" || Tags["Content-Type"].Contains("/javascript")
+    Subject: HttpEndpoint
 
-- ShortName: shortname_scanning
-  CommandTemplate: shortname-check.sh {{Url}}
-  Subject: HttpEndpoint
-  Filter: Tags["Title"].Contains("Internet Information Services")|| Tags["Title"].Contains("IIS")||Tags["Server"].Contains("IIS")||Tags["Server"].Contains("Microsoft-HTTPAPI")
+  - ShortName: cors_check
+    CommandTemplate: check-cors.sh {{Url}}
+    Subject: HttpEndpoint
+    Filter: HttpEndpoint.Path == "/" || Tags["Content-Type"].Contains("/json") || Tags["Content-Type"].Contains("/xml")
 
-- ShortName: shortname_scanning_srv
-  CommandTemplate: shortname-check.sh {{Address}}
-  Subject: NetworkSocket
-  Filter: Tags["Version"].Contains("IIS") || Tags["Version"].Contains("Microsoft HTTPAPI")
+  - ShortName: shortname_scanning
+    CommandTemplate: shortname-check.sh {{Url}}
+    Subject: HttpEndpoint
+    Filter: Tags["Title"].Contains("Internet Information Services")|| Tags["Title"].Contains("IIS")||Tags["Server"].Contains("IIS")||Tags["Server"].Contains("Microsoft-HTTPAPI")
 
-- ShortName: zone_walking
-  CommandTemplate: ldns-walk {{Key}} | tail -n +2 | cut -d ' ' -f 1
-  Filter: DomainNameRecord.Type == pwnctl.domain.Enums.DnsRecordType.NSEC
-  Subject: DomainNameRecord
+  - ShortName: shortname_scanning_srv
+    CommandTemplate: shortname-check.sh {{Address}}
+    Subject: NetworkSocket
+    Filter: Tags["Version"].Contains("IIS") || Tags["Version"].Contains("Microsoft HTTPAPI")
 
-- ShortName: cloud_enum
-  CommandTemplate: cloud-enum.sh {{Word}}
-  Subject: DomainName
-  Filter: DomainName.ZoneDepth == 1
+  - ShortName: zone_walking
+    CommandTemplate: ldns-walk {{Key}} | tail -n +2 | cut -d ' ' -f 1
+    Filter: DomainNameRecord.Type == pwnctl.domain.Enums.DnsRecordType.NSEC
+    Subject: DomainNameRecord
 
-- ShortName: s3_scan
-  CommandTemplate: s3-scan.sh {{Name}}
-  Subject: DomainName
-  Filter: DomainName.Name.Contains("amazonaws.com") && DomainName.Name.Contains("s3")
-  MatchOutOfScope: true
+  - ShortName: cloud_enum
+    CommandTemplate: cloud-enum.sh {{Word}}
+    Subject: DomainName
+    Filter: DomainName.ZoneDepth == 1
 
-- ShortName: s3_scan_url
-  CommandTemplate: s3-scan.sh {{Url}}
-  Subject: HttpEndpoint
-  Filter: HttpEndpoint.Url.Contains("amazonaws.com") && HttpEndpoint.Url.Contains("s3")
-  MatchOutOfScope: true
+  - ShortName: s3_scan
+    CommandTemplate: s3-scan.sh {{Name}}
+    Subject: DomainName
+    Filter: DomainName.Name.Contains("amazonaws.com") && DomainName.Name.Contains("s3")
+    MatchOutOfScope: true
 
-- ShortName: cname_takeover_check
-  CommandTemplate: cloud_misconfig_scan.sh {{Value}}
-  Subject: DomainNameRecord
-  Filter: DomainNameRecord.Type == pwnctl.domain.Enums.DnsRecordType.CNAME
+  - ShortName: cname_takeover_check
+    CommandTemplate: cloud_misconfig_scan.sh {{Value}}
+    Subject: DomainNameRecord
+    Filter: DomainNameRecord.Type == pwnctl.domain.Enums.DnsRecordType.CNAME
 
-- ShortName: second_order_takeover
-  CommandTemplate: cloud_misconfig_scan.sh {{Url}}
-  Subject: HttpEndpoint
-  Filter: CloudServiceRepository.Instance.IsCloudService(HttpEndpoint)
-  MatchOutOfScope: true
+  - ShortName: second_order_takeover
+    CommandTemplate: cloud_misconfig_scan.sh {{Url}}
+    Subject: HttpEndpoint
+    Filter: CloudServiceRepository.Instance.IsCloudService(HttpEndpoint)
+    MatchOutOfScope: true

@@ -46,14 +46,15 @@ namespace pwnctl.infra.Persistence
         public DbSet<HttpEndpoint> HttpEndpoints { get; set; }
         public DbSet<HttpParameter> HttpParameters { get; set; }
         public DbSet<Email> Emails { get; set; }
-        public DbSet<TaskDefinition> TaskDefinitions { get; set; }
         public DbSet<NotificationRule> NotificationRules { get; set; }
         public DbSet<ScopeDefinition> ScopeDefinitions { get; set; }
         public DbSet<OperationalPolicy> OperationalPolicies { get; set; }
         public DbSet<Program> Programs { get; set; }
+        public DbSet<TaskEntry> TaskEntries { get; set; }
+        public DbSet<TaskDefinition> TaskDefinitions { get; set; }
+        public DbSet<TaskProfile> TaskProfiles { get; set; }
         public DbSet<AssetRecord> AssetRecords { get; set; }
         public DbSet<Tag> Tags { get; set; }
-        public DbSet<TaskEntry> TaskEntries { get; set; }
 
         public override int SaveChanges()
         {

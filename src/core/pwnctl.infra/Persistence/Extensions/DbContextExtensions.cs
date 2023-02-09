@@ -15,6 +15,8 @@ namespace pwnctl.infra.Persistence.Extensions
         {
             return context.Programs
                             .Include(p => p.Policy)
+                            .Include(p => p.TaskProfile)
+                                .ThenInclude(p => p.TaskDefinitions)
                             .Include(p => p.Scope)
                             .ToList();
         }
@@ -22,6 +24,8 @@ namespace pwnctl.infra.Persistence.Extensions
         public static IQueryable<TaskEntry> JoinedTaskRecordQueryable(this PwnctlDbContext context)
         {
             return context.TaskEntries
+                            .Include(r => r.Record)
+                                .ThenInclude(r => r.Program)
                             .Include(r => r.Definition)
                             .Include(r => r.Record)
                                 .ThenInclude(r => r.NetworkHost)

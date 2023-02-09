@@ -17,9 +17,11 @@ public sealed class AssetRecord : Entity<string>
     public int? FoundByTaskId { get; set; }
     public bool InScope { get; set; }
 
+    public int? ProgramId { get; set; }
+    public Program Program { get; set; }
+
     public List<Tag> Tags { get; private init; } = new List<Tag>();
     public List<TaskEntry> Tasks { get; private init; } = new List<TaskEntry>();
-    public Program OwningProgram { get; private set; }
     public AssetClass SubjectClass { get; private set; }
 
     public NetworkHost NetworkHost { get; set; }
@@ -65,8 +67,8 @@ public sealed class AssetRecord : Entity<string>
 
     public void SetOwningProgram(Program program)
     {
-        OwningProgram = program;
-        InScope = OwningProgram != null;
+        Program = program;
+        InScope = Program != null;
     }
 
     public void UpdateTags(Dictionary<string, object> tags)

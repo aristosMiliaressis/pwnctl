@@ -1,62 +1,64 @@
-- ShortName: nmap_basic
-  CommandTemplate: nmap -Pn {{CIDR}}
-  IsActive: true
-  Aggressiveness: 5
-  Subject: NetworkRange
-  
-- ShortName: ffuf_common
-  CommandTemplate: "ffuf -H 'User-Agent: Mozilla/5.0' -H 'X-Forwarded-For: 127.0.0.1' -w /opt/SecLists/Discovery/Web-Content/common.txt {{Url}}/FUZZ"
-  IsActive: true
-  Aggressiveness: 8
-  Subject: HttpEndpoint
-  Filter: HttpEndpoint.Path == "/"
-  
-- ShortName: shortname_scanner
-  CommandTemplate: shortname_scanner
-  IsActive: true
-  Aggressiveness: 5
-  Subject: HttpEndpoint
-  Filter: HttpEndpoint.Path == "/" && Tags["Protocol"] == "IIS"
+Profiles: [ "all" ]
 
-- ShortName: subfinder
-  CommandTemplate: subfinder {{Name}}
-  IsActive: false
-  Aggressiveness: 0
-  Subject: DomainName
+TaskDefinitions:
+  - ShortName: nmap_basic
+    CommandTemplate: nmap -Pn {{CIDR}}
+    IsActive: true
+    Aggressiveness: 5
+    Subject: NetworkRange
+    
+  - ShortName: ffuf_common
+    CommandTemplate: "ffuf -H 'User-Agent: Mozilla/5.0' -H 'X-Forwarded-For: 127.0.0.1' -w /opt/SecLists/Discovery/Web-Content/common.txt {{Url}}/FUZZ"
+    IsActive: true
+    Aggressiveness: 8
+    Subject: HttpEndpoint
+    Filter: HttpEndpoint.Path == "/"
+    
+  - ShortName: shortname_scanner
+    CommandTemplate: shortname_scanner
+    IsActive: true
+    Aggressiveness: 5
+    Subject: HttpEndpoint
+    Filter: HttpEndpoint.Path == "/" && Tags["Protocol"] == "IIS"
 
-- ShortName: domain_resolution
-  CommandTemplate: dig +short {{Name}} | awk '{print "{{Name}} IN A " $1}'
-  IsActive: false
-  Aggressiveness: 1
-  Subject: DomainName
+  - ShortName: subfinder
+    CommandTemplate: subfinder {{Name}}
+    IsActive: false
+    Aggressiveness: 0
+    Subject: DomainName
 
-- ShortName: hakrawler
-  CommandTemplate: "hakrawler -plain -h 'User-Agent: Mozilla/5.0' {{Url}}"
-  IsActive: true
-  Aggressiveness: 3
-  Subject: HttpEndpoint
-  Filter: Tags["Content-Type"].Contains("/html")
+  - ShortName: domain_resolution
+    CommandTemplate: dig +short {{Name}} | awk '{print "{{Name}} IN A " $1}'
+    IsActive: false
+    Aggressiveness: 1
+    Subject: DomainName
 
-- ShortName: sqlmap
-  CommandTemplate: sqlmap {{Url}}
-  IsActive: true
-  Aggressiveness: 1000
-  Subject: HttpEndpoint
+  - ShortName: hakrawler
+    CommandTemplate: "hakrawler -plain -h 'User-Agent: Mozilla/5.0' {{Url}}"
+    IsActive: true
+    Aggressiveness: 3
+    Subject: HttpEndpoint
+    Filter: Tags["Content-Type"].Contains("/html")
 
-- ShortName: cloud_enum
-  CommandTemplate: cloud-enum.sh {{Word}}
-  IsActive: true
-  Aggressiveness: 5
-  Subject: DomainName
+  - ShortName: sqlmap
+    CommandTemplate: sqlmap {{Url}}
+    IsActive: true
+    Aggressiveness: 1000
+    Subject: HttpEndpoint
 
-- ShortName: cname_takeover_check
-  CommandTemplate: nuclei -t /opt/nuclei-templates/cname_takeovers
-  Subject: DomainNameRecord
-  Filter: DomainNameRecord.Type == DnsRecordType.CNAME
+  - ShortName: cloud_enum
+    CommandTemplate: cloud-enum.sh {{Word}}
+    IsActive: true
+    Aggressiveness: 5
+    Subject: DomainName
 
-- ShortName: second_order_takeover
-  CommandTemplate: nuclei -t /opt/nuclei-templates/cname_takeovers
-  Subject: HttpEndpoint
-  Filter: CloudServiceRepository.Instance.IsCloudService(HttpEndpoint)
-  MatchOutOfScope: true
+  - ShortName: cname_takeover_check
+    CommandTemplate: nuclei -t /opt/nuclei-templates/cname_takeovers
+    Subject: DomainNameRecord
+    Filter: DomainNameRecord.Type == DnsRecordType.CNAME
 
+  - ShortName: second_order_takeover
+    CommandTemplate: nuclei -t /opt/nuclei-templates/cname_takeovers
+    Subject: HttpEndpoint
+    Filter: CloudServiceRepository.Instance.IsCloudService(HttpEndpoint)
+    MatchOutOfScope: true

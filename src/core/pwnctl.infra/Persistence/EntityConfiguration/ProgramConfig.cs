@@ -19,6 +19,10 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
 
             builder.HasOne(p => p.Policy)
                 .WithOne();
+
+            builder.HasOne(p => p.TaskProfile)
+                .WithMany()
+                .HasForeignKey(p => p.TaskProfileId);
         }
     }
 
