@@ -1,0 +1,11 @@
+Profiles: [ "all" ]
+
+TaskDefinitions:
+  - ShortName: ping_sweep
+    CommandTemplate: ping-sweep.sh {{CIDR}}
+    Subject: NetworkRange
+
+  - ShortName: reverse_range_lookup
+    CommandTemplate: reverse-range-lookup.sh {{CIDR}}
+    Subject: NetworkRange
+

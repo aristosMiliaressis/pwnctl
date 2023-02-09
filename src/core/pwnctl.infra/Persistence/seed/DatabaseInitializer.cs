@@ -50,57 +50,67 @@ namespace pwnctl.infra.Persistence
 
         private static async Task SeedTaskDefinitionsAsync(PwnctlDbContext context)
         {
-            string taskFile = $"{PwnInfraContext.Config.InstallPath}/seed/task-definitions.yml";
-            if (!File.Exists(taskFile))
-            {
-                throw new ConfigValidationException(taskFile, "File not found");
-            }
+            Matcher matcher = new();
+            matcher.AddInclude("*.td.yml");
 
-            var passed = ConfigValidator.TryValidateTaskDefinitions(taskFile, out string errorMessage);
-            if (!passed)
+            foreach (string taskFile in matcher.GetResultsInFullPath($"{PwnInfraContext.Config.InstallPath}/seed/"))
             {
-                throw new ConfigValidationException(taskFile, errorMessage);
-            }
-
-            var taskText = File.ReadAllText(taskFile);
-            var file = _deserializer.Deserialize<TaskDefinitionFile>(taskText);
-
-            foreach (var profileName in file.Profiles)
-            {
-                var profile = context.TaskProfiles.FirstOrDefault(p => p.ShortName == profileName);
-                if (profile == null)
+                if (!File.Exists(taskFile))
                 {
-                    profile = new TaskProfile(profileName, file.TaskDefinitions);
-                    context.Add(profile);
-                    continue;
+                    throw new ConfigValidationException(taskFile, "File not found");
                 }
 
-                profile.TaskDefinitions.AddRange(file.TaskDefinitions);
-                context.Update(profile);
-            }
+                var passed = ConfigValidator.TryValidateTaskDefinitions(taskFile, out string errorMessage);
+                if (!passed)
+                {
+                    throw new ConfigValidationException(taskFile, errorMessage);
+                }
 
-            await context.SaveChangesAsync();
+                var taskText = File.ReadAllText(taskFile);
+                var file = _deserializer.Deserialize<TaskDefinitionFile>(taskText);
+
+                foreach (var profileName in file.Profiles)
+                {
+                    var profile = context.TaskProfiles.FirstOrDefault(p => p.ShortName == profileName);
+                    if (profile == null)
+                    {
+                        profile = new TaskProfile(profileName, file.TaskDefinitions);
+                        context.Add(profile);
+                        continue;
+                    }
+
+                    profile.TaskDefinitions.AddRange(file.TaskDefinitions);
+                    context.Update(profile);
+                }
+
+                await context.SaveChangesAsync();
+            }
         }
 
         private static async Task SeedNotificationRulesAsync(PwnctlDbContext context)
         {
-            string notificationFile = $"{PwnInfraContext.Config.InstallPath}/seed/notification-rules.yml";
-            if (!File.Exists(notificationFile))
+            Matcher matcher = new();
+            matcher.AddInclude("*.nr.yml");
+
+            foreach (string notificationFile in matcher.GetResultsInFullPath($"{PwnInfraContext.Config.InstallPath}/seed/"))
             {
-                throw new ConfigValidationException(notificationFile, "File not found");
+                if (!File.Exists(notificationFile))
+                {
+                    throw new ConfigValidationException(notificationFile, "File not found");
+                }
+
+                var passed = ConfigValidator.TryValidateNotificationRules(notificationFile, out string errorMessage);
+                if (!passed)
+                {
+                    throw new ConfigValidationException(notificationFile, errorMessage);
+                }
+
+                var taskText = File.ReadAllText(notificationFile);
+                var notificationRules = _deserializer.Deserialize<List<NotificationRule>>(taskText);
+
+                context.NotificationRules.AddRange(notificationRules);
+                await context.SaveChangesAsync();
             }
-
-            var passed = ConfigValidator.TryValidateNotificationRules(notificationFile, out string errorMessage);
-            if (!passed)
-            {
-                throw new ConfigValidationException(notificationFile, errorMessage);
-            }
-
-            var taskText = File.ReadAllText(notificationFile);
-            var notificationRules = _deserializer.Deserialize<List<NotificationRule>>(taskText);
-
-            context.NotificationRules.AddRange(notificationRules);
-            await context.SaveChangesAsync();
         }
     
         private static async Task SeedTargetsAsync(PwnctlDbContext context)

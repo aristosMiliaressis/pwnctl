@@ -1,0 +1,45 @@
+Profiles: [ "all" ]
+
+TaskDefinitions:
+  - ShortName: domain_resolution
+    CommandTemplate: resolve.sh {{Name}}
+    Subject: DomainName
+
+  - ShortName: httpx
+    CommandTemplate: echo {{Name}} | httpx -silent
+    Subject: DomainName
+
+  - ShortName: zone_trasfer
+    CommandTemplate: zone-transfer.sh {{Name}}
+    Subject: DomainName
+
+  - ShortName: sub_enum
+    CommandTemplate: sub-enum.sh {{Name}}
+    Filter: DomainName.ZoneDepth <= 2
+    Subject: DomainName
+
+  - ShortName: tld_brute
+    CommandTemplate: tld-brute.sh {{Name}}
+    Subject: DomainName
+    Filter: DomainName.ZoneDepth == 1
+
+  - ShortName: cloud_enum
+    CommandTemplate: cloud-enum.sh {{Word}}
+    Subject: DomainName
+    Filter: DomainName.ZoneDepth == 1
+
+  - ShortName: s3_scan
+    CommandTemplate: s3-scan.sh {{Name}}
+    Subject: DomainName
+    Filter: DomainName.Name.Contains("amazonaws.com") && DomainName.Name.Contains("s3")
+    MatchOutOfScope: true
+
+  - ShortName: zone_walking
+    CommandTemplate: ldns-walk {{Key}} | tail -n +2 | cut -d ' ' -f 1
+    Filter: DomainNameRecord.Type == pwnctl.domain.Enums.DnsRecordType.NSEC
+    Subject: DomainNameRecord
+
+  - ShortName: cname_takeover_check
+    CommandTemplate: cloud_misconfig_scan.sh {{Value}}
+    Subject: DomainNameRecord
+    Filter: DomainNameRecord.Type == pwnctl.domain.Enums.DnsRecordType.CNAME
