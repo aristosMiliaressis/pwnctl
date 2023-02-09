@@ -1,12 +1,6 @@
 Profiles: [ "all" ]
 
 TaskDefinitions:
-  - ShortName: nmap_basic
-    CommandTemplate: nmap -Pn {{CIDR}}
-    IsActive: true
-    Aggressiveness: 5
-    Subject: NetworkRange
-    
   - ShortName: ffuf_common
     CommandTemplate: "ffuf -H 'User-Agent: Mozilla/5.0' -H 'X-Forwarded-For: 127.0.0.1' -w /opt/SecLists/Discovery/Web-Content/common.txt {{Url}}/FUZZ"
     IsActive: true
@@ -21,18 +15,6 @@ TaskDefinitions:
     Subject: HttpEndpoint
     Filter: HttpEndpoint.Path == "/" && Tags["Protocol"] == "IIS"
 
-  - ShortName: subfinder
-    CommandTemplate: subfinder {{Name}}
-    IsActive: false
-    Aggressiveness: 0
-    Subject: DomainName
-
-  - ShortName: domain_resolution
-    CommandTemplate: dig +short {{Name}} | awk '{print "{{Name}} IN A " $1}'
-    IsActive: false
-    Aggressiveness: 1
-    Subject: DomainName
-
   - ShortName: hakrawler
     CommandTemplate: "hakrawler -plain -h 'User-Agent: Mozilla/5.0' {{Url}}"
     IsActive: true
@@ -45,17 +27,6 @@ TaskDefinitions:
     IsActive: true
     Aggressiveness: 1000
     Subject: HttpEndpoint
-
-  - ShortName: cloud_enum
-    CommandTemplate: cloud-enum.sh {{Word}}
-    IsActive: true
-    Aggressiveness: 5
-    Subject: DomainName
-
-  - ShortName: cname_takeover_check
-    CommandTemplate: nuclei -t /opt/nuclei-templates/cname_takeovers
-    Subject: DomainNameRecord
-    Filter: DomainNameRecord.Type == DnsRecordType.CNAME
 
   - ShortName: second_order_takeover
     CommandTemplate: nuclei -t /opt/nuclei-templates/cname_takeovers
