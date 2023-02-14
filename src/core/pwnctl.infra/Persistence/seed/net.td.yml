@@ -29,6 +29,6 @@ TaskDefinitions:
     CommandTemplate: udp-scan.sh {{IP}}
     Subject: NetworkHost
 
-  - ShortName: get_alt_names
-    CommandTemplate: get-alt-names.sh {{IP}}
-    Subject: NetworkHost
+  - ShortName: tls_probe
+    CommandTemplate: tls-probe.sh {{Address}}
+    Subject: NetworkSocket

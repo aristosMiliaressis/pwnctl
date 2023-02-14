@@ -28,11 +28,14 @@ TaskDefinitions:
     Subject: DomainName
     Filter: DomainName.ZoneDepth == 1
 
-  - ShortName: s3_scan
-    CommandTemplate: s3-scan.sh {{Name}}
+  - ShortName: email_finder
+    CommandTemplate: email-finder.sh {{Name}}
     Subject: DomainName
-    Filter: DomainName.Name.Contains("amazonaws.com") && DomainName.Name.Contains("s3")
-    MatchOutOfScope: true
+    Filter: DomainName.ZoneDepth == 1
+
+  - ShortName: reverse_whois
+    CommandTemplate: reverse-whois.sh {{Address}}
+    Subject: Email
 
   - ShortName: zone_walking
     CommandTemplate: ldns-walk {{Key}} | tail -n +2 | cut -d ' ' -f 1
@@ -43,3 +46,9 @@ TaskDefinitions:
     CommandTemplate: cloud_misconfig_scan.sh {{Value}}
     Subject: DomainNameRecord
     Filter: DomainNameRecord.Type == pwnctl.domain.Enums.DnsRecordType.CNAME
+
+  - ShortName: s3_scan
+    CommandTemplate: s3-scan.sh {{Name}}
+    Subject: DomainName
+    Filter: DomainName.Name.Contains("amazonaws.com") && DomainName.Name.Contains("s3")
+    MatchOutOfScope: true

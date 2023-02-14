@@ -6,7 +6,7 @@ then
     exit 1
 fi
 
-RECORD_TYPES=(ANY A AAAA NS CNAME MX TXT SRV HTTPS HINFO NSEC)
+RECORD_TYPES=(ANY A AAAA NS CNAME MX TXT SRV HINFO NSEC HTTPS SVCB)
 DNS_RESOLVERS_FILE='/opt/wordlists/dns/resolvers_top25.txt'
 
 domainfile=$1
