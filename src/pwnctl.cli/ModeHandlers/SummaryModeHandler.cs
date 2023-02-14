@@ -36,9 +36,9 @@ namespace pwnctl.cli.ModeHandlers
 
             Console.WriteLine();
             Console.WriteLine($"{"TASK".PadLeft(25)}  COUNT - TIME");
-            foreach(var def in model.TaskDetails.OrderBy(t => t.Duration))
+            foreach(var def in model.TaskDetails.OrderBy(t => t.Count))
             {
-                Console.WriteLine($"{def.ShortName.PadLeft(25)}: {def.Count.ToString().PadLeft(5)} - {def.Duration.ToString("hh\\:mm\\:ss")}");
+                Console.WriteLine($"{def.ShortName.PadLeft(30)}: Queued {def.Count.ToString().PadLeft(6)} times, ran for {def.Duration.ToString("hh\\:mm\\:ss")} and fount {def.Findings.ToString().PadLeft(6)} new assets.");
             }
         }
 

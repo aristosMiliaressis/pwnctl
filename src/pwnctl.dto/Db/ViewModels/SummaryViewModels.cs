@@ -33,5 +33,6 @@ public sealed class SummaryViewModel
         public string ShortName { get; set; }
         public int Count { get; set; }
         public TimeSpan Duration { get; set; }
+        public int Findings { get; set; }
     }
 }
