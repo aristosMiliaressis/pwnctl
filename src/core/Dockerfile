@@ -143,6 +143,7 @@ RUN go install github.com/sw33tLie/sns@latest
 RUN go install github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
 RUN go install github.com/gwen001/github-subdomains@latest
 RUN pip3 install s3scanner
+RUN pip3 install emailfinder
 
 RUN curl https://api.github.com/repos/michenriksen/aquatone/releases/latest 2>/dev/null \
     | grep browser_download_url \

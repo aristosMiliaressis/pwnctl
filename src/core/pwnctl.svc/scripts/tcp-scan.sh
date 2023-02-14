@@ -1,10 +1,11 @@
 #!/bin/bash
 
 ip=$1
-temp=`mktemp`;
+temp=`mktemp | sed 's/\/tmp\///g'`;
+touch $temp
 
-rustscan -r 1-65535 -a $ip -- -sSV --script-args http.useragent="Mozilla/9.1" -oG $temp >/dev/null;
-# naabu -silent -p 0-65535 -host $ip -nmap "nmap -sSVC --script-args http.useragent='$(uagen)' -oG $temp" >/dev/null
+sudo naabu -silent -Pn -ec -p 1-65535 -host $ip \
+ 	-nmap-cli "nmap -sSV -oG ./$temp" >/dev/null
 
 cat $temp \
 	| sed 's/Ports: /\n/g' \
