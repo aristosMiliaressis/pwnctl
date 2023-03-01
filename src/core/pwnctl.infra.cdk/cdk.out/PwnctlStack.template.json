@@ -546,7 +546,7 @@
     "QueueName": "pwnctl-dlq.fifo",
     "ReceiveMessageWaitTimeSeconds": 20,
     "SqsManagedSseEnabled": true,
-    "VisibilityTimeout": 3600
+    "VisibilityTimeout": 600
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete",
@@ -570,10 +570,10 @@
        "Arn"
       ]
      },
-     "maxReceiveCount": 4
+     "maxReceiveCount": 3
     },
     "SqsManagedSseEnabled": true,
-    "VisibilityTimeout": 3600
+    "VisibilityTimeout": 600
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete",
@@ -932,7 +932,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "bfbbef91d20701cca27e0ef940fc685ddea89383e3375cd73971ebf2d81c2b3d.zip"
+     "S3Key": "000a097106966bf61e6c5b2100d90f7727f4336ffea714ef9309daeb73d25f61.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -945,7 +945,7 @@
       "PWNCTL_Aws__InVpc": "true",
       "PWNCTL_TaskQueue__QueueName": "pwnctl.fifo",
       "PWNCTL_TaskQueue__DLQName": "pwnctl-dlq.fifo",
-      "PWNCTL_TaskQueue__VisibilityTimeout": "3600",
+      "PWNCTL_TaskQueue__VisibilityTimeout": "600",
       "PWNCTL_Logging__MinLevel": "Debug",
       "PWNCTL_Logging__FilePath": "/mnt/efs/",
       "PWNCTL_Logging__LogGroup": "/aws/lambda/PwnctlApi",
@@ -1014,7 +1014,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "PwnctlStack/PwnctlApi/Resource",
-    "aws:asset:path": "asset.bfbbef91d20701cca27e0ef940fc685ddea89383e3375cd73971ebf2d81c2b3d.0",
+    "aws:asset:path": "asset.000a097106966bf61e6c5b2100d90f7727f4336ffea714ef9309daeb73d25f61.0",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
@@ -1350,7 +1350,7 @@
        },
        {
         "Name": "PWNCTL_TaskQueue__VisibilityTimeout",
-        "Value": "3600"
+        "Value": "600"
        },
        {
         "Name": "PWNCTL_Logging__FilePath",
@@ -1396,7 +1396,7 @@
       "StopTimeout": 120
      }
     ],
-    "Cpu": "2048",
+    "Cpu": "1024",
     "ExecutionRoleArn": {
      "Fn::GetAtt": [
       "PwnctlRole3D3A5C97",
@@ -1404,7 +1404,7 @@
      ]
     },
     "Family": "PwnctlStackPwnctlDef78C9F95D",
-    "Memory": "4096",
+    "Memory": "8192",
     "NetworkMode": "awsvpc",
     "RequiresCompatibilities": [
      "FARGATE"
@@ -1602,56 +1602,14 @@
     },
     "StepScalingPolicyConfiguration": {
      "AdjustmentType": "ExactCapacity",
-     "Cooldown": 300,
-     "MetricAggregationType": "Average",
      "StepAdjustments": [
       {
-       "MetricIntervalLowerBound": -10,
+       "MetricIntervalLowerBound": -9999,
        "MetricIntervalUpperBound": 0,
-       "ScalingAdjustment": 9
+       "ScalingAdjustment": 20
       },
       {
-       "MetricIntervalLowerBound": -20,
-       "MetricIntervalUpperBound": -10,
-       "ScalingAdjustment": 8
-      },
-      {
-       "MetricIntervalLowerBound": -30,
-       "MetricIntervalUpperBound": -20,
-       "ScalingAdjustment": 7
-      },
-      {
-       "MetricIntervalLowerBound": -40,
-       "MetricIntervalUpperBound": -30,
-       "ScalingAdjustment": 6
-      },
-      {
-       "MetricIntervalLowerBound": -50,
-       "MetricIntervalUpperBound": -40,
-       "ScalingAdjustment": 5
-      },
-      {
-       "MetricIntervalLowerBound": -60,
-       "MetricIntervalUpperBound": -50,
-       "ScalingAdjustment": 4
-      },
-      {
-       "MetricIntervalLowerBound": -70,
-       "MetricIntervalUpperBound": -60,
-       "ScalingAdjustment": 3
-      },
-      {
-       "MetricIntervalLowerBound": -80,
-       "MetricIntervalUpperBound": -70,
-       "ScalingAdjustment": 2
-      },
-      {
-       "MetricIntervalLowerBound": -90,
-       "MetricIntervalUpperBound": -80,
-       "ScalingAdjustment": 1
-      },
-      {
-       "MetricIntervalUpperBound": -90,
+       "MetricIntervalUpperBound": -9999,
        "ScalingAdjustment": 0
       }
      ]
@@ -1672,131 +1630,62 @@
      }
     ],
     "AlarmDescription": "Lower threshold scaling alarm",
-    "Dimensions": [
+    "Metrics": [
      {
-      "Name": "QueueName",
-      "Value": {
-       "Fn::GetAtt": [
-        "pwnctlfifo1F05FF65",
-        "QueueName"
-       ]
-      }
+      "Expression": "visibleMessages + inFlightMessages",
+      "Id": "expr_1"
+     },
+     {
+      "Id": "visibleMessages",
+      "MetricStat": {
+       "Metric": {
+        "Dimensions": [
+         {
+          "Name": "QueueName",
+          "Value": {
+           "Fn::GetAtt": [
+            "pwnctlfifo1F05FF65",
+            "QueueName"
+           ]
+          }
+         }
+        ],
+        "MetricName": "ApproximateNumberOfMessagesVisible",
+        "Namespace": "AWS/SQS"
+       },
+       "Period": 300,
+       "Stat": "Maximum"
+      },
+      "ReturnData": false
+     },
+     {
+      "Id": "inFlightMessages",
+      "MetricStat": {
+       "Metric": {
+        "Dimensions": [
+         {
+          "Name": "QueueName",
+          "Value": {
+           "Fn::GetAtt": [
+            "pwnctlfifo1F05FF65",
+            "QueueName"
+           ]
+          }
+         }
+        ],
+        "MetricName": "ApproximateNumberOfMessagesNotVisible",
+        "Namespace": "AWS/SQS"
+       },
+       "Period": 300,
+       "Stat": "Maximum"
+      },
+      "ReturnData": false
      }
     ],
-    "MetricName": "ApproximateNumberOfMessagesVisible",
-    "Namespace": "AWS/SQS",
-    "Period": 300,
-    "Statistic": "Average",
-    "Threshold": 91
+    "Threshold": 10000
    },
    "Metadata": {
     "aws:cdk:path": "PwnctlStack/PwnctlSvc/TaskCount/Target/ScaleOutPolicy/LowerAlarm/Resource"
-   }
-  },
-  "PwnctlSvcTaskCountTargetScaleOutPolicyUpperPolicy83B7BC5C": {
-   "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
-   "Properties": {
-    "PolicyName": "PwnctlStackPwnctlSvcTaskCountTargetScaleOutPolicyUpperPolicy283EFEC6",
-    "PolicyType": "StepScaling",
-    "ScalingTargetId": {
-     "Ref": "PwnctlSvcTaskCountTarget569E5CCF"
-    },
-    "StepScalingPolicyConfiguration": {
-     "AdjustmentType": "ExactCapacity",
-     "Cooldown": 300,
-     "MetricAggregationType": "Average",
-     "StepAdjustments": [
-      {
-       "MetricIntervalLowerBound": 0,
-       "MetricIntervalUpperBound": 10,
-       "ScalingAdjustment": 10
-      },
-      {
-       "MetricIntervalLowerBound": 10,
-       "MetricIntervalUpperBound": 20,
-       "ScalingAdjustment": 11
-      },
-      {
-       "MetricIntervalLowerBound": 20,
-       "MetricIntervalUpperBound": 30,
-       "ScalingAdjustment": 12
-      },
-      {
-       "MetricIntervalLowerBound": 30,
-       "MetricIntervalUpperBound": 40,
-       "ScalingAdjustment": 13
-      },
-      {
-       "MetricIntervalLowerBound": 40,
-       "MetricIntervalUpperBound": 50,
-       "ScalingAdjustment": 14
-      },
-      {
-       "MetricIntervalLowerBound": 50,
-       "MetricIntervalUpperBound": 60,
-       "ScalingAdjustment": 15
-      },
-      {
-       "MetricIntervalLowerBound": 60,
-       "MetricIntervalUpperBound": 70,
-       "ScalingAdjustment": 16
-      },
-      {
-       "MetricIntervalLowerBound": 70,
-       "MetricIntervalUpperBound": 80,
-       "ScalingAdjustment": 17
-      },
-      {
-       "MetricIntervalLowerBound": 80,
-       "MetricIntervalUpperBound": 90,
-       "ScalingAdjustment": 18
-      },
-      {
-       "MetricIntervalLowerBound": 90,
-       "MetricIntervalUpperBound": 100,
-       "ScalingAdjustment": 19
-      },
-      {
-       "MetricIntervalLowerBound": 100,
-       "ScalingAdjustment": 20
-      }
-     ]
-    }
-   },
-   "Metadata": {
-    "aws:cdk:path": "PwnctlStack/PwnctlSvc/TaskCount/Target/ScaleOutPolicy/UpperPolicy/Resource"
-   }
-  },
-  "PwnctlSvcTaskCountTargetScaleOutPolicyUpperAlarm649CF721": {
-   "Type": "AWS::CloudWatch::Alarm",
-   "Properties": {
-    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "EvaluationPeriods": 1,
-    "AlarmActions": [
-     {
-      "Ref": "PwnctlSvcTaskCountTargetScaleOutPolicyUpperPolicy83B7BC5C"
-     }
-    ],
-    "AlarmDescription": "Upper threshold scaling alarm",
-    "Dimensions": [
-     {
-      "Name": "QueueName",
-      "Value": {
-       "Fn::GetAtt": [
-        "pwnctlfifo1F05FF65",
-        "QueueName"
-       ]
-      }
-     }
-    ],
-    "MetricName": "ApproximateNumberOfMessagesVisible",
-    "Namespace": "AWS/SQS",
-    "Period": 300,
-    "Statistic": "Average",
-    "Threshold": 91
-   },
-   "Metadata": {
-    "aws:cdk:path": "PwnctlStack/PwnctlSvc/TaskCount/Target/ScaleOutPolicy/UpperAlarm/Resource"
    }
   },
   "CDKMetadata": {

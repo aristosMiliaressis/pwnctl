@@ -22,26 +22,20 @@ namespace pwnctl.domain.Entities
             Version = address.AddressFamily;
         }
 
-        public static bool TryParse(string assetText, out Asset asset)
+        public static Asset TryParse(string assetText)
         {
-            asset = null;
-
             // if inside square brakets could be an ipv6
             assetText = assetText.StartsWith("[") && assetText.EndsWith("]")
                     ? assetText.Substring(1, assetText.Length-2)
                     : assetText;
 
             if (assetText.Contains("]"))
-                return false;
+                return null;
 
-            if (IPAddress.TryParse(assetText, out IPAddress address))
-            {
-                var host = new NetworkHost(address);
-                asset = host;
-                return true;
-            }
+            if (!IPAddress.TryParse(assetText, out IPAddress address))
+                return null;
 
-            return false;
+            return new NetworkHost(address);
         }
 
         public override string ToString()

@@ -21,7 +21,7 @@ namespace pwnctl.domain.Entities
             NetPrefixBits = netPrefix;
         }
 
-        public static bool TryParse(string assetText, out Asset asset)
+        public static Asset TryParse(string assetText)
         {
             try
             {
@@ -29,13 +29,11 @@ namespace pwnctl.domain.Entities
                 var netPrefixBits = ushort.Parse(assetText.Split("/")[1]);
                 var netRange = new NetworkRange(firstAddress, netPrefixBits);
 
-                asset = netRange;
-                return true;
+                return netRange;
             }
             catch
             {
-                asset = null;
-                return false;
+                return null;
             }
         }
 

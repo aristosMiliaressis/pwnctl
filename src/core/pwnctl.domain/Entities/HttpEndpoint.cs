@@ -45,13 +45,11 @@ namespace pwnctl.domain.Entities
             Url = $"{Scheme}://{hostSegment}{portSegment}{Path}";
         }
 
-        public static bool TryParse(string assetText, out Asset asset)
+        public static Asset TryParse(string assetText)
         {
-            asset = null;
-
             if (!(assetText.ToLower().StartsWith("http") && assetText.Contains("://"))
                 && !assetText.StartsWith("//"))
-                return false;
+                return null;
 
             var uri = new Uri(assetText);
 
@@ -59,7 +57,8 @@ namespace pwnctl.domain.Entities
             string scheme = uri.Port == -1 ? "https" : uri.Scheme;
             ushort port = (ushort) (uri.Port == -1 ? 443 : uri.Port);
 
-            var socket = NetworkHost.TryParse(uri.Host, out Asset host)
+            var host = NetworkHost.TryParse(uri.Host);
+            var socket = host != null
                     ? new NetworkSocket((NetworkHost)host, port)
                     : new NetworkSocket(new DomainName(uri.Host), port);
 
@@ -72,7 +71,8 @@ namespace pwnctl.domain.Entities
                 .ToList();
 
             endpoint.HttpParameters = _params;
-            asset = endpoint;
+
+            var furthestEndpoint = endpoint;
 
             // Adds all subdirectories
             string path = endpoint.Path;
@@ -83,7 +83,7 @@ namespace pwnctl.domain.Entities
                 endpoint = endpoint.ParentEndpoint;
             } while (path.Length > 1);
 
-            return true;
+            return furthestEndpoint;
         }
 
         public override string ToString()

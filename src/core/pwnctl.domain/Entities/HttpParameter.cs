@@ -29,9 +29,9 @@ namespace pwnctl.domain.Entities
             UrlEncodedCsValues = urlEncodedCsValues;
         }
 
-        public static bool TryParse(string assetText, out Asset asset)
+        public static Asset TryParse(string assetText)
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         public override string ToString()

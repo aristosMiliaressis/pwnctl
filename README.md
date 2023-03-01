@@ -5,7 +5,7 @@ serverless configuration driven crawler for recon automation.
 
 ### Overview
 
-the target scope is onboarded trough the cli or api, than it is recursivly scanned by pushing tasks to the SQS queue that trigger serverless ECS instances to spin up and consume those tasks, collecting assets into an Aurora postgreSQL database, sending discord notifications according to `NotificationRules` and queueing further tasks according to `TaskDefinitions`, all infrastructure is provisioned as code trough CDK.
+the target scope is onboarded trough the cli or api, than it is recursivly scanned by pushing tasks to the SQS queue that trigger serverless ECS instances to spin up and consume those tasks, collecting assets into a postgreSQL database, sending discord notifications according to `NotificationRules` and queueing further tasks according to `TaskDefinitions`, all infrastructure is provisioned as code trough CDK.
 
 <p align="center">
   <img src="https://github.com/aristosMiliaressis/pwnctl/blob/master/img/arch-phase1.png?raw=true">
@@ -94,11 +94,6 @@ tags are a way to store arbitary metadata relating to an asset, they can be used
   Filter: DomainName.ZoneDepth <= 2
   Subject: DomainName
 
-- ShortName: tld_brute
-  CommandTemplate: tld-brute.sh {{Name}}
-  Subject: DomainName
-  Filter: DomainName.ZoneDepth == 1
-
 - ShortName: asn_lookup
   CommandTemplate: asn-lookup.sh {{IP}}
   Subject: NetworkHost
@@ -115,9 +110,9 @@ tags are a way to store arbitary metadata relating to an asset, they can be used
   CommandTemplate: udp-scan.sh {{IP}}
   Subject: NetworkHost
 
-- ShortName: get_alt_names
-  CommandTemplate: get-alt-names.sh {{IP}}
-  Subject: NetworkHost
+- ShortName: tls_probe
+  CommandTemplate: tls-probe.sh {{Address}}
+  Subject: NetworkSocket
 
 - ShortName: get_all_urls
   CommandTemplate: get-all-urls.sh {{Url}}
@@ -132,6 +127,11 @@ tags are a way to store arbitary metadata relating to an asset, they can be used
 - ShortName: file_brute_config
   CommandTemplate: file-brute.sh {{Url}} /opt/wordlists/config.txt
   Filter: HttpEndpoint.Path == "/"
+  Subject: HttpEndpoint
+
+- ShortName: webcrawl
+  CommandTemplate: webcrawl.sh '{{Url}}'
+  Filter: HttpEndpoint.Path == "/" || Tags["Content-Type"].Contains("/html") || Tags["Content-Type"].Contains("/xhtml")
   Subject: HttpEndpoint
 ```
 

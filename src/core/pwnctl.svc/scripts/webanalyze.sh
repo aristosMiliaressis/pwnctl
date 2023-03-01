@@ -3,14 +3,16 @@
 url=$1
 temp=`mktemp`
 
-if [[ ! -f /opt/tools/technologies.json ]]; 
-then 
-    webanalyze -update
-    mv technologies.json /opt/tools/technologies.json
+if [[ ! -f technologies.json ]]
+then
+    webanalyze -update 2>/dev/null
+elif [ $(((`date +%s` - `stat -L --format %Y technologies.json`))) -gt $((60*60*24)) ]
+then
+    webanalyze -update 2>/dev/null
 fi
 
-webanalyze -apps /opt/tools/technologies.json -crawl 1 -search -host $url -output json 1> $temp
+webanalyze -crawl 1 -search -host $url -output json > $temp 2>/dev/null
 
 tags=$(cat $temp | jq -r -c '.matches[] | "\"\(.app.category_names[0])\": \"\(.app_name)\""' | tr '\n' ',' | head -c -1)
 
-echo "{\"Asset\":\"$url\",\"Tags\":{$tags}}" 2>/dev/null
+echo '{"Asset":"'$url'","Tags":{'$tags'}}' 2>/dev/null

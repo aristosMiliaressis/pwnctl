@@ -17,6 +17,12 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Commands
             if (existingProgram != null)
                 return MediatedResponse.Error("Target {0} already exists.", command.Name);
 
+            var taskProfile = _context.TaskProfiles.FirstOrDefault(p => p.ShortName == command.TaskProfile.ShortName);
+            if (taskProfile == null)
+                return MediatedResponse.Error("Task Profile {0} not found.", command.TaskProfile.ShortName);
+
+            command.TaskProfile = taskProfile;
+
             _context.Programs.Add(command);
             await _context.SaveChangesAsync();
 

@@ -33,32 +33,35 @@ namespace pwnctl.domain.Entities
                         .Count();
         }
 
-        public static bool TryParse(string assetText, out Asset asset)
+        public static Asset TryParse(string assetText)
         {
-            asset = null;
-
-            if (assetText.Trim().Contains(" ")
-                || assetText.Contains("/")
-                || assetText.Contains("*")
-                || assetText.Contains("@"))
-                return false;
-
-            if (!_domainRegex.Match(assetText).Success)
-                return false;
-
-            var domain = new DomainName(assetText);
-
-            var tmp = domain;
-            var registrationDomain = new DomainName(domain.GetRegistrationDomain());
-            while (tmp.Name != registrationDomain.Name)
+            try
             {
-                tmp.ParentDomain = new DomainName(string.Join(".", tmp.Name.Split(".").Skip(1)));
-                tmp = tmp.ParentDomain;
+                if (assetText.Trim().Contains(" ")
+                    || assetText.Contains("/")
+                    || assetText.Contains("*")
+                    || assetText.Contains("@"))
+                    return null;
+
+                if (!_domainRegex.Match(assetText).Success)
+                    return null;
+
+                var domain = new DomainName(assetText);
+
+                var tmp = domain;
+                var registrationDomain = new DomainName(domain.GetRegistrationDomain());
+                while (tmp.Name != registrationDomain.Name)
+                {
+                    tmp.ParentDomain = new DomainName(string.Join(".", tmp.Name.Split(".").Skip(1)));
+                    tmp = tmp.ParentDomain;
+                }
+
+                return domain;
             }
-
-            asset = domain;
-
-            return true;
+            catch
+            {
+                return null;
+            }
        }
 
         public override string ToString()

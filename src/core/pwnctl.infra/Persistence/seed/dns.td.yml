@@ -9,19 +9,29 @@ TaskDefinitions:
     CommandTemplate: echo {{Name}} | httpx -silent
     Subject: DomainName
 
-  - ShortName: zone_trasfer
-    CommandTemplate: zone-transfer.sh {{Name}}
-    Subject: DomainName
-
   - ShortName: sub_enum
     CommandTemplate: sub-enum.sh {{Name}}
     Filter: DomainName.ZoneDepth <= 2
     Subject: DomainName
 
-  - ShortName: tld_brute
-    CommandTemplate: tld-brute.sh {{Name}}
+  - ShortName: dns_record_enum
+    CommandTemplate: dns-record-enum.sh {{Name}}
+    Subject: DomainName
+
+  - ShortName: get_all_urls
+    CommandTemplate: get-all-urls.sh {{Name}}
     Subject: DomainName
     Filter: DomainName.ZoneDepth == 1
+
+  - ShortName: waybackurls
+    CommandTemplate: waybackurls.sh {{Name}}
+    Subject: DomainName
+    Filter: DomainName.ZoneDepth == 1
+
+  # - ShortName: tld_brute
+  #   CommandTemplate: tld-brute.sh {{Name}}
+  #   Subject: DomainName
+  #   Filter: DomainName.ZoneDepth == 1
 
   - ShortName: cloud_enum
     CommandTemplate: cloud-enum.sh {{Word}}
@@ -36,6 +46,11 @@ TaskDefinitions:
   - ShortName: reverse_whois
     CommandTemplate: reverse-whois.sh {{Address}}
     Subject: Email
+    MatchOutOfScope: true
+
+  - ShortName: zone_trasfer
+    CommandTemplate: zone-transfer.sh {{Name}}
+    Subject: DomainName
 
   - ShortName: zone_walking
     CommandTemplate: ldns-walk {{Key}} | tail -n +2 | cut -d ' ' -f 1

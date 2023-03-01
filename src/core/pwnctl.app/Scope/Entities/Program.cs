@@ -15,7 +15,7 @@ namespace pwnctl.app.Scope.Entities
         public OperationalPolicy Policy { get; init; }
         [JsonIgnore]
         public int TaskProfileId { get; init; }
-        public TaskProfile TaskProfile { get; init; }
+        public TaskProfile TaskProfile { get; set; }
         public List<ScopeDefinition> Scope { get; init; }
         public List<AssetRecord> Assets { get; init; }
 

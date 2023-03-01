@@ -31,24 +31,28 @@ namespace pwnctl.domain.Entities
             Type = type;
             Value = value;
 
-            if (DomainName.TryParse(key, out Asset domain))
+            Asset keyDomain = DomainName.TryParse(key);
+            if (keyDomain != null)
             {
-                DomainName = (DomainName)domain;
+                DomainName = (DomainName)keyDomain;
                 Key = DomainName.Name;
             }
 
-            if (NetworkHost.TryParse(value, out Asset host))
+            Asset host = NetworkHost.TryParse(value);
+            Asset domain = DomainName.TryParse(value);
+
+            if (host != null)
             {
                 NetworkHost = (NetworkHost)host;
                 NetworkHost.AARecords = new List<DomainNameRecord> { this };
             }
-            else if (DomainName.TryParse(value, out domain))
+            else if (domain != null)
             {
                 DomainName = (DomainName)domain;
             }
         }
 
-        public static bool TryParse(string assetText, out Asset asset)
+        public static Asset TryParse(string assetText)
         {
             assetText = assetText.Replace("\t", " ");
             var parts = assetText.Split(" ").Where(p => !string.IsNullOrWhiteSpace(p)).ToArray();
@@ -63,12 +67,10 @@ namespace pwnctl.domain.Entities
                     record.SPFHosts = DomainNameRecord.ParseSPFString(record.Value);
                 }
 
-                asset = record;
-                return true;
+                return record;
             }
 
-            asset = null;
-            return false;
+            return null;
         }
 
         public static List<NetworkHost> ParseSPFString(string spf)

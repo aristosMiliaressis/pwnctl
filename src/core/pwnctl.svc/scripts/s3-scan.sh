@@ -10,12 +10,12 @@ else
 fi
 
 resp=$(curl -L -k -s $url) 
-echo $resp | grep -q NoSuchBucket && echo "{\"Asset\":\"$url\",\"Tags\"{\"s3-takeover\":\"true\"}}"
-echo $resp | grep -q "The specified bucket does not exist" && echo "{\"Asset\":\"$url\",\"Tags\":{\"s3-takeover\":\"true\"}}"
+echo $resp | grep -q NoSuchBucket && echo '{"Asset":"'$url'","Tags"{"s3-takeover":"true"}}'
+echo $resp | grep -q "The specified bucket does not exist" && echo '{"Asset":"'$url'","Tags":{"s3-takeover":"true"}}'
 
 s3scanner -i scan -b $bucketName \
     | grep bucket_exists \
     | cut -d '|' -f 3 \
     | while read perms; do if [ "${#perms}" -gt 30 ]; then \
-            echo "{\"Asset\":\"$url\",\"Tags\"{\"s3-public-perms\":\"$perms\"}}"; \
+            echo '{"Asset":"'$url'","Tags"{"s3-public-perms":"'$perms'"}}'; \
         fi; done

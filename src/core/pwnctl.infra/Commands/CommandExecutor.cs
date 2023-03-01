@@ -5,7 +5,7 @@ using pwnctl.app;
 
 public static class CommandExecutor
 {
-    public static async Task<Process> ExecuteAsync(string fileName, string args, string stdin = null, CancellationToken token = default)
+    public static async Task<Process> ExecuteAsync(string fileName, string args, string stdin = null, bool waitProcess = true, CancellationToken token = default)
     {
         PwnInfraContext.Logger.Debug($"Running: {fileName} {args} " + (stdin == null ? "" : $"<<< {stdin}"));
 
@@ -31,8 +31,9 @@ public static class CommandExecutor
                 sr.Close();
             }
         }
-        
-        await process.WaitForExitAsync(token);
+
+        if (waitProcess)
+            await process.WaitForExitAsync(token);
 
         return process;
     }

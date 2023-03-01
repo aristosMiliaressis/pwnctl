@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using System.IO;
 using pwnctl.infra.Configuration;
+using System.IO.Compression;
+using pwnctl.api.Extensions;
 
 [ApiController]
 [Route("[controller]")]
@@ -35,8 +37,23 @@ public sealed class FsController : ControllerBase
     {
         string filePath = FullPath(path);
 
+        if (Directory.Exists(filePath))
+        {
+            var zipFilename = filePath.Replace("/", "_")+".zip";
+
+            using (var memoryStream = new MemoryStream())
+            using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create))
+            {
+                archive.AddFolderEntry(filePath);
+
+                return File(memoryStream.ToArray(), "application/zip", zipFilename);
+            }
+        }
+
         if (!System.IO.File.Exists(filePath))
+        {
             return NotFound();
+        }
 
         string contentType = GetFileContentType(filePath);
 

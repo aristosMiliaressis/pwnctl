@@ -8,8 +8,6 @@ namespace pwnctl.infra.Repositories
     {
         private static string _publicSuffixDataFile = $"{EnvironmentVariables.InstallPath}/public_suffix_list.dat";
 
-        private List<PublicSuffix> _suffixes;
-
         public PublicSuffix GetSuffix(string suffix)
         {
             return List()
@@ -20,21 +18,11 @@ namespace pwnctl.infra.Repositories
 
         private List<PublicSuffix> List()
         {
-            if (_suffixes == null)
-            {
-                _suffixes = File.ReadLines(_publicSuffixDataFile)
-                    .Select(suffix => {
-                        try {
-                            return PublicSuffix.Create(suffix);
-                        } catch {
-                            return null;
-                        }})
-                    .Where(s => s != null)
-                    .Distinct()
-                    .ToList();
-            }
-
-            return _suffixes;
+            return File.ReadLines(_publicSuffixDataFile)
+                        .Distinct()
+                        .Where(suf => Uri.CheckHostName(suf) == UriHostNameType.Dns)
+                        .Select(suffix => PublicSuffix.Create(suffix))
+                        .ToList();
         }
     }
 }

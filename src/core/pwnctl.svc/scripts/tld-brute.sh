@@ -2,7 +2,7 @@
 
 temp=`mktemp`; 
 domain=$1
-RESOLVERS=$(cat /opt/wordlists/dns/resolvers_top25.txt| tr '\n' ',')
+RESOLVERS=$(cat /opt/wordlists/dns/resolvers.txt| tr '\n' ',')
 
 dnsrecon -d $domain -t tld -j $temp -n $RESOLVERS >/dev/null 
 

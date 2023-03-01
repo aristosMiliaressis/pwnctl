@@ -10,6 +10,7 @@ RUN apt-get update \
     git \
     groff \
     jq \
+    libpcap-dev \
     make \
     moreutils \
     nano \
@@ -95,7 +96,7 @@ RUN go install github.com/projectdiscovery/dnsx/cmd/dnsx@latest
 RUN go install github.com/projectdiscovery/httpx/cmd/httpx@latest
 RUN go install github.com/projectdiscovery/notify/cmd/notify@latest
 RUN go install github.com/projectdiscovery/katana/cmd/katana@latest
-RUN go install github.com/projectdiscovery/naabu/cmd/naabu@latest
+#RUN go install github.com/projectdiscovery/naabu/v2/cmd/naabu@latest
 RUN go install github.com/lc/gau/v2/cmd/gau@latest
 RUN go install github.com/hakluke/hakrawler@latest
 RUN go install github.com/d3mondev/puredns/v2@latest
@@ -105,6 +106,8 @@ RUN go install github.com/ffuf/ffuf@latest
 RUN pip install useragent-picker-cli && uagen
 RUN mkdir -p /etc/amass/scripts \
     && git clone https://github.com/PatrikFehrenbach/amass-tools.git /etc/amass/scripts
+RUN wget https://github.com/RustScan/RustScan/releases/download/2.0.1/rustscan_2.0.1_amd64.deb \
+    && dpkg -i rustscan_2.0.1_amd64.deb && rm rustscan_2.0.1_amd64.deb
 RUN curl -o /opt/wordlists/common.txt https://raw.githubusercontent.com/danielmiessler/SecLists/master/Discovery/Web-Content/common.txt
 RUN curl -o /opt/wordlists/commonspeak2.txt https://raw.githubusercontent.com/assetnote/commonspeak2-wordlists/master/subdomains/subdomains.txt
 RUN curl -o /opt/wordlists/subdomains-top-20000.txt https://raw.githubusercontent.com/theMiddleBlue/DNSenum/master/wordlist/subdomains-top1mil-20000.txt
@@ -144,6 +147,10 @@ RUN go install github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
 RUN go install github.com/gwen001/github-subdomains@latest
 RUN pip3 install s3scanner
 RUN pip3 install emailfinder
+
+RUN curl https://github.com/mgdm/htmlq/releases/download/v0.4.0/htmlq-x86_64-linux.tar.gz -L -o htmlq-x86_64-linux.tar.gz \
+    && tar xzf htmlq-x86_64-linux.tar.gz \
+    && rm htmlq-x86_64-linux.tar.gz && mv htmlq /usr/local/bin
 
 RUN curl https://api.github.com/repos/michenriksen/aquatone/releases/latest 2>/dev/null \
     | grep browser_download_url \

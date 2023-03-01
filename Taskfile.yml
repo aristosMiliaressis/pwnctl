@@ -2,7 +2,7 @@ version: '3'
 
 tasks:
   simple-setup: 
-    deps: [install-deps, build-svc-image, push-svc-image, bootstrap-aws, deploy-app, install-cli-src, init-app]
+    deps: [install-deps, build-svc-image, push-svc-image, bootstrap-aws, deploy-app, install-cli, init-app]
 
   test:
     cmds:
@@ -13,7 +13,7 @@ tasks:
       - dotnet clean
       - dotnet build src/pwnctl.api/pwnctl.api.csproj -c Release
   
-  build-pwnctl-cli:
+  build-cli:
     cmds:
       - dotnet clean
       - dotnet publish src/pwnctl.cli/pwnctl.cli.csproj -c Release
@@ -34,10 +34,10 @@ tasks:
         docker push public.ecr.aws/i0m2p7r6/pwnctl:latest
         
   build-all: 
-    deps: [build-pwnctl-cli, build-api, build-svc-image]
+    deps: [build-cli, build-api, build-svc-image]
     
-  install-cli-src:
-    deps: [build-pwnctl-cli]
+  install-cli:
+    deps: [build-cli]
     cmds:
       - chmod +x src/pwnctl.cli/bin/Release/net6.0/linux-x64/publish/pwnctl
       - sudo mv src/pwnctl.cli/bin/Release/net6.0/linux-x64/publish/pwnctl /usr/local/bin
@@ -55,7 +55,7 @@ tasks:
         cdk bootstrap aws://${accountId}/${region} -o src/core/pwnctl.infra.cdk/cdk.out
 
   deploy-app:
-    deps: [clean-cdk, build-api, install-cli-src]
+    deps: [clean-cdk, build-api, install-cli]
     cmds:
       - cdk deploy -o src/core/pwnctl.infra.cdk/cdk.out
       - chmod +x ./bin/*

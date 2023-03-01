@@ -16,7 +16,7 @@ namespace pwnctl.infra.Queueing
         /// <param name="command"></param>
         public async Task<bool> EnqueueAsync(QueuedTaskDTO task, CancellationToken token = default)
         {
-            await CommandExecutor.ExecuteAsync("job-queue.sh", $"-w {PwnInfraContext.Config.TaskQueue.WorkerCount} -q {_queueDirectory}", task.Command, token);
+            await CommandExecutor.ExecuteAsync("job-queue.sh", $"-w {PwnInfraContext.Config.TaskQueue.WorkerCount} -q {_queueDirectory}", task.Command, token: token);
 
             return true;
         }

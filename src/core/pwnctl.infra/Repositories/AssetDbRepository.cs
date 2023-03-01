@@ -12,9 +12,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace pwnctl.infra.Repositories
 {
-    public sealed class AssetDbRepository : AssetRepository
+    public sealed class AssetDbRepository : AssetRepository, IDisposable
     {
         private PwnctlDbContext _context;
+
+        public AssetDbRepository()
+        {
+            _context = new PwnctlDbContext();
+        }
 
         public AssetDbRepository(PwnctlDbContext context)
         {
@@ -215,6 +220,11 @@ namespace pwnctl.infra.Repositories
                             .Where(r => r.SubjectClass.Class == nameof(Email))
                             .AsNoTracking()
                             .ToListAsync();
+        }
+
+        public void Dispose()
+        {
+            _context.Dispose();
         }
     }
 }

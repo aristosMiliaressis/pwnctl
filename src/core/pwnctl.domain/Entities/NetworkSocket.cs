@@ -38,15 +38,15 @@ namespace pwnctl.domain.Entities
             Address = l4Proto.ToString().ToLower() + "://" + host.IP + ":" + port;
         }
 
-        public static bool TryParse(string assetText, out Asset asset)
+        public static Asset TryParse(string assetText)
         {
-            asset = null;
             var protocol = TransportProtocol.TCP;
 
             if (assetText.Contains("://"))
             {
                 if (!Enum.TryParse<TransportProtocol>(assetText.ToUpper().Split("://")[0], out protocol))
-                    return false;
+                    return null;
+
                 assetText = assetText.Split("://")[1];
             }
 
@@ -54,27 +54,21 @@ namespace pwnctl.domain.Entities
             
             assetText = assetText.Substring(0, assetText.Length - strPort.Length - 1);
 
-            if (!char.IsDigit(strPort[0]))
-                strPort = strPort.Substring(1);
-
             var port = ushort.Parse(strPort);
 
-            if (NetworkHost.TryParse(assetText, out Asset host))
-            {
-                var service = new NetworkSocket((NetworkHost)host, port, protocol);
+            var host = NetworkHost.TryParse(assetText);
+            var domain = DomainName.TryParse(assetText);
 
-                asset = service;
-                return true;
-            }
-            else if (DomainName.TryParse(assetText, out Asset domain))
+            if (host != null)
             {
-                var service = new NetworkSocket((DomainName)domain, port, protocol);
-                asset = service;
-                return true;
+                return new NetworkSocket((NetworkHost) host, port, protocol);
+            }
+            else if (domain != null)
+            {
+                return new NetworkSocket((DomainName)domain, port, protocol);
             }
 
-            asset = null;
-            return false;
+            return null;
         }
 
         public override string ToString()

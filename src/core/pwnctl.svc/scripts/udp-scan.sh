@@ -15,7 +15,7 @@ cat $temp \
 		port=`echo $line | cut -d '/' -f 1`; \
 		protocol=`echo $line | cut -d '/' -f 2`; \
 		version=`echo $line | cut -d '/' -f 3`; \
-		printf "{\"asset\":\"udp://$ip:$port\",\"tags\":{\"Protocol\":\"$protocol\", \"Version\":\"$version\"}}\n"; \
+		echo '{"asset":"udp://'$ip:$port'","tags":{"Protocol":"'$protocol'", "Version":"'$version'"}}'; \
 	done
 
 rm $temp

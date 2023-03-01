@@ -14,21 +14,20 @@ namespace pwnctl.app.Assets
 
             assetText = assetText.Trim();
 
-            object[] parameters = new object[] { assetText, null };
             foreach (var tryParseMethod in _tryParseMethod)
             {
                 try
                 {
-                    bool parsed = (bool)tryParseMethod.Invoke(null, parameters);
-                    if (!parsed)
+                    Asset asset = (Asset)tryParseMethod.Invoke(null, new object[] { assetText });
+                    if (asset == null)
                         continue;
+
+                    return asset;
                 }
                 catch
                 {
                     continue;
                 }
-
-                return (Asset)parameters[1];
             }
 
             throw new UnparsableAssetException(assetText);

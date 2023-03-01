@@ -7,6 +7,7 @@ public sealed class TaskDTO
     public int Id { get; set; }
     public string ShortName { get; set; }
     public string Subject { get; set; }
+    public string Asset { get; set; }
     public string State { get; set; }
     public DateTime QueuedAt { get; set; }
     public DateTime StartedAt { get; set; }
@@ -21,6 +22,7 @@ public sealed class TaskDTO
         Id = entry.Id;
         ShortName = entry.Definition.ShortName;
         Subject = entry.Definition.SubjectClass.Class;
+        Asset = entry.Record.Asset.ToString();
         State = entry.State.ToString();
         QueuedAt = entry.QueuedAt;
         StartedAt = entry.StartedAt;

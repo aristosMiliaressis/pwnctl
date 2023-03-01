@@ -15,7 +15,7 @@ then
     fi
 fi
 
-sns --check -u $url | grep -q VULNERABLE \
-     && echo "{\"Asset\":\"$url\", \"tags\":{\"shortname-misconfig\":\"true\"}}"
+sns --check -u $url 2>/dev/null | grep -q VULNERABLE \
+    && echo '{"Asset":"'$url'", "tags":{"shortname-misconfig":"true"}}'
 
 rm $temp

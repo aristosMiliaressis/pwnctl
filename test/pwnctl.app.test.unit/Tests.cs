@@ -219,7 +219,7 @@ public sealed class Tests
     public async Task AssetRepository_Tests()
     {
         PwnctlDbContext context = new();
-        AssetDbRepository repository = new(context);
+        AssetDbRepository repository = new();
 
         var inScopeDomain = new DomainName("tesla.com");
         var outOfScope = new DomainName("www.outofscope.com");
@@ -406,7 +406,7 @@ public sealed class Tests
     {
         var processor = AssetProcessorFactory.Create();
         PwnctlDbContext context = new();
-        AssetDbRepository repository = new(context);
+        AssetDbRepository repository = new();
 
         var exampleUrl = new AssetDTO {
             Asset = "https://example.com",

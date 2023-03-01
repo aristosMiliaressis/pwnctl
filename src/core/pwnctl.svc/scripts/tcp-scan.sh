@@ -4,8 +4,8 @@ ip=$1
 temp=`mktemp | sed 's/\/tmp\///g'`;
 touch $temp
 
-sudo naabu -silent -Pn -ec -p 1-65535 -host $ip \
- 	-nmap-cli "nmap -sSV -oG ./$temp" >/dev/null
+rustscan -r 1-65535 -a $ip -- -sSV --script-args http.useragent="Mozilla/9.1" -oG $temp >/dev/null;
+#naabu -silent -Pn -ec -p 1-65535 -host $ip -nmap-cli "nmap -sV -oG $temp" >/dev/null
 
 cat $temp \
 	| sed 's/Ports: /\n/g' \
@@ -17,7 +17,7 @@ cat $temp \
 		port=`echo $line | cut -d '/' -f 1`; \
 		protocol=`echo $line | cut -d '/' -f 2`; \
 		version=`echo $line | cut -d '/' -f 3`; \
-		printf "{\"asset\":\"$ip:$port\",\"tags\":{\"Protocol\":\"$protocol\", \"Version\":\"$version\"}}\n"; \
+		echo '{"asset":"'$ip:$port'","tags":{"Protocol":"'$protocol'", "Version":"'$version'"}}'; \
 	done
 
 rm $temp

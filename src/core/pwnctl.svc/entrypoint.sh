@@ -12,6 +12,7 @@ fi
 
 if test -f "/mnt/efs/whoisxml.conf"; 
 then
+    mkdir $HOME/.config/ 2>/dev/null
     cp "/mnt/efs/whoisxml.conf" $HOME/.config/whoisxml.conf
 fi
 
@@ -27,16 +28,16 @@ then
 fi
 
 # if no resolvers list generate new one
-if [ ! -f "/mnt/efs/resolvers_top25.txt" ] 
+if [ ! -f "/mnt/efs/resolvers.txt" ] 
 then
     get-valid-resolvers.sh
-    cp /opt/wordlists/dns/resolvers_top25.txt /mnt/efs/resolvers_top25.txt
+    cp /opt/wordlists/dns/resolvers.txt /mnt/efs/resolvers.txt
 # else if list is older than 6 hours take it but move it out of efs so next task will have to regenerate it
-elif [ $(((`date +%s` - `stat -L --format %Y /mnt/efs/resolvers_top25.txt`))) -gt $((60*60*24)) ]
+elif [ $(((`date +%s` - `stat -L --format %Y /mnt/efs/resolvers.txt`))) -gt $((60*60*24)) ]
 then
-    mv /mnt/efs/resolvers_top25.txt /opt/wordlists/dns/resolvers_top25.txt
+    mv /mnt/efs/resolvers.txt /opt/wordlists/dns/resolvers.txt
 else
-    cp /mnt/efs/resolvers_top25.txt /opt/wordlists/dns/resolvers_top25.txt
+    cp /mnt/efs/resolvers.txt /opt/wordlists/dns/resolvers.txt
 fi
 
 exec /opt/pwnctl-svc/pwnsvc

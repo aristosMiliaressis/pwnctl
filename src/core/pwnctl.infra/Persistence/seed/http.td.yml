@@ -1,11 +1,6 @@
 Profiles: [ "all" ]
 
 TaskDefinitions:
-  - ShortName: get_all_urls
-    CommandTemplate: get-all-urls.sh {{Url}}
-    Subject: HttpEndpoint
-    Filter: HttpEndpoint.Path == "/"
-
   - ShortName: dir_brute_common
     CommandTemplate: dir-brute.sh {{Url}} /opt/wordlists/common.txt
     Filter: HttpEndpoint.Path == "/"
@@ -31,20 +26,20 @@ TaskDefinitions:
     Filter: HttpEndpoint.Path == "/"
     Subject: HttpEndpoint
 
-  - ShortName: screenshot
-    CommandTemplate: screenshot.sh {{Url}}
-    Filter: HttpEndpoint.Path == "/"
-    Subject: HttpEndpoint
-
   - ShortName: webcrawl
-    CommandTemplate: webcrawl.sh '{{Url}}'
+    CommandTemplate: webcrawl.sh {{Url}}
     Filter: HttpEndpoint.Path == "/" || Tags["Content-Type"].Contains("/html") || Tags["Content-Type"].Contains("/xhtml")
     Subject: HttpEndpoint
 
-  - ShortName: link_finder
-    CommandTemplate: link-finder.sh {{Url}}
-    Filter: HttpEndpoint.Extension == "js" || HttpEndpoint.Extension == "jsm" || Tags["Content-Type"].Contains("/javascript")
-    Subject: HttpEndpoint
+  # - ShortName: link_finder
+  #   CommandTemplate: link-finder.sh {{Url}}
+  #   Filter: HttpEndpoint.Extension == "js" || HttpEndpoint.Extension == "jsm" || Tags["Content-Type"].Contains("/javascript")
+  #   Subject: HttpEndpoint
+
+  # - ShortName: screenshot
+  #   CommandTemplate: screenshot.sh {{Url}}
+  #   Filter: HttpEndpoint.Path == "/"
+  #   Subject: HttpEndpoint
 
   - ShortName: cors_check
     CommandTemplate: check-cors.sh {{Url}}

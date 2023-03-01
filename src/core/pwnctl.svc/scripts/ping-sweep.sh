@@ -2,7 +2,7 @@
 
 cidr=$1
 
-sudo nmap -n -sn -PO -PE $cidr -vv \
+nmap -n -sn -PO -PE $cidr -vv \
     | grep 'Host is up' -B 1 \
     | tr '\n' ' ' \
     | sed 's/Nmap scan report/\nNmap scan report/g' \

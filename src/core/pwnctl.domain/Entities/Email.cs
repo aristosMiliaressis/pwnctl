@@ -20,10 +20,8 @@ namespace pwnctl.domain.Entities
             DomainName = domain;
         }
 
-        public static bool TryParse(string assetText, out Asset asset)
+        public static Asset TryParse(string assetText)
         {
-            asset = null;
-
             assetText = assetText.StartsWith("mailto:")
                     ? assetText.Substring(7)
                     : assetText;
@@ -34,17 +32,14 @@ namespace pwnctl.domain.Entities
 
             // for some reason MailKit parses IPv4 as valid email address so if it is ip return false
             if (IPAddress.TryParse(assetText, out IPAddress _)
-             || NetworkRange.TryParse(assetText, out Asset _))
-                return false;
+             || NetworkRange.TryParse(assetText) != null)
+                return null;
 
             if (!MailboxAddress.TryParse(assetText, out MailboxAddress address))
-                return false;
+                return null;
 
             var domain = new DomainName(address.Domain);
-
-            asset = new Email(domain, address.Address); // TODO: https://www.rfc-editor.org/rfc/rfc822
-
-            return true;
+            return new Email(domain, address.Address);
         }
 
         public override string ToString()

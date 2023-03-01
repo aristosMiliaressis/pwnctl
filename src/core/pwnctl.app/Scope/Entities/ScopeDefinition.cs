@@ -31,7 +31,7 @@ namespace pwnctl.app.Scope.Entities
                 ScopeType.CIDR => CidrMatchingChecks(asset),
                 ScopeType.DomainRegex => DomainMatchingChecks(asset),
                 ScopeType.UrlRegex => UrlMatchingChecks(asset),
-                _ => throw new NotImplementedException()
+                _ => false
             };
         }
 
