@@ -162,7 +162,7 @@ namespace pwnctl.infra.cdk.Stacks
                 VisibilityTimeout = Duration.Seconds(AwsConstants.QueueVisibilityTimeoutInSec),
                 DeadLetterQueue = new DeadLetterQueue
                 {
-                    MaxReceiveCount = 4,
+                    MaxReceiveCount = 3,
                     Queue = DLQueue
                 }
             });
@@ -283,7 +283,7 @@ namespace pwnctl.infra.cdk.Stacks
             TaskDefinition = new FargateTaskDefinition(this, AwsConstants.TaskDefinitionId, new FargateTaskDefinitionProps
             {
                 Cpu = 1024,
-                MemoryLimitMiB = 4096,
+                MemoryLimitMiB = 8192,
                 TaskRole = ecsTaskExecutionRole,
                 ExecutionRole = ecsTaskExecutionRole,
                 Volumes = new ECS.Volume[]
@@ -348,43 +348,60 @@ namespace pwnctl.infra.cdk.Stacks
             container.AddMountPoints(mountPoint);
         }
 
-        internal void CreateStepScalingPolicy(int maxInstances = 20, int stepDepth = 10)
+        internal void CreateStepScalingPolicy()
         {
-            var scaling = FargateService.AutoScaleTaskCount(new EnableScalingProps { MinCapacity = 0, MaxCapacity = maxInstances });
-
-            var queueDepthMetric = new Metric(new MetricProps
+            var visibleMessages = new Metric(new MetricProps
             {
                 Namespace = "AWS/SQS",
                 MetricName = "ApproximateNumberOfMessagesVisible",
-                Statistic = "Average",
-                Period = Duration.Seconds(300),
+                Statistic = "Maximum",
+                Period = Duration.Seconds(60),
                 DimensionsMap = new Dictionary<string, string>
                 {
                     { "QueueName", Queue.QueueName }
                 }
             });
 
-            List<IScalingInterval> scalingSteps = new();
-
-            scalingSteps.Add(new ScalingInterval
+            var inFlightMessages = new Metric(new MetricProps
             {
-                Upper = 1,
-                Change = 0
+                Namespace = "AWS/SQS",
+                MetricName = "ApproximateNumberOfMessagesNotVisible",
+                Statistic = "Maximum",
+                Period = Duration.Seconds(60),
+                DimensionsMap = new Dictionary<string, string>
+                {
+                    { "QueueName", Queue.QueueName }
+                }
             });
 
-            for (int i = 0; i < maxInstances; i++)
+            var allMessages = new MathExpression(new MathExpressionProps
             {
-                scalingSteps.Add(new ScalingInterval
+                Expression = "visibleMessages + inFlightMessages",
+                UsingMetrics = new Dictionary<string, IMetric> {
+                    { "visibleMessages", visibleMessages },
+                    { "inFlightMessages", inFlightMessages }
+                }
+            });
+
+            var scaling = FargateService.AutoScaleTaskCount(new EnableScalingProps { MinCapacity = 0, MaxCapacity = AwsConstants.EcsInstances });
+
+            List<IScalingInterval> scalingSteps = new()
+            {
+                new ScalingInterval
                 {
-                    Lower = stepDepth * i + 1,
-                    Change = i + 1
-                });
-            }
+                    Upper = 1,
+                    Change = 0
+                },
+                new ScalingInterval
+                {
+                    Upper = 10000,
+                    Change = AwsConstants.EcsInstances
+                }
+            };
 
             scaling.ScaleOnMetric(AwsConstants.ScaleOutPolicy, new BasicStepScalingPolicyProps
             {
-                Cooldown = Duration.Seconds(300),
-                Metric = queueDepthMetric,
+                Metric = allMessages,
                 AdjustmentType = AdjustmentType.EXACT_CAPACITY,
                 ScalingSteps = scalingSteps.ToArray()
             });

@@ -13,7 +13,9 @@ public static class AwsConstants
     public const string DatabaseCredSecretName = $"/aws/secret/pwnctl/Db";
     public const string QueueName = "pwnctl.fifo";
     public const string DLQName = "pwnctl-dlq.fifo";
-    public const int QueueVisibilityTimeoutInSec = 3600;
+    public const double EcsInstances = 20;
+    public const int MaxTaskTimeout = 7200;
+    public const int QueueVisibilityTimeoutInSec = 600;
     public const string EfsId = "PwnctlFs";
     public const string EfsMountPoint = "/mnt/efs";
     public const string EcsClusterName = "PwnctlCluster";
