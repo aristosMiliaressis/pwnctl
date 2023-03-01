@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using pwnctl.dto.Db.Queries;
 using pwnctl.cli.Interfaces;
 using System.Linq;
+using pwnctl.infra.Aws;
 
 namespace pwnctl.cli.ModeHandlers
 {
@@ -27,18 +28,25 @@ namespace pwnctl.cli.ModeHandlers
             Console.WriteLine($"Tags: {model.TagCount}");
             Console.WriteLine();
             Console.WriteLine($"PENDING: {model.PendingTaskCount}, QUEUED: {model.QueuedTaskCount}, RUNNING: {model.RunningTaskCount}, FINISHED: {model.FinishedTaskCount}");
+            Console.WriteLine();
+            foreach(var def in model.TaskDetails.OrderBy(t => t.Count))
+            {
+                Console.WriteLine($"{def.ShortName.PadLeft(24)}: Queued {def.Count.ToString().PadLeft(4)} times, ran for {def.Duration.ToString("dd\\.hh\\:mm\\:ss")} and found {def.Findings.ToString().PadLeft(4)} unique assets.");
+            }
+
             if (model.FirstTask != null)
             {
                 Console.WriteLine();
                 Console.WriteLine("First Queued Task: " + model.FirstTask);
                 Console.WriteLine("Last Queued Task: " + model.LastTask);
-            }
+                Console.WriteLine("Last Finished Task: " + model.LastFinishedTask);
 
-            Console.WriteLine();
-            Console.WriteLine($"{"TASK".PadLeft(25)}  COUNT - TIME");
-            foreach(var def in model.TaskDetails.OrderBy(t => t.Count))
-            {
-                Console.WriteLine($"{def.ShortName.PadLeft(30)}: Queued {def.Count.ToString().PadLeft(6)} times, ran for {def.Duration.ToString("hh\\:mm\\:ss")} and fount {def.Findings.ToString().PadLeft(6)} new assets.");
+                var runTime = (model.LastTask - model.FirstTask) * AwsConstants.EcsInstances;
+                var productiveTime = TimeSpan.FromSeconds(model.TaskDetails.Sum(t => t.Duration.TotalSeconds));
+                var productiveTimePercentage = 100 / runTime.Value.TotalSeconds * productiveTime.TotalSeconds;
+                Console.WriteLine("Total Runtime: " + runTime.Value.ToString("dd\\.hh\\:mm\\:ss"));
+                Console.WriteLine("Total Productive time: " + productiveTime.ToString("dd\\.hh\\:mm\\:ss"));
+                Console.WriteLine($"Percent of Productive time: {productiveTimePercentage}%");
             }
         }
 

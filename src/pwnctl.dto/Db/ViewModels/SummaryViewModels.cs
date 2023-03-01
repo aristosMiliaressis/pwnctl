@@ -25,6 +25,7 @@ public sealed class SummaryViewModel
     public int FinishedTaskCount { get; set; }
     public DateTime? FirstTask { get; set; }
     public DateTime? LastTask { get; set; }
+    public DateTime? LastFinishedTask { get; set; }
 
     public List<TaskDefinitionDetails> TaskDetails { get; set; }
 

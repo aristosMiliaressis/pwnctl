@@ -41,16 +41,17 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Commands
             viewModel.RunningTaskCount = await context.TaskEntries.Where(t => t.State == TaskState.RUNNING).CountAsync();
             viewModel.FinishedTaskCount = await context.TaskEntries.Where(t => t.State == TaskState.FINISHED).CountAsync();
             viewModel.FirstTask = (await context.TaskEntries.Where(t => t.State != TaskState.PENDING).OrderBy(t => t.QueuedAt).FirstOrDefaultAsync())?.QueuedAt;
-            viewModel.LastTask = (await context.TaskEntries.Where(t => t.State != TaskState.PENDING).OrderByDescending(t => t.QueuedAt).FirstOrDefaultAsync())?.QueuedAt;
+            viewModel.LastTask = (await context.TaskEntries.OrderByDescending(t => t.QueuedAt).FirstOrDefaultAsync())?.QueuedAt;
+            viewModel.LastFinishedTask = (await context.TaskEntries.OrderByDescending(t => t.FinishedAt).FirstOrDefaultAsync())?.FinishedAt;
             viewModel.TaskDetails = new List<SummaryViewModel.TaskDefinitionDetails>();
             foreach (var def in context.TaskDefinitions.ToList())
             {
-                var entries = context.TaskEntries.Where(e => e.State == TaskState.FINISHED && e.DefinitionId == def.Id).ToList();
+                var entries = context.TaskEntries.Where(e => e.DefinitionId == def.Id).ToList();
                 viewModel.TaskDetails.Add(new SummaryViewModel.TaskDefinitionDetails
                 {
                     ShortName = def.ShortName,
                     Count = entries.Count,
-                    Duration = TimeSpan.FromSeconds(entries.Select(e => e.FinishedAt - e.StartedAt).Sum(e => e.TotalSeconds)),
+                    Duration = TimeSpan.FromSeconds(entries.Where(e => e.State == TaskState.FINISHED).Select(e => e.FinishedAt - e.StartedAt).Sum(e => e.TotalSeconds)),
                     Findings = context.AssetRecords.Include(r => r.FoundByTask).Where(r => r.FoundByTask.DefinitionId == def.Id).Count()
                 });
             }
