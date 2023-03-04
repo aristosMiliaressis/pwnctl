@@ -30,7 +30,8 @@ tasks:
     cmds:
       - |
         region=$(aws configure get region)
-        aws ecr-public get-login-password --region $region | docker login --username AWS --password-stdin public.ecr.aws/i0m2p7r6
+        aws ecr-public get-login-password --region $region \
+          | docker login --username AWS --password-stdin public.ecr.aws/i0m2p7r6
         docker push public.ecr.aws/i0m2p7r6/pwnctl:latest
         
   build-all: 
@@ -61,6 +62,15 @@ tasks:
       - chmod +x ./bin/*
       - ./bin/upload-conf.sh
       - ./bin/init-db.sh
+
+  debug-svc:
+    cmds:
+      - |
+        mkdir -p deployment/seed/
+        cp ./src/core/pwnctl.infra/Persistence/seed/*.yml deployment/seed/
+        docker run -e PWNCTL_TEST_RUN=true -e PWNCTL_INSTALL_PATH=/mnt/efs \
+                   -e PWNCTL_Logging__FilePath=/mnt/efs -e PWNCTL_Logging__MinLevel=Debug \
+                   -v "$(pwd)"/deployment:/mnt/efs -t public.ecr.aws/i0m2p7r6/pwnctl:latest
 
   clean-cdk:
     cmds:

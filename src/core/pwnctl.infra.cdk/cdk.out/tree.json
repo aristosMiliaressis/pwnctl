@@ -1351,7 +1351,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "000a097106966bf61e6c5b2100d90f7727f4336ffea714ef9309daeb73d25f61.zip"
+                      "s3Key": "fc39cb41f360113547afe73861b9ec075bc4e46cc7b8c13f7c3c0decbe00c9f6.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -1368,7 +1368,7 @@
                         "PWNCTL_Logging__MinLevel": "Debug",
                         "PWNCTL_Logging__FilePath": "/mnt/efs/",
                         "PWNCTL_Logging__LogGroup": "/aws/lambda/PwnctlApi",
-                        "PWNCTL_InstallPath": "/mnt/efs"
+                        "PWNCTL_INSTALL_PATH": "/mnt/efs"
                       }
                     },
                     "fileSystemConfigs": [
@@ -1921,7 +1921,7 @@
                             }
                           },
                           {
-                            "name": "PWNCTL_InstallPath",
+                            "name": "PWNCTL_INSTALL_PATH",
                             "value": "/mnt/efs"
                           }
                         ]
@@ -2183,7 +2183,7 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::ApplicationAutoScaling::ScalableTarget",
                           "aws:cdk:cloudformation:props": {
-                            "maxCapacity": 20,
+                            "maxCapacity": 12,
                             "minCapacity": 0,
                             "resourceId": {
                               "Fn::Join": [
@@ -2251,12 +2251,12 @@
                                       "adjustmentType": "ExactCapacity",
                                       "stepAdjustments": [
                                         {
-                                          "metricIntervalLowerBound": -9999,
+                                          "metricIntervalLowerBound": -10,
                                           "metricIntervalUpperBound": 0,
-                                          "scalingAdjustment": 20
+                                          "scalingAdjustment": 3
                                         },
                                         {
-                                          "metricIntervalUpperBound": -9999,
+                                          "metricIntervalUpperBound": -10,
                                           "scalingAdjustment": 0
                                         }
                                       ]
@@ -2344,7 +2344,138 @@
                                         "returnData": false
                                       }
                                     ],
-                                    "threshold": 10000
+                                    "threshold": 11
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
+                                  "version": "2.51.1"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
+                              "version": "2.51.1"
+                            }
+                          },
+                          "UpperPolicy": {
+                            "id": "UpperPolicy",
+                            "path": "PwnctlStack/PwnctlSvc/TaskCount/Target/ScaleOutPolicy/UpperPolicy",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "PwnctlStack/PwnctlSvc/TaskCount/Target/ScaleOutPolicy/UpperPolicy/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::ApplicationAutoScaling::ScalingPolicy",
+                                  "aws:cdk:cloudformation:props": {
+                                    "policyName": "PwnctlStackPwnctlSvcTaskCountTargetScaleOutPolicyUpperPolicy283EFEC6",
+                                    "policyType": "StepScaling",
+                                    "scalingTargetId": {
+                                      "Ref": "PwnctlSvcTaskCountTarget569E5CCF"
+                                    },
+                                    "stepScalingPolicyConfiguration": {
+                                      "adjustmentType": "ExactCapacity",
+                                      "stepAdjustments": [
+                                        {
+                                          "metricIntervalLowerBound": 0,
+                                          "metricIntervalUpperBound": 10,
+                                          "scalingAdjustment": 6
+                                        },
+                                        {
+                                          "metricIntervalLowerBound": 10,
+                                          "metricIntervalUpperBound": 20,
+                                          "scalingAdjustment": 9
+                                        },
+                                        {
+                                          "metricIntervalLowerBound": 20,
+                                          "scalingAdjustment": 12
+                                        }
+                                      ]
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_applicationautoscaling.CfnScalingPolicy",
+                                  "version": "2.51.1"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_applicationautoscaling.StepScalingAction",
+                              "version": "2.51.1"
+                            }
+                          },
+                          "UpperAlarm": {
+                            "id": "UpperAlarm",
+                            "path": "PwnctlStack/PwnctlSvc/TaskCount/Target/ScaleOutPolicy/UpperAlarm",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "PwnctlStack/PwnctlSvc/TaskCount/Target/ScaleOutPolicy/UpperAlarm/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                                  "aws:cdk:cloudformation:props": {
+                                    "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                                    "evaluationPeriods": 1,
+                                    "alarmActions": [
+                                      {
+                                        "Ref": "PwnctlSvcTaskCountTargetScaleOutPolicyUpperPolicy83B7BC5C"
+                                      }
+                                    ],
+                                    "alarmDescription": "Upper threshold scaling alarm",
+                                    "metrics": [
+                                      {
+                                        "expression": "visibleMessages + inFlightMessages",
+                                        "id": "expr_1"
+                                      },
+                                      {
+                                        "metricStat": {
+                                          "metric": {
+                                            "metricName": "ApproximateNumberOfMessagesVisible",
+                                            "namespace": "AWS/SQS",
+                                            "dimensions": [
+                                              {
+                                                "name": "QueueName",
+                                                "value": {
+                                                  "Fn::GetAtt": [
+                                                    "pwnctlfifo1F05FF65",
+                                                    "QueueName"
+                                                  ]
+                                                }
+                                              }
+                                            ]
+                                          },
+                                          "period": 300,
+                                          "stat": "Maximum"
+                                        },
+                                        "id": "visibleMessages",
+                                        "returnData": false
+                                      },
+                                      {
+                                        "metricStat": {
+                                          "metric": {
+                                            "metricName": "ApproximateNumberOfMessagesNotVisible",
+                                            "namespace": "AWS/SQS",
+                                            "dimensions": [
+                                              {
+                                                "name": "QueueName",
+                                                "value": {
+                                                  "Fn::GetAtt": [
+                                                    "pwnctlfifo1F05FF65",
+                                                    "QueueName"
+                                                  ]
+                                                }
+                                              }
+                                            ]
+                                          },
+                                          "period": 300,
+                                          "stat": "Maximum"
+                                        },
+                                        "id": "inFlightMessages",
+                                        "returnData": false
+                                      }
+                                    ],
+                                    "threshold": 11
                                   }
                                 },
                                 "constructInfo": {

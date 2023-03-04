@@ -41,12 +41,8 @@ namespace pwnctl.cli.ModeHandlers
                 Console.WriteLine("Last Queued Task: " + model.LastTask);
                 Console.WriteLine("Last Finished Task: " + model.LastFinishedTask);
 
-                var runTime = (model.LastTask - model.FirstTask) * AwsConstants.EcsInstances;
                 var productiveTime = TimeSpan.FromSeconds(model.TaskDetails.Sum(t => t.Duration.TotalSeconds));
-                var productiveTimePercentage = 100 / runTime.Value.TotalSeconds * productiveTime.TotalSeconds;
-                Console.WriteLine("Total Runtime: " + runTime.Value.ToString("dd\\.hh\\:mm\\:ss"));
                 Console.WriteLine("Total Productive time: " + productiveTime.ToString("dd\\.hh\\:mm\\:ss"));
-                Console.WriteLine($"Percent of Productive time: {productiveTimePercentage}%");
             }
         }
 

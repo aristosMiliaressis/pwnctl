@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1cc81a1ddd79fb4b17a1198e6008077cb403783df9383feefb4071a080dcbb7.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/16ada80f47f86a517ebf9c6cc7c276c0b5cd7d21f6659cc9edb9f1cf367e2358.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -355,6 +355,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "PwnctlSvcTaskCountTargetScaleOutPolicyLowerAlarmDD5F3CD4"
+          }
+        ],
+        "/PwnctlStack/PwnctlSvc/TaskCount/Target/ScaleOutPolicy/UpperPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnctlSvcTaskCountTargetScaleOutPolicyUpperPolicy83B7BC5C"
+          }
+        ],
+        "/PwnctlStack/PwnctlSvc/TaskCount/Target/ScaleOutPolicy/UpperAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PwnctlSvcTaskCountTargetScaleOutPolicyUpperAlarm649CF721"
           }
         ],
         "/PwnctlStack/CDKMetadata/Default": [

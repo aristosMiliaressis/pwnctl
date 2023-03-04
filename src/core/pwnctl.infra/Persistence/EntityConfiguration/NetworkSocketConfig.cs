@@ -14,11 +14,11 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
             builder.HasKey(e => e.Id);
 
             builder.HasOne(e => e.NetworkHost)
-                .WithMany(h => h.Sockets)
+                .WithMany()
                 .HasForeignKey(e => e.NetworkHostId);
 
             builder.HasOne(e => e.DomainName)
-                .WithMany(h => h.Sockets)
+                .WithMany()
                 .HasForeignKey(e => e.DomainNameId);
 
             builder.HasIndex(nameof(NetworkSocket.Address)).IsUnique();

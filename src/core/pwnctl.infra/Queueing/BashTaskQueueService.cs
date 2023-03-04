@@ -8,7 +8,7 @@ namespace pwnctl.infra.Queueing
 {
     public sealed class BashTaskQueueService : TaskQueueService
     {
-        private static readonly string _queueDirectory = Path.Combine(EnvironmentVariables.InstallPath, "queue/");
+        private static readonly string _queueDirectory = Path.Combine(EnvironmentVariables.INSTALL_PATH, "queue/");
 
         /// <summary>
         /// pushes a task to the pending queue.
@@ -16,7 +16,7 @@ namespace pwnctl.infra.Queueing
         /// <param name="command"></param>
         public async Task<bool> EnqueueAsync(QueuedTaskDTO task, CancellationToken token = default)
         {
-            await CommandExecutor.ExecuteAsync("job-queue.sh", $"-w {PwnInfraContext.Config.TaskQueue.WorkerCount} -q {_queueDirectory}", task.Command, token: token);
+            await CommandExecutor.ExecuteAsync($"echo {task.Command} | job-queue.sh -w {PwnInfraContext.Config.TaskQueue.WorkerCount} -q {_queueDirectory}", token: token);
 
             return true;
         }

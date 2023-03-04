@@ -7,7 +7,7 @@ public static class TaskQueueServiceFactory
 {
     public static TaskQueueService Create()
     {
-        return EnvironmentVariables.IsTestRun
+        return EnvironmentVariables.TEST_RUN
             ? new MockTaskQueueService()
             : new SQSTaskQueueService();
     }

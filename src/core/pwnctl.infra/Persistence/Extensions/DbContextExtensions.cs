@@ -18,56 +18,8 @@ namespace pwnctl.infra.Persistence.Extensions
                             .Include(p => p.TaskProfile)
                                 .ThenInclude(p => p.TaskDefinitions)
                             .Include(p => p.Scope)
+                            .AsNoTracking()
                             .ToList();
-        }
-
-        public static IQueryable<TaskEntry> JoinedTaskRecordQueryable(this PwnctlDbContext context)
-        {
-            return context.TaskEntries
-                            .Include(r => r.Record)
-                                .ThenInclude(r => r.Program)
-                            .Include(r => r.Definition)
-                            .Include(r => r.Record)
-                                .ThenInclude(r => r.NetworkHost)
-                                .ThenInclude(r => r.AARecords)
-                            .Include(r => r.Record)
-                                .ThenInclude(r => r.NetworkRange)
-                            .Include(r => r.Record)
-                                .ThenInclude(r => r.NetworkSocket)
-                                .ThenInclude(r => r.NetworkHost)
-                            .Include(r => r.Record)
-                                .ThenInclude(r => r.NetworkSocket)
-                                .ThenInclude(r => r.DomainName)
-                            .Include(r => r.Record)
-                                .ThenInclude(r => r.DomainName)
-                            .Include(r => r.Record)
-                                .ThenInclude(r => r.DomainNameRecord)
-                                .ThenInclude(r => r.DomainName)
-                            .Include(r => r.Record)
-                                .ThenInclude(r => r.DomainNameRecord)
-                                .ThenInclude(r => r.NetworkHost)
-                            .Include(r => r.Record)
-                                .ThenInclude(r => r.HttpHost)
-                            .Include(r => r.Record)
-                                .ThenInclude(r => r.HttpEndpoint)
-                                .ThenInclude(s => s.Socket)
-                                .ThenInclude(s => s.DomainName)
-                            .Include(r => r.Record)
-                                .ThenInclude(r => r.HttpEndpoint)
-                                .ThenInclude(s => s.Socket)
-                                .ThenInclude(s => s.NetworkHost)
-                            .Include(r => r.Record)
-                                .ThenInclude(r => r.HttpParameter)
-                            .Include(r => r.Record)
-                                .ThenInclude(r => r.Email)
-                                .ThenInclude(r => r.DomainName);
-        }
-
-        public static Asset FindAsset(this DbContext context, Asset asset)
-        {
-            var lambda = ExpressionTreeBuilder.BuildAssetMatchingLambda(asset);
-
-            return (Asset)context.FirstFromLambda(lambda);
         }
 
         public static Entity FirstFromLambda(this DbContext context, LambdaExpression lambda)

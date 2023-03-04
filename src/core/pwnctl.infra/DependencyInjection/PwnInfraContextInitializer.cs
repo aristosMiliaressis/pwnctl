@@ -9,25 +9,28 @@ using pwnctl.infra.Repositories;
 using pwnctl.infra.Serialization;
 using pwnctl.infra.Logging;
 using pwnctl.app.Notifications.Interfaces;
-using pwnctl.app.Common.Interfaces;
+using pwnctl.infra.Persistence;
 
 public static class PwnInfraContextInitializer
 {
-    public static void Setup(bool mock = false)
+    public static void Setup()
     {
         PublicSuffixRepository.Instance = new FsPublicSuffixRepository();
         CloudServiceRepository.Instance = new FsCloudServiceRepository();
 
         var config = PwnConfigFactory.Create();
-        var sender = mock
+        var sender = EnvironmentVariables.TEST_RUN
                     ? (NotificationSender)new MockNotificationSender()
                     : (NotificationSender)new DiscordNotificationSender();
         var logger = PwnLoggerFactory.Create(config, sender);
         var serializer = new AppJsonSerializer();
-        var evaluator = mock
-                        ? (FilterEvaluator) new MockFilterEvaluator()
-                        : (FilterEvaluator) new CSharpFilterEvaluator();
+        var evaluator = new CSharpFilterEvaluator();
 
         PwnInfraContext.Setup(config, logger, serializer, evaluator, sender);
+
+        if (EnvironmentVariables.TEST_RUN)
+        {
+            DatabaseInitializer.InitializeAsync().Wait();
+        }
     }
 }

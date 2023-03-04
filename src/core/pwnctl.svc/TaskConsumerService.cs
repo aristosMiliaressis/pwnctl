@@ -4,14 +4,11 @@ using pwnctl.app.Queueing.DTO;
 using pwnctl.app.Queueing.Interfaces;
 using pwnctl.app.Logging;
 using pwnctl.app.Tasks.Entities;
-using pwnctl.app.Tasks.Enums;
 using pwnctl.infra;
 using pwnctl.infra.Aws;
 using pwnctl.infra.Commands;
 using pwnctl.infra.Queueing;
-using pwnctl.infra.Persistence;
-using pwnctl.infra.Persistence.Extensions;
-using Microsoft.EntityFrameworkCore;
+using pwnctl.infra.Repositories;
 
 namespace pwnctl.svc
 {
@@ -19,8 +16,8 @@ namespace pwnctl.svc
     {
         private readonly IHostApplicationLifetime _hostApplicationLifetime;
         private readonly TaskQueueService _queueService = TaskQueueServiceFactory.Create();
+        private readonly TaskDbRepository _taskRepo = new TaskDbRepository();
         private readonly AssetProcessor _processor = AssetProcessorFactory.Create();
-        private readonly PwnctlDbContext _context = new();
 
         public TaskConsumerService(IHostApplicationLifetime hostApplicationLifetime)
         {
@@ -29,16 +26,11 @@ namespace pwnctl.svc
             {
                 PwnInfraContext.Logger.Information(LogSinks.Console|LogSinks.Notification, $"{nameof(TaskConsumerService)} stoped.");
             });
+            PwnInfraContext.Logger.Information(LogSinks.Console | LogSinks.Notification, $"{nameof(TaskConsumerService)} started.");
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            PwnInfraContext.Logger.Information(LogSinks.Console | LogSinks.Notification, $"{nameof(TaskConsumerService)} started.");
-
-            var dbgTimer = new System.Timers.Timer(60 * 1000);
-            dbgTimer.Elapsed += async (_, _) => await LogMemoryUsage();
-            dbgTimer.Start();
-
             while (!stoppingToken.IsCancellationRequested)
             {
                 var taskDTO = await _queueService.ReceiveAsync(stoppingToken);
@@ -49,9 +41,7 @@ namespace pwnctl.svc
                     continue;
                 }
 
-                var taskEntry = await _context
-                                    .JoinedTaskRecordQueryable()
-                                    .FirstOrDefaultAsync(r => r.Id == taskDTO.TaskId);
+                var taskEntry = await _taskRepo.GetEntryAsync(taskDTO.TaskId);
 
                 // create a linked token that cancels the task when the timeout passes or 
                 // when a SIGTERM is received due to an ECS scale in event
@@ -92,54 +82,36 @@ namespace pwnctl.svc
         public async Task ExecuteTaskAsync(TaskEntry task, CancellationToken token = default)
         {
             task.Started();
-            await _context.SaveChangesAsync(token);
+            await _taskRepo.UpdateAsync(task);
 
-            var process = await CommandExecutor.ExecuteAsync("/bin/bash", null, task.Command, waitProcess: false, token: token);
-            while (!(process.HasExited && process.StandardOutput.EndOfStream))
+            using (var process = await CommandExecutor.ExecuteAsync(task.Command, token: token))
             {
-                var line = process.StandardOutput.ReadLine();
-                if (string.IsNullOrEmpty(line))
-                    continue;
-
-                await _processor.TryProcessAsync(line, task);
-
-                var pendingTasks = await _context.JoinedTaskRecordQueryable()
-                            .Where(r => r.State == TaskState.PENDING)
-                            .ToListAsync();
-
-                foreach (var t in pendingTasks)
+                while (!process.StandardOutput.EndOfStream)
                 {
-                    t.Queued();
-                    await _queueService.EnqueueAsync(new QueuedTaskDTO(t));
-                    await _context.SaveChangesAsync();
-                    _context.Entry(t).State = EntityState.Detached;
+                    var line = await process.StandardOutput.ReadLineAsync();
+                    if (string.IsNullOrEmpty(line))
+                        continue;
+
+                    PwnInfraContext.Logger.Debug("Output: "+line);
+                    _processor.TryProcessAsync(line, task);
+
+                    var pendingTasks = await _taskRepo.ListPendingAsync(token);
+                    foreach (var t in pendingTasks)
+                    {
+                        t.Queued();
+                        await _queueService.EnqueueAsync(new QueuedTaskDTO(t), token);
+                        await _taskRepo.UpdateAsync(t);
+                    }
                 }
 
-                await _context.SaveChangesAsync();
+                string stderr = await process.StandardError.ReadToEndAsync();
+                if (!string.IsNullOrEmpty(stderr))
+                    PwnInfraContext.Logger.Error(stderr);
+
+                task.Finished(process.ExitCode);
             }
 
-            string stderr = await process.StandardError.ReadToEndAsync();
-            if (!string.IsNullOrEmpty(stderr))
-                PwnInfraContext.Logger.Error(stderr);
-
-            task.Finished(process.ExitCode);
-            await _context.SaveChangesAsync(token);
-        }
-
-        public async Task LogMemoryUsage()
-        {
-            PwnInfraContext.Logger.Debug("Memory Usage:" + GC.GetTotalMemory(false));
-
-            var process = await CommandExecutor.ExecuteAsync("/bin/bash", null, "free -m | head -2", waitProcess: true, token: CancellationToken.None);
-            PwnInfraContext.Logger.Debug(process.StandardOutput.ReadLine());
-            PwnInfraContext.Logger.Debug(process.StandardOutput.ReadLine());
-            
-            process = await CommandExecutor.ExecuteAsync("/bin/bash", null, "ps aux | sort -rnk 4 | head -5", waitProcess: true, token: CancellationToken.None);
-            PwnInfraContext.Logger.Debug(process.StandardOutput.ReadLine());
-            PwnInfraContext.Logger.Debug(process.StandardOutput.ReadLine());
-            PwnInfraContext.Logger.Debug(process.StandardOutput.ReadLine());
-            PwnInfraContext.Logger.Debug(process.StandardOutput.ReadLine());
-            PwnInfraContext.Logger.Debug(process.StandardOutput.ReadLine());
+            await _taskRepo.UpdateAsync(task);
         }
     }
 }

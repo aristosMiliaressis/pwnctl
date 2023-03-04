@@ -22,14 +22,11 @@ public sealed class Tests
 {
     public Tests()
     {
-        Environment.SetEnvironmentVariable("PWNCTL_IsTestRun", "true");
-        Environment.SetEnvironmentVariable("PWNCTL_InstallPath", ".");
+        Environment.SetEnvironmentVariable("PWNCTL_TEST_RUN", "true");
+        Environment.SetEnvironmentVariable("PWNCTL_INSTALL_PATH", ".");
         Environment.SetEnvironmentVariable("PWNCTL_Logging__FilePath", ".");
 
         PwnInfraContextInitializer.Setup();
-
-        // reset the database for every test method
-        DatabaseInitializer.InitializeAsync().Wait();
     }
 
     [Fact]
@@ -72,7 +69,7 @@ public sealed class Tests
         Assert.IsType<domain.Entities.NetworkSocket>(asset);
         Assert.NotNull(((domain.Entities.NetworkSocket)asset).NetworkHost);
 
-        // ipv6 parsing 
+        // ipv6 parsing
         asset = AssetParser.Parse("[FD00:DEAD:BEEF:64:35::2]:163");
         Assert.IsType<domain.Entities.NetworkSocket>(asset);
         Assert.NotNull(((domain.Entities.NetworkSocket)asset).NetworkHost);
@@ -130,7 +127,7 @@ public sealed class Tests
         Assert.IsType<HttpEndpoint>(asset);
         Assert.NotEmpty(((HttpEndpoint)asset).HttpParameters);
 
-        // ipv6 parsing 
+        // ipv6 parsing
         asset = AssetParser.Parse("http://[FD00:DEAD:BEEF:64:35::2]:80/ipv6test");
         Assert.IsType<HttpEndpoint>(asset);
         Assert.NotNull(((HttpEndpoint)asset).Socket);
@@ -224,9 +221,9 @@ public sealed class Tests
         var inScopeDomain = new DomainName("tesla.com");
         var outOfScope = new DomainName("www.outofscope.com");
 
-        Assert.Null(context.FindAsset(inScopeDomain));
+        Assert.Null(repository.FindMatching(inScopeDomain));
         await repository.SaveAsync(new AssetRecord(inScopeDomain));
-        Assert.NotNull(context.FindAsset(inScopeDomain));
+        Assert.NotNull(repository.FindMatching(inScopeDomain));
         inScopeDomain = context.Domains.First(d => d.Name == "tesla.com");
         await repository.SaveAsync(new AssetRecord(outOfScope));
         outOfScope = context.Domains.First(d => d.Name == "www.outofscope.com");
@@ -234,23 +231,23 @@ public sealed class Tests
         var record1 = new DomainNameRecord(DnsRecordType.A, "hackerone.com", "1.3.3.7");
         var record2 = new DomainNameRecord(DnsRecordType.AAAA, "hackerone.com", "dead:beef::::");
 
-        Assert.Null(context.FindAsset(record1));
-        Assert.Null(context.FindAsset(record2));
+        Assert.Null(repository.FindMatching(record1));
+        Assert.Null(repository.FindMatching(record2));
         await repository.SaveAsync(new AssetRecord(record1));
-        Assert.NotNull(context.FindAsset(record1));
-        Assert.Null(context.FindAsset(record2));
+        Assert.NotNull(repository.FindMatching(record1));
+        Assert.Null(repository.FindMatching(record2));
         await repository.SaveAsync(new AssetRecord(record2));
-        Assert.NotNull(context.FindAsset(record2));
+        Assert.NotNull(repository.FindMatching(record2));
 
         var netRange = new NetworkRange(System.Net.IPAddress.Parse("10.1.101.0"), 24);
-        Assert.Null(context.FindAsset(netRange));
+        Assert.Null(repository.FindMatching(netRange));
         await repository.SaveAsync(new AssetRecord(netRange));
-        Assert.NotNull(context.FindAsset(netRange));
+        Assert.NotNull(repository.FindMatching(netRange));
 
         var service = new domain.Entities.NetworkSocket(inScopeDomain, 443);
-        Assert.Null(context.FindAsset(service));
+        Assert.Null(repository.FindMatching(service));
         await repository.SaveAsync(new AssetRecord(service));
-        Assert.NotNull(context.FindAsset(service));
+        Assert.NotNull(repository.FindMatching(service));
     }
 
     [Fact]
@@ -258,6 +255,7 @@ public sealed class Tests
     {
         var processor = AssetProcessorFactory.Create();
         PwnctlDbContext context = new();
+        TaskDbRepository repository = new();
 
         var programs = context.ListPrograms();
 
@@ -267,8 +265,11 @@ public sealed class Tests
         Assert.True(record.InScope);
         Assert.Equal("tesla", record.DomainName.Word);
 
-        var cloudEnumTask = context.JoinedTaskRecordQueryable().First(t => t.Definition.ShortName == "cloud_enum");
+        var cloudEnumTask = repository.JoinedQueryable.First(t => t.Definition.ShortName == "cloud_enum");
         Assert.Equal("cloud-enum.sh tesla", cloudEnumTask.Command);
+
+        cloudEnumTask.Queued();
+        await repository.UpdateAsync(cloudEnumTask);
 
         await processor.ProcessAsync("tesla.com IN A 31.3.3.7");
 
@@ -299,20 +300,35 @@ public sealed class Tests
         await processor.ProcessAsync("xyz.tesla.com. IN A 1.3.3.7");
         record = context.AssetRecords.Include(r => r.DomainNameRecord).First(r => r.DomainNameRecord.Key == "xyz.tesla.com" && r.DomainNameRecord.Value == "1.3.3.7");
         Assert.True(record.InScope);
-
+        
         record = context.AssetRecords.Include(r => r.NetworkHost).First(r => r.NetworkHost.IP == "1.3.3.7");
         Assert.True(record.InScope);
 
-        record = context.AssetRecords.Include(r => r.NetworkSocket).First(r => r.NetworkSocket.Address == "tcp://1.3.3.7:443");
+        record = context.AssetRecords.Include(r => r.DomainNameRecord).First(r => r.DomainNameRecord.Value == "1.3.3.7");
         Assert.True(record.InScope);
 
-        record = context.AssetRecords.Include(r => r.HttpEndpoint).First(r => r.HttpEndpoint.Url == "https://1.3.3.7/");
+        record = context.AssetRecords.Include(r => r.DomainName).First(r => r.DomainName.Name == "xyz.tesla.com");
         Assert.True(record.InScope);
+
+        record = context.AssetRecords.Include(r => r.NetworkSocket).First(r => r.NetworkSocket.Address == "tcp://1.3.3.7:443");
+        Assert.False(record.InScope);
+
+        record = context.AssetRecords.Include(r => r.HttpEndpoint).First(r => r.HttpEndpoint.Url == "https://1.3.3.7/");
+        Assert.False(record.InScope);
 
         record = context.AssetRecords.Include(r => r.NetworkSocket).First(r => r.NetworkSocket.Address == "tcp://xyz.tesla.com:443");
         Assert.True(record.InScope);
 
         record = context.AssetRecords.Include(r => r.HttpEndpoint).First(r => r.HttpEndpoint.Url == "https://xyz.tesla.com/");
+        Assert.True(record.InScope);
+
+        processor = AssetProcessorFactory.Create();
+        await processor.ProcessAsync("https://1.3.3.7:443");
+        context = new();
+        record = context.AssetRecords.Include(r => r.NetworkSocket).First(r => r.NetworkSocket.Address == "tcp://1.3.3.7:443");
+        Assert.True(record.InScope);
+
+        record = context.AssetRecords.Include(r => r.HttpEndpoint).First(r => r.HttpEndpoint.Url == "https://1.3.3.7/");
         Assert.True(record.InScope);
 
         await processor.ProcessAsync("https://abc.tesla.com");
@@ -338,11 +354,12 @@ public sealed class Tests
     public async Task TaskFiltering_Tests()
     {
         PwnctlDbContext context = new();
+        TaskDbRepository repository = new();
         var processor = AssetProcessorFactory.Create();
 
         await processor.ProcessAsync("172.16.17.0/24");
-        Assert.True(context.JoinedTaskRecordQueryable().Any(t => t.Definition.ShortName == "nmap_basic"));
-        Assert.False(context.JoinedTaskRecordQueryable().Any(t => t.Definition.ShortName == "ffuf_common"));
+        Assert.True(repository.JoinedQueryable.Any(t => t.Definition.ShortName == "nmap_basic"));
+        Assert.False(repository.JoinedQueryable.Any(t => t.Definition.ShortName == "ffuf_common"));
 
         var exampleUrl = new
         {
@@ -356,16 +373,16 @@ public sealed class Tests
         await processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(exampleUrl));
 
         // aggresivness test
-        Assert.True(context.JoinedTaskRecordQueryable().Any(t => t.Definition.ShortName == "hakrawler"));
-        Assert.False(context.JoinedTaskRecordQueryable().Any(t => t.Definition.ShortName == "sqlmap"));
+        Assert.True(repository.JoinedQueryable.Any(t => t.Definition.ShortName == "hakrawler"));
+        Assert.False(repository.JoinedQueryable.Any(t => t.Definition.ShortName == "sqlmap"));
 
         // Task.Command interpolation test
-        var hakrawlerTask = context.JoinedTaskRecordQueryable().First(t => t.Definition.ShortName == "hakrawler");
+        var hakrawlerTask = repository.JoinedQueryable.First(t => t.Definition.ShortName == "hakrawler");
         Assert.Equal("hakrawler -plain -h 'User-Agent: Mozilla/5.0' https://172.16.17.15/api/token", hakrawlerTask.Command);
 
         // TaskDefinition.Filter pass test
         await processor.ProcessAsync("https://172.16.17.15/");
-        Assert.True(context.JoinedTaskRecordQueryable().Any(t => t.Definition.ShortName == "ffuf_common"));
+        Assert.True(repository.JoinedQueryable.Any(t => t.Definition.ShortName == "ffuf_common"));
 
         // Task added on existing asset
         exampleUrl = new
@@ -376,25 +393,25 @@ public sealed class Tests
             }
         };
         await processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(exampleUrl));
-        Assert.True(context.JoinedTaskRecordQueryable().Any(t => t.Definition.ShortName == "shortname_scanner"));
+        Assert.True(repository.JoinedQueryable.Any(t => t.Definition.ShortName == "shortname_scanner"));
 
         // multiple interpolation test
         await processor.ProcessAsync("sub.tesla.com");
-        var resolutionTask = context.JoinedTaskRecordQueryable()
-                                    .First(t => t.Record.DomainName.Name == "sub.tesla.com" 
+        var resolutionTask = repository.JoinedQueryable
+                                    .First(t => t.Record.DomainName.Name == "sub.tesla.com"
                                              && t.Definition.ShortName == "domain_resolution");
         Assert.Equal("dig +short sub.tesla.com | awk '{print \"sub.tesla.com IN A \" $1}'", resolutionTask.Command);
 
         // blacklist test
-        Assert.False(context.JoinedTaskRecordQueryable().Any(t => t.Definition.ShortName == "subfinder"));
+        Assert.False(repository.JoinedQueryable.Any(t => t.Definition.ShortName == "subfinder"));
 
         // Keyword test
-        var cloudEnumTask = context.JoinedTaskRecordQueryable().First(t => t.Definition.ShortName == "cloud_enum");
+        var cloudEnumTask = repository.JoinedQueryable.First(t => t.Definition.ShortName == "cloud_enum");
         Assert.Equal("cloud-enum.sh tesla", cloudEnumTask.Command);
 
         await processor.ProcessAsync("https://tesla.s3.amazonaws.com");
         var record = context.AssetRecords.Include(r => r.HttpEndpoint).First(r => r.HttpEndpoint.Url == "https://tesla.s3.amazonaws.com/");
-        Assert.True(context.JoinedTaskRecordQueryable().Any(t => t.Definition.ShortName == "second_order_takeover"));
+        Assert.True(repository.JoinedQueryable.Any(t => t.Definition.ShortName == "second_order_takeover"));
 
         // TODO: AllowActive = false test, csv black&whitelist test
         // TODO: test TaskDefinition.MatchOutOfScope
@@ -407,6 +424,7 @@ public sealed class Tests
         var processor = AssetProcessorFactory.Create();
         PwnctlDbContext context = new();
         AssetDbRepository repository = new();
+        TaskDbRepository taskRepository = new();
 
         var exampleUrl = new AssetDTO {
             Asset = "https://example.com",
@@ -472,7 +490,7 @@ public sealed class Tests
         // process same asset twice and make sure tasks are only assigned once
         await processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl));
         endpointRecord = repository.ListEndpointsAsync().Result.First(ep => ep.HttpEndpoint.Url == "https://iis.tesla.com/");
-        var tasks = context.JoinedTaskRecordQueryable().Where(t => t.Record.Id == endpointRecord.Asset.Id).ToList();
+        var tasks = taskRepository.JoinedQueryable.Where(t => t.Record.Id == endpointRecord.Asset.Id).ToList();
         Assert.True(!tasks.GroupBy(t => t.DefinitionId).Any(g => g.Count() > 1));
         srvTag = endpointRecord.Tags.First(t => t.Name == "protocol");
         Assert.Equal("IIS", srvTag.Value);
@@ -492,7 +510,7 @@ public sealed class Tests
         await processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(apacheTeslaUrl));
         endpointRecord = repository.ListEndpointsAsync().Result.First(r => r.HttpEndpoint.Url == "https://apache.tesla.com/");
 
-        tasks = context.JoinedTaskRecordQueryable().Where(t => t.Record.Id == endpointRecord.Id).ToList();
+        tasks = taskRepository.JoinedQueryable.Where(t => t.Record.Id == endpointRecord.Id).ToList();
         Assert.DoesNotContain(tasks, t => t.Definition.ShortName == "shortname_scanner");
 
         var sshService = new
@@ -515,13 +533,13 @@ public sealed class Tests
         var processor = AssetProcessorFactory.Create();
 
         var definition = context.TaskDefinitions.FirstOrDefault(t => t.ShortName == "domain_resolution");
-        
+
         var record = new AssetRecord(new DomainName("example.com.cn"));
         var task = new TaskEntry(definition, record);
-        context.Add(task);
+        context.TaskEntries.Add(task);
         context.SaveChanges();
 
-        var process = await CommandExecutor.ExecuteAsync("/bin/bash", null, "echo example.com");
+        var process = await CommandExecutor.ExecuteAsync("echo example.com");
 
         string? line = "";
         while ((line = process.StandardOutput.ReadLine()) != null)
@@ -539,7 +557,7 @@ public sealed class Tests
         Assert.Equal("domain_resolution", record?.FoundByTask.Definition.ShortName);
         Assert.DoesNotContain("foundby", record?.Tags.Select(t => t.Name));
 
-        process = await CommandExecutor.ExecuteAsync("/bin/bash", null, "echo '{\"Asset\":\"example2.com\"}'");
+        process = await CommandExecutor.ExecuteAsync("echo '{\"Asset\":\"example2.com\"}'");
 
         while ((line = process.StandardOutput.ReadLine()) != null)
         {
@@ -556,7 +574,7 @@ public sealed class Tests
         Assert.Equal("domain_resolution", record?.FoundByTask.Definition.ShortName);
         Assert.DoesNotContain("foundby", record?.Tags.Select(t => t.Name));
 
-        process = await CommandExecutor.ExecuteAsync("/bin/bash", null, "echo '{\"Asset\":\"sub.example3.com\",\"tags\":{\"test\":\"tag\"}}'");
+        process = await CommandExecutor.ExecuteAsync("echo '{\"Asset\":\"sub.example3.com\",\"tags\":{\"test\":\"tag\"}}'");
 
         while ((line = process.StandardOutput.ReadLine()) != null)
         {
@@ -569,7 +587,7 @@ public sealed class Tests
                             .ThenInclude(r => r.Definition)
                         .Include(r => r.DomainName)
                         .FirstOrDefault(r => r.DomainName.Name == "sub.example3.com");
-        
+
         Assert.Equal("domain_resolution", record?.FoundByTask.Definition.ShortName);
         Assert.Contains("test", record?.Tags.Select(t => t.Name));
         Assert.DoesNotContain("foundby", record?.Tags.Select(t => t.Name));

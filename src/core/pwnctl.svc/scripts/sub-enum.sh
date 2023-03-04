@@ -35,7 +35,7 @@ generate_brute_gueses() {
 }
 
 resolve_domains() {
-    puredns resolve -t 60 -q $potential_subs_file -r $DNS_RESOLVERS_FILE
+    puredns resolve -q $potential_subs_file -r $DNS_RESOLVERS_FILE
 }
 
 generate_wordlist_alts() {

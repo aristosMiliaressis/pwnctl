@@ -5,13 +5,12 @@ using pwnctl.app;
 
 public static class CommandExecutor
 {
-    public static async Task<Process> ExecuteAsync(string fileName, string args, string stdin = null, bool waitProcess = true, CancellationToken token = default)
+    public static async Task<Process> ExecuteAsync(string command, bool waitProcess = true, CancellationToken token = default)
     {
-        PwnInfraContext.Logger.Debug($"Running: {fileName} {args} " + (stdin == null ? "" : $"<<< {stdin}"));
+        PwnInfraContext.Logger.Debug($"Running: {command}");
 
         var psi = new ProcessStartInfo();
-        psi.FileName = fileName;
-        psi.Arguments = args;
+        psi.FileName = "/bin/bash";
         psi.RedirectStandardError = true;
         psi.RedirectStandardOutput = true;
         psi.RedirectStandardInput = true;
@@ -20,16 +19,13 @@ public static class CommandExecutor
 
         var process = Process.Start(psi);
         if (process == null)
-            throw new Exception(fileName + " process failed to start");
+            throw new Exception("bash process failed to start");
 
-        if (stdin != null)
+        using (StreamWriter sr = process.StandardInput)
         {
-            using (StreamWriter sr = process.StandardInput)
-            {
-                await sr.WriteLineAsync(stdin);
-                sr.Flush();
-                sr.Close();
-            }
+            await sr.WriteLineAsync(command);
+            sr.Flush();
+            sr.Close();
         }
 
         if (waitProcess)

@@ -40,7 +40,7 @@ target policies allow filtering tasks per target.
 **`target-*.yml`**
 ```YAML
 Name: EXAMPLE BB TARGET
-Platform: HackerOne
+TaskProfile: all
 Policy:
     Whitelist: ffuf_common
     Blacklist: nmap_basic

@@ -18,8 +18,6 @@ namespace pwnctl.domain.Entities
         public string DomainNameId { get; private init; }
         public DomainName DomainName { get; init; }
 
-        public List<HttpEndpoint> Endpoints { get; init; }
-
         public NetworkSocket() { }
 
         public NetworkSocket(DomainName domain, ushort port, TransportProtocol l4Proto = TransportProtocol.TCP)

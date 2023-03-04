@@ -9,6 +9,9 @@ using YamlDotNet.Serialization.NamingConventions;
 using pwnctl.infra.Configuration.Validation.Exceptions;
 using pwnctl.infra.Configuration.Validation;
 using pwnctl.infra.Configuration;
+using pwnctl.infra.Queueing;
+using pwnctl.infra.Repositories;
+using pwnctl.app.Queueing.DTO;
 
 namespace pwnctl.infra.Persistence
 {
@@ -22,7 +25,7 @@ namespace pwnctl.infra.Persistence
         {
             PwnctlDbContext context = new();
 
-            if (EnvironmentVariables.IsTestRun)
+            if (EnvironmentVariables.TEST_RUN)
             {
                 await context.Database.EnsureDeletedAsync();
             }
@@ -46,6 +49,30 @@ namespace pwnctl.infra.Persistence
             {
                 await SeedTargetsAsync(context);
             }
+
+            string assetSeed = Path.Combine(EnvironmentVariables.INSTALL_PATH, "seed/assets.txt");
+            if (EnvironmentVariables.TEST_RUN)
+            {
+                if (File.Exists(assetSeed))
+                {
+                    var processor = AssetProcessorFactory.Create();
+                    var queueService = TaskQueueServiceFactory.Create();
+                    var taskRepo = new TaskDbRepository();
+                    foreach (var line in File.ReadAllLines(assetSeed))
+                    {
+                        await processor.TryProcessAsync(line);
+
+                        var tasks = await taskRepo.ListPendingAsync();
+
+                        tasks.ForEach(async t => 
+                        {
+                            await queueService.EnqueueAsync(new QueuedTaskDTO(t));
+                        });
+
+                        await context.SaveChangesAsync();
+                    }
+                }
+            }
         }
 
         private static async Task SeedTaskDefinitionsAsync(PwnctlDbContext context)
@@ -53,7 +80,7 @@ namespace pwnctl.infra.Persistence
             Matcher matcher = new();
             matcher.AddInclude("*.td.yml");
 
-            foreach (string taskFile in matcher.GetResultsInFullPath($"{EnvironmentVariables.InstallPath}/seed/"))
+            foreach (string taskFile in matcher.GetResultsInFullPath(Path.Combine(EnvironmentVariables.INSTALL_PATH, "seed/")))
             {
                 if (!File.Exists(taskFile))
                 {
@@ -92,7 +119,7 @@ namespace pwnctl.infra.Persistence
             Matcher matcher = new();
             matcher.AddInclude("*.nr.yml");
 
-            foreach (string notificationFile in matcher.GetResultsInFullPath($"{EnvironmentVariables.InstallPath}/seed/"))
+            foreach (string notificationFile in matcher.GetResultsInFullPath(Path.Combine(EnvironmentVariables.INSTALL_PATH, "seed/")))
             {
                 if (!File.Exists(notificationFile))
                 {
@@ -118,7 +145,7 @@ namespace pwnctl.infra.Persistence
             Matcher matcher = new();
             matcher.AddInclude("target-*.yml");
 
-            foreach (string file in matcher.GetResultsInFullPath($"{EnvironmentVariables.InstallPath}/seed/")) 
+            foreach (string file in matcher.GetResultsInFullPath(Path.Combine(EnvironmentVariables.INSTALL_PATH, "seed/"))) 
             {
                 var programText = File.ReadAllText(file);
                 var target = _deserializer.Deserialize<TargetFile>(programText);

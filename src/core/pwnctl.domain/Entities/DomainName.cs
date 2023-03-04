@@ -12,8 +12,6 @@ namespace pwnctl.domain.Entities
         public int ZoneDepth { get; private init; }
         public DomainName ParentDomain { get; private set; }
         public string ParentDomainId { get; private init; }
-        public List<DomainNameRecord> DNSRecords { get; private init; }
-        public List<NetworkSocket> Sockets { get; private init; }
         public string Word => Name.Replace($".{PublicSuffixRepository.Instance.GetSuffix(Name).Value}", "")
                                     .Split(".")
                                     .Last();

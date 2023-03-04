@@ -217,7 +217,7 @@ namespace pwnctl.infra.cdk.Stacks
                     {"PWNCTL_Logging__MinLevel", "Debug"},
                     {"PWNCTL_Logging__FilePath", "/mnt/efs/"},
                     {"PWNCTL_Logging__LogGroup", AwsConstants.LambdaLogGroup},
-                    {"PWNCTL_InstallPath", AwsConstants.EfsMountPoint}
+                    {"PWNCTL_INSTALL_PATH", AwsConstants.EfsMountPoint}
                 }
             });
             Database.Connections.AllowDefaultPortFrom(function);
@@ -334,7 +334,7 @@ namespace pwnctl.infra.cdk.Stacks
                     {"PWNCTL_Logging__FilePath", "/mnt/efs/"},
                     {"PWNCTL_Logging__MinLevel", "Debug"},
                     {"PWNCTL_Logging__LogGroup", logGroup.LogGroupName},
-                    {"PWNCTL_InstallPath", AwsConstants.EfsMountPoint}
+                    {"PWNCTL_INSTALL_PATH", AwsConstants.EfsMountPoint}
                 }
             });
 
@@ -385,19 +385,21 @@ namespace pwnctl.infra.cdk.Stacks
 
             var scaling = FargateService.AutoScaleTaskCount(new EnableScalingProps { MinCapacity = 0, MaxCapacity = AwsConstants.EcsInstances });
 
-            List<IScalingInterval> scalingSteps = new()
+            List<IScalingInterval> scalingSteps = new();
+            scalingSteps.Add(new ScalingInterval
             {
-                new ScalingInterval
+                Upper = 1,
+                Change = 0
+            });
+
+            for (int i = 0; i < AwsConstants.EcsInstances / 3; i++)
+            {
+                scalingSteps.Add(new ScalingInterval
                 {
-                    Upper = 1,
-                    Change = 0
-                },
-                new ScalingInterval
-                {
-                    Upper = 10000,
-                    Change = AwsConstants.EcsInstances
-                }
-            };
+                    Lower = 10 * i + 1,
+                    Change = (i+1) * 3 + (AwsConstants.EcsInstances % 3)
+                });
+            }
 
             scaling.ScaleOnMetric(AwsConstants.ScaleOutPolicy, new BasicStepScalingPolicyProps
             {

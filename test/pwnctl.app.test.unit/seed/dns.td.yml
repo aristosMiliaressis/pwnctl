@@ -23,3 +23,8 @@ TaskDefinitions:
     CommandTemplate: nuclei -t /opt/nuclei-templates/cname_takeovers
     Subject: DomainNameRecord
     Filter: DomainNameRecord.Type == DnsRecordType.CNAME
+
+  - ShortName: sub_enum
+    CommandTemplate: ../../../../../src/core/pwnctl.svc/scripts/sub-enum.sh {{Name}}
+    Filter: DomainName.ZoneDepth <= 2
+    Subject: DomainName

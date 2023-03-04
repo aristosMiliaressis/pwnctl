@@ -16,7 +16,7 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
             builder.Ignore(e => e.SPFHosts);
 
             builder.HasOne(e => e.DomainName)
-                .WithMany(e => e.DNSRecords)
+                .WithMany()
                 .HasForeignKey(e => e.DomainId);
 
             builder.HasOne(e => e.NetworkHost)

@@ -43,6 +43,13 @@ namespace pwnctl.infra.Repositories
                             .FirstOrDefaultAsync(r => r.Id == HashIdValueGenerator.Generate(asset));
         }
 
+        public Asset FindMatching(Asset asset)
+        {
+            var lambda = ExpressionTreeBuilder.BuildAssetMatchingLambda(asset);
+
+            return (Asset) _context.FirstFromLambda(lambda);
+        }
+
         public TaskEntry FindTaskEntry(Asset asset, TaskDefinition def)
         {
             var lambda = ExpressionTreeBuilder.BuildTaskMatchingLambda(asset, def);
@@ -53,48 +60,73 @@ namespace pwnctl.infra.Repositories
         {
             var assetReferences = asset.GetType()
                 .GetProperties()
-                .Where(p => p.PropertyType.IsAssignableTo(typeof(Asset)));
+                .Where(p => p.PropertyType.IsAssignableTo(typeof(Asset))
+                         && p.GetValue(asset) != null);
 
             foreach (var reference in assetReferences)
             {
-                var assetRef = (Asset)reference.GetValue(asset);
-                if (assetRef == null)
+                var existing = FindMatching((Asset)reference.GetValue(asset));
+                if (existing == null)
                     continue;
 
-                var existingAsset = _context.FindAsset(assetRef);
-                if (existingAsset == null)
-                    continue;
+                await _context.Entry(existing).LoadReferencesRecursivelyAsync();
 
-                await _context.Entry(existingAsset).LoadReferencesRecursivelyAsync();
-
-                reference.SetValue(record.Asset, existingAsset);
+                reference.SetValue(record.Asset, existing);
             };
+
+            var existingAsset = FindMatching(record.Asset);
+            if (existingAsset == null)
+                return record;
+
+            var assetCollections = asset.GetType()
+                .GetProperties()
+                .Where(p => p.PropertyType.IsGenericType
+                         && p.PropertyType.GetGenericArguments()[0].IsAssignableTo(typeof(Asset))
+                         && p.GetValue(asset) != null);
+
+            foreach (var collection in assetCollections)
+            {
+                var innerAssets = (IEnumerable<Asset>)collection.GetValue(asset);
+                if (innerAssets == null || !innerAssets.Any())
+                {
+                    await _context.Entry(existingAsset).LoadReferencesRecursivelyAsync();
+                    collection.SetValue(record.Asset, collection.GetValue(existingAsset));
+                }
+            }
 
             return record;
         }
 
         public async Task SaveAsync(AssetRecord record)
         {
-            var existingAsset = _context.FindAsset(record.Asset);
+            record.Program = null;
+            record.Tasks.ForEach(t => _context.Entry(t.Definition).State = EntityState.Unchanged);
+            
+            var existingAsset = FindMatching(record.Asset);
             if (existingAsset == null)
             {
                 record.FoundAt = DateTime.UtcNow;
 
                 _context.Entry(record.Asset).State = EntityState.Added;
+                
                 _context.Add(record);
 
                 await _context.SaveChangesAsync();
+            }
+            else
+            {
+                _context.Entry(record.Asset).DetachReferechGraph();
+                _context.Entry(record).State = EntityState.Modified;
 
-                return;
+                _context.AddRange(record.Tags.Where(t => t.Id == default));
+
+                _context.AddRange(record.Tasks.Where(t => t.Id == default));
+
+                await _context.SaveChangesAsync();
             }
 
-            _context.Update(record);
-
-            _context.AddRange(record.Tags.Where(t => t.Id == default));
-
-            _context.AddRange(record.Tasks.Where(t => t.Id == default));
-
-            await _context.SaveChangesAsync();
+            _context.Entry(record).DetachReferechGraph();
+            record.Tasks.ForEach(t => _context.Entry(t.Definition).State = EntityState.Detached);
         }
 
         public async Task<List<AssetRecord>> ListHostsAsync()

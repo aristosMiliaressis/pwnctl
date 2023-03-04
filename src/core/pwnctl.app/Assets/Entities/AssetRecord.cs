@@ -68,6 +68,7 @@ public sealed class AssetRecord : Entity<string>
     public void SetOwningProgram(Program program)
     {
         Program = program;
+        ProgramId = program?.Id;
         InScope = Program != null;
     }
 

@@ -12,7 +12,6 @@ namespace pwnctl.domain.Entities
         public AddressFamily Version { get; init; }
 
         public List<DomainNameRecord> AARecords { get; internal set; } = new List<DomainNameRecord>();
-        public List<NetworkSocket> Sockets { get; private init; }
         
         public NetworkHost() {}
 

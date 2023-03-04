@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using pwnctl.infra.Persistence;
@@ -11,9 +12,10 @@ using pwnctl.infra.Persistence;
 namespace pwnctl.infra.Migrations
 {
     [DbContext(typeof(PwnctlDbContext))]
-    partial class PwnctlDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230304083922_asset-rel-pruning")]
+    partial class assetrelpruning
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -826,7 +828,7 @@ namespace pwnctl.infra.Migrations
                         .HasForeignKey("DomainNameId");
 
                     b.HasOne("pwnctl.domain.Entities.NetworkHost", "NetworkHost")
-                        .WithMany("Sockets")
+                        .WithMany()
                         .HasForeignKey("NetworkHostId");
 
                     b.Navigation("DomainName");
@@ -861,8 +863,6 @@ namespace pwnctl.infra.Migrations
             modelBuilder.Entity("pwnctl.domain.Entities.NetworkHost", b =>
                 {
                     b.Navigation("AARecords");
-
-                    b.Navigation("Sockets");
                 });
 #pragma warning restore 612, 618
         }

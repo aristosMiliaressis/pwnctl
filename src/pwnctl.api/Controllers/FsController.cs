@@ -29,7 +29,7 @@ public sealed class FsController : ControllerBase
         var directoryListing = Directory.GetDirectories(filePath)
                                 .Concat(Directory.GetFiles(filePath));
 
-        return Ok(directoryListing.Select(f => f.Replace(EnvironmentVariables.InstallPath, "")));
+        return Ok(directoryListing.Select(f => f.Replace(EnvironmentVariables.INSTALL_PATH, "")));
     }
 
     [HttpGet("download")]
@@ -119,7 +119,7 @@ public sealed class FsController : ControllerBase
         return Ok();
     }
 
-    private string FullPath(string path) => EnvironmentVariables.InstallPath + (path.StartsWith("/") ? "" : "/") + path;
+    private string FullPath(string path) => EnvironmentVariables.INSTALL_PATH + (path.StartsWith("/") ? "" : "/") + path;
 
     private string GetFileContentType(string filePath)
     {

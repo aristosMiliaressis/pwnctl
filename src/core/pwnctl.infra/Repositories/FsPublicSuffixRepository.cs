@@ -6,7 +6,7 @@ namespace pwnctl.infra.Repositories
 {
     public sealed class FsPublicSuffixRepository : PublicSuffixRepository
     {
-        private static string _publicSuffixDataFile = $"{EnvironmentVariables.InstallPath}/public_suffix_list.dat";
+        private static string _publicSuffixDataFile = Path.Combine(EnvironmentVariables.INSTALL_PATH, "public_suffix_list.dat");
 
         public PublicSuffix GetSuffix(string suffix)
         {

@@ -36,7 +36,7 @@ namespace pwnctl.cli.ModeHandlers
             Matcher matcher = new();
             matcher.AddInclude("*.json");
 
-            PwnInfraContextInitializer.Setup(mock: true);
+            //PwnInfraContextInitializer.Setup(mock: true);
             await DatabaseInitializer.InitializeAsync();
             var context = new PwnctlDbContext();
             var processor = AssetProcessorFactory.Create();

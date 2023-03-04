@@ -9,7 +9,7 @@ public static class ZipArchiveExtensions
     {
         foreach (var file in Directory.GetFiles(path))
         {
-            archive.CreateEntryFromFile(file, file.Replace(EnvironmentVariables.InstallPath+"/", ""));
+            archive.CreateEntryFromFile(file, file.Replace(EnvironmentVariables.INSTALL_PATH +"/", ""));
         }
 
         foreach (var directory in Directory.GetDirectories(path))
