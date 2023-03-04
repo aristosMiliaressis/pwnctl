@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using pwnctl.app;
 using pwnctl.app.Tasks.Entities;
 using pwnctl.app.Scope.Entities;
 using pwnctl.app.Notifications.Entities;
@@ -64,10 +63,10 @@ namespace pwnctl.infra.Persistence
 
                         var tasks = await taskRepo.ListPendingAsync();
 
-                        tasks.ForEach(async t => 
+                        foreach (var task in tasks)
                         {
-                            await queueService.EnqueueAsync(new QueuedTaskDTO(t));
-                        });
+                            await queueService.EnqueueAsync(new QueuedTaskDTO(task));
+                        }
 
                         await context.SaveChangesAsync();
                     }

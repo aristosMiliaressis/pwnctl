@@ -1,10 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using pwnctl.domain.BaseClasses;
-using pwnctl.app.Tasks.Entities;
 using pwnctl.app.Scope.Entities;
 using System.Reflection;
 using System.Linq.Expressions;
-using pwnctl.app.Common;
 using pwnctl.kernel.BaseClasses;
 
 namespace pwnctl.infra.Persistence.Extensions

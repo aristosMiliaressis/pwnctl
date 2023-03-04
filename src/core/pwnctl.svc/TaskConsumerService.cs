@@ -92,8 +92,7 @@ namespace pwnctl.svc
                     if (string.IsNullOrEmpty(line))
                         continue;
 
-                    PwnInfraContext.Logger.Debug("Output: "+line);
-                    _processor.TryProcessAsync(line, task);
+                    await _processor.TryProcessAsync(line, task);
 
                     var pendingTasks = await _taskRepo.ListPendingAsync(token);
                     foreach (var t in pendingTasks)

@@ -1,5 +1,3 @@
-using pwnctl.app.Assets.Aggregates;
-using pwnctl.domain.ValueObjects;
 using pwnctl.kernel.BaseClasses;
 
 namespace pwnctl.app.Tasks.Entities

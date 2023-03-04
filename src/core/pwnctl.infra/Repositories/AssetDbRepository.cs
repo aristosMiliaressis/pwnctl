@@ -100,7 +100,10 @@ namespace pwnctl.infra.Repositories
         public async Task SaveAsync(AssetRecord record)
         {
             record.Program = null;
-            record.Tasks.ForEach(t => _context.Entry(t.Definition).State = EntityState.Unchanged);
+            foreach (var task in record.Tasks)
+            {
+                _context.Entry(task.Definition).State = EntityState.Unchanged;
+            }
             
             var existingAsset = FindMatching(record.Asset);
             if (existingAsset == null)
@@ -110,8 +113,6 @@ namespace pwnctl.infra.Repositories
                 _context.Entry(record.Asset).State = EntityState.Added;
                 
                 _context.Add(record);
-
-                await _context.SaveChangesAsync();
             }
             else
             {
@@ -121,12 +122,15 @@ namespace pwnctl.infra.Repositories
                 _context.AddRange(record.Tags.Where(t => t.Id == default));
 
                 _context.AddRange(record.Tasks.Where(t => t.Id == default));
-
-                await _context.SaveChangesAsync();
             }
 
+            await _context.SaveChangesAsync();
+
             _context.Entry(record).DetachReferechGraph();
-            record.Tasks.ForEach(t => _context.Entry(t.Definition).State = EntityState.Detached);
+            foreach (var task in record.Tasks)
+            {
+                _context.Entry(task.Definition).State = EntityState.Detached;
+            }
         }
 
         public async Task<List<AssetRecord>> ListHostsAsync()
