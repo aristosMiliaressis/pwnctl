@@ -13,7 +13,7 @@ namespace pwnctl.domain.Entities
 
         [EqualityComponent]
         public string Name { get; init; }
-        [EqualityComponent]
+        //[EqualityComponent]
         public ParamType Type { get; init; }
 
         public string UrlEncodedCsValues { get; private init; }

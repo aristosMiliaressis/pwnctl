@@ -11,6 +11,7 @@ using pwnctl.infra.Configuration;
 using pwnctl.infra.Queueing;
 using pwnctl.infra.Repositories;
 using pwnctl.app.Queueing.DTO;
+using pwnctl.app;
 
 namespace pwnctl.infra.Persistence
 {
@@ -50,26 +51,25 @@ namespace pwnctl.infra.Persistence
             }
 
             string assetSeed = Path.Combine(EnvironmentVariables.INSTALL_PATH, "seed/assets.txt");
-            if (EnvironmentVariables.TEST_RUN)
+            if (EnvironmentVariables.TEST_RUN && File.Exists(assetSeed))
             {
-                if (File.Exists(assetSeed))
+                var processor = AssetProcessorFactory.Create();
+                var queueService = TaskQueueServiceFactory.Create();
+                var taskRepo = new TaskDbRepository();
+                foreach (var line in File.ReadAllLines(assetSeed))
                 {
-                    var processor = AssetProcessorFactory.Create();
-                    var queueService = TaskQueueServiceFactory.Create();
-                    var taskRepo = new TaskDbRepository();
-                    foreach (var line in File.ReadAllLines(assetSeed))
+                    await processor.TryProcessAsync(line);
+
+                    var tasks = await taskRepo.ListPendingAsync();
+
+                    foreach (var task in tasks)
                     {
-                        await processor.TryProcessAsync(line);
-
-                        var tasks = await taskRepo.ListPendingAsync();
-
-                        foreach (var task in tasks)
-                        {
-                            await queueService.EnqueueAsync(new QueuedTaskDTO(task));
-                        }
-
-                        await context.SaveChangesAsync();
+                        task.Queued();
+                        await queueService.EnqueueAsync(new QueuedTaskDTO(task));
+                        await taskRepo.UpdateAsync(task);
                     }
+
+                    await context.SaveChangesAsync();
                 }
             }
         }

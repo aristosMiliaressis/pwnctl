@@ -17,6 +17,7 @@ using System.Net;
 using Microsoft.EntityFrameworkCore;
 using pwnctl.app.Tasks.Entities;
 using pwnctl.infra.Commands;
+using System.Text;
 
 public sealed class Tests
 {
@@ -25,6 +26,7 @@ public sealed class Tests
         Environment.SetEnvironmentVariable("PWNCTL_TEST_RUN", "true");
         Environment.SetEnvironmentVariable("PWNCTL_INSTALL_PATH", ".");
         Environment.SetEnvironmentVariable("PWNCTL_Logging__FilePath", ".");
+        Environment.SetEnvironmentVariable("PWNCTL_Logging__MinLevel", "Debug");
 
         PwnInfraContextInitializer.Setup();
     }
@@ -123,10 +125,10 @@ public sealed class Tests
         // Assert.IsType<HttpEndpoint>(asset);
 
         // parameter
-        asset = AssetParser.Parse("https://xyz.example.com:8443/api/token?_u=xxx");
+        asset = AssetParser.Parse("https://xyz.example.com:8443/api/token?_u=xxx&second=test");
         Assert.IsType<HttpEndpoint>(asset);
-        Assert.NotEmpty(((HttpEndpoint)asset).HttpParameters);
-
+        Assert.Equal(2, ((HttpEndpoint)asset).HttpParameters.Count);
+        
         // ipv6 parsing
         asset = AssetParser.Parse("http://[FD00:DEAD:BEEF:64:35::2]:80/ipv6test");
         Assert.IsType<HttpEndpoint>(asset);
@@ -296,7 +298,7 @@ public sealed class Tests
 
         await processor.ProcessAsync("https://1.3.3.7:443");
         await processor.ProcessAsync("https://xyz.tesla.com:443");
-        await processor.ProcessAsync("https://xyz.tesla.com:443/api");
+        await processor.ProcessAsync("https://xyz.tesla.com:443/api?key=xxx");
         await processor.ProcessAsync("xyz.tesla.com. IN A 1.3.3.7");
         record = context.AssetRecords.Include(r => r.DomainNameRecord).First(r => r.DomainNameRecord.Key == "xyz.tesla.com" && r.DomainNameRecord.Value == "1.3.3.7");
         Assert.True(record.InScope);
@@ -320,6 +322,9 @@ public sealed class Tests
         Assert.True(record.InScope);
 
         record = context.AssetRecords.Include(r => r.HttpEndpoint).First(r => r.HttpEndpoint.Url == "https://xyz.tesla.com/");
+        Assert.True(record.InScope);
+
+        record = context.AssetRecords.Include(r => r.HttpParameter).First(r => r.HttpParameter.Url == "https://xyz.tesla.com/api" && r.HttpParameter.Name == "key");
         Assert.True(record.InScope);
 
         processor = AssetProcessorFactory.Create();

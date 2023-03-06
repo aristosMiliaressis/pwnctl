@@ -162,7 +162,7 @@ namespace pwnctl.infra.cdk.Stacks
                 VisibilityTimeout = Duration.Seconds(AwsConstants.QueueVisibilityTimeoutInSec),
                 DeadLetterQueue = new DeadLetterQueue
                 {
-                    MaxReceiveCount = 3,
+                    MaxReceiveCount = 4,
                     Queue = DLQueue
                 }
             });
@@ -282,8 +282,8 @@ namespace pwnctl.infra.cdk.Stacks
 
             TaskDefinition = new FargateTaskDefinition(this, AwsConstants.TaskDefinitionId, new FargateTaskDefinitionProps
             {
-                Cpu = 1024,
-                MemoryLimitMiB = 8192,
+                Cpu = 512,
+                MemoryLimitMiB = 3072,
                 TaskRole = ecsTaskExecutionRole,
                 ExecutionRole = ecsTaskExecutionRole,
                 Volumes = new ECS.Volume[]
