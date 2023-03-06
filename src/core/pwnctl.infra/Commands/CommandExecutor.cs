@@ -1,25 +1,33 @@
 namespace pwnctl.infra.Commands;
 
 using System.Diagnostics;
+using System.Text;
 using pwnctl.app;
 
 public static class CommandExecutor
 {
-    public static async Task<Process> ExecuteAsync(string command, bool waitProcess = true, CancellationToken token = default)
+    public static async Task<(int, StringBuilder, StringBuilder)> ExecuteAsync(string command, CancellationToken token = default)
     {
         PwnInfraContext.Logger.Debug($"Running: {command}");
+        
+        StringBuilder stdout = new();
+        StringBuilder stderr = new();
 
-        var psi = new ProcessStartInfo();
-        psi.FileName = "/bin/bash";
-        psi.RedirectStandardError = true;
-        psi.RedirectStandardOutput = true;
-        psi.RedirectStandardInput = true;
-        psi.UseShellExecute = false;
-        psi.CreateNoWindow = true;
+        var process = new Process();
+        process.StartInfo.FileName = "/bin/bash";
+        process.StartInfo.RedirectStandardError = true;
+        process.StartInfo.RedirectStandardOutput = true;
+        process.StartInfo.RedirectStandardInput = true;
+        process.StartInfo.UseShellExecute = false;
+        process.StartInfo.CreateNoWindow = true;
 
-        var process = Process.Start(psi);
-        if (process == null)
-            throw new Exception("bash process failed to start");
+        process.OutputDataReceived += (s, e) => stdout.AppendLine(e.Data);
+        process.ErrorDataReceived += (s, e) => stderr.AppendLine(e.Data);
+
+        process.Start();
+
+        process.BeginErrorReadLine();
+        process.BeginOutputReadLine();
 
         using (StreamWriter sr = process.StandardInput)
         {
@@ -28,9 +36,8 @@ public static class CommandExecutor
             sr.Close();
         }
 
-        if (waitProcess)
-            await process.WaitForExitAsync(token);
+        await process.WaitForExitAsync(token);
 
-        return process;
+        return (process.ExitCode, stdout, stderr);
     }
 }

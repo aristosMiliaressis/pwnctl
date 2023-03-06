@@ -3,6 +3,7 @@ using pwnctl.app.Tasks.Entities;
 using pwnctl.infra.Persistence;
 using Microsoft.EntityFrameworkCore;
 using pwnctl.app.Tasks.Enums;
+using pwnctl.infra.Persistence.Extensions;
 
 namespace pwnctl.infra.Repositories
 {
@@ -69,6 +70,10 @@ namespace pwnctl.infra.Repositories
             
             await _context.SaveChangesAsync();
             _context.Entry(task).State = EntityState.Detached;
+            _context.Entry(task.Definition).State = EntityState.Detached;
+            _context.Entry(task.Record).State = EntityState.Detached;
+            _context.Entry(task.Record.Asset).State = EntityState.Detached;
+            _context.Entry(task.Record.Program).State = EntityState.Detached;
         }
 
         public void Dispose()

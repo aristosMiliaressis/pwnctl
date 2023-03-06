@@ -1,3 +1,4 @@
+using System.Text;
 using pwnctl.app;
 using pwnctl.app.Queueing.DTO;
 using pwnctl.app.Queueing.Interfaces;
@@ -8,11 +9,11 @@ namespace pwnctl.infra.Queueing
 {
     public sealed class MockTaskQueueService : TaskQueueService
     {
-        private static readonly string _queuePath = "./.fifo";
+        private static readonly string _queuePath = "./queue";
 
         public MockTaskQueueService()
         {
-            CommandExecutor.ExecuteAsync($"mkfifo {_queuePath}").Wait();
+            CommandExecutor.ExecuteAsync($"touch {_queuePath}").Wait();
         }
 
         /// <summary>
@@ -23,20 +24,19 @@ namespace pwnctl.infra.Queueing
         {
             var json = PwnInfraContext.Serializer.Serialize(task);
             
-            await CommandExecutor.ExecuteAsync($"echo '{json}' > {_queuePath}");
+            await CommandExecutor.ExecuteAsync($"echo '{json}' >> {_queuePath}");
             
             return true;
         }
 
         public async Task<QueuedTaskDTO> ReceiveAsync(CancellationToken token = default)
         {
-            var process = await CommandExecutor.ExecuteAsync($"if read line <{_queuePath}; then echo $line; fi");
+            (_, StringBuilder stdout, _) = await CommandExecutor.ExecuteAsync($"if read line <{_queuePath}; then echo $line; tmp=\"$(tail -n +2 {_queuePath})\"; echo \"$tmp\" > {_queuePath}; fi");
 
-            var json = await process.StandardOutput.ReadLineAsync();
-            if (string.IsNullOrEmpty(json))
+            if (string.IsNullOrEmpty(stdout.ToString()))
                 return null;
 
-            return PwnInfraContext.Serializer.Deserialize<QueuedTaskDTO>(json);
+            return PwnInfraContext.Serializer.Deserialize<QueuedTaskDTO>(stdout.ToString());
         }
 
         public Task DequeueAsync(QueuedTaskDTO task)

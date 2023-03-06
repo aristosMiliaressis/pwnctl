@@ -9,6 +9,7 @@ using pwnctl.infra.Aws;
 using pwnctl.infra.Commands;
 using pwnctl.infra.Queueing;
 using pwnctl.infra.Repositories;
+using System.Text;
 
 namespace pwnctl.svc
 {
@@ -84,31 +85,28 @@ namespace pwnctl.svc
             task.Started();
             await _taskRepo.UpdateAsync(task);
 
-            using (var process = await CommandExecutor.ExecuteAsync(task.Command, token: token))
+            (int exitCode, StringBuilder stdout, StringBuilder stderr) = await CommandExecutor.ExecuteAsync(task.Command, token: token);
+
+            foreach (var line in stdout.ToString().Split("\n"))
             {
-                while (!process.StandardOutput.EndOfStream)
+                if (string.IsNullOrEmpty(line))
+                    continue;
+
+                await _processor.TryProcessAsync(line, task);
+
+                var pendingTasks = await _taskRepo.ListPendingAsync(token);
+                foreach (var t in pendingTasks)
                 {
-                    var line = await process.StandardOutput.ReadLineAsync();
-                    if (string.IsNullOrEmpty(line))
-                        continue;
-
-                    await _processor.TryProcessAsync(line, task);
-
-                    var pendingTasks = await _taskRepo.ListPendingAsync(token);
-                    foreach (var t in pendingTasks)
-                    {
-                        t.Queued();
-                        await _queueService.EnqueueAsync(new QueuedTaskDTO(t), token);
-                        await _taskRepo.UpdateAsync(t);
-                    }
+                    t.Queued();
+                    await _queueService.EnqueueAsync(new QueuedTaskDTO(t), token);
+                    await _taskRepo.UpdateAsync(t);
                 }
-
-                string stderr = await process.StandardError.ReadToEndAsync();
-                if (!string.IsNullOrEmpty(stderr))
-                    PwnInfraContext.Logger.Error(stderr);
-
-                task.Finished(process.ExitCode);
             }
+
+            if (!string.IsNullOrWhiteSpace(stderr.ToString()))
+                PwnInfraContext.Logger.Error(stderr.ToString());
+
+            task.Finished(exitCode);
 
             await _taskRepo.UpdateAsync(task);
         }

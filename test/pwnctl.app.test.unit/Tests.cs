@@ -539,10 +539,9 @@ public sealed class Tests
         context.TaskEntries.Add(task);
         context.SaveChanges();
 
-        var process = await CommandExecutor.ExecuteAsync("echo example.com");
+        (_, StringBuilder stdout, _) = await CommandExecutor.ExecuteAsync("echo example.com");
 
-        string? line = "";
-        while ((line = process.StandardOutput.ReadLine()) != null)
+        foreach (var line in stdout.ToString().Split("\n").Where(l => !string.IsNullOrEmpty(l)))
         {
             await processor.ProcessAsync(line, task);
         }
@@ -557,9 +556,9 @@ public sealed class Tests
         Assert.Equal("domain_resolution", record?.FoundByTask.Definition.ShortName);
         Assert.DoesNotContain("foundby", record?.Tags.Select(t => t.Name));
 
-        process = await CommandExecutor.ExecuteAsync("echo '{\"Asset\":\"example2.com\"}'");
+        (_, stdout, _) = await CommandExecutor.ExecuteAsync("echo '{\"Asset\":\"example2.com\"}'");
 
-        while ((line = process.StandardOutput.ReadLine()) != null)
+        foreach (var line in stdout.ToString().Split("\n").Where(l => !string.IsNullOrEmpty(l)))
         {
             await processor.ProcessAsync(line, task);
         }
@@ -574,9 +573,9 @@ public sealed class Tests
         Assert.Equal("domain_resolution", record?.FoundByTask.Definition.ShortName);
         Assert.DoesNotContain("foundby", record?.Tags.Select(t => t.Name));
 
-        process = await CommandExecutor.ExecuteAsync("echo '{\"Asset\":\"sub.example3.com\",\"tags\":{\"test\":\"tag\"}}'");
+        (_, stdout, _) = await CommandExecutor.ExecuteAsync("echo '{\"Asset\":\"sub.example3.com\",\"tags\":{\"test\":\"tag\"}}'");
 
-        while ((line = process.StandardOutput.ReadLine()) != null)
+        foreach (var line in stdout.ToString().Split("\n").Where(l => !string.IsNullOrEmpty(l)))
         {
             await processor.ProcessAsync(line, task);
         }
