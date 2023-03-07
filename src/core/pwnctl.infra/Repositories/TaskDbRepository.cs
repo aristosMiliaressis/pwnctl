@@ -73,7 +73,8 @@ namespace pwnctl.infra.Repositories
             _context.Entry(task.Definition).State = EntityState.Detached;
             _context.Entry(task.Record).State = EntityState.Detached;
             _context.Entry(task.Record.Asset).State = EntityState.Detached;
-            _context.Entry(task.Record.Program).State = EntityState.Detached;
+            if (task.Record.Program != null)
+                _context.Entry(task.Record.Program).State = EntityState.Detached;
         }
 
         public void Dispose()

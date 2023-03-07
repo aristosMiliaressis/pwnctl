@@ -416,7 +416,12 @@ public sealed class Tests
 
         await processor.ProcessAsync("https://tesla.s3.amazonaws.com");
         var record = context.AssetRecords.Include(r => r.HttpEndpoint).First(r => r.HttpEndpoint.Url == "https://tesla.s3.amazonaws.com/");
-        Assert.True(repository.JoinedQueryable.Any(t => t.Definition.ShortName == "second_order_takeover"));
+        
+        var task = repository.JoinedQueryable.First(t => t.Definition.ShortName == "second_order_takeover");
+        Assert.NotNull(task);
+
+        task.Queued();
+        await repository.UpdateAsync(task);
 
         // TODO: AllowActive = false test, csv black&whitelist test
         // TODO: test TaskDefinition.MatchOutOfScope

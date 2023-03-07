@@ -1351,7 +1351,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "a0e3bbce5d1b9849433fa20915c79e67c324e8ba242ae2d18add439c3e1dfe7f.zip"
+                      "s3Key": "23c6dc1ff8cb1468dc1bca3643084b0e502516eee0e3f48b7024dabb1492bf75.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -1927,7 +1927,7 @@
                         ]
                       }
                     ],
-                    "cpu": "1024",
+                    "cpu": "512",
                     "executionRoleArn": {
                       "Fn::GetAtt": [
                         "PwnctlRole3D3A5C97",
@@ -1935,7 +1935,7 @@
                       ]
                     },
                     "family": "PwnctlStackPwnctlDef78C9F95D",
-                    "memory": "4096",
+                    "memory": "3072",
                     "networkMode": "awsvpc",
                     "requiresCompatibilities": [
                       "FARGATE"

@@ -932,7 +932,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "a0e3bbce5d1b9849433fa20915c79e67c324e8ba242ae2d18add439c3e1dfe7f.zip"
+     "S3Key": "23c6dc1ff8cb1468dc1bca3643084b0e502516eee0e3f48b7024dabb1492bf75.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -1014,7 +1014,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "PwnctlStack/PwnctlApi/Resource",
-    "aws:asset:path": "asset.a0e3bbce5d1b9849433fa20915c79e67c324e8ba242ae2d18add439c3e1dfe7f.0",
+    "aws:asset:path": "asset.23c6dc1ff8cb1468dc1bca3643084b0e502516eee0e3f48b7024dabb1492bf75.0",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
@@ -1396,7 +1396,7 @@
       "StopTimeout": 120
      }
     ],
-    "Cpu": "1024",
+    "Cpu": "512",
     "ExecutionRoleArn": {
      "Fn::GetAtt": [
       "PwnctlRole3D3A5C97",
@@ -1404,7 +1404,7 @@
      ]
     },
     "Family": "PwnctlStackPwnctlDef78C9F95D",
-    "Memory": "4096",
+    "Memory": "3072",
     "NetworkMode": "awsvpc",
     "RequiresCompatibilities": [
      "FARGATE"

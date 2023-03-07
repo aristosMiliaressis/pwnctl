@@ -41,12 +41,11 @@ namespace pwnctl.app.Scope.Entities
             {
                 NetworkRange net => NetworkRange.RoutesTo(net.FirstAddress, Pattern),
                 NetworkHost host => NetworkRange.RoutesTo(host.IP, Pattern),
-                Email email => Matches(email.DomainName),
-                DomainNameRecord record => record.NetworkHost != null && Matches(record.NetworkHost),
-                HttpEndpoint ep => Matches(ep.Socket),
-                HttpHost vh => Matches(vh.Socket),
-                HttpParameter param => Matches(param.Endpoint),
                 NetworkSocket srv => srv.NetworkHost != null && Matches(srv.NetworkHost),
+                DomainNameRecord record => record.NetworkHost != null && Matches(record.NetworkHost),
+                //HttpHost vh => Matches(vh.Socket),
+                HttpEndpoint ep => Matches(ep.Socket),
+                HttpParameter param => Matches(param.Endpoint),
                 _ => false
             };
         }
@@ -55,14 +54,14 @@ namespace pwnctl.app.Scope.Entities
         {
             return asset switch
             {
-                DomainNameRecord record => new Regex(Pattern).Matches(record.Key).Count > 0,
                 DomainName domain => new Regex(Pattern).Matches(domain.Name).Count > 0,
+                DomainNameRecord record => new Regex(Pattern).Matches(record.Key).Count > 0,
                 Email email => Matches(email.DomainName),
-                HttpHost vh => Matches(vh.Socket),
-                HttpEndpoint ep => Matches(ep.Socket),
                 NetworkHost host => host.AARecords.Any(r => Matches(r.DomainName)),
-                HttpParameter param => Matches(param.Endpoint),
                 NetworkSocket srv => srv.NetworkHost != null && Matches(srv.NetworkHost) || srv.DomainName != null && Matches(srv.DomainName),
+                //HttpHost vh => Matches(vh.Socket),
+                HttpEndpoint ep => Matches(ep.Socket),
+                HttpParameter param => Matches(param.Endpoint),
                 _ => false
             };
         }

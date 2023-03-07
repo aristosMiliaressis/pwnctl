@@ -16,6 +16,8 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
             builder.HasOne(e => e.Socket)
                 .WithMany()
                 .HasForeignKey(e => e.ServiceId);
+
+            builder.HasIndex(nameof(HttpHost.Name), nameof(HttpHost.SocketAddress)).IsUnique();
         }
     }
 }

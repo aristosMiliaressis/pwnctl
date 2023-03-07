@@ -74,10 +74,10 @@ namespace pwnctl.infra.Persistence
         {
             if (!optionsBuilder.IsConfigured)
             {
-#if DEBUG
-                optionsBuilder = optionsBuilder.UseLoggerFactory(_loggerFactory).EnableSensitiveDataLogging(true);
-#endif
-                optionsBuilder = optionsBuilder.ReplaceService<StringValueGenerator, HashIdValueGenerator>();
+                optionsBuilder = optionsBuilder
+                                    .UseLoggerFactory(_loggerFactory)
+                                    .EnableSensitiveDataLogging(true)
+                                    .ReplaceService<StringValueGenerator, HashIdValueGenerator>();
 
                 if (EnvironmentVariables.TEST_RUN)
                 {
