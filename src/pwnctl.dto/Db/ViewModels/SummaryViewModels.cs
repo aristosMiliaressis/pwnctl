@@ -12,7 +12,7 @@ public sealed class SummaryViewModel
     public int EmailCount { get; set; }
     public int TagCount { get; set; }
     public int InScopeRangesCount { get; set; }
-    public int InsCopeHostCount { get; set; }
+    public int InScopeHostCount { get; set; }
     public int InScopeDomainCount { get; set; }
     public int InScopeRecordCount { get; set; }
     public int InScopeServiceCount { get; set; }

@@ -28,7 +28,7 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Commands
             viewModel.EmailCount = await context.Emails.CountAsync();
             viewModel.TagCount = await context.Tags.CountAsync();
             viewModel.InScopeRangesCount = await context.AssetRecords.Where(r => r.SubjectClass.Class == nameof(NetworkRange) && r.InScope).CountAsync();
-            viewModel.InsCopeHostCount = await context.Hosts.CountAsync();
+            viewModel.InScopeHostCount = await context.AssetRecords.Where(r => r.SubjectClass.Class == nameof(NetworkHost) && r.InScope).CountAsync();
             viewModel.InScopeDomainCount = await context.AssetRecords.Where(r => r.SubjectClass.Class == nameof(DomainName) && r.InScope).CountAsync();
             viewModel.InScopeRecordCount = await context.AssetRecords.Where(r => r.SubjectClass.Class == nameof(DomainNameRecord) && r.InScope).CountAsync();
             viewModel.InScopeServiceCount = await context.AssetRecords.Where(r => r.SubjectClass.Class == nameof(NetworkSocket) && r.InScope).CountAsync();

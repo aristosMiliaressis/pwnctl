@@ -18,7 +18,7 @@ namespace pwnctl.cli.ModeHandlers
             var model = await client.Send(new SummaryQuery());
 
             Console.WriteLine($"NetworkRanges: {model.NetworkRangeCount}, InScope: {model.InScopeRangesCount}");
-            Console.WriteLine($"NetworkHosts: {model.HostCount}, InScope: {model.InsCopeHostCount}");
+            Console.WriteLine($"NetworkHosts: {model.HostCount}, InScope: {model.InScopeHostCount}");
             Console.WriteLine($"NetworkSockets: {model.SocketCount}, InScope: {model.InScopeServiceCount}");
             Console.WriteLine($"DomainNames: {model.DomainCount}, InScope: {model.InScopeDomainCount}");
             Console.WriteLine($"DomainNameRecords: {model.RecordCount}, InScope: {model.InScopeRecordCount}");

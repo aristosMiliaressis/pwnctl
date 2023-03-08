@@ -144,6 +144,7 @@ namespace pwnctl.infra.Repositories
                             .Include(e => e.Tasks)
                             .Include(e => e.NetworkHost)
                                 .ThenInclude(e => e.AARecords)
+                                .ThenInclude(e => e.DomainName)
                             .Where(r => r.SubjectClass.Class == nameof(NetworkHost))
                             .AsNoTracking()
                             .ToListAsync();
