@@ -34,9 +34,16 @@ namespace pwnctl.infra.Persistence.Extensions
                 await collection.LoadAsync(token);
 
                 var enumerator = collection.CurrentValue.GetEnumerator();
+                var elements = new List<EntityEntry>();
                 while (enumerator.MoveNext())
                 {
-                    await collection.FindEntry(enumerator.Current).LoadReferencesRecursivelyAsync(token, refChain);
+                    var element = collection.FindEntry(enumerator.Current);
+                    element.State = EntityState.Detached;
+                    elements.Add(element);
+                }
+                foreach (var element in elements.DistinctBy(e => e.Entity.ToString()))
+                {
+                    await element.LoadReferencesRecursivelyAsync(token, refChain);
                 }
             }
 

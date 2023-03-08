@@ -299,6 +299,7 @@ public sealed class Tests
         await processor.ProcessAsync("https://1.3.3.7:443");
         await processor.ProcessAsync("https://xyz.tesla.com:443");
         await processor.ProcessAsync("https://xyz.tesla.com:443/api?key=xxx");
+        await processor.ProcessAsync("https://xyz.tesla.com:443/api?duplicate=xxx&duplicate=yyy");
         await processor.ProcessAsync("xyz.tesla.com. IN A 1.3.3.7");
         record = context.AssetRecords.Include(r => r.DomainNameRecord).First(r => r.DomainNameRecord.Key == "xyz.tesla.com" && r.DomainNameRecord.Value == "1.3.3.7");
         Assert.True(record.InScope);
@@ -325,6 +326,9 @@ public sealed class Tests
         Assert.True(record.InScope);
 
         record = context.AssetRecords.Include(r => r.HttpParameter).First(r => r.HttpParameter.Url == "https://xyz.tesla.com/api" && r.HttpParameter.Name == "key");
+        Assert.True(record.InScope);
+
+        record = context.AssetRecords.Include(r => r.HttpParameter).First(r => r.HttpParameter.Url == "https://xyz.tesla.com/api" && r.HttpParameter.Name == "duplicate");
         Assert.True(record.InScope);
 
         processor = AssetProcessorFactory.Create();

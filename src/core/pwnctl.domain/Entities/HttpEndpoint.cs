@@ -65,10 +65,12 @@ namespace pwnctl.domain.Entities
             var endpoint = new HttpEndpoint(scheme, socket, uri.AbsolutePath);
 
             var _params = uri.GetComponents(UriComponents.Query, UriFormat.SafeUnescaped)
-                .Split("&")
-                .Select(p => new HttpParameter(endpoint, p.Split("=")[0], ParamType.Query, null))
-                .Where(p => !string.IsNullOrEmpty(p.Name))
-                .ToList();
+                            .Split("&")
+                            .Select(p => p.Split("=")[0])
+                            .Distinct()
+                            .Select(p => new HttpParameter(endpoint, p, ParamType.Query, null))
+                            .Where(p => !string.IsNullOrEmpty(p.Name))
+                            .ToList();
 
             endpoint.HttpParameters = _params;
 
