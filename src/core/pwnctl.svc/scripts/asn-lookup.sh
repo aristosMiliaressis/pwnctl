@@ -10,4 +10,7 @@ registry=$(echo $whois_info | cut -d '|' -f 5 | xargs)
 date=$(echo $whois_info | cut -d '|' -f 6 | xargs)
 asname=$(echo $whois_info | cut -d '|' -f 7 | xargs)
 
-echo '{"asset":"'$cidr'", "tags":{"asn":"'$asn'", "asdesc":"'$asname'", "country":"'$country'", "date":"'$date'"}}'
+if [[ $cidr != "NA" ]]
+then
+    echo '{"asset":"'$cidr'", "tags":{"asn":"'$asn'", "asdesc":"'$asname'", "country":"'$country'", "date":"'$date'"}}'
+fi

@@ -32,3 +32,8 @@ TaskDefinitions:
   - ShortName: tls_probe
     CommandTemplate: tls-probe.sh {{Address}}
     Subject: NetworkSocket
+
+  - ShortName: http_probe
+    CommandTemplate: http-probe.sh {{Address}}
+    Subject: NetworkSocket
+    Filter: Tags["protocol"].Contains("http")

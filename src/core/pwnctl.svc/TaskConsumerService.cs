@@ -42,8 +42,6 @@ namespace pwnctl.svc
                     continue;
                 }
 
-                var taskEntry = await _taskRepo.GetEntryAsync(taskDTO.TaskId);
-
                 // create a linked token that cancels the task when the timeout passes or 
                 // when a SIGTERM is received due to an ECS scale in event
                 var cts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
@@ -59,7 +57,7 @@ namespace pwnctl.svc
 
                 try
                 {
-                    await ExecuteTaskAsync(taskEntry, cts.Token);
+                    await ExecuteTaskAsync(taskDTO, cts.Token);
                 }
                 catch (Exception ex)
                 {
@@ -73,42 +71,45 @@ namespace pwnctl.svc
                 {
                     timer.Dispose();
                 }
-
-                await _queueService.DequeueAsync(taskDTO);
             }
 
             _hostApplicationLifetime.StopApplication();
         }
 
-        public async Task ExecuteTaskAsync(TaskEntry task, CancellationToken token = default)
+        public async Task ExecuteTaskAsync(QueuedTaskDTO taskDTO, CancellationToken token = default)
         {
+            var task = await _taskRepo.GetEntryAsync(taskDTO.TaskId);
+
             task.Started();
             await _taskRepo.UpdateAsync(task);
 
             (int exitCode, StringBuilder stdout, StringBuilder stderr) = await CommandExecutor.ExecuteAsync(task.Command, token: token);
+
+            await _queueService.DequeueAsync(taskDTO);
+
+            task.Finished(exitCode);
+            await _taskRepo.UpdateAsync(task);
+
+            if (!string.IsNullOrWhiteSpace(stderr.ToString()))
+                PwnInfraContext.Logger.Error(stderr.ToString());
 
             foreach (var line in stdout.ToString().Split("\n"))
             {
                 if (string.IsNullOrEmpty(line))
                     continue;
 
+                PwnInfraContext.Logger.Debug("Output: "+line);
+
                 await _processor.TryProcessAsync(line, task);
 
-                var pendingTasks = await _taskRepo.ListPendingAsync(token);
+                var pendingTasks = await _taskRepo.ListPendingAsync();
                 foreach (var t in pendingTasks)
                 {
                     t.Queued();
-                    await _queueService.EnqueueAsync(new QueuedTaskDTO(t), token);
+                    await _queueService.EnqueueAsync(new QueuedTaskDTO(t));
                     await _taskRepo.UpdateAsync(t);
                 }
             }
-
-            if (!string.IsNullOrWhiteSpace(stderr.ToString()))
-                PwnInfraContext.Logger.Error(stderr.ToString());
-
-            task.Finished(exitCode);
-
-            await _taskRepo.UpdateAsync(task);
         }
     }
 }
