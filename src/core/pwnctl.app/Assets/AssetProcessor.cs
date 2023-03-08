@@ -79,7 +79,8 @@ namespace pwnctl.app.Assets
             record.UpdateTags(tags);
 
             var program = _programs.FirstOrDefault(program => program.Scope.Any(scope => scope.Matches(record.Asset)));
-            record.SetOwningProgram(program);
+            if (program != null)
+                record.SetOwningProgram(program);
 
             foreach (var rule in _notificationRules.Where(rule => (record.InScope || rule.CheckOutOfScope) && rule.Check(record)))
             {
