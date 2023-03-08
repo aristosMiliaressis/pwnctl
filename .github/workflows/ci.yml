@@ -53,45 +53,6 @@ jobs:
       - name: build cli
         run: dotnet publish "src/pwnctl.cli/pwnctl.cli.csproj" -c Release -o ./pwnctl
 
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: pwnctl-cli
-          path: ./pwnctl/pwnctl
-          retention-days: 1
-
-  release-cli:
-    needs: build-cli
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download build artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: pwnctl-cli
-
-      - name: get datetime stamp
-        run: echo "STAMP=$(date +%y%m%d%H%M%S)" >> $GITHUB_OUTPUT
-        id: datetime
-
-      - name: Create release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.run_number }}.${{ steps.datetime.outputs.STAMP }}
-          release_name: Release ${{ github.run_number }}.${{ steps.datetime.outputs.STAMP }}
-
-      - name: Upload relase assets
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_name: pwnctl
-          asset_path: ./pwnctl
-          asset_content_type: application/x-elf
-
   build-api:
     needs: test-app
     runs-on: ubuntu-latest
@@ -138,4 +99,3 @@ jobs:
           context: src/core/
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
