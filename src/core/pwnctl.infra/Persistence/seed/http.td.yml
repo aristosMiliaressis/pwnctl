@@ -1,8 +1,8 @@
 Profiles: [ "all" ]
 
 TaskDefinitions:
-  - ShortName: dir_brute_common
-    CommandTemplate: dir-brute.sh {{Url}} /opt/wordlists/common.txt
+  - ShortName: dir_brute_all
+    CommandTemplate: dir-brute.sh {{Url}} /opt/wordlists/all.txt
     Filter: HttpEndpoint.Path == "/"
     Subject: HttpEndpoint
 
