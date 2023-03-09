@@ -57,7 +57,40 @@ namespace pwnctl.svc
 
                 try
                 {
-                    await ExecuteTaskAsync(taskDTO, cts.Token);
+                    var task = await _taskRepo.GetEntryAsync(taskDTO.TaskId);
+
+                    task.Started();
+                    await _taskRepo.UpdateAsync(task);
+
+                    (int exitCode, StringBuilder stdout, StringBuilder stderr) = await CommandExecutor.ExecuteAsync(task.Command, token: cts.Token);
+
+                    await _queueService.DequeueAsync(taskDTO);
+
+                    task.Finished(exitCode);
+                    await _taskRepo.UpdateAsync(task);
+
+                    timer.Dispose();
+
+                    if (!string.IsNullOrWhiteSpace(stderr.ToString()))
+                        PwnInfraContext.Logger.Error(stderr.ToString());
+
+                    foreach (var line in stdout.ToString().Split("\n"))
+                    {
+                        if (string.IsNullOrEmpty(line))
+                            continue;
+
+                        PwnInfraContext.Logger.Debug("Output: " + line);
+
+                        await _processor.TryProcessAsync(line, task);
+
+                        var pendingTasks = await _taskRepo.ListPendingAsync();
+                        foreach (var t in pendingTasks)
+                        {
+                            t.Queued();
+                            await _queueService.EnqueueAsync(new QueuedTaskDTO(t));
+                            await _taskRepo.UpdateAsync(t);
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -67,49 +100,9 @@ namespace pwnctl.svc
                     await _queueService.ChangeMessageVisibilityAsync(taskDTO, 0);
                     continue;
                 }
-                finally
-                {
-                    timer.Dispose();
-                }
             }
 
             _hostApplicationLifetime.StopApplication();
-        }
-
-        public async Task ExecuteTaskAsync(QueuedTaskDTO taskDTO, CancellationToken token = default)
-        {
-            var task = await _taskRepo.GetEntryAsync(taskDTO.TaskId);
-
-            task.Started();
-            await _taskRepo.UpdateAsync(task);
-
-            (int exitCode, StringBuilder stdout, StringBuilder stderr) = await CommandExecutor.ExecuteAsync(task.Command, token: token);
-
-            await _queueService.DequeueAsync(taskDTO);
-
-            task.Finished(exitCode);
-            await _taskRepo.UpdateAsync(task);
-
-            if (!string.IsNullOrWhiteSpace(stderr.ToString()))
-                PwnInfraContext.Logger.Error(stderr.ToString());
-
-            foreach (var line in stdout.ToString().Split("\n"))
-            {
-                if (string.IsNullOrEmpty(line))
-                    continue;
-
-                PwnInfraContext.Logger.Debug("Output: "+line);
-
-                await _processor.TryProcessAsync(line, task);
-
-                var pendingTasks = await _taskRepo.ListPendingAsync();
-                foreach (var t in pendingTasks)
-                {
-                    t.Queued();
-                    await _queueService.EnqueueAsync(new QueuedTaskDTO(t));
-                    await _taskRepo.UpdateAsync(t);
-                }
-            }
         }
     }
 }
