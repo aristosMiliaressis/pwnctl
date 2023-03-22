@@ -10,7 +10,7 @@ namespace pwnctl.domain.Entities
         [EqualityComponent]
         public string Address { get; init; }
         public DomainName DomainName { get; private init; }
-        public string DomainId { get; private init; }
+        public Guid DomainId { get; private init; }
 
         public Email() { }
 
@@ -20,7 +20,7 @@ namespace pwnctl.domain.Entities
             DomainName = domain;
         }
 
-        public static Asset TryParse(string assetText)
+        public static Email TryParse(string assetText)
         {
             assetText = assetText.StartsWith("mailto:")
                     ? assetText.Substring(7)

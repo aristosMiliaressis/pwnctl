@@ -8,7 +8,7 @@ using pwnctl.domain.Entities;
 
 namespace pwnctl.app.Assets.Aggregates;
 
-public sealed class AssetRecord : Entity<string>
+public sealed class AssetRecord : Entity<Guid>
 {
     public Asset Asset =>(Asset)typeof(AssetRecord).GetProperty(SubjectClass.Class).GetValue(this);
     
@@ -25,31 +25,31 @@ public sealed class AssetRecord : Entity<string>
     public AssetClass SubjectClass { get; private set; }
 
     public NetworkHost NetworkHost { get; set; }
-    public string NetworkHostId { get; set; }
+    public Guid? NetworkHostId { get; set; }
 
     public NetworkSocket NetworkSocket { get; set; }
-    public string NetworkSocketId { get; set; }
+    public Guid? NetworkSocketId { get; set; }
 
     public HttpEndpoint HttpEndpoint { get; set; }
-    public string HttpEndpointId { get; set; }
+    public Guid? HttpEndpointId { get; set; }
 
     public DomainName DomainName { get; set; }
-    public string DomainNameId { get; set; }
+    public Guid? DomainNameId { get; set; }
 
     public DomainNameRecord DomainNameRecord { get; set; }
-    public string DomainNameRecordId { get; set; }
+    public Guid? DomainNameRecordId { get; set; }
 
     public NetworkRange NetworkRange { get; set; }
-    public string NetworkRangeId { get; set; }
+    public Guid? NetworkRangeId { get; set; }
 
     public Email Email { get; set; }
-    public string EmailId { get; set; }
+    public Guid? EmailId { get; set; }
 
     public HttpParameter HttpParameter { get; set; }
-    public string HttpParameterId { get; set; }
+    public Guid? HttpParameterId { get; set; }
 
     public HttpHost HttpHost { get; set; }
-    public string HttpHostId { get; set; }
+    public Guid? HttpHostId { get; set; }
 
     private AssetRecord() {}
 

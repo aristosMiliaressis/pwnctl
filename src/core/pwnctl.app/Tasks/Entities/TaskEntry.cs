@@ -19,7 +19,7 @@ namespace pwnctl.app.Tasks.Entities
         public TaskState State { get; private set; }
 
         public AssetRecord Record { get; set; }
-        public string RecordId { get; private init; }
+        public Guid RecordId { get; private init; }
 
         private TaskEntry() {}
 
@@ -27,6 +27,7 @@ namespace pwnctl.app.Tasks.Entities
         {
             State = TaskState.PENDING;
             Definition = definition;
+            DefinitionId = definition.Id;
             Record = record;
         }
 

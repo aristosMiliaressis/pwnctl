@@ -3,8 +3,6 @@ using pwnctl.app.Tasks.Entities;
 using pwnctl.infra.Persistence;
 using Microsoft.EntityFrameworkCore;
 using pwnctl.app.Tasks.Enums;
-using pwnctl.infra.Persistence.Extensions;
-
 namespace pwnctl.infra.Repositories
 {
     public sealed class TaskDbRepository : IDisposable

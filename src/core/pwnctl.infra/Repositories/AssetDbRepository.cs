@@ -40,7 +40,7 @@ namespace pwnctl.infra.Repositories
                             .Include(r => r.HttpEndpoint)
                             .Include(r => r.HttpParameter)
                             .Include(r => r.Email)
-                            .FirstOrDefaultAsync(r => r.Id == HashIdValueGenerator.Generate(asset));
+                            .FirstOrDefaultAsync(r => r.Id == UUIDv5ValueGenerator.Generate(asset));
         }
 
         public Asset FindMatching(Asset asset)
@@ -69,7 +69,7 @@ namespace pwnctl.infra.Repositories
                 if (existing == null)
                     continue;
 
-                await _context.Entry(existing).LoadReferencesRecursivelyAsync();
+                await _context.Entry(existing).LoadReferenceGraphAsync();
 
                 reference.SetValue(record.Asset, existing);
             };
@@ -89,7 +89,7 @@ namespace pwnctl.infra.Repositories
                 var innerAssets = (IEnumerable<Asset>)collection.GetValue(asset);
                 if (innerAssets == null || !innerAssets.Any())
                 {
-                    await _context.Entry(existingAsset).LoadReferencesRecursivelyAsync();
+                    await _context.Entry(existingAsset).LoadReferenceGraphAsync();
                     collection.SetValue(record.Asset, collection.GetValue(existingAsset));
                 }
             }
@@ -100,11 +100,7 @@ namespace pwnctl.infra.Repositories
         public async Task SaveAsync(AssetRecord record)
         {
             record.Program = null;
-            record.Tasks.ForEach(t => 
-            {
-                if (t.Definition != null)
-                    _context.Entry(t.Definition).State = EntityState.Unchanged;
-            });
+            record.Tasks.ForEach(t => t.Definition = null);
 
             var existingAsset = FindMatching(record.Asset);
             if (existingAsset == null)
@@ -112,12 +108,13 @@ namespace pwnctl.infra.Repositories
                 record.FoundAt = DateTime.UtcNow;
 
                 _context.Entry(record.Asset).State = EntityState.Added;
-                
+
                 _context.Add(record);
             }
             else
             {
-                _context.Entry(record.Asset).DetachReferechGraph();
+                _context.Entry(record.Asset).DetachReferenceGraph();
+
                 _context.Entry(record).State = EntityState.Modified;
 
                 _context.AddRange(record.Tags.Where(t => t.Id == default));
@@ -127,12 +124,7 @@ namespace pwnctl.infra.Repositories
 
             await _context.SaveChangesAsync();
 
-            _context.Entry(record).DetachReferechGraph();
-            record.Tasks.ForEach(t =>
-            {
-                if (t.Definition != null)
-                    _context.Entry(t.Definition).State = EntityState.Detached;
-            });
+            _context.Entry(record).DetachReferenceGraph();
         }
 
         public async Task<List<AssetRecord>> ListHostsAsync()

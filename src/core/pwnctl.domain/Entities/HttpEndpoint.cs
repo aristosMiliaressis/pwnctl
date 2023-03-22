@@ -9,9 +9,9 @@ namespace pwnctl.domain.Entities
         [EqualityComponent]
         public string Url { get; init; }
 
-        public string SocketAddressId { get; private init; }
+        public Guid SocketAddressId { get; private init; }
         public NetworkSocket Socket { get; init; }
-        public string ParentEndpointId { get; private init; }
+        public Guid? ParentEndpointId { get; private init; }
         public HttpEndpoint ParentEndpoint { get; private set; }
         public List<HttpParameter> HttpParameters { get; private set; }
 
@@ -45,7 +45,7 @@ namespace pwnctl.domain.Entities
             Url = $"{Scheme}://{hostSegment}{portSegment}{Path}";
         }
 
-        public static Asset TryParse(string assetText)
+        public static HttpEndpoint TryParse(string assetText)
         {
             if (!(assetText.ToLower().StartsWith("http") && assetText.Contains("://"))
                 && !assetText.StartsWith("//"))
@@ -59,7 +59,7 @@ namespace pwnctl.domain.Entities
 
             var host = NetworkHost.TryParse(uri.Host);
             var socket = host != null
-                    ? new NetworkSocket((NetworkHost)host, port)
+                    ? new NetworkSocket(host, port)
                     : new NetworkSocket(new DomainName(uri.Host), port);
 
             var endpoint = new HttpEndpoint(scheme, socket, uri.AbsolutePath);

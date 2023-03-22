@@ -10,7 +10,7 @@ namespace pwnctl.domain.Entities
         [EqualityComponent]
         public string SocketAddress { get; private init; }
         public NetworkSocket Socket { get; private init; }
-        public string ServiceId { get; private init; }
+        public Guid ServiceId { get; private init; }
 
         private HttpHost() {}
 
@@ -21,7 +21,7 @@ namespace pwnctl.domain.Entities
             Name = name;
         }
 
-        public static Asset TryParse(string assetText)
+        public static HttpHost TryParse(string assetText)
         {
             return null;
         }

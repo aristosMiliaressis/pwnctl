@@ -16,8 +16,8 @@ namespace pwnctl.domain.Entities
         [EqualityComponent]
         public string Value { get; init; }
 
-        public string HostId { get; private init; }
-        public string DomainId { get; private init; }
+        public Guid? HostId { get; private init; }
+        public Guid? DomainId { get; private init; }
 
         public NetworkHost NetworkHost { get; private init; }
         public DomainName DomainName { get; private init; }
@@ -31,28 +31,17 @@ namespace pwnctl.domain.Entities
             Type = type;
             Value = value;
 
-            Asset keyDomain = DomainName.TryParse(key);
-            if (keyDomain != null)
-            {
-                DomainName = (DomainName)keyDomain;
-                Key = DomainName.Name;
-            }
+            DomainName = DomainName.TryParse(key);
+            Key = DomainName.Name;
 
-            Asset host = NetworkHost.TryParse(value);
-            Asset domain = DomainName.TryParse(value);
-
-            if (host != null)
+            NetworkHost = NetworkHost.TryParse(value);
+            if (NetworkHost != null)
             {
-                NetworkHost = (NetworkHost)host;
                 NetworkHost.AARecords = new List<DomainNameRecord> { this };
-            }
-            else if (domain != null)
-            {
-                DomainName = (DomainName)domain;
             }
         }
 
-        public static Asset TryParse(string assetText)
+        public static DomainNameRecord TryParse(string assetText)
         {
             assetText = assetText.Replace("\t", " ");
             var parts = assetText.Split(" ").Where(p => !string.IsNullOrWhiteSpace(p)).ToArray();

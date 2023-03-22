@@ -1,11 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using pwnctl.domain.BaseClasses;
+using pwnctl.infra.Persistence.IdGenerators;
 
 namespace pwnctl.infra.Persistence.Extensions
 {
     public static class EntityEntryExtensions
     {
-        public static async Task LoadReferencesRecursivelyAsync(this EntityEntry entry, CancellationToken token = default, List<string> refChain = null)
+        public static async Task LoadReferenceGraphAsync(this EntityEntry entry, CancellationToken token = default, List<string> refChain = null)
         {
             if (entry == null)
                 return;
@@ -26,8 +28,10 @@ namespace pwnctl.infra.Persistence.Extensions
             foreach (var reference in entry.References)
             {
                 await reference.LoadAsync(token);
-                await reference.TargetEntry.LoadReferencesRecursivelyAsync(token, refChain);
+                await reference.TargetEntry.LoadReferenceGraphAsync(token, refChain);
             }
+            
+            entry.State = EntityState.Unchanged;
 
             foreach (var collection in entry.Collections)
             {
@@ -43,14 +47,14 @@ namespace pwnctl.infra.Persistence.Extensions
                 }
                 foreach (var element in elements.DistinctBy(e => e.Entity.ToString()))
                 {
-                    await element.LoadReferencesRecursivelyAsync(token, refChain);
+                    await element.LoadReferenceGraphAsync(token, refChain);
                 }
             }
 
             entry.State = EntityState.Detached;
         }
 
-        public static void DetachReferechGraph(this EntityEntry entry, List<string> refChain = null)
+        public static void DetachReferenceGraph(this EntityEntry entry, List<string> refChain = null)
         {
             if (entry == null)
                 return;
@@ -68,7 +72,7 @@ namespace pwnctl.infra.Persistence.Extensions
 
             foreach (var reference in entry.References.Where(r => r.TargetEntry != null))
             {
-                reference.TargetEntry.DetachReferechGraph(refChain);
+                reference.TargetEntry.DetachReferenceGraph(refChain);
             }
 
             foreach (var collection in entry.Collections)
@@ -76,7 +80,7 @@ namespace pwnctl.infra.Persistence.Extensions
                 var enumerator = collection?.CurrentValue?.GetEnumerator();
                 if (enumerator == null)
                     continue;
-                    
+
                 while (enumerator.MoveNext())
                 {
                     var colEntry = collection.FindEntry(enumerator.Current);

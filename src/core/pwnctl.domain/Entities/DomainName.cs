@@ -11,7 +11,7 @@ namespace pwnctl.domain.Entities
         public string Name { get; init; }
         public int ZoneDepth { get; private init; }
         public DomainName ParentDomain { get; private set; }
-        public string ParentDomainId { get; private init; }
+        public Guid? ParentDomainId { get; private init; }
         public string Word => Name.Replace($".{PublicSuffixRepository.Instance.GetSuffix(Name).Value}", "")
                                     .Split(".")
                                     .Last();
@@ -31,7 +31,7 @@ namespace pwnctl.domain.Entities
                         .Count();
         }
 
-        public static Asset TryParse(string assetText)
+        public static DomainName TryParse(string assetText)
         {
             try
             {

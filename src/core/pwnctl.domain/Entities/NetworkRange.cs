@@ -21,7 +21,7 @@ namespace pwnctl.domain.Entities
             NetPrefixBits = netPrefix;
         }
 
-        public static Asset TryParse(string assetText)
+        public static NetworkRange TryParse(string assetText)
         {
             try
             {

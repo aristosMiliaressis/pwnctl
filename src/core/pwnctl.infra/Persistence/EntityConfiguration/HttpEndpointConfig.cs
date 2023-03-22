@@ -9,7 +9,7 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
     {
         public void Configure(EntityTypeBuilder<HttpEndpoint> builder)
         {
-            builder.Property(c => c.Id).HasValueGenerator<HashIdValueGenerator>();
+            builder.Property(c => c.Id).HasValueGenerator<UUIDv5ValueGenerator>();
 
             builder.HasKey(e => e.Id);
 

@@ -77,7 +77,7 @@ namespace pwnctl.infra.Persistence
                 optionsBuilder = optionsBuilder
                                     .UseLoggerFactory(_loggerFactory)
                                     .EnableSensitiveDataLogging(true)
-                                    .ReplaceService<StringValueGenerator, HashIdValueGenerator>();
+                                    .ReplaceService<GuidValueGenerator, UUIDv5ValueGenerator>();
 
                 if (EnvironmentVariables.TEST_RUN)
                 {

@@ -2,7 +2,7 @@
 
 namespace pwnctl.domain.BaseClasses
 {
-    public abstract class Asset : Entity<string>, IEquatable<Asset>
+    public abstract class Asset : Entity<Guid>, IEquatable<Asset>
     {
         public abstract override string ToString();
 

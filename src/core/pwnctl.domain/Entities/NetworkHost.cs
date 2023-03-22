@@ -21,7 +21,7 @@ namespace pwnctl.domain.Entities
             Version = address.AddressFamily;
         }
 
-        public static Asset TryParse(string assetText)
+        public static NetworkHost TryParse(string assetText)
         {
             // if inside square brakets could be an ipv6
             assetText = assetText.StartsWith("[") && assetText.EndsWith("]")

@@ -9,7 +9,7 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
     {
         public void Configure(EntityTypeBuilder<AssetRecord> builder)
         {
-            builder.Property(r => r.Id).HasValueGenerator<HashIdValueGenerator>();
+            builder.Property(r => r.Id).HasValueGenerator<UUIDv5ValueGenerator>();
             
             builder.HasKey(r => r.Id);
 
