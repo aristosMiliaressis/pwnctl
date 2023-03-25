@@ -92,12 +92,12 @@ resource "aws_lambda_function" "this" {
   environment {
       variables = {
           PWNCTL_Aws__InVpc = "true"
-          PWNCTL_TaskQueue__QueueName = ""
-          PWNCTL_TaskQueue__DLQName = ""
-          PWNCTL_TaskQueue__VisibilityTimeout = ""
+          PWNCTL_TaskQueue__QueueName = "pwnctl_${random_id.id.hex}.fifo"
+          PWNCTL_TaskQueue__DLQName = "pwnctl_${random_id.id.hex}_dlq.fifo"
+          PWNCTL_TaskQueue__VisibilityTimeout = var.sqs_visibility_timeout
           PWNCTL_Logging__MinLevel = "Debug"
           PWNCTL_Logging__FilePath = "/mnt/efs/"
-          PWNCTL_Logging__LogGroup = ""
+          PWNCTL_Logging__LogGroup = "/aws/lambda/${var.stack_name}"
           PWNCTL_INSTALL_PATH = "/mnt/efs/"
       }
   }

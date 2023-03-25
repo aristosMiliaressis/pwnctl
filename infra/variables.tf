@@ -22,3 +22,8 @@ variable "stack_name" {
   description = "Name of the stack."
   default = "PwnCtl"
 }
+
+variable "sqs_visibility_timeout" {
+  description = "SQS Visibility Timeout"
+  default = 600
+}

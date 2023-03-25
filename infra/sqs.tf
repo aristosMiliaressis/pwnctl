@@ -3,7 +3,7 @@ resource "aws_sqs_queue" "this" {
   fifo_queue                  = true
   content_based_deduplication = true
   sqs_managed_sse_enabled = true
-  visibility_timeout_seconds  = 600
+  visibility_timeout_seconds  = var.sqs_visibility_timeout
   max_message_size          = 8192
   message_retention_seconds = 1209600 # 14 days
   receive_wait_time_seconds = 20
@@ -22,7 +22,7 @@ resource "aws_sqs_queue" "dlq" {
   fifo_queue                  = true
   content_based_deduplication = true
   sqs_managed_sse_enabled = true
-  visibility_timeout_seconds  = 600
+  visibility_timeout_seconds  = var.sqs_visibility_timeout
   max_message_size          = 8192
   message_retention_seconds = 1209600 # 14 days
   receive_wait_time_seconds = 20
