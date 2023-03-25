@@ -1,6 +1,6 @@
 resource "aws_vpc" "main" {
   tags = {
-      Name = "PwnCtl ${var.pwnctl_id} VPC"
+      Name = "PwnCtl ${random_id.id.hex} VPC"
       Stack = var.stack_name
   }
 
@@ -12,7 +12,7 @@ resource "aws_internet_gateway" "this" {
   vpc_id = aws_vpc.main.id
 
   tags = {
-      Name = "PwnCtl ${var.pwnctl_id} Internet Gateway"
+      Name = "PwnCtl ${random_id.id.hex} Internet Gateway"
       Stack = var.stack_name
   }
 }
@@ -26,7 +26,7 @@ resource "aws_subnet" "public" {
   vpc_id = aws_vpc.main.id
 
   tags = {
-      Name = "PwnCtl ${var.pwnctl_id} Public Subnet at ${var.region}${each.key}"
+      Name = "PwnCtl ${random_id.id.hex} Public Subnet at ${var.region}${each.key}"
       Stack = var.stack_name
   }
 
@@ -43,7 +43,7 @@ resource "aws_subnet" "private" {
   vpc_id = aws_vpc.main.id
 
   tags = {
-    Name = "PwnCtl ${var.pwnctl_id} Private Subnet at ${var.region}${each.key}"
+    Name = "PwnCtl ${random_id.id.hex} Private Subnet at ${var.region}${each.key}"
     Stack = var.stack_name
   }
 
@@ -55,7 +55,7 @@ resource "aws_route_table" "public" {
   vpc_id = aws_vpc.main.id
 
   tags = {
-    Name = "PwnCtl ${var.pwnctl_id} Route Table for Public Subnet"
+    Name = "PwnCtl ${random_id.id.hex} Route Table for Public Subnet"
     Stack = var.stack_name
   }
 
@@ -69,7 +69,7 @@ resource "aws_route_table" "private" {
   vpc_id = aws_vpc.main.id
 
   tags = {
-    Name = "PwnCtl ${var.pwnctl_id} Route Table for Private Subnet"
+    Name = "PwnCtl ${random_id.id.hex} Route Table for Private Subnet"
     Stack = var.stack_name
   }
 }

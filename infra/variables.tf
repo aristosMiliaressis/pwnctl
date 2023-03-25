@@ -14,8 +14,8 @@ variable "region" {
   default = "us-east-1"
 }
 
-variable "pwnctl_id" {
-  description = "variable for unique naming."
+resource "random_id" "id" {
+  byte_length = 8
 }
 
 variable "stack_name" {

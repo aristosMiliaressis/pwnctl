@@ -11,7 +11,7 @@ data "aws_iam_policy" "efs_client_full_access" {
 }
 
 resource "aws_iam_role" "lambda" {
-  name = "pwnctl_${var.pwnctl_id}_lambda_service_role"
+  name = "pwnctl_${random_id.id.hex}_lambda_service_role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -27,7 +27,7 @@ resource "aws_iam_role" "lambda" {
   })
 
   tags = {
-    Name = "pwnctl_lambda_role_${var.pwnctl_id}"
+    Name = "pwnctl_lambda_role_${random_id.id.hex}"
     Stack = var.stack_name
   }
 }
@@ -60,7 +60,7 @@ resource "aws_cloudwatch_log_group" "this" {
 
 resource "aws_lambda_function" "this" {
   tags = {
-    Name = "pwnctl_lambda_${var.pwnctl_id}"
+    Name = "pwnctl_lambda_${random_id.id.hex}"
     Stack = var.stack_name
   }
 
@@ -71,7 +71,7 @@ resource "aws_lambda_function" "this" {
   ]
 
   filename = "../src/pwnctl.api/bin/Release/net6.0/lambda.zip"
-  function_name = "pwnctl_api_${var.pwnctl_id}"
+  function_name = "pwnctl_api_${random_id.id.hex}"
   role = aws_iam_role.lambda.arn
   handler = "pwnctl.api"
   source_code_hash = data.archive_file.this.output_base64sha256

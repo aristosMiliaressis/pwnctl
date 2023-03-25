@@ -9,7 +9,7 @@ provider "aws" {
 
   default_tags {
     tags = {
-      Name     = "pwnctl_${var.pwnctl_id}"
+      Name     = "pwnctl_${random_id.id.hex}"
       Stack    = var.stack_name
     }
   }
