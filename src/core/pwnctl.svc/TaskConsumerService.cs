@@ -100,6 +100,10 @@ namespace pwnctl.svc
                     await _queueService.ChangeMessageVisibilityAsync(taskDTO, 0);
                     continue;
                 }
+                finally
+                {
+                    timer.Dispose();
+                }
             }
 
             _hostApplicationLifetime.StopApplication();

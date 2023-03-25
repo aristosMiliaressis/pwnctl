@@ -9,6 +9,7 @@ using pwnctl.infra.Persistence.Extensions;
 using pwnctl.infra.Persistence.IdGenerators;
 
 using Microsoft.EntityFrameworkCore;
+using pwnctl.app.Notifications.Entities;
 
 namespace pwnctl.infra.Repositories
 {
@@ -54,6 +55,12 @@ namespace pwnctl.infra.Repositories
         {
             var lambda = ExpressionTreeBuilder.BuildTaskMatchingLambda(asset, def);
             return (TaskEntry)_context.FirstNotTrackedFromLambda(lambda);
+        }
+
+        public Notification FindNotification(Asset asset, NotificationRule rule)
+        {
+            var lambda = ExpressionTreeBuilder.BuildNotificationMatchingLambda(asset, rule);
+            return (Notification)_context.FirstNotTrackedFromLambda(lambda);
         }
 
         public async Task<AssetRecord> UpdateRecordReferences(AssetRecord record, Asset asset)
@@ -120,6 +127,8 @@ namespace pwnctl.infra.Repositories
                 _context.AddRange(record.Tags.Where(t => t.Id == default));
 
                 _context.AddRange(record.Tasks.Where(t => t.Id == default));
+
+                _context.AddRange(record.Notifications.Where(t => t.Id == default));
             }
 
             await _context.SaveChangesAsync();

@@ -162,7 +162,7 @@ namespace pwnctl.infra.cdk.Stacks
                 VisibilityTimeout = Duration.Seconds(AwsConstants.QueueVisibilityTimeoutInSec),
                 DeadLetterQueue = new DeadLetterQueue
                 {
-                    MaxReceiveCount = 4,
+                    MaxReceiveCount = 3,
                     Queue = DLQueue
                 }
             });

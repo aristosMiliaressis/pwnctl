@@ -7,7 +7,7 @@ namespace pwnctl.infra.Notifications
 {
     public sealed class MockNotificationSender : NotificationSender
     {
-        public void Send(Asset asset, NotificationRule rule)
+        public void Send(Notification notification)
         {
         }
 

@@ -84,7 +84,16 @@ namespace pwnctl.app.Assets
 
             foreach (var rule in _notificationRules.Where(rule => (record.InScope || rule.CheckOutOfScope) && rule.Check(record)))
             {
-                PwnInfraContext.NotificationSender.Send(record.Asset, rule);
+                // only send notifications once
+                var notification = _assetRepository.FindNotification(record.Asset, rule);
+                if (notification != null)
+                    continue;
+                
+                notification = new Notification(record, rule);
+
+                PwnInfraContext.NotificationSender.Send(notification);
+                notification.SentAt = DateTime.UtcNow;
+                record.Notifications.Add(notification);
             }
 
             var allowedTasks = record?.Program?.GetAllowedTasks() ?? new List<TaskDefinition>();

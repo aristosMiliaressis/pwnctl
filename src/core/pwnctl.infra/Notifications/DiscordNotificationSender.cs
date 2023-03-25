@@ -8,9 +8,9 @@ namespace pwnctl.infra.Notifications
 {
     public sealed class DiscordNotificationSender : NotificationSender
     {
-        public void Send(Asset asset, NotificationRule rule)
+        public void Send(Notification notification)
         {
-            Send(rule.GetText(asset), rule.Topic);
+            Send(notification.GetText(), notification.Rule.Topic);
         }
 
         public void Send(string message, NotificationTopic topic)

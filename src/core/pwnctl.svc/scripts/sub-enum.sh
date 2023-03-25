@@ -4,7 +4,8 @@
 
 domain=$1
 dict='/opt/wordlists/subdomains-top-20000.txt'
-DNS_RESOLVERS_FILE='/opt/wordlists/dns/resolvers.txt'
+RESOLVERS_FILE='/opt/wordlists/dns/resolvers.txt'
+TRUSTED_RESOLVERS_FILE='/opt/wordlists/dns/trusted-resolvers.txt'
 ALT_WORDLIST='/opt/wordlists/dns/alts.txt'
 GITHUB_TOKENS_FILE='/mnt/efs/github.tokens'
 
@@ -35,7 +36,7 @@ generate_brute_gueses() {
 }
 
 resolve_domains() {
-    puredns resolve -q $potential_subs_file -r $DNS_RESOLVERS_FILE
+    puredns resolve -q $potential_subs_file -r $RESOLVERS_FILE --resolvers-trusted $TRUSTED_RESOLVERS_FILE
 }
 
 generate_wordlist_alts() {

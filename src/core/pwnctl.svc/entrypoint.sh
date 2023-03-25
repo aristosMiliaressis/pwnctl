@@ -39,5 +39,6 @@ then
 else
     cp /mnt/efs/resolvers.txt /opt/wordlists/dns/resolvers.txt
 fi
+cp /mnt/efs/trusted-resolvers.txt /opt/wordlists/dns/trusted-resolvers.txt
 
 exec /opt/pwnctl-svc/pwnsvc

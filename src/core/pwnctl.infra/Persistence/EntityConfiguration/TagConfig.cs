@@ -11,7 +11,7 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
             builder.HasKey(t => t.Id);
 
             builder.HasOne(t => t.Record)
-                .WithMany()
+                .WithMany(r => r.Tags)
                 .HasForeignKey(t => t.RecordId);
 
             builder.HasIndex(nameof(Tag.RecordId), nameof(Tag.Name)).IsUnique();

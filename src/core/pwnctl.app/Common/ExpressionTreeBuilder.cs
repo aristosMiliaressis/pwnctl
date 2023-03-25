@@ -4,6 +4,7 @@ using pwnctl.app.Tasks.Entities;
 using System.Reflection;
 using System.Linq.Expressions;
 using pwnctl.app.Tagging.Entities;
+using pwnctl.app.Notifications.Entities;
 
 namespace pwnctl.app.Common
 {
@@ -62,6 +63,30 @@ namespace pwnctl.app.Common
 
             return lambda;
         }
+
+        public static LambdaExpression BuildNotificationMatchingLambda(Asset asset, NotificationRule rule)
+        {
+            var type = typeof(Notification);
+
+            var _param = Expression.Parameter(type, "n");
+
+            var lref = Expression.PropertyOrField(_param, nameof(Notification.RuleId));
+            var rval = Expression.Constant(rule.Id);
+            var expression = Expression.Equal(lref, rval);
+
+            lref = Expression.PropertyOrField(_param, nameof(Tag.RecordId));
+            rval = Expression.Constant(asset.Id);
+            var assetExpression = Expression.Equal(lref, rval);
+
+            expression = Expression.AndAlso(expression, assetExpression);
+
+            var lamdaMethod = _lambdaMethod.MakeGenericMethod(typeof(Func<,>).MakeGenericType(type, typeof(bool)));
+            var lambda = (LambdaExpression)lamdaMethod.Invoke(null, new object[] { expression, new ParameterExpression[] { _param } });
+
+            return lambda;
+        }
+
+        
 
         private static MethodInfo _lambdaMethod = typeof(Expression).GetMethods().Where(m => m.Name == nameof(Expression.Lambda)
                         && m.IsGenericMethod && m.GetParameters().Count() == 2

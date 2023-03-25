@@ -9,7 +9,7 @@ namespace pwnctl.infra.Repositories
     public sealed class FsCloudServiceRepository : CloudServiceRepository
     {
         private static string _cloudServiceDataFile = Path.Combine(EnvironmentVariables.INSTALL_PATH, "cloud-services.json");
-        private List<CloudService> _services;
+        private static List<CloudService> _services;
 
         public bool IsCloudService(HttpEndpoint endpoint)
         {

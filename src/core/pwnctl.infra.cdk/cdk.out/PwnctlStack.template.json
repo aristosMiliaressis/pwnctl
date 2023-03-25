@@ -570,7 +570,7 @@
        "Arn"
       ]
      },
-     "maxReceiveCount": 4
+     "maxReceiveCount": 3
     },
     "SqsManagedSseEnabled": true,
     "VisibilityTimeout": 600
@@ -1549,7 +1549,7 @@
   "PwnctlSvcTaskCountTarget569E5CCF": {
    "Type": "AWS::ApplicationAutoScaling::ScalableTarget",
    "Properties": {
-    "MaxCapacity": 20,
+    "MaxCapacity": 30,
     "MinCapacity": 0,
     "ResourceId": {
      "Fn::Join": [
@@ -1606,20 +1606,25 @@
       {
        "MetricIntervalLowerBound": -10,
        "MetricIntervalUpperBound": 0,
-       "ScalingAdjustment": 11
+       "ScalingAdjustment": 12
       },
       {
        "MetricIntervalLowerBound": -20,
        "MetricIntervalUpperBound": -10,
-       "ScalingAdjustment": 8
+       "ScalingAdjustment": 9
       },
       {
        "MetricIntervalLowerBound": -30,
        "MetricIntervalUpperBound": -20,
-       "ScalingAdjustment": 5
+       "ScalingAdjustment": 6
       },
       {
+       "MetricIntervalLowerBound": -40,
        "MetricIntervalUpperBound": -30,
+       "ScalingAdjustment": 3
+      },
+      {
+       "MetricIntervalUpperBound": -40,
        "ScalingAdjustment": 0
       }
      ]
@@ -1692,7 +1697,7 @@
       "ReturnData": false
      }
     ],
-    "Threshold": 31
+    "Threshold": 41
    },
    "Metadata": {
     "aws:cdk:path": "PwnctlStack/PwnctlSvc/TaskCount/Target/ScaleOutPolicy/LowerAlarm/Resource"
@@ -1712,21 +1717,31 @@
       {
        "MetricIntervalLowerBound": 0,
        "MetricIntervalUpperBound": 10,
-       "ScalingAdjustment": 14
+       "ScalingAdjustment": 15
       },
       {
        "MetricIntervalLowerBound": 10,
        "MetricIntervalUpperBound": 20,
-       "ScalingAdjustment": 17
+       "ScalingAdjustment": 18
       },
       {
        "MetricIntervalLowerBound": 20,
        "MetricIntervalUpperBound": 30,
-       "ScalingAdjustment": 20
+       "ScalingAdjustment": 21
       },
       {
        "MetricIntervalLowerBound": 30,
-       "ScalingAdjustment": 23
+       "MetricIntervalUpperBound": 40,
+       "ScalingAdjustment": 24
+      },
+      {
+       "MetricIntervalLowerBound": 40,
+       "MetricIntervalUpperBound": 50,
+       "ScalingAdjustment": 27
+      },
+      {
+       "MetricIntervalLowerBound": 50,
+       "ScalingAdjustment": 30
       }
      ]
     }
@@ -1798,7 +1813,7 @@
       "ReturnData": false
      }
     ],
-    "Threshold": 31
+    "Threshold": 41
    },
    "Metadata": {
     "aws:cdk:path": "PwnctlStack/PwnctlSvc/TaskCount/Target/ScaleOutPolicy/UpperAlarm/Resource"

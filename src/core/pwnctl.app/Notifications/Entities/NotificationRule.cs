@@ -1,7 +1,5 @@
 using pwnctl.app.Assets.Aggregates;
-using pwnctl.app.Common.Extensions;
 using pwnctl.app.Notifications.Enums;
-using pwnctl.domain.BaseClasses;
 using pwnctl.domain.ValueObjects;
 using pwnctl.kernel.BaseClasses;
 
@@ -26,14 +24,6 @@ namespace pwnctl.app.Notifications.Entities
                 return false;
 
             return PwnInfraContext.FilterEvaluator.Evaluate(Filter, record);
-        }
-
-        public string GetText(Asset asset)
-        {
-            if (!string.IsNullOrEmpty(Template))
-                return Template.Interpolate(asset);
-
-            return $"{asset} triggered rule {ShortName}";
         }
     }
 }

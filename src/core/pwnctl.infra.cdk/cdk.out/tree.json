@@ -840,7 +840,7 @@
                           "Arn"
                         ]
                       },
-                      "maxReceiveCount": 4
+                      "maxReceiveCount": 3
                     },
                     "sqsManagedSseEnabled": true,
                     "visibilityTimeout": 600
@@ -2183,7 +2183,7 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::ApplicationAutoScaling::ScalableTarget",
                           "aws:cdk:cloudformation:props": {
-                            "maxCapacity": 20,
+                            "maxCapacity": 30,
                             "minCapacity": 0,
                             "resourceId": {
                               "Fn::Join": [
@@ -2253,20 +2253,25 @@
                                         {
                                           "metricIntervalLowerBound": -10,
                                           "metricIntervalUpperBound": 0,
-                                          "scalingAdjustment": 11
+                                          "scalingAdjustment": 12
                                         },
                                         {
                                           "metricIntervalLowerBound": -20,
                                           "metricIntervalUpperBound": -10,
-                                          "scalingAdjustment": 8
+                                          "scalingAdjustment": 9
                                         },
                                         {
                                           "metricIntervalLowerBound": -30,
                                           "metricIntervalUpperBound": -20,
-                                          "scalingAdjustment": 5
+                                          "scalingAdjustment": 6
                                         },
                                         {
+                                          "metricIntervalLowerBound": -40,
                                           "metricIntervalUpperBound": -30,
+                                          "scalingAdjustment": 3
+                                        },
+                                        {
+                                          "metricIntervalUpperBound": -40,
                                           "scalingAdjustment": 0
                                         }
                                       ]
@@ -2354,7 +2359,7 @@
                                         "returnData": false
                                       }
                                     ],
-                                    "threshold": 31
+                                    "threshold": 41
                                   }
                                 },
                                 "constructInfo": {
@@ -2389,21 +2394,31 @@
                                         {
                                           "metricIntervalLowerBound": 0,
                                           "metricIntervalUpperBound": 10,
-                                          "scalingAdjustment": 14
+                                          "scalingAdjustment": 15
                                         },
                                         {
                                           "metricIntervalLowerBound": 10,
                                           "metricIntervalUpperBound": 20,
-                                          "scalingAdjustment": 17
+                                          "scalingAdjustment": 18
                                         },
                                         {
                                           "metricIntervalLowerBound": 20,
                                           "metricIntervalUpperBound": 30,
-                                          "scalingAdjustment": 20
+                                          "scalingAdjustment": 21
                                         },
                                         {
                                           "metricIntervalLowerBound": 30,
-                                          "scalingAdjustment": 23
+                                          "metricIntervalUpperBound": 40,
+                                          "scalingAdjustment": 24
+                                        },
+                                        {
+                                          "metricIntervalLowerBound": 40,
+                                          "metricIntervalUpperBound": 50,
+                                          "scalingAdjustment": 27
+                                        },
+                                        {
+                                          "metricIntervalLowerBound": 50,
+                                          "scalingAdjustment": 30
                                         }
                                       ]
                                     }
@@ -2490,7 +2505,7 @@
                                         "returnData": false
                                       }
                                     ],
-                                    "threshold": 31
+                                    "threshold": 41
                                   }
                                 },
                                 "constructInfo": {

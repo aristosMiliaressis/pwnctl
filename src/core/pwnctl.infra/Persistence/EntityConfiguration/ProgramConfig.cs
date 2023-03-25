@@ -18,7 +18,9 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
               .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(p => p.Policy)
-                .WithOne();
+                .WithOne()
+                .HasForeignKey<Program>(p => p.PolicyId);
+
 
             builder.HasOne(p => p.TaskProfile)
                 .WithMany()
@@ -50,6 +52,22 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
             builder.HasKey(r => r.Id);
 
             builder.OwnsOne(r => r.SubjectClass).Property(s => s.Class).IsRequired();
+        }
+    }
+
+    public sealed class NotificationConfig : IEntityTypeConfiguration<Notification>
+    {
+        public void Configure(EntityTypeBuilder<Notification> builder)
+        {
+            builder.HasKey(e => e.Id);
+
+            builder.HasOne(e => e.Rule)
+                .WithMany()
+                .HasForeignKey(e => e.RuleId);
+
+            builder.HasOne(e => e.Record)
+                .WithMany(e => e.Notifications)
+                .HasForeignKey(e => e.RecordId);
         }
     }
 }
