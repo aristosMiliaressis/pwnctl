@@ -1,30 +1,56 @@
-data "archive_file" "this" {
-  type = "zip"
-  source_dir = "../src/pwnctl.api/bin/Release/net6.0/"
-  output_path = "../src/pwnctl.api/bin/Release/net6.0/lambda.zip"
+data "aws_iam_policy" "lambda_basic_execution" {
+  name = "AWSLambdaBasicExecutionRole"
 }
 
-resource "aws_iam_role" "this" {
-  name = "pwnctl_lambda_role_${var.pwnctl_id}_service_role"
-  assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": "sts:AssumeRole",
-      "Principal": {
-        "Service": "lambda.amazonaws.com"
-      },
-      "Effect": "Allow",
-      "Sid": ""
-    }
-  ]
+data "aws_iam_policy" "lambda_vpc_access" {
+  name = "AWSLambdaVPCAccessExecutionRole"
 }
-EOF
+
+data "aws_iam_policy" "efs_client_full_access" {
+  name = "AmazonElasticFileSystemClientFullAccess"
+}
+
+resource "aws_iam_role" "lambda" {
+  name = "pwnctl_${var.pwnctl_id}_lambda_service_role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "lambda.amazonaws.com"
+        }
+      },
+    ]
+  })
+
   tags = {
     Name = "pwnctl_lambda_role_${var.pwnctl_id}"
     Stack = var.stack_name
   }
+}
+
+resource "aws_iam_role_policy_attachment" "attach_lambda_basic_execution" {
+  role       = aws_iam_role.lambda.name
+  policy_arn = data.aws_iam_policy.lambda_basic_execution.arn
+}
+
+resource "aws_iam_role_policy_attachment" "attach_lambda_vpc_access" {
+  role       = aws_iam_role.lambda.name
+  policy_arn = data.aws_iam_policy.lambda_vpc_access.arn
+}
+
+resource "aws_iam_role_policy_attachment" "attach_efs_client_full_access" {
+  role       = aws_iam_role.lambda.name
+  policy_arn = data.aws_iam_policy.efs_client_full_access.arn
+}
+
+data "archive_file" "this" {
+  type = "zip"
+  source_dir = "../src/pwnctl.api/bin/Release/net6.0/"
+  output_path = "../src/pwnctl.api/bin/Release/net6.0/lambda.zip"
 }
 
 resource "aws_cloudwatch_log_group" "this" {
@@ -41,12 +67,12 @@ resource "aws_lambda_function" "this" {
   depends_on = [
     aws_efs_mount_target.this,
     aws_cloudwatch_log_group.this,
-    aws_iam_role.this
+    aws_iam_role.lambda
   ]
 
   filename = "../src/pwnctl.api/bin/Release/net6.0/lambda.zip"
   function_name = "pwnctl_api_${var.pwnctl_id}"
-  role = aws_iam_role.this.arn
+  role = aws_iam_role.lambda.arn
   handler = "pwnctl.api"
   source_code_hash = data.archive_file.this.output_base64sha256
   runtime = "dotnet6"

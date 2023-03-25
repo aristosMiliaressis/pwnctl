@@ -5,8 +5,10 @@ resource "aws_efs_file_system" "this" {
 }
 
 resource "aws_efs_mount_target" "this" {
+  for_each = aws_subnet.public
+
   file_system_id = aws_efs_file_system.this.id
-  subnet_id      = aws_subnet.private["a"].id 
+  subnet_id      = each.value.id 
 
   security_groups = [ aws_security_group.allow_nfs.id ]
 }
@@ -31,11 +33,11 @@ resource "aws_efs_access_point" "this" {
 
 resource "aws_security_group" "allow_nfs" {
   name        = "allow_nfs"
-  description = "Allow NFS inbound traffic"
+  description = "Allow ingress NFS traffic from VPC"
   vpc_id      = aws_vpc.main.id
 
   ingress {
-    description      = "NFS from VPC"
+    description      = "Allow ingress NFS traffic from VPC"
     from_port        = 2049
     to_port          = 2049
     protocol         = "tcp"
