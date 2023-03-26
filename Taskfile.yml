@@ -84,6 +84,13 @@ tasks:
     cmds:
       - cdk destroy -o src/core/pwnctl.infra.cdk/cdk.out
 
+  terraform:
+    deps: [build-api, install-cli]
+    cmds:
+      - cd infra
+      - echo yes | terraform apply
+      - cd -
+
   install-deps:
     cmds:
       - |

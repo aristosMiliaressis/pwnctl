@@ -98,6 +98,10 @@ resource "aws_lambda_function" "this" {
           PWNCTL_Logging__MinLevel = "Debug"
           PWNCTL_Logging__FilePath = "/mnt/efs/"
           PWNCTL_Logging__LogGroup = "/aws/lambda/${var.stack_name}"
+          PWNCTL_Db__Name = var.rds_postgres_databasename
+          PWNCTL_Db__Username = var.rds_postgres_username
+          PWNCTL_Db__Password = random_password.db.result
+          #PWNCTL_Db__Host = output.aws_postgres_endpoint
           PWNCTL_INSTALL_PATH = "/mnt/efs/"
       }
   }

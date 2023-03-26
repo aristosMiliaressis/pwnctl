@@ -1,4 +1,4 @@
-resource "aws_sqs_queue" "this" {
+resource "aws_sqs_queue" "main" {
   name                      = "pwnctl_${random_id.id.hex}.fifo"
   fifo_queue                  = true
   content_based_deduplication = true
@@ -13,7 +13,7 @@ resource "aws_sqs_queue" "this" {
   })
 
   tags = {
-    Name = "pwnctl_${random_id.id.hex}_queue"
+    Name = "pwnctl_queue"
   }
 }
 
@@ -28,6 +28,6 @@ resource "aws_sqs_queue" "dlq" {
   receive_wait_time_seconds = 20
 
   tags = {
-    Name = "pwnctl_${random_id.id.hex}_dlq"
+    Name = "pwnctl_dlq"
   }
 }
