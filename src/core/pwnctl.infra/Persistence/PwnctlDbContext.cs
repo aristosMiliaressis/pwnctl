@@ -19,8 +19,8 @@ namespace pwnctl.infra.Persistence
     public sealed class PwnctlDbContext : DbContext
     {
         public static string ConnectionString => $"Host={PwnInfraContext.Config.Db.Host};"
-                                              + $"Database={AwsConstants.DatabaseName};"
-                                              + $"Username={AwsConstants.AuroraInstanceUsername};"
+                                              + $"Database={PwnInfraContext.Config.Db.Name};"
+                                              + $"Username={PwnInfraContext.Config.Db.Username};"
                                               + $"Password={PwnInfraContext.Config.Db.Password};Timeout=30";
 
         public static readonly ILoggerFactory _loggerFactory = LoggerFactory.Create(builder =>
