@@ -1,0 +1,10 @@
+Profiles: [ "all" ]
+
+TaskDefinitions:
+  - ShortName: os_fingerprint
+    CommandTemplate: os-fingerprint.sh {{IP}}
+    Subject: NetworkHost
+
+  - ShortName: udp_scan
+    CommandTemplate: udp-scan.sh {{IP}}
+    Subject: NetworkHost

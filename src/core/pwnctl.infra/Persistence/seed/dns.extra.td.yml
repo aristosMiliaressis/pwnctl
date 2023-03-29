@@ -1,0 +1,18 @@
+Profiles: [ "all" ]
+
+TaskDefinitions:
+  # - ShortName: tld_brute
+  #   CommandTemplate: tld-brute.sh {{Name}}
+  #   Subject: DomainName
+  #   Filter: DomainName.ZoneDepth == 1
+
+  - ShortName: cloud_enum
+    CommandTemplate: cloud-enum.sh {{Word}}
+    Subject: DomainName
+    Filter: DomainName.ZoneDepth == 1
+
+  - ShortName: email_finder
+    CommandTemplate: email-finder.sh {{Name}}
+    Subject: DomainName
+    Filter: DomainName.ZoneDepth == 1
+
