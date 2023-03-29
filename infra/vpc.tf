@@ -13,6 +13,10 @@ resource "aws_internet_gateway" "this" {
   tags = {
     Name = "PwnCtl ${random_id.id.hex} Internet Gateway"
   }
+
+  depends_on = [
+    aws_subnet.private
+  ]
 }
 
 resource "aws_subnet" "public" {

@@ -121,7 +121,6 @@ resource "aws_lambda_function" "this" {
       variables = {
           PWNCTL_Aws__InVpc = "true"
           PWNCTL_TaskQueue__QueueName = "pwnctl_${random_id.id.hex}.fifo"
-          PWNCTL_TaskQueue__DLQName = "pwnctl_${random_id.id.hex}_dlq.fifo"
           PWNCTL_TaskQueue__VisibilityTimeout = var.sqs_visibility_timeout
           PWNCTL_Logging__MinLevel = "Debug"
           PWNCTL_Logging__FilePath = var.efs_mount_point

@@ -1,4 +1,3 @@
-# READ: https://github.com/hashicorp/terraform-provider-aws/issues/25794
 
 resource "aws_iam_role" "ecs" {
   name = "pwnctl_${random_id.id.hex}_ecs_service_role"
@@ -62,10 +61,6 @@ resource "aws_iam_role_policy_attachment" "attach_rds_full_access" {
   policy_arn = data.aws_iam_policy.rds_full_access.arn
 }
 
-# Queue.GrantConsumeMessages
-# Queue.GrantSendMessages
-# DatabaseSecret.GrantRead
-
 resource "aws_ecs_task_definition" "this" {
   family = "service"
   requires_compatibilities = ["FARGATE"]
@@ -74,7 +69,16 @@ resource "aws_ecs_task_definition" "this" {
   memory                   = 3072
   execution_role_arn = aws_iam_role.ecs.arn
   task_role_arn = aws_iam_role.ecs.arn
-  container_definitions = file("task-definitions/pwnctl.json")
+  container_definitions = templatefile("task-definitions/pwnctl.tftpl", {
+    efs_mount_point = var.efs_mount_point
+    efs_name = "pwnctl-fs",
+    db_name = var.rds_postgres_databasename,
+    db_username = var.rds_postgres_username,
+    db_password = random_password.db.result
+    db_endpoint = aws_db_instance.this.endpoint,
+    sqs_visibility_timeout = var.sqs_visibility_timeout,
+    sqs_queue_name = aws_sqs_queue.main.name
+  })
 
   volume {
     name      = "pwnctl-fs"
@@ -90,64 +94,49 @@ resource "aws_ecs_task_definition" "this" {
   }
 }
 
-/* data "aws_ecr_image" "this" {
-  repository_name = "i0m2p7r6/pwnctl"
-  image_tag       = "latest"
-} */
+# Queue.GrantConsumeMessages
+# Queue.GrantSendMessages
+# DatabaseSecret.GrantRead
+#FileSystem.Connections.AllowDefaultPortFrom(FargateService);
+#Database.Connections.AllowDefaultPortFrom(FargateService);
 
+# READ: https://www.terraform.io/language/functions/templatefile
 # Container LogGroup
-# Container MountPoint
-# StopTimeout
-
-/* data "aws_ecs_container_definition" "pwnctl" {
-  task_definition = aws_ecs_task_definition.this.id
-  container_name  = "pwnctl"
-  image = aws_ecr_image.this
-
-  environment {
-      variables = {
-          PWNCTL_Aws__InVpc = "true"
-          PWNCTL_TaskQueue__QueueName = "pwnctl_${random_id.id.hex}.fifo"
-          PWNCTL_TaskQueue__DLQName = "pwnctl_${random_id.id.hex}_dlq.fifo"
-          PWNCTL_TaskQueue__VisibilityTimeout = var.sqs_visibility_timeout
-          PWNCTL_Logging__MinLevel = "Debug"
-          PWNCTL_Logging__FilePath = var.efs_mount_point
-          #PWNCTL_Logging__LogGroup = "/aws/ecs/${var.stack_name}"
-          PWNCTL_Db__Name = var.rds_postgres_databasename
-          PWNCTL_Db__Username = var.rds_postgres_username
-          PWNCTL_Db__Password = random_password.db.result
-          PWNCTL_Db__Host = aws_db_instance.this.endpoint
-          PWNCTL_INSTALL_PATH = var.efs_mount_point
-      }
-  }
-} */
 
 resource "aws_ecs_cluster" "this" {
   name = "pwnctl-cluster"
 }
 
-/* resource "aws_ecs_service" "this" {
-  name            = "mongodb"
+resource "aws_ecs_service" "this" {
+  name            = "pwnctl-svc"
   launch_type     = "FARGATE"
-  cluster         = aws_ecs_cluster.foo.id
-  task_definition = aws_ecs_task_definition.mongo.arn
-  desired_count   = 3
-  iam_role        = aws_iam_role.foo.arn
-  depends_on      = [aws_iam_role_policy.foo]
+  cluster         = aws_ecs_cluster.this.id
+  task_definition = aws_ecs_task_definition.this.arn
+  desired_count   = 0
+  iam_role        = aws_iam_role.ecs.arn
+  depends_on      = [
+    aws_ecs_cluster.this,
+    aws_ecs_task_definition.this, 
+    aws_iam_role.ecs
+  ]
 
-  ordered_placement_strategy {
-    type  = "binpack"
-    field = "cpu"
+  network_configuration {
+    subnets = [for k, v in aws_subnet.private : aws_subnet.private[k].id]
+    assign_public_ip = "true"
   }
 
-  load_balancer {
-    target_group_arn = aws_lb_target_group.foo.arn
-    container_name   = "mongo"
-    container_port   = 8080
+  capacity_provider_strategy {
+    capacity_provider = "FARGATE"
+    weight = 1
+  }
+
+  /*ordered_placement_strategy {
+    type  = "binpack"
+    field = "cpu"
   }
 
   placement_constraints {
     type       = "memberOf"
     expression = "attribute:ecs.availability-zone in [us-west-2a, us-west-2b]"
-  }
-} */
+  } */
+}
