@@ -9,6 +9,11 @@ variable "profile" {
   default = "r00t"
 }
 
+variable "efs_mount_point" {
+  description = "EFS Mount Point."
+  default = "/mnt/efs"
+}
+
 variable "region" {
   description = "The AWS region to deploy resources to."
   default = "us-east-1"

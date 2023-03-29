@@ -1,0 +1,7 @@
+[
+    {
+        "name": "pwnctl",
+        "image": "public.ecr.aws/i0m2p7r6/pwnctl:latest",
+        "essential": true
+    }
+]

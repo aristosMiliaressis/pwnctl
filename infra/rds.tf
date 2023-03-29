@@ -74,7 +74,3 @@ resource "aws_db_instance" "this" {
   vpc_security_group_ids = [aws_security_group.allow_postgres.id]
   db_subnet_group_name   = aws_db_subnet_group.this.id
 }
-
-output "aws_postgres_endpoint" {
-  value = aws_db_instance.this.endpoint
-}

@@ -21,7 +21,7 @@ namespace pwnctl.infra.Queueing
 
                 if (!_queueUrls.TryGetValue(queueName, out string queueUrl))
                 {
-                    var queueUrlResponse = _sqsClient.GetQueueUrlAsync(AwsConstants.QueueName).Result;
+                    var queueUrlResponse = _sqsClient.GetQueueUrlAsync(PwnInfraContext.Config.TaskQueue.Name).Result;
                     queueUrl = queueUrlResponse.QueueUrl;
                     _queueUrls[queueName] = queueUrl;
                 }
@@ -41,7 +41,7 @@ namespace pwnctl.infra.Queueing
             var request = new SendMessageRequest
             {
                 MessageGroupId = task.TaskId.ToString(),
-                QueueUrl = this[AwsConstants.QueueName],
+                QueueUrl = this[PwnInfraContext.Config.TaskQueue.Name],
                 MessageBody = PwnInfraContext.Serializer.Serialize(task)
             };
 
@@ -66,7 +66,7 @@ namespace pwnctl.infra.Queueing
         {
             var receiveRequest = new ReceiveMessageRequest
             {
-                QueueUrl = this[AwsConstants.QueueName],
+                QueueUrl = this[PwnInfraContext.Config.TaskQueue.Name],
                 MaxNumberOfMessages = 1
             };
 
@@ -106,7 +106,7 @@ namespace pwnctl.infra.Queueing
 
             try
             {
-                var response = await _sqsClient.DeleteMessageAsync(this[AwsConstants.QueueName], task.Metadata[nameof(Message.ReceiptHandle)], CancellationToken.None);
+                var response = await _sqsClient.DeleteMessageAsync(this[PwnInfraContext.Config.TaskQueue.Name], task.Metadata[nameof(Message.ReceiptHandle)], CancellationToken.None);
                 if (response.HttpStatusCode != HttpStatusCode.OK)
                 {
                     PwnInfraContext.Logger.Warning(PwnInfraContext.Serializer.Serialize(response));
@@ -125,7 +125,7 @@ namespace pwnctl.infra.Queueing
 
             var request = new ChangeMessageVisibilityRequest
             {
-                QueueUrl = this[AwsConstants.QueueName],
+                QueueUrl = this[PwnInfraContext.Config.TaskQueue.Name],
                 ReceiptHandle = task.Metadata[nameof(Message.ReceiptHandle)],
                 VisibilityTimeout = visibilityTimeout
             };

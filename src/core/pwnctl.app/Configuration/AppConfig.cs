@@ -20,14 +20,15 @@ public sealed class AppConfig
 
     public sealed class DbSettings
     {
-        public string Name { get; set; }
-        public string Username { get; set; }
+        public string Name { get; set; } = "pwnctl";
+        public string Username { get; set; } = "pwnadmin";
         public string Password { get; set; }
         public string Host { get; set; }
     }
 
     public sealed class TaskQueueSettings
     {
+        public string Name { get; set; }
         public bool UseBash { get; set; }
         public int WorkerCount { get; set; }
     }

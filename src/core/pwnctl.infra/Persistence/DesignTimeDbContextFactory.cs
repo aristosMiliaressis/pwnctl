@@ -8,8 +8,8 @@ namespace pwnctl.infra.Persistence
     {
         public PwnctlDbContext CreateDbContext(string[] args)
         {
-            Environment.SetEnvironmentVariable("PWNCTL_TEST_RUN", "true");
             PwnInfraContextInitializer.Setup();
+            Environment.SetEnvironmentVariable("PWNCTL_TEST_RUN", "true");
 
             var optionsBuilder = new DbContextOptionsBuilder<PwnctlDbContext>();
             optionsBuilder.UseNpgsql(PwnctlDbContext.ConnectionString);

@@ -61,7 +61,6 @@ tasks:
       - cdk deploy -o src/core/pwnctl.infra.cdk/cdk.out
       - chmod +x ./bin/*
       - ./bin/upload-conf.sh
-      - ./bin/init-db.sh
 
   debug-svc:
     cmds:

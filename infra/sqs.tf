@@ -31,3 +31,13 @@ resource "aws_sqs_queue" "dlq" {
     Name = "pwnctl_dlq"
   }
 }
+
+resource "aws_ssm_parameter" "queue_name" {
+  name  = "/pwnctl/TaskQueue/Name"
+  type  = "String"
+  value = aws_sqs_queue.main.name
+}
+
+output "apiqueue_name_url" {
+  value = aws_sqs_queue.main.name
+}

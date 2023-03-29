@@ -12,8 +12,8 @@ using pwnctl.infra.Persistence;
 namespace pwnctl.infra.Migrations
 {
     [DbContext(typeof(PwnctlDbContext))]
-    [Migration("20230321221248_asset_uuidv5")]
-    partial class asset_uuidv5
+    [Migration("20230326160312_pwnctl_schema")]
+    partial class pwnctl_schema
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -94,6 +94,32 @@ namespace pwnctl.infra.Migrations
                     b.HasIndex("ProgramId");
 
                     b.ToTable("AssetRecords");
+                });
+
+            modelBuilder.Entity("pwnctl.app.Notifications.Entities.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<Guid>("RecordId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("RuleId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("SentAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RecordId");
+
+                    b.HasIndex("RuleId");
+
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("pwnctl.app.Notifications.Entities.NotificationRule", b =>
@@ -211,9 +237,6 @@ namespace pwnctl.infra.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<Guid?>("AssetRecordId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
@@ -224,8 +247,6 @@ namespace pwnctl.infra.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AssetRecordId");
 
                     b.HasIndex("RecordId", "Name")
                         .IsUnique();
@@ -277,9 +298,6 @@ namespace pwnctl.infra.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<Guid?>("AssetRecordId")
-                        .HasColumnType("uuid");
-
                     b.Property<int>("DefinitionId")
                         .HasColumnType("integer");
 
@@ -302,8 +320,6 @@ namespace pwnctl.infra.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AssetRecordId");
 
                     b.HasIndex("DefinitionId");
 
@@ -658,6 +674,25 @@ namespace pwnctl.infra.Migrations
                     b.Navigation("SubjectClass");
                 });
 
+            modelBuilder.Entity("pwnctl.app.Notifications.Entities.Notification", b =>
+                {
+                    b.HasOne("pwnctl.app.Assets.Aggregates.AssetRecord", "Record")
+                        .WithMany("Notifications")
+                        .HasForeignKey("RecordId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("pwnctl.app.Notifications.Entities.NotificationRule", "Rule")
+                        .WithMany()
+                        .HasForeignKey("RuleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Record");
+
+                    b.Navigation("Rule");
+                });
+
             modelBuilder.Entity("pwnctl.app.Notifications.Entities.NotificationRule", b =>
                 {
                     b.OwnsOne("pwnctl.domain.ValueObjects.AssetClass", "SubjectClass", b1 =>
@@ -709,12 +744,8 @@ namespace pwnctl.infra.Migrations
 
             modelBuilder.Entity("pwnctl.app.Tagging.Entities.Tag", b =>
                 {
-                    b.HasOne("pwnctl.app.Assets.Aggregates.AssetRecord", null)
-                        .WithMany("Tags")
-                        .HasForeignKey("AssetRecordId");
-
                     b.HasOne("pwnctl.app.Assets.Aggregates.AssetRecord", "Record")
-                        .WithMany()
+                        .WithMany("Tags")
                         .HasForeignKey("RecordId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -754,10 +785,6 @@ namespace pwnctl.infra.Migrations
 
             modelBuilder.Entity("pwnctl.app.Tasks.Entities.TaskEntry", b =>
                 {
-                    b.HasOne("pwnctl.app.Assets.Aggregates.AssetRecord", null)
-                        .WithMany("Tasks")
-                        .HasForeignKey("AssetRecordId");
-
                     b.HasOne("pwnctl.app.Tasks.Entities.TaskDefinition", "Definition")
                         .WithMany()
                         .HasForeignKey("DefinitionId")
@@ -765,7 +792,7 @@ namespace pwnctl.infra.Migrations
                         .IsRequired();
 
                     b.HasOne("pwnctl.app.Assets.Aggregates.AssetRecord", "Record")
-                        .WithMany()
+                        .WithMany("Tasks")
                         .HasForeignKey("RecordId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -864,6 +891,8 @@ namespace pwnctl.infra.Migrations
 
             modelBuilder.Entity("pwnctl.app.Assets.Aggregates.AssetRecord", b =>
                 {
+                    b.Navigation("Notifications");
+
                     b.Navigation("Tags");
 
                     b.Navigation("Tasks");

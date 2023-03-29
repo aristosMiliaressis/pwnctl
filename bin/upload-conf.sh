@@ -31,3 +31,5 @@ curl -s https://raw.githubusercontent.com/trickest/resolvers/main/resolvers-trus
 
 uploadDirectory ./deployment
 uploadDirectory ./src/core/pwnctl.infra/Persistence/seed /seed
+
+python3 -m awscurl --service lambda -X POST ${functionUrl}db/seed 2>/dev/null

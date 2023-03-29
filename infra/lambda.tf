@@ -28,7 +28,6 @@ resource "aws_iam_role" "lambda" {
 
   tags = {
     Name = "pwnctl_lambda_role_${random_id.id.hex}"
-    Stack = var.stack_name
   }
 }
 
@@ -47,25 +46,54 @@ resource "aws_iam_role_policy_attachment" "attach_efs_client_full_access" {
   policy_arn = data.aws_iam_policy.efs_client_full_access.arn
 }
 
+resource "aws_cloudwatch_log_group" "this" {
+  name              = "/aws/lambda/pwnctl"
+  retention_in_days = 7
+  lifecycle {
+    prevent_destroy = false
+  }
+}
+
+data "aws_iam_policy_document" "api_logging" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+    ]
+
+    resources = ["arn:aws:logs:*:*:*"]
+  }
+}
+
+resource "aws_iam_policy" "api_logging" {
+  name        = "api_logging"
+  path        = "/"
+  description = "IAM policy for logging from a lambda"
+  policy      = data.aws_iam_policy_document.api_logging.json
+}
+
+resource "aws_iam_role_policy_attachment" "api_logging" {
+  role       = aws_iam_role.lambda.name
+  policy_arn = aws_iam_policy.api_logging.arn
+}
+
 data "archive_file" "this" {
   type = "zip"
   source_dir = "../src/pwnctl.api/bin/Release/net6.0/"
   output_path = "../src/pwnctl.api/bin/Release/net6.0/lambda.zip"
 }
 
-resource "aws_cloudwatch_log_group" "this" {
-  name              = "/aws/lambda/${var.stack_name}"
-  retention_in_days = 7
-}
-
 resource "aws_lambda_function" "this" {
   tags = {
     Name = "pwnctl_lambda_${random_id.id.hex}"
-    Stack = var.stack_name
   }
 
   depends_on = [
     aws_efs_mount_target.this,
+    aws_iam_role_policy_attachment.api_logging,
     aws_cloudwatch_log_group.this,
     aws_iam_role.lambda
   ]
@@ -86,7 +114,7 @@ resource "aws_lambda_function" "this" {
 
   file_system_config {
     arn = aws_efs_access_point.this.arn
-    local_mount_path = "/mnt/efs"
+    local_mount_path = var.efs_mount_point
   }
 
   environment {
@@ -96,13 +124,13 @@ resource "aws_lambda_function" "this" {
           PWNCTL_TaskQueue__DLQName = "pwnctl_${random_id.id.hex}_dlq.fifo"
           PWNCTL_TaskQueue__VisibilityTimeout = var.sqs_visibility_timeout
           PWNCTL_Logging__MinLevel = "Debug"
-          PWNCTL_Logging__FilePath = "/mnt/efs/"
+          PWNCTL_Logging__FilePath = var.efs_mount_point
           PWNCTL_Logging__LogGroup = "/aws/lambda/${var.stack_name}"
           PWNCTL_Db__Name = var.rds_postgres_databasename
           PWNCTL_Db__Username = var.rds_postgres_username
           PWNCTL_Db__Password = random_password.db.result
-          PWNCTL_Db__Host = "${aws_db_instance.this.id}.${aws_db_instance.this.identifier}.${var.region}.rds.amazonaws.com:5432"
-          PWNCTL_INSTALL_PATH = "/mnt/efs/"
+          PWNCTL_Db__Host = aws_db_instance.this.endpoint
+          PWNCTL_INSTALL_PATH = var.efs_mount_point
       }
   }
 }
@@ -129,7 +157,26 @@ resource "aws_security_group" "allow_https_from_internet" {
     ipv6_cidr_blocks = ["::/0"]
   }
 
+  lifecycle {
+    create_before_destroy = true
+  }
+
   tags = {
     Name = "allow_https_from_internet"
   }
+}
+
+resource "aws_lambda_function_url" "this" {
+  function_name      = aws_lambda_function.this.function_name
+  authorization_type = "AWS_IAM"
+}
+
+resource "aws_ssm_parameter" "api_url" {
+  name  = "/pwnctl/Api/BaseUrl"
+  type  = "String"
+  value = aws_lambda_function_url.this.function_url
+}
+
+output "api_url" {
+  value = aws_lambda_function_url.this.function_url
 }
