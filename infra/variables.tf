@@ -9,11 +9,6 @@ variable "profile" {
   default = "r00t"
 }
 
-variable "efs_mount_point" {
-  description = "EFS Mount Point."
-  default = "/mnt/efs"
-}
-
 variable "region" {
   description = "The AWS region to deploy resources to."
   default = "us-east-1"
@@ -32,3 +27,29 @@ variable "sqs_visibility_timeout" {
   description = "SQS Visibility Timeout"
   default = 600
 }
+
+variable "efs_mount_point" {
+  description = "EFS Mount Point."
+  default = "/mnt/efs"
+}
+
+variable "ecs_cluster" {
+  default = {
+    name = "pwnctl_cluster"
+  }
+}
+
+variable "ecs_task" {
+  default = {
+    max_timeout = 7200
+    max_instances = 30
+  }
+}
+
+variable "ecs_service" {
+  default = {
+    name = "pwnctl_svc"
+    min_capacity = 0
+  }
+}
+

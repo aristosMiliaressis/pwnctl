@@ -56,6 +56,14 @@ tasks:
         cdk bootstrap aws://${accountId}/${region} -o src/core/pwnctl.infra.cdk/cdk.out
 
   deploy-app:
+    deps: [build-api, install-cli]
+    cmds:
+      - cd infra
+      - echo yes | terraform apply
+      - cd -
+      - ./bin/upload-conf.sh
+
+  deploy-app-cdk:
     deps: [clean-cdk, build-api, install-cli]
     cmds:
       - cdk deploy -o src/core/pwnctl.infra.cdk/cdk.out
@@ -82,13 +90,6 @@ tasks:
   destroy:
     cmds:
       - cdk destroy -o src/core/pwnctl.infra.cdk/cdk.out
-
-  terraform:
-    deps: [build-api, install-cli]
-    cmds:
-      - cd infra
-      - echo yes | terraform apply
-      - cd -
 
   install-deps:
     cmds:

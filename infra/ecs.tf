@@ -1,3 +1,7 @@
+#resource "aws_ecr_repository" "main" {
+#  name                 = "${var.name}-${var.environment}"
+#  image_tag_mutability = "MUTABLE"
+#}
 
 resource "aws_iam_role" "ecs" {
   name = "pwnctl_${random_id.id.hex}_ecs_service_role"
@@ -62,23 +66,38 @@ resource "aws_iam_role_policy_attachment" "attach_rds_full_access" {
 }
 
 resource "aws_ecs_task_definition" "this" {
-  family = "service"
+  family                   = "pwnwrk"
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   cpu                      = 512
   memory                   = 3072
   execution_role_arn = aws_iam_role.ecs.arn
   task_role_arn = aws_iam_role.ecs.arn
-  container_definitions = templatefile("task-definitions/pwnctl.tftpl", {
-    efs_mount_point = var.efs_mount_point
-    efs_name = "pwnctl-fs",
-    db_name = var.rds_postgres_databasename,
-    db_username = var.rds_postgres_username,
-    db_password = random_password.db.result
-    db_endpoint = aws_db_instance.this.endpoint,
-    sqs_visibility_timeout = var.sqs_visibility_timeout,
-    sqs_queue_name = aws_sqs_queue.main.name
-  })
+  container_definitions = jsonencode([{
+   name        = "pwnctl"
+   image       = "public.ecr.aws/i0m2p7r6/pwnctl:latest"
+   essential   = true
+   stopTimeout = 120
+   environment = [
+    {Name = "PWNCTL_Aws__InVpc", Value = "true"},
+    {Name = "PWNCTL_TaskQueue__QueueName", Value = aws_sqs_queue.main.name}, 
+    {Name = "PWNCTL_TaskQueue__VisibilityTimeout", Value = tostring(var.sqs_visibility_timeout)}, 
+    {Name = "PWNCTL_TaskQueue__MaxTaskTimeout", Value = tostring(var.ecs_task.max_timeout)},
+    {Name = "PWNCTL_Logging__MinLevel", Value = "Debug"},
+    {Name = "PWNCTL_Logging__FilePath", Value = var.efs_mount_point},
+    {Name = "PWNCTL_Logging__LogGroup", Value = "/aws/ecs/pwnctl"},
+    {Name = "PWNCTL_Db__Name", Value = var.rds_postgres_databasename},
+    {Name = "PWNCTL_Db__Username", Value = var.rds_postgres_username},
+    {Name = "PWNCTL_Db__Password", Value = aws_secretsmanager_secret_version.password.secret_string},
+    {Name = "PWNCTL_Db__Host", Value = aws_db_instance.this.endpoint},
+    {Name = "PWNCTL_INSTALL_PATH", Value = var.efs_mount_point}
+   ]
+   mountPoints = [
+    {
+     sourceVolume  = "pwnctl-fs"
+     containerPath = var.efs_mount_point
+    }
+   ]}])   
 
   volume {
     name      = "pwnctl-fs"
@@ -94,26 +113,15 @@ resource "aws_ecs_task_definition" "this" {
   }
 }
 
-# Queue.GrantConsumeMessages
-# Queue.GrantSendMessages
-# DatabaseSecret.GrantRead
-#FileSystem.Connections.AllowDefaultPortFrom(FargateService);
-#Database.Connections.AllowDefaultPortFrom(FargateService);
-
-# READ: https://www.terraform.io/language/functions/templatefile
-# Container LogGroup
-
 resource "aws_ecs_cluster" "this" {
   name = "pwnctl-cluster"
 }
 
 resource "aws_ecs_service" "this" {
-  name            = "pwnctl-svc"
-  launch_type     = "FARGATE"
+  name            = var.ecs_service.name
   cluster         = aws_ecs_cluster.this.id
   task_definition = aws_ecs_task_definition.this.arn
   desired_count   = 0
-  iam_role        = aws_iam_role.ecs.arn
   depends_on      = [
     aws_ecs_cluster.this,
     aws_ecs_task_definition.this, 
@@ -129,14 +137,87 @@ resource "aws_ecs_service" "this" {
     capacity_provider = "FARGATE"
     weight = 1
   }
+}
 
-  /*ordered_placement_strategy {
-    type  = "binpack"
-    field = "cpu"
+resource "aws_appautoscaling_target" "this" {
+  max_capacity       = var.ecs_task.max_instances
+  min_capacity       = var.ecs_service.min_capacity
+  resource_id        = "service/${aws_ecs_cluster.this.name}/${aws_ecs_service.this.name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+  service_namespace  = "ecs"
+}
+
+resource "aws_appautoscaling_policy" "this" {
+  name               = "PwnctlStackPwnctlSvcTaskCountTargetScaleOutPolicyLowerPolicy9ECA2AC3"
+  policy_type        = "StepScaling"
+  resource_id  = aws_appautoscaling_target.this.id
+  scalable_dimension = aws_appautoscaling_target.this.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.this.service_namespace
+
+  step_scaling_policy_configuration {
+    adjustment_type         = "ExactCapacity"
+    metric_aggregation_type = "Maximum"
+
+    step_adjustment {
+      metric_interval_upper_bound = 1
+      scaling_adjustment = 0
+    } 
+
+    dynamic "step_adjustment" {
+      for_each = toset([for i in range(0, 30/3, 1) : i])
+
+      content {
+        metric_interval_lower_bound = 10 * step_adjustment.value + 1
+        metric_interval_upper_bound = 10 * (step_adjustment.value + 1)
+        scaling_adjustment = (step_adjustment.value+1) * 3 + (var.ecs_task.max_instances%3)
+      }
+    }
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "task_queue_depth_metric" {
+  alarm_name                = "task_queue_depth_metric"
+  comparison_operator       = "GreaterThanUpperThreshold"
+  threshold_metric_id       = "allMessages"
+  evaluation_periods        = 1
+  insufficient_data_actions = []
+
+  metric_query {
+    id          = "visibleMessages"
+
+    metric {
+      metric_name = "ApproximateNumberOfMessagesVisible"
+      namespace   = "AWS/SQS"
+      period      = 60
+      stat        = "Maximum"
+
+      dimensions = {
+        QueueName = aws_sqs_queue.main.name
+      }
+    }
   }
 
-  placement_constraints {
-    type       = "memberOf"
-    expression = "attribute:ecs.availability-zone in [us-west-2a, us-west-2b]"
-  } */
+  metric_query {
+    id          = "inFlightMessages"
+    
+    metric {
+      metric_name = "ApproximateNumberOfMessagesNotVisible"
+      namespace   = "AWS/SQS"
+      period      = 60
+      stat        = "Maximum"
+
+      dimensions = {
+        QueueName = aws_sqs_queue.main.name
+      }
+    }
+  }
+
+   metric_query {
+    id          = "allMessages"
+    expression  = "visibleMessages + inFlightMessages"
+    return_data = "true"
+  }
+
+  alarm_description = "This metric monitors pending work in the main task queue."
+  alarm_actions     = [aws_appautoscaling_policy.this.arn]
 }

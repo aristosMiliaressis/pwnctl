@@ -12,6 +12,17 @@ resource "random_password" "db" {
   override_special = "!#$%&*()-_=+[]{}<>:?"
 }
 
+resource "aws_secretsmanager_secret" "password" {
+  name = "/aws/secret/pwnctl/Db"
+
+  recovery_window_in_days = 0
+}
+
+resource "aws_secretsmanager_secret_version" "password" {
+  secret_id = aws_secretsmanager_secret.password.id
+  secret_string = random_password.db.result
+}
+
 resource "aws_db_subnet_group" "this" {
   name       = "main"
   subnet_ids  = [for k, v in aws_subnet.private : aws_subnet.private[k].id]
@@ -68,7 +79,7 @@ resource "aws_db_instance" "this" {
   instance_class       = "db.t3.micro"
   db_name                = var.rds_postgres_databasename
   username               = var.rds_postgres_username
-  password               = random_password.db.result
+  password               = aws_secretsmanager_secret_version.password.secret_string
   parameter_group_name = aws_db_parameter_group.this.name
   skip_final_snapshot  = true
   vpc_security_group_ids = [aws_security_group.allow_postgres.id]

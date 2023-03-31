@@ -95,6 +95,7 @@ resource "aws_lambda_function" "this" {
     aws_efs_mount_target.this,
     aws_iam_role_policy_attachment.api_logging,
     aws_cloudwatch_log_group.this,
+    aws_security_group.allow_https_from_internet,
     aws_iam_role.lambda
   ]
 
@@ -127,7 +128,7 @@ resource "aws_lambda_function" "this" {
           PWNCTL_Logging__LogGroup = "/aws/lambda/${var.stack_name}"
           PWNCTL_Db__Name = var.rds_postgres_databasename
           PWNCTL_Db__Username = var.rds_postgres_username
-          PWNCTL_Db__Password = random_password.db.result
+          PWNCTL_Db__Password = aws_secretsmanager_secret_version.password.secret_string
           PWNCTL_Db__Host = aws_db_instance.this.endpoint
           PWNCTL_INSTALL_PATH = var.efs_mount_point
       }
@@ -155,6 +156,11 @@ resource "aws_security_group" "allow_https_from_internet" {
     cidr_blocks      = ["0.0.0.0/0"]
     ipv6_cidr_blocks = ["::/0"]
   }
+
+  depends_on = [
+    aws_vpc.main,
+    aws_subnet.private
+  ]
 
   lifecycle {
     create_before_destroy = true
