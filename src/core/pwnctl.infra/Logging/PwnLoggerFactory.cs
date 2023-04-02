@@ -3,7 +3,6 @@ using Serilog.Core;
 using Serilog.Events;
 using AWS.Logger.SeriLog;
 using AWS.Logger;
-using pwnctl.infra.Aws;
 using pwnctl.infra.Configuration;
 using pwnctl.app.Configuration;
 using pwnctl.app.Logging.Interfaces;
@@ -25,7 +24,7 @@ namespace pwnctl.infra.Logging
 
         private static Logger CreateCloudWatchLogger(AppConfig config)
         {
-            var configuration = new AWSLoggerConfig(config.Logging.LogGroup ?? AwsConstants.EcsLogGroupName);
+            var configuration = new AWSLoggerConfig(config.Logging.LogGroup);
 
             return new LoggerConfiguration()
                     .MinimumLevel.Is(Enum.Parse<LogEventLevel>(config.Logging.MinLevel))

@@ -3,7 +3,9 @@ namespace pwnctl.app.Configuration;
 public sealed class AppConfig
 {
     public DbSettings Db { get; set; } = new DbSettings();
-    public TaskQueueSettings TaskQueue { get; set; } = new TaskQueueSettings();
+    public WorkerSettings Worker { get; set; } = new WorkerSettings();
+    public QueueSettings TaskQueue { get; set; } = new QueueSettings();
+    public QueueSettings OutputQueue { get; set; } = new QueueSettings();
     public LogSettings Logging { get; set; } = new LogSettings();
     public AwsSettings Aws { get; set; } = new AwsSettings();
     public ApiSettings Api { get; set; } = new ApiSettings();
@@ -26,11 +28,15 @@ public sealed class AppConfig
         public string Host { get; set; }
     }
 
-    public sealed class TaskQueueSettings
+    public sealed class QueueSettings
     {
         public string Name { get; set; }
-        public bool UseBash { get; set; }
-        public int WorkerCount { get; set; }
+        public int VisibilityTimeout { get; set; }
+    }
+
+    public sealed class WorkerSettings
+    {
+        public int MaxTaskTimeout { get; set; }
     }
 
     public sealed class LogSettings

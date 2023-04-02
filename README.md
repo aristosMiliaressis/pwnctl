@@ -5,7 +5,7 @@ serverless configuration driven crawler for recon automation.
 
 ### Overview
 
-the target scope is onboarded trough the cli or api, than it is recursivly scanned by pushing tasks to the SQS queue that trigger serverless ECS instances to spin up and consume those tasks, collecting assets into a postgreSQL database, sending discord notifications according to `NotificationRules` and queueing further tasks according to `TaskDefinitions`, all infrastructure is provisioned as code trough CDK.
+the target scope is onboarded trough the cli or api, than it is recursivly scanned by pushing tasks to the SQS queue that trigger serverless ECS instances to spin up and consume those tasks, collecting assets into a postgreSQL database, sending discord notifications according to `NotificationRules` and queueing further tasks according to `TaskDefinitions`, all infrastructure is provisioned as code trough terraform.
 
 <p align="center">
   <img src="https://github.com/aristosMiliaressis/pwnctl/blob/master/img/arch-phase1.png?raw=true">
@@ -190,12 +190,12 @@ prints a summary about queued tasks and found assets
 
 ## Setup
 
-1. create an iam user with the policy provided in `src/core/pwnctl.infra.cdk/pwnctl-cdk-policy.json`
+1. create an Administrator user for use with terraform
 2. put all configuration/seed/script files in the `deployment/` folder
 3. install `task`
 > sudo sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin
 4. run `task simple-setup`
 
 **To Do**
+- [ ] terraform private ecr registry
 - [ ] terraform discord server
-- [ ] private ecr registry

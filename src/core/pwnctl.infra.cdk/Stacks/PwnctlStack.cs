@@ -20,7 +20,6 @@ using EFS = Amazon.CDK.AWS.EFS;
 using ECS = Amazon.CDK.AWS.ECS;
 using RDS = Amazon.CDK.AWS.RDS;
 using Lambda = Amazon.CDK.AWS.Lambda;
-using pwnctl.infra.Aws;
 
 namespace pwnctl.infra.cdk.Stacks
 {
@@ -53,7 +52,7 @@ namespace pwnctl.infra.cdk.Stacks
 
         internal void CreateVpc()
         {
-            Vpc = new Vpc(this, AwsConstants.VpcId, new VpcProps
+            Vpc = new Vpc(this, Constants.VpcId, new VpcProps
             {
                 MaxAzs = 2,
                 NatGateways = 0,
@@ -61,13 +60,13 @@ namespace pwnctl.infra.cdk.Stacks
                 {
                     new SubnetConfiguration
                     {
-                        Name = AwsConstants.PublicSubnet1,
+                        Name = Constants.PublicSubnet1,
                         SubnetType = SubnetType.PUBLIC,
                         CidrMask = 24
                     },
                     new SubnetConfiguration
                     {
-                        Name = AwsConstants.PrivateSubnet1,
+                        Name = Constants.PrivateSubnet1,
                         SubnetType = SubnetType.PRIVATE_ISOLATED,
                         CidrMask = 24
                     }
@@ -77,13 +76,13 @@ namespace pwnctl.infra.cdk.Stacks
 
         internal void CreateDatabase(bool aurora = false)
         {
-            DatabaseSecret = new SecretsManager.Secret(this, AwsConstants.DatabaseCredSecret, new SecretProps
+            DatabaseSecret = new SecretsManager.Secret(this, Constants.DatabaseCredSecret, new SecretProps
             {
-                SecretName = AwsConstants.DatabaseCredSecretName,
+                SecretName = Constants.DatabaseCredSecretName,
                 RemovalPolicy = RemovalPolicy.DESTROY,
                 GenerateSecretString = new SecretStringGenerator
                 {
-                    SecretStringTemplate = JsonSerializer.Serialize(new { username = AwsConstants.AuroraInstanceUsername }),
+                    SecretStringTemplate = JsonSerializer.Serialize(new { username = Constants.AuroraInstanceUsername }),
                     ExcludePunctuation = true,
                     IncludeSpace = false,
                     GenerateStringKey = "password"
@@ -97,9 +96,9 @@ namespace pwnctl.infra.cdk.Stacks
                     Version = AuroraPostgresEngineVersion.VER_14_5
                 });
 
-                Database = new DatabaseCluster(this, AwsConstants.AuroraCluster, new DatabaseClusterProps
+                Database = new DatabaseCluster(this, Constants.AuroraCluster, new DatabaseClusterProps
                 {
-                    ClusterIdentifier = AwsConstants.AuroraCluster,
+                    ClusterIdentifier = Constants.AuroraCluster,
                     Engine = dbEngine,
                     Credentials = Credentials.FromSecret(DatabaseSecret),
                     InstanceProps = new RDS.InstanceProps
@@ -113,15 +112,15 @@ namespace pwnctl.infra.cdk.Stacks
                     },
                     RemovalPolicy = RemovalPolicy.DESTROY,
                     Instances = 1,
-                    InstanceIdentifierBase = AwsConstants.AuroraInstance,
+                    InstanceIdentifierBase = Constants.AuroraInstance,
                     CloudwatchLogsRetention = RetentionDays.ONE_WEEK,
-                    DefaultDatabaseName = AwsConstants.DatabaseName,
+                    DefaultDatabaseName = Constants.DatabaseName,
                 });
 
                 return;
             }
 
-            Database = new DatabaseInstance(this, AwsConstants.AuroraInstance, new DatabaseInstanceProps
+            Database = new DatabaseInstance(this, Constants.AuroraInstance, new DatabaseInstanceProps
             {
                 Engine = DatabaseInstanceEngine.Postgres(new PostgresInstanceEngineProps { Version = PostgresEngineVersion.VER_14_4 }),
                 InstanceType = InstanceType.Of(InstanceClass.BURSTABLE3, InstanceSize.MICRO),
@@ -132,34 +131,34 @@ namespace pwnctl.infra.cdk.Stacks
                     SubnetType = SubnetType.PRIVATE_ISOLATED
                 },
                 RemovalPolicy = RemovalPolicy.DESTROY,
-                InstanceIdentifier = AwsConstants.AuroraInstance,
+                InstanceIdentifier = Constants.AuroraInstance,
                 CloudwatchLogsRetention = RetentionDays.ONE_WEEK,
-                DatabaseName = AwsConstants.DatabaseName
+                DatabaseName = Constants.DatabaseName
             });
         }
 
         internal void CreateQueues()
         {
-            DLQueue = new Queue(this, AwsConstants.DLQName, new QueueProps
+            DLQueue = new Queue(this, Constants.DLQName, new QueueProps
             {
-                QueueName = AwsConstants.DLQName,
+                QueueName = Constants.DLQName,
                 Encryption = QueueEncryption.SQS_MANAGED,
                 ContentBasedDeduplication = true,
                 MaxMessageSizeBytes = 8192,
                 ReceiveMessageWaitTime = Duration.Seconds(20),
                 RetentionPeriod = Duration.Days(14),
-                VisibilityTimeout = Duration.Seconds(AwsConstants.QueueVisibilityTimeoutInSec)
+                VisibilityTimeout = Duration.Seconds(Constants.QueueVisibilityTimeoutInSec)
             });
 
-            Queue = new Queue(this, AwsConstants.QueueName, new QueueProps
+            Queue = new Queue(this, Constants.QueueName, new QueueProps
             {
-                QueueName = AwsConstants.QueueName,
+                QueueName = Constants.QueueName,
                 Encryption = QueueEncryption.SQS_MANAGED,
                 ContentBasedDeduplication = true,
                 MaxMessageSizeBytes = 8192,
                 ReceiveMessageWaitTime = Duration.Seconds(20),
                 RetentionPeriod = Duration.Days(14),
-                VisibilityTimeout = Duration.Seconds(AwsConstants.QueueVisibilityTimeoutInSec),
+                VisibilityTimeout = Duration.Seconds(Constants.QueueVisibilityTimeoutInSec),
                 DeadLetterQueue = new DeadLetterQueue
                 {
                     MaxReceiveCount = 3,
@@ -170,13 +169,13 @@ namespace pwnctl.infra.cdk.Stacks
 
         internal void CreateFileSystem()
         {
-            FileSystem = new EFS.FileSystem(this, AwsConstants.EfsId, new FileSystemProps
+            FileSystem = new EFS.FileSystem(this, Constants.EfsId, new FileSystemProps
             {
                 Vpc = Vpc,
                 RemovalPolicy = RemovalPolicy.DESTROY
             });
 
-            AccessPoint = FileSystem.AddAccessPoint(AwsConstants.EfsApId, new AccessPointOptions
+            AccessPoint = FileSystem.AddAccessPoint(Constants.EfsApId, new AccessPointOptions
             {
                 CreateAcl = new Acl { OwnerGid = "1001", OwnerUid = "1001", Permissions = "777" },
                 PosixUser = new PosixUser { Gid = "0", Uid = "0" },
@@ -186,7 +185,7 @@ namespace pwnctl.infra.cdk.Stacks
 
         internal void CreateLambda()
         {
-            var pwnctlApiRole = new Role(this, AwsConstants.LambdaRole, new RoleProps
+            var pwnctlApiRole = new Role(this, Constants.LambdaRole, new RoleProps
             {
                 AssumedBy = new ServicePrincipal("lambda.amazonaws.com")
             });
@@ -197,7 +196,7 @@ namespace pwnctl.infra.cdk.Stacks
             pwnctlApiRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonRDSFullAccess"));
             Queue.GrantSendMessages(pwnctlApiRole);
 
-            var function = new Function(this, AwsConstants.LambdaName, new FunctionProps
+            var function = new Function(this, Constants.LambdaName, new FunctionProps
             {
                 Runtime = Runtime.DOTNET_6,
                 MemorySize = 3072,
@@ -206,18 +205,18 @@ namespace pwnctl.infra.cdk.Stacks
                 Handler = "pwnctl.api",
                 Vpc = Vpc,
                 Role = pwnctlApiRole,
-                Filesystem = Lambda.FileSystem.FromEfsAccessPoint(AccessPoint, AwsConstants.EfsMountPoint),
+                Filesystem = Lambda.FileSystem.FromEfsAccessPoint(AccessPoint, Constants.EfsMountPoint),
                 LogRetention = RetentionDays.ONE_WEEK,
                 Environment = new Dictionary<string, string>()
                 {
                     {"PWNCTL_Aws__InVpc", "true"},
-                    {"PWNCTL_TaskQueue__QueueName", AwsConstants.QueueName},
-                    {"PWNCTL_TaskQueue__DLQName", AwsConstants.DLQName},
-                    {"PWNCTL_TaskQueue__VisibilityTimeout", AwsConstants.QueueVisibilityTimeoutInSec.ToString()},
+                    {"PWNCTL_TaskQueue__QueueName", Constants.QueueName},
+                    {"PWNCTL_TaskQueue__DLQName", Constants.DLQName},
+                    {"PWNCTL_TaskQueue__VisibilityTimeout", Constants.QueueVisibilityTimeoutInSec.ToString()},
                     {"PWNCTL_Logging__MinLevel", "Debug"},
                     {"PWNCTL_Logging__FilePath", "/mnt/efs/"},
-                    {"PWNCTL_Logging__LogGroup", AwsConstants.LambdaLogGroup},
-                    {"PWNCTL_INSTALL_PATH", AwsConstants.EfsMountPoint}
+                    {"PWNCTL_Logging__LogGroup", Constants.LambdaLogGroup},
+                    {"PWNCTL_INSTALL_PATH", Constants.EfsMountPoint}
                 }
             });
             Database.Connections.AllowDefaultPortFrom(function);
@@ -227,11 +226,11 @@ namespace pwnctl.infra.cdk.Stacks
                 AuthType = FunctionUrlAuthType.AWS_IAM
             });
 
-            new StringParameter(this, AwsConstants.ApiUrlParamId, new StringParameterProps
+            new StringParameter(this, Constants.ApiUrlParamId, new StringParameterProps
             {
-                ParameterName = AwsConstants.ApiUrlParam,
+                ParameterName = Constants.ApiUrlParam,
                 StringValue = fnUrl.Url,
-                Description = $"the base url of {AwsConstants.LambdaName}"
+                Description = $"the base url of {Constants.LambdaName}"
             });
         }
 
@@ -239,12 +238,12 @@ namespace pwnctl.infra.cdk.Stacks
         {
             CreateFargateTaskDefinition();
 
-            var cluster = new Cluster(this, AwsConstants.EcsClusterName, new ClusterProps
+            var cluster = new Cluster(this, Constants.EcsClusterName, new ClusterProps
             {
                 Vpc = Vpc
             });
 
-            FargateService = new FargateService(this, AwsConstants.FargateServiceId, new FargateServiceProps
+            FargateService = new FargateService(this, Constants.FargateServiceId, new FargateServiceProps
             {
                 AssignPublicIp = true,
                 Cluster = cluster,
@@ -266,7 +265,7 @@ namespace pwnctl.infra.cdk.Stacks
 
         internal void CreateFargateTaskDefinition()
         {
-            var ecsTaskExecutionRole = new Role(this, AwsConstants.EcsRoleName, new RoleProps
+            var ecsTaskExecutionRole = new Role(this, Constants.EcsRoleName, new RoleProps
             {
                 AssumedBy = new ServicePrincipal("ecs-tasks.amazonaws.com")
             });
@@ -280,7 +279,7 @@ namespace pwnctl.infra.cdk.Stacks
             Queue.GrantSendMessages(ecsTaskExecutionRole);
             DatabaseSecret.GrantRead(ecsTaskExecutionRole);
 
-            TaskDefinition = new FargateTaskDefinition(this, AwsConstants.TaskDefinitionId, new FargateTaskDefinitionProps
+            TaskDefinition = new FargateTaskDefinition(this, Constants.TaskDefinitionId, new FargateTaskDefinitionProps
             {
                 Cpu = 512,
                 MemoryLimitMiB = 3072,
@@ -290,7 +289,7 @@ namespace pwnctl.infra.cdk.Stacks
                 {
                     new ECS.Volume()
                     {
-                        Name = AwsConstants.EfsId,
+                        Name = Constants.EfsId,
                         EfsVolumeConfiguration = new EfsVolumeConfiguration
                         {
                             FileSystemId = FileSystem.FileSystemId,
@@ -306,18 +305,18 @@ namespace pwnctl.infra.cdk.Stacks
                 }
             });
 
-            var logGroup = new LogGroup(this, AwsConstants.EcsLogGroupId, new LogGroupProps
+            var logGroup = new LogGroup(this, Constants.EcsLogGroupId, new LogGroupProps
             {
-                LogGroupName = AwsConstants.EcsLogGroupName,
+                LogGroupName = Constants.EcsLogGroupName,
                 RemovalPolicy = RemovalPolicy.DESTROY,
                 Retention = RetentionDays.ONE_WEEK
             });
 
             logGroup.GrantWrite(new ServicePrincipal("ecs-tasks.amazonaws.com"));
 
-            var container = TaskDefinition.AddContainer(AwsConstants.ContainerName, new ContainerDefinitionOptions
+            var container = TaskDefinition.AddContainer(Constants.ContainerName, new ContainerDefinitionOptions
             {
-                ContainerName = AwsConstants.ContainerName,
+                ContainerName = Constants.ContainerName,
                 StopTimeout = Duration.Seconds(120),
                 Image = ContainerImage.FromRegistry("public.ecr.aws/i0m2p7r6/pwnctl:latest"),
                 Logging = LogDriver.AwsLogs(new AwsLogDriverProps
@@ -330,18 +329,18 @@ namespace pwnctl.infra.cdk.Stacks
                     {"PWNCTL_Aws__InVpc", "true"},
                     {"PWNCTL_TaskQueue__QueueName", Queue.QueueName},
                     {"PWNCTL_TaskQueue__DLQName", DLQueue.QueueName},
-                    {"PWNCTL_TaskQueue__VisibilityTimeout", AwsConstants.QueueVisibilityTimeoutInSec.ToString()},
+                    {"PWNCTL_TaskQueue__VisibilityTimeout", Constants.QueueVisibilityTimeoutInSec.ToString()},
                     {"PWNCTL_Logging__FilePath", "/mnt/efs/"},
                     {"PWNCTL_Logging__MinLevel", "Debug"},
                     {"PWNCTL_Logging__LogGroup", logGroup.LogGroupName},
-                    {"PWNCTL_INSTALL_PATH", AwsConstants.EfsMountPoint}
+                    {"PWNCTL_INSTALL_PATH", Constants.EfsMountPoint}
                 }
             });
 
             var mountPoint = new MountPoint
             {
-                SourceVolume = AwsConstants.EfsId,
-                ContainerPath = AwsConstants.EfsMountPoint,
+                SourceVolume = Constants.EfsId,
+                ContainerPath = Constants.EfsMountPoint,
                 ReadOnly = false
             };
 
@@ -383,7 +382,7 @@ namespace pwnctl.infra.cdk.Stacks
                 }
             });
 
-            var scaling = FargateService.AutoScaleTaskCount(new EnableScalingProps { MinCapacity = 0, MaxCapacity = AwsConstants.EcsInstances });
+            var scaling = FargateService.AutoScaleTaskCount(new EnableScalingProps { MinCapacity = 0, MaxCapacity = Constants.EcsInstances });
 
             List<IScalingInterval> scalingSteps = new();
             scalingSteps.Add(new ScalingInterval
@@ -392,16 +391,16 @@ namespace pwnctl.infra.cdk.Stacks
                 Change = 0
             });
 
-            for (int i = 0; i < AwsConstants.EcsInstances / 3; i++)
+            for (int i = 0; i < Constants.EcsInstances / 3; i++)
             {
                 scalingSteps.Add(new ScalingInterval
                 {
                     Lower = 10 * i + 1,
-                    Change = (i+1) * 3 + (AwsConstants.EcsInstances % 3)
+                    Change = (i+1) * 3 + (Constants.EcsInstances % 3)
                 });
             }
 
-            scaling.ScaleOnMetric(AwsConstants.ScaleOutPolicy, new BasicStepScalingPolicyProps
+            scaling.ScaleOnMetric(Constants.ScaleOutPolicy, new BasicStepScalingPolicyProps
             {
                 Metric = allMessages,
                 AdjustmentType = AdjustmentType.EXACT_CAPACITY,

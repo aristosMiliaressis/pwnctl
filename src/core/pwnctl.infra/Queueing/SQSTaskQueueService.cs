@@ -1,5 +1,4 @@
-﻿using pwnctl.infra.Aws;
-using Amazon.SQS;
+﻿using Amazon.SQS;
 using Amazon.SQS.Model;
 using pwnctl.app;
 using pwnctl.app.Queueing.Interfaces;
@@ -12,18 +11,22 @@ namespace pwnctl.infra.Queueing
     {
         private readonly AmazonSQSClient _sqsClient = new();
         private Dictionary<string,string> _queueUrls;
-        private string this[string queueName]
+        private string this[string messageType]
         {
             get
             {
                 if (_queueUrls == null)
                     _queueUrls = new();
 
+                var queueName = messageType == nameof(PendingTaskDTO)
+                            ? PwnInfraContext.Config.TaskQueue.Name
+                            : PwnInfraContext.Config.OutputQueue.Name;
+
                 if (!_queueUrls.TryGetValue(queueName, out string queueUrl))
                 {
                     var queueUrlResponse = _sqsClient.GetQueueUrlAsync(PwnInfraContext.Config.TaskQueue.Name).Result;
                     queueUrl = queueUrlResponse.QueueUrl;
-                    _queueUrls[queueName] = queueUrl;
+                    _queueUrls[messageType] = queueUrl;
                 }
 
                 return queueUrl;
@@ -34,15 +37,15 @@ namespace pwnctl.infra.Queueing
         /// pushes a task to the pending queue.
         /// </summary>
         /// <param name="command"></param>
-        public async Task<bool> EnqueueAsync(QueuedTaskDTO task, CancellationToken token = default)
+        public async Task<bool> EnqueueAsync(QueueMessage message, CancellationToken token = default)
         {
-            PwnInfraContext.Logger.Debug($"Enqueue: {task.TaskId} : {task.Command}");
+            PwnInfraContext.Logger.Debug($"Enqueue: {message.TaskId}");
 
             var request = new SendMessageRequest
             {
-                MessageGroupId = task.TaskId.ToString(),
-                QueueUrl = this[PwnInfraContext.Config.TaskQueue.Name],
-                MessageBody = PwnInfraContext.Serializer.Serialize(task)
+                MessageGroupId = message.TaskId.ToString(),
+                QueueUrl = this[message.GetType().Name],
+                MessageBody = PwnInfraContext.Serializer.Serialize(message)
             };
 
             try
@@ -62,11 +65,11 @@ namespace pwnctl.infra.Queueing
             return true;
         }
 
-        public async Task<QueuedTaskDTO> ReceiveAsync(CancellationToken token = default)
+        public async Task<TMessage> ReceiveAsync<TMessage>(CancellationToken token = default) where TMessage : QueueMessage
         {
             var receiveRequest = new ReceiveMessageRequest
             {
-                QueueUrl = this[PwnInfraContext.Config.TaskQueue.Name],
+                QueueUrl = this[typeof(TMessage).Name],
                 MaxNumberOfMessages = 1
             };
 
@@ -81,7 +84,7 @@ namespace pwnctl.infra.Queueing
 
                 return messageResponse.Messages.Select(msg => 
                 {
-                    var task = PwnInfraContext.Serializer.Deserialize<QueuedTaskDTO>(msg.Body);
+                    var task = PwnInfraContext.Serializer.Deserialize<TMessage>(msg.Body);
                     PwnInfraContext.Logger.Debug($"Received : {task.TaskId}, MessageId: {msg.MessageId}");
 
                     task.Metadata = new Dictionary<string, string>
@@ -96,17 +99,17 @@ namespace pwnctl.infra.Queueing
             catch (Exception ex)
             {
                 PwnInfraContext.Logger.Exception(ex);
-                return null;
+                return default(TMessage);
             }
         }
 
-        public async Task DequeueAsync(QueuedTaskDTO task)
+        public async Task DequeueAsync(QueueMessage message)
         {
-            PwnInfraContext.Logger.Debug($"Dequeueing : {task.TaskId}");
+            PwnInfraContext.Logger.Debug($"Dequeueing : {message.TaskId}");
 
             try
             {
-                var response = await _sqsClient.DeleteMessageAsync(this[PwnInfraContext.Config.TaskQueue.Name], task.Metadata[nameof(Message.ReceiptHandle)], CancellationToken.None);
+                var response = await _sqsClient.DeleteMessageAsync(message.GetType().Name, message.Metadata[nameof(Message.ReceiptHandle)], CancellationToken.None);
                 if (response.HttpStatusCode != HttpStatusCode.OK)
                 {
                     PwnInfraContext.Logger.Warning(PwnInfraContext.Serializer.Serialize(response));
@@ -119,14 +122,14 @@ namespace pwnctl.infra.Queueing
             }
         }
 
-        public async Task ChangeMessageVisibilityAsync(QueuedTaskDTO task, int visibilityTimeout, CancellationToken token = default)
+        public async Task ChangeMessageVisibilityAsync(QueueMessage message, int visibilityTimeout, CancellationToken token = default)
         {
-            PwnInfraContext.Logger.Debug($"ChangeMessageVisibilityAsync : {task.TaskId} {visibilityTimeout}");
+            PwnInfraContext.Logger.Debug($"ChangeMessageVisibilityAsync : {message.TaskId} {visibilityTimeout}");
 
             var request = new ChangeMessageVisibilityRequest
             {
-                QueueUrl = this[PwnInfraContext.Config.TaskQueue.Name],
-                ReceiptHandle = task.Metadata[nameof(Message.ReceiptHandle)],
+                QueueUrl = this[message.GetType().Name],
+                ReceiptHandle = message.Metadata[nameof(Message.ReceiptHandle)],
                 VisibilityTimeout = visibilityTimeout
             };
 

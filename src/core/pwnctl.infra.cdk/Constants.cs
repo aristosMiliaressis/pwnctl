@@ -1,6 +1,6 @@
-namespace pwnctl.infra.Aws;
+namespace pwnctl.infra.cdk;
 
-public static class AwsConstants
+public static class Constants
 {
     public const string VpcId = "PwnctlVpc";
     public const string PublicSubnet1 = "PublicSubnet1";

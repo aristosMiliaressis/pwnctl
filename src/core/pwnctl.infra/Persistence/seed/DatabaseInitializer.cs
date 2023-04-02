@@ -11,7 +11,6 @@ using pwnctl.infra.Configuration;
 using pwnctl.infra.Queueing;
 using pwnctl.infra.Repositories;
 using pwnctl.app.Queueing.DTO;
-using pwnctl.app;
 
 namespace pwnctl.infra.Persistence
 {
@@ -65,7 +64,7 @@ namespace pwnctl.infra.Persistence
                     foreach (var task in tasks)
                     {
                         task.Queued();
-                        await queueService.EnqueueAsync(new QueuedTaskDTO(task));
+                        await queueService.EnqueueAsync(new PendingTaskDTO(task));
                         await taskRepo.UpdateAsync(task);
                     }
 

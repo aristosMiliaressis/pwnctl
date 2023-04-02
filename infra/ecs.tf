@@ -80,9 +80,11 @@ resource "aws_ecs_task_definition" "this" {
    stopTimeout = 120
    environment = [
     {Name = "PWNCTL_Aws__InVpc", Value = "true"},
+    {Name = "PWNCTL_Worker__MaxTaskTimeout", Value = tostring(var.ecs_task.max_timeout)},
     {Name = "PWNCTL_TaskQueue__QueueName", Value = aws_sqs_queue.main.name}, 
-    {Name = "PWNCTL_TaskQueue__VisibilityTimeout", Value = tostring(var.sqs_visibility_timeout)}, 
-    {Name = "PWNCTL_TaskQueue__MaxTaskTimeout", Value = tostring(var.ecs_task.max_timeout)},
+    {Name = "PWNCTL_TaskQueue__VisibilityTimeout", Value = tostring(var.sqs_visibility_timeout)},
+    {Name = "PWNCTL_OutputQueue__QueueName", Value = aws_sqs_queue.main.name}, 
+    {Name = "PWNCTL_OutputQueue__VisibilityTimeout", Value = tostring(var.sqs_visibility_timeout)}, 
     {Name = "PWNCTL_Logging__MinLevel", Value = "Debug"},
     {Name = "PWNCTL_Logging__FilePath", Value = var.efs_mount_point},
     {Name = "PWNCTL_Logging__LogGroup", Value = "/aws/ecs/pwnctl"},
@@ -159,26 +161,31 @@ resource "aws_appautoscaling_policy" "this" {
     metric_aggregation_type = "Maximum"
 
     step_adjustment {
-      metric_interval_upper_bound = 1
+      metric_interval_upper_bound = 0
       scaling_adjustment = 0
     } 
 
     dynamic "step_adjustment" {
-      for_each = toset([for i in range(0, 30/3, 1) : i])
+      for_each = toset([for i in range(0, var.ecs_task.max_instances/3, 1) : i])
 
       content {
-        metric_interval_lower_bound = 10 * step_adjustment.value + 1
+        metric_interval_lower_bound = 10 * step_adjustment.value
         metric_interval_upper_bound = 10 * (step_adjustment.value + 1)
         scaling_adjustment = (step_adjustment.value+1) * 3 + (var.ecs_task.max_instances%3)
       }
     }
+
+    step_adjustment {
+      metric_interval_lower_bound = 10 * (var.ecs_task.max_instances/3)
+      scaling_adjustment = var.ecs_task.max_instances
+    } 
   }
 }
 
 resource "aws_cloudwatch_metric_alarm" "task_queue_depth_metric" {
   alarm_name                = "task_queue_depth_metric"
-  comparison_operator       = "GreaterThanUpperThreshold"
-  threshold_metric_id       = "allMessages"
+  comparison_operator       = "GreaterThanOrEqualToThreshold"
+  threshold = 0
   evaluation_periods        = 1
   insufficient_data_actions = []
 
@@ -212,7 +219,7 @@ resource "aws_cloudwatch_metric_alarm" "task_queue_depth_metric" {
     }
   }
 
-   metric_query {
+  metric_query {
     id          = "allMessages"
     expression  = "visibleMessages + inFlightMessages"
     return_data = "true"

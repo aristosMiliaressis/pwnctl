@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using pwnctl.dto.Db.Queries;
 using pwnctl.cli.Interfaces;
 using System.Linq;
-using pwnctl.infra.Aws;
 
 namespace pwnctl.cli.ModeHandlers
 {

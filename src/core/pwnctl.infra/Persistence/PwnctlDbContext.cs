@@ -11,7 +11,6 @@ using pwnctl.app.Notifications.Entities;
 using pwnctl.domain.Entities;
 using pwnctl.app.Tagging.Entities;
 using pwnctl.app.Assets.Aggregates;
-using pwnctl.infra.Aws;
 using pwnctl.infra.Configuration;
 
 namespace pwnctl.infra.Persistence

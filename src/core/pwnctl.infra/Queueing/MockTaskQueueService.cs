@@ -1,9 +1,7 @@
 using System.Text;
 using pwnctl.app;
-using pwnctl.app.Queueing.DTO;
 using pwnctl.app.Queueing.Interfaces;
 using pwnctl.infra.Commands;
-using pwnctl.infra.Configuration;
 
 namespace pwnctl.infra.Queueing
 {
@@ -20,7 +18,7 @@ namespace pwnctl.infra.Queueing
         /// pushes a task to the pending queue.
         /// </summary>
         /// <param name="task"></param>
-        public async Task<bool> EnqueueAsync(QueuedTaskDTO task, CancellationToken token = default)
+        public async Task<bool> EnqueueAsync(QueueMessage task, CancellationToken token = default)
         {
             var json = PwnInfraContext.Serializer.Serialize(task);
             
@@ -29,22 +27,22 @@ namespace pwnctl.infra.Queueing
             return true;
         }
 
-        public async Task<QueuedTaskDTO> ReceiveAsync(CancellationToken token = default)
+        public async Task<TMessage> ReceiveAsync<TMessage>(CancellationToken token = default) where TMessage : QueueMessage
         {
             (_, StringBuilder stdout, _) = await CommandExecutor.ExecuteAsync($"if read line <{_queuePath}; then echo $line; tmp=\"$(tail -n +2 {_queuePath})\"; echo \"$tmp\" > {_queuePath}; fi");
 
             if (string.IsNullOrEmpty(stdout.ToString()))
-                return null;
+                return default(TMessage);
 
-            return PwnInfraContext.Serializer.Deserialize<QueuedTaskDTO>(stdout.ToString());
+            return PwnInfraContext.Serializer.Deserialize<TMessage>(stdout.ToString());
         }
 
-        public Task DequeueAsync(QueuedTaskDTO task)
+        public Task DequeueAsync(QueueMessage task)
         {
             return Task.CompletedTask;
         }
 
-        public Task ChangeMessageVisibilityAsync(QueuedTaskDTO task, int visibilityTimeout, CancellationToken token = default)
+        public Task ChangeMessageVisibilityAsync(QueueMessage task, int visibilityTimeout, CancellationToken token = default)
         {
             return Task.CompletedTask;
         }

@@ -1,5 +1,3 @@
-using pwnctl.app.Queueing.DTO;
-
 namespace pwnctl.app.Queueing.Interfaces;
 
 public interface TaskQueueService
@@ -8,9 +6,11 @@ public interface TaskQueueService
     /// pushes a task to the pending queue.
     /// </summary>
     /// <param name="task"></param>
-    Task<bool> EnqueueAsync(QueuedTaskDTO task, CancellationToken token = default);
-    Task<QueuedTaskDTO> ReceiveAsync(CancellationToken token = default);
-    Task DequeueAsync(QueuedTaskDTO task);
-    Task ChangeMessageVisibilityAsync(QueuedTaskDTO task, int visibilityTimeout, CancellationToken token = default);
+    Task<bool> EnqueueAsync(QueueMessage msg, CancellationToken token = default);
+
+    Task<TMessage> ReceiveAsync<TMessage>(CancellationToken token = default) where TMessage : QueueMessage;
+
+    Task DequeueAsync(QueueMessage msg);
+    Task ChangeMessageVisibilityAsync(QueueMessage msg, int visibilityTimeout, CancellationToken token = default);
 }
 

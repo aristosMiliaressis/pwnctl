@@ -1,20 +1,16 @@
-using pwnctl.infra.Persistence;
 using pwnctl.infra;
 using pwnctl.dto.Assets.Commands;
 using pwnctl.dto.Mediator;
 
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using pwnctl.app.Tasks.Enums;
-using pwnctl.infra.Persistence.Extensions;
 using pwnctl.app.Queueing.DTO;
 using pwnctl.infra.Repositories;
 
 namespace pwnctl.api.Mediator.Handlers.Assets.Commands
 {
-    public sealed class ProcessAssetsCommandHandler : IRequestHandler<ProcessAssetsCommand, MediatedResponse<List<QueuedTaskDTO>>>
+    public sealed class ProcessAssetsCommandHandler : IRequestHandler<ProcessAssetsCommand, MediatedResponse<List<PendingTaskDTO>>>
     {
-        public async Task<MediatedResponse<List<QueuedTaskDTO>>> Handle(ProcessAssetsCommand command, CancellationToken cancellationToken)
+        public async Task<MediatedResponse<List<PendingTaskDTO>>> Handle(ProcessAssetsCommand command, CancellationToken cancellationToken)
         {
             var repo = new TaskDbRepository();
 
@@ -35,7 +31,7 @@ namespace pwnctl.api.Mediator.Handlers.Assets.Commands
                 await repo.UpdateAsync(task);
             }
 
-            return MediatedResponse<List<QueuedTaskDTO>>.Success(pendingTasks.Select(t => new QueuedTaskDTO(t)).ToList());
+            return MediatedResponse<List<PendingTaskDTO>>.Success(pendingTasks.Select(t => new PendingTaskDTO(t)).ToList());
         }
     }
 }
