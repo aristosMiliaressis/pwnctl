@@ -131,7 +131,7 @@ resource "aws_ecs_service" "this" {
   ]
 
   network_configuration {
-    subnets = [for k, v in aws_subnet.private : aws_subnet.private[k].id]
+    subnets = [for k, v in aws_subnet.public : aws_subnet.public[k].id]
     assign_public_ip = "true"
   }
 
