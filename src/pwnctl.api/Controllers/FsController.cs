@@ -57,10 +57,9 @@ public sealed class FsController : ControllerBase
 
         string contentType = GetFileContentType(filePath);
 
-        var bytes = System.IO.File.ReadAllBytes(filePath);
-        var content = new System.IO.MemoryStream(bytes);
+        var fileStream = System.IO.File.OpenRead(filePath);
 
-        return File(content, contentType, Path.GetFileName(filePath));
+        return File(fileStream, contentType, Path.GetFileName(filePath));
     }
 
     [HttpPut("upload")]
