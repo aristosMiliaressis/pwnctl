@@ -15,7 +15,7 @@ resource "aws_iam_role" "ecs" {
         Principal = {
           Service = "ecs-tasks.amazonaws.com"
         }
-      },
+      }
     ]
   })
 
@@ -88,6 +88,14 @@ resource "aws_iam_role_policy_attachment" "attach_rds_full_access" {
   policy_arn = data.aws_iam_policy.rds_full_access.arn
 }
 
+resource "aws_cloudwatch_log_group" "worker" {
+  name              = "/aws/ecs/worker"
+  retention_in_days = 7
+  lifecycle {
+    prevent_destroy = false
+  }
+}
+
 resource "aws_ecs_task_definition" "this" {
   family                   = "pwnwrk"
   requires_compatibilities = ["FARGATE"]
@@ -96,33 +104,88 @@ resource "aws_ecs_task_definition" "this" {
   memory                   = 3072
   execution_role_arn = aws_iam_role.ecs.arn
   task_role_arn = aws_iam_role.ecs.arn
-  container_definitions = jsonencode([{
-   name        = "pwnctl"
-   image       = "public.ecr.aws/i0m2p7r6/pwnctl:latest"
-   essential   = true
-   stopTimeout = 120
-   environment = [
-    {Name = "PWNCTL_Aws__InVpc", Value = "true"},
-    {Name = "PWNCTL_Worker__MaxTaskTimeout", Value = tostring(var.ecs_task.max_timeout)},
-    {Name = "PWNCTL_TaskQueue__QueueName", Value = aws_sqs_queue.main.name}, 
-    {Name = "PWNCTL_TaskQueue__VisibilityTimeout", Value = tostring(var.sqs_visibility_timeout)},
-    {Name = "PWNCTL_OutputQueue__QueueName", Value = aws_sqs_queue.main.name}, 
-    {Name = "PWNCTL_OutputQueue__VisibilityTimeout", Value = tostring(var.sqs_visibility_timeout)}, 
-    {Name = "PWNCTL_Logging__MinLevel", Value = "Debug"},
-    {Name = "PWNCTL_Logging__FilePath", Value = var.efs_mount_point},
-    {Name = "PWNCTL_Logging__LogGroup", Value = "/aws/ecs/pwnctl"},
-    {Name = "PWNCTL_Db__Name", Value = var.rds_postgres_databasename},
-    {Name = "PWNCTL_Db__Username", Value = var.rds_postgres_username},
-    {Name = "PWNCTL_Db__Password", Value = aws_secretsmanager_secret_version.password.secret_string},
-    {Name = "PWNCTL_Db__Host", Value = aws_db_instance.this.endpoint},
-    {Name = "PWNCTL_INSTALL_PATH", Value = var.efs_mount_point}
-   ]
-   mountPoints = [
+  container_definitions = <<DEFINITION
+  [
     {
-     sourceVolume  = "pwnctl-fs"
-     containerPath = var.efs_mount_point
+      "name": "pwnctl",
+      "image": "public.ecr.aws/i0m2p7r6/pwnctl:latest",
+      "essential": true,
+      "stopTimeout": 120,
+      "environment": [
+        {
+          "name": "PWNCTL_IN_VPC",
+          "value": "true"
+        },
+        {
+          "name": "PWNCTL_Worker__MaxTaskTimeout",
+          "value": "${var.ecs_task.max_timeout}"
+        },
+        {
+          "name": "PWNCTL_TaskQueue__Name",
+          "value": "${aws_sqs_queue.main.name}"
+        },
+        {
+          "name": "PWNCTL_TaskQueue__VisibilityTimeout",
+          "value": "${var.sqs_visibility_timeout}"
+        },
+        {
+          "name": "PWNCTL_OutputQueue__Name",
+          "value": "${aws_sqs_queue.output.name}"
+        },
+        {
+          "name": "PWNCTL_OutputQueue__VisibilityTimeout",
+          "value": "${var.sqs_visibility_timeout}"
+        },
+        {
+          "name": "PWNCTL_Logging__MinLevel",
+          "value": "Debug"
+        },
+        {
+          "name": "PWNCTL_Logging__FilePath",
+          "value": "${var.efs_mount_point}"
+        },
+        {
+          "name": "PWNCTL_Logging__LogGroup",
+          "value": "${aws_cloudwatch_log_group.worker.name}"
+        },
+        {
+          "name": "PWNCTL_Db__Name",
+          "value": "${var.rds_postgres_databasename}"
+        },
+        {
+          "name": "PWNCTL_Db__Username",
+          "value": "${var.rds_postgres_username}"
+        },
+        {
+          "name": "PWNCTL_Db__Password",
+          "value": "${aws_secretsmanager_secret_version.password.secret_string}"
+        },
+        {
+          "name": "PWNCTL_Db__Host",
+          "value": "${aws_db_instance.this.endpoint}"
+        },
+        {
+          "name": "PWNCTL_INSTALL_PATH",
+          "value": "${var.efs_mount_point}"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "${aws_cloudwatch_log_group.worker.name}",
+          "awslogs-region": "${var.region}",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "mountPoints": [
+        {
+          "sourceVolume": "pwnctl-fs",
+          "containerPath": "${var.efs_mount_point}"
+        }
+      ]
     }
-   ]}])   
+  ]
+  DEFINITION
 
   volume {
     name      = "pwnctl-fs"

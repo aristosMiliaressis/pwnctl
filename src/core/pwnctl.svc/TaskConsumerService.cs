@@ -8,6 +8,7 @@ using pwnctl.infra.Commands;
 using pwnctl.infra.Queueing;
 using pwnctl.infra.Repositories;
 using System.Text;
+using Serilog.Events;
 
 namespace pwnctl.svc
 {
@@ -21,13 +22,15 @@ namespace pwnctl.svc
         {
             hostApplicationLifetime.ApplicationStopping.Register(() => 
             {
-                PwnInfraContext.Logger.Information(LogSinks.Console|LogSinks.Notification,$"{nameof(TaskConsumerService)} stoped.");
+                PwnInfraContext.Logger.Log(LogEventLevel.Information, LogSinks.Console | LogSinks.Notification, 
+                                        $"{nameof(TaskConsumerService)} stoped.");
             });
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            PwnInfraContext.Logger.Information(LogSinks.Console | LogSinks.Notification, $"{nameof(TaskConsumerService)} started.");
+            PwnInfraContext.Logger.Log(LogEventLevel.Information, LogSinks.Console | LogSinks.Notification, 
+                                    $"{nameof(TaskConsumerService)} started.");
 
             while (!stoppingToken.IsCancellationRequested)
             {

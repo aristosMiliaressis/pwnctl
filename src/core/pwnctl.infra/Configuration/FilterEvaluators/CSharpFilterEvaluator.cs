@@ -33,7 +33,7 @@ namespace pwnctl.infra.Configuration
 
                 var evalTask = evalMethod.Invoke(null, new object[]
                 {
-                    $"({record.Asset.GetType().Name}, Tags) => " + script,
+                    "("+record.Asset.GetType().Name+", Tags) => " + script,
                     _scriptOptions, null, null, CancellationToken.None
                 });
 

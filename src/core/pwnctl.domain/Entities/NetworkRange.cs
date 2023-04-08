@@ -11,7 +11,7 @@ namespace pwnctl.domain.Entities
         [EqualityComponent]
         public ushort NetPrefixBits { get; init; }
 
-        public string CIDR => $"{FirstAddress}/{NetPrefixBits}";
+        public string CIDR => FirstAddress+"/"+NetPrefixBits;
 
         public NetworkRange() {}
         

@@ -1,8 +1,9 @@
 namespace pwnctl.app.Logging;
 
-public static class LogSinks
+[Flags]
+public enum LogSinks
 {
-    public const int File = 1;
-    public const int Console = 2;
-    public const int Notification = 4;
+    File = 1,
+    Console = 2,
+    Notification = 4,
 }

@@ -1,28 +1,20 @@
 namespace pwnctl.app.Logging.Interfaces;
 
+using Serilog.Events;
+
 public interface AppLogger
 {
-    public void Exception(Exception ex);
+    void Exception(Exception ex);
 
-    public void Exception(int sinkBitMap, Exception ex);
+    void Debug(string messageTemplate, params string[] args);
 
-    public void Debug(string messageTemplate, params string[] args);
+    void Information(string messageTemplate, params string[] args);
 
-    public void Debug(int sinkBitMap, string messageTemplate, params string[] args);
+    void Warning(string messageTemplate, params string[] args);
 
-    public void Information(string messageTemplate, params string[] args);
+    void Error(string messageTemplate, params string[] args);
 
-    public void Information(int sinkBitMap, string messageTemplate, params string[] args);
+    void Fatal(string messageTemplate, params string[] args);
 
-    public void Warning(string messageTemplate, params string[] args);
-
-    public void Warning(int sinkBitMap, string messageTemplate, params string[] args);
-
-    public void Error(string messageTemplate, params string[] args);
-
-    public void Error(int sinkBitMap, string messageTemplate, params string[] args);
-
-    public void Fatal(string messageTemplate, params string[] args);
-
-    public void Fatal(int sinkBitMap, string messageTemplate, params string[] args);
+    void Log(LogEventLevel level, LogSinks sinkBitMap, string messageTemplate, params string[] args);
 }

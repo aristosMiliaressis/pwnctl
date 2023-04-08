@@ -46,8 +46,8 @@ resource "aws_iam_role_policy_attachment" "attach_efs_client_full_access" {
   policy_arn = data.aws_iam_policy.efs_client_full_access.arn
 }
 
-resource "aws_cloudwatch_log_group" "this" {
-  name              = "/aws/lambda/pwnctl"
+resource "aws_cloudwatch_log_group" "api" {
+  name              = "/aws/lambda/api"
   retention_in_days = 7
   lifecycle {
     prevent_destroy = false
@@ -94,7 +94,7 @@ resource "aws_lambda_function" "this" {
   depends_on = [
     aws_efs_mount_target.this,
     aws_iam_role_policy_attachment.api_logging,
-    aws_cloudwatch_log_group.this,
+    aws_cloudwatch_log_group.api,
     aws_security_group.allow_https_from_internet,
     aws_iam_role.lambda
   ]
@@ -128,7 +128,7 @@ resource "aws_lambda_function" "this" {
           PWNCTL_OutputQueue__VisibilityTimeout = tostring(var.sqs_visibility_timeout), 
           PWNCTL_Logging__MinLevel = "Debug"
           PWNCTL_Logging__FilePath = var.efs_mount_point
-          PWNCTL_Logging__LogGroup = "/aws/lambda/${var.stack_name}"
+          PWNCTL_Logging__LogGroup = aws_cloudwatch_log_group.api.name
           PWNCTL_Db__Name = var.rds_postgres_databasename
           PWNCTL_Db__Username = var.rds_postgres_username
           PWNCTL_Db__Password = aws_secretsmanager_secret_version.password.secret_string

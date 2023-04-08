@@ -11,7 +11,7 @@ namespace pwnctl.infra.Repositories
         public PublicSuffix GetSuffix(string suffix)
         {
             return List()
-                .Where(s => suffix.EndsWith($".{s.Value}"))
+                .Where(s => suffix.EndsWith("."+s.Value))
                 .OrderByDescending(s => s.Value.Length)
                 .FirstOrDefault();
         }

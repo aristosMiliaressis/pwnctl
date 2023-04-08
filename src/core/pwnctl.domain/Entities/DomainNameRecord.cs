@@ -74,7 +74,7 @@ namespace pwnctl.domain.Entities
 
         public override string ToString()
         {
-            return $"{Key} IN {Type} {Value}";
+            return Key + " IN " + Type + " " + Value;
         }
     }
 }

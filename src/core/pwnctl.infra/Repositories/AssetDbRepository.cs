@@ -13,7 +13,7 @@ using pwnctl.app.Notifications.Entities;
 
 namespace pwnctl.infra.Repositories
 {
-    public sealed class AssetDbRepository : AssetRepository, IDisposable
+    public sealed class AssetDbRepository : AssetRepository
     {
         private PwnctlDbContext _context;
 
@@ -54,12 +54,14 @@ namespace pwnctl.infra.Repositories
         public TaskEntry FindTaskEntry(Asset asset, TaskDefinition def)
         {
             var lambda = ExpressionTreeBuilder.BuildTaskMatchingLambda(asset, def);
+
             return (TaskEntry)_context.FirstNotTrackedFromLambda(lambda);
         }
 
         public Notification FindNotification(Asset asset, NotificationRule rule)
         {
             var lambda = ExpressionTreeBuilder.BuildNotificationMatchingLambda(asset, rule);
+
             return (Notification)_context.FirstNotTrackedFromLambda(lambda);
         }
 
@@ -260,11 +262,6 @@ namespace pwnctl.infra.Repositories
                             .Where(r => r.SubjectClass.Class == nameof(Email))
                             .AsNoTracking()
                             .ToListAsync();
-        }
-
-        public void Dispose()
-        {
-            _context.Dispose();
         }
     }
 }

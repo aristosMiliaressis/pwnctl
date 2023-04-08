@@ -3,9 +3,10 @@ using pwnctl.app.Tasks.Entities;
 using pwnctl.infra.Persistence;
 using Microsoft.EntityFrameworkCore;
 using pwnctl.app.Tasks.Enums;
+
 namespace pwnctl.infra.Repositories
 {
-    public sealed class TaskDbRepository : IDisposable
+    public sealed class TaskDbRepository
     {
         private PwnctlDbContext _context = new PwnctlDbContext();
         public IQueryable<TaskEntry> JoinedQueryable => _context.TaskEntries
@@ -73,11 +74,6 @@ namespace pwnctl.infra.Repositories
             _context.Entry(task.Record.Asset).State = EntityState.Detached;
             if (task.Record.Program != null)
                 _context.Entry(task.Record.Program).State = EntityState.Detached;
-        }
-
-        public void Dispose()
-        {
-            _context.Dispose();
         }
     }
 }

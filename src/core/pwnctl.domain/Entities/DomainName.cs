@@ -12,7 +12,7 @@ namespace pwnctl.domain.Entities
         public int ZoneDepth { get; private init; }
         public DomainName ParentDomain { get; private set; }
         public Guid? ParentDomainId { get; private init; }
-        public string Word => Name.Replace($".{PublicSuffixRepository.Instance.GetSuffix(Name).Value}", "")
+        public string Word => Name.Replace("."+PublicSuffixRepository.Instance.GetSuffix(Name).Value, "")
                                     .Split(".")
                                     .Last();
 

@@ -42,7 +42,7 @@ namespace pwnctl.domain.Entities
             
             string hostSegment = Socket.NetworkHost != null ? Socket.NetworkHost.IP : Socket.DomainName.Name;
             string portSegment = (scheme == "http" && Socket.Port == 80) || (scheme == "https" && Socket.Port == 443) ? "" : (":" + Socket.Port);
-            Url = $"{Scheme}://{hostSegment}{portSegment}{Path}";
+            Url = Scheme+"://"+hostSegment+portSegment+Path;
         }
 
         public static HttpEndpoint TryParse(string assetText)

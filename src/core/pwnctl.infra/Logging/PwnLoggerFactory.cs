@@ -15,11 +15,11 @@ namespace pwnctl.infra.Logging
     {
         public static AppLogger Create(AppConfig config, NotificationSender sender)
         {
-            var defaultSink = EnvironmentVariables.InVpc ? LogSinks.Console : LogSinks.File;
+            var defaultSink = EnvironmentVariables.IN_VPC ? LogSinks.Console : LogSinks.File;
 
             return new PwnLogger(defaultSink, sender,
                         fileLogger: CreateFileLogger(config),
-                        consoleLogger: CreateConsoleLogger(config));
+                        consoleLogger: CreateCloudWatchLogger(config));
         }
 
         private static Logger CreateCloudWatchLogger(AppConfig config)

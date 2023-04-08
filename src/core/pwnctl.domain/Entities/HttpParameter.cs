@@ -38,7 +38,7 @@ namespace pwnctl.domain.Entities
         {
             return Type switch
             {
-                ParamType.Query => $"{Url}?{Name}=",
+                ParamType.Query => Url+"?"+Name+"=",
                 _ => throw new NotImplementedException()
             };
         }

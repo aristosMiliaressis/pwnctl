@@ -28,7 +28,7 @@ namespace pwnctl.domain.Entities
 
         public override string ToString()
         {
-            return $"{Name}:{SocketAddress}";
+            return SocketAddress + "\t" + Name;
         }
     }
 }
