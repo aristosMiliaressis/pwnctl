@@ -6,7 +6,7 @@ variable "do_token" {
 
 variable "profile" {
   description = "The AWS profile to use."
-  default = "r00t"
+  default = "default"
 }
 
 variable "region" {

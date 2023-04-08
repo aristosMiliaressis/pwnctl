@@ -24,6 +24,29 @@ resource "aws_iam_role" "ecs" {
   }
 }
 
+resource "aws_iam_role_policy" "sqs_policy" {
+  name = "sqs_policy"
+  role = aws_iam_role.ecs.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "sqs:ChangeMessageVisibility",
+          "sqs:DeleteMessage",
+          "sqs:GetQueueAttributes",
+          "sqs:GetQueueUrl",
+          "sqs:ReceiveMessage",
+          "sqs:SendMessage"
+        ],
+        Effect   = "Allow"
+        Resource = "*"
+      },
+    ]
+  })
+}
+
 data "aws_iam_policy" "ecs_task_execution_role_policy" {
   name = "AmazonECSTaskExecutionRolePolicy"
 }

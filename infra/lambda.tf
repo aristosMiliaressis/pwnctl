@@ -120,11 +120,11 @@ resource "aws_lambda_function" "this" {
 
   environment {
       variables = {
-          PWNCTL_Aws__InVpc = "true"
+          PWNCTL_IN_VPC = "true"
           PWNCTL_Worker__MaxTaskTimeout = tostring(var.ecs_task.max_timeout),
-          PWNCTL_TaskQueue__QueueName = aws_sqs_queue.main.name, 
+          PWNCTL_TaskQueue__Name = aws_sqs_queue.main.name, 
           PWNCTL_TaskQueue__VisibilityTimeout = tostring(var.sqs_visibility_timeout),
-          PWNCTL_OutputQueue__QueueName = aws_sqs_queue.output.name,
+          PWNCTL_OutputQueue__Name = aws_sqs_queue.output.name,
           PWNCTL_OutputQueue__VisibilityTimeout = tostring(var.sqs_visibility_timeout), 
           PWNCTL_Logging__MinLevel = "Debug"
           PWNCTL_Logging__FilePath = var.efs_mount_point

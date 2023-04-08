@@ -18,13 +18,11 @@ namespace pwnctl.infra.Queueing
         /// pushes a task to the pending queue.
         /// </summary>
         /// <param name="task"></param>
-        public async Task<bool> EnqueueAsync(QueueMessage task, CancellationToken token = default)
+        public async Task EnqueueAsync(QueueMessage task, CancellationToken token = default)
         {
             var json = PwnInfraContext.Serializer.Serialize(task);
             
             await CommandExecutor.ExecuteAsync($"echo '{json}' >> {_queuePath}");
-            
-            return true;
         }
 
         public async Task<TMessage> ReceiveAsync<TMessage>(CancellationToken token = default) where TMessage : QueueMessage
