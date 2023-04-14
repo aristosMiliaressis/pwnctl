@@ -40,20 +40,19 @@ tasks:
   install-cli:
     deps: [build-cli]
     cmds:
-      - chmod +x src/pwnctl.cli/bin/Release/net6.0/linux-x64/publish/pwnctl
-      - sudo mv src/pwnctl.cli/bin/Release/net6.0/linux-x64/publish/pwnctl /usr/local/bin
+      - chmod +x src/pwnctl.cli/bin/Release/net7.0/linux-x64/publish/pwnctl
+      - sudo mv src/pwnctl.cli/bin/Release/net7.0/linux-x64/publish/pwnctl /usr/local/bin
       - sudo mkdir -p /etc/pwnctl/
       - sudo chown $USER /etc/pwnctl/
-      - sudo mv src/pwnctl.cli/bin/Release/net6.0/linux-x64/publish/config.ini /etc/pwnctl/
+      - sudo mv src/pwnctl.cli/bin/Release/net7.0/linux-x64/publish/config.ini /etc/pwnctl/
       - sudo ./src/core/pwnctl.svc/scripts/get-psl.sh /etc/pwnctl/
       - sudo cp -r ./src/core/pwnctl.infra/Persistence/seed /etc/pwnctl
   
   bootstrap-aws:
     cmds:
-      - |
-        region=$(aws configure get region)
-        accountId=$(aws sts get-caller-identity --query "Account" --output text)
-        cdk bootstrap aws://${accountId}/${region} -o src/core/pwnctl.infra.cdk/cdk.out
+      - region=$(aws configure get region)
+      - accountId=$(aws sts get-caller-identity --query "Account" --output text)
+      - cdk bootstrap aws://${accountId}/${region} -o src/core/pwnctl.infra.cdk/cdk.out
 
   deploy-app:
     deps: [build-api, install-cli]
@@ -90,6 +89,7 @@ tasks:
     cmds:
       - cd infra && echo yes | terraform destroy
       - cd -
+    
   destroy-cdk:
     cmds:
       - cdk destroy -o src/core/pwnctl.infra.cdk/cdk.out

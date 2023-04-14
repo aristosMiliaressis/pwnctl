@@ -201,7 +201,7 @@ namespace pwnctl.infra.cdk.Stacks
                 Runtime = Runtime.DOTNET_6,
                 MemorySize = 3072,
                 Timeout = Duration.Seconds(120),
-                Code = Code.FromAsset(Path.Join("src", "pwnctl.api", "bin", "Release", "net6.0")),
+                Code = Code.FromAsset(Path.Join("src", "pwnctl.api", "bin", "Release", "net7.0")),
                 Handler = "pwnctl.api",
                 Vpc = Vpc,
                 Role = pwnctlApiRole,
