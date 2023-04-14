@@ -267,7 +267,7 @@ public sealed class Tests
         Assert.True(record.InScope);
         Assert.Equal("tesla", record.DomainName.Word);
 
-        var cloudEnumTask = repository.JoinedQueryable.First(t => t.Definition.ShortName == "cloud_enum");
+        var cloudEnumTask = TaskDbRepository.JoinedQueryable().First(t => t.Definition.ShortName == "cloud_enum");
         Assert.Equal("cloud-enum.sh tesla", cloudEnumTask.Command);
 
         cloudEnumTask.Queued();
@@ -367,8 +367,8 @@ public sealed class Tests
         var processor = AssetProcessorFactory.Create();
 
         await processor.ProcessAsync("172.16.17.0/24");
-        Assert.True(repository.JoinedQueryable.Any(t => t.Definition.ShortName == "nmap_basic"));
-        Assert.False(repository.JoinedQueryable.Any(t => t.Definition.ShortName == "ffuf_common"));
+        Assert.True(TaskDbRepository.JoinedQueryable().Any(t => t.Definition.ShortName == "nmap_basic"));
+        Assert.False(TaskDbRepository.JoinedQueryable().Any(t => t.Definition.ShortName == "ffuf_common"));
 
         var exampleUrl = new
         {
@@ -382,16 +382,16 @@ public sealed class Tests
         await processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(exampleUrl));
 
         // aggresivness test
-        Assert.True(repository.JoinedQueryable.Any(t => t.Definition.ShortName == "hakrawler"));
-        Assert.False(repository.JoinedQueryable.Any(t => t.Definition.ShortName == "sqlmap"));
+        Assert.True(TaskDbRepository.JoinedQueryable().Any(t => t.Definition.ShortName == "hakrawler"));
+        Assert.False(TaskDbRepository.JoinedQueryable().Any(t => t.Definition.ShortName == "sqlmap"));
 
         // Task.Command interpolation test
-        var hakrawlerTask = repository.JoinedQueryable.First(t => t.Definition.ShortName == "hakrawler");
+        var hakrawlerTask = TaskDbRepository.JoinedQueryable().First(t => t.Definition.ShortName == "hakrawler");
         Assert.Equal("hakrawler -plain -h 'User-Agent: Mozilla/5.0' https://172.16.17.15/api/token", hakrawlerTask.Command);
 
         // TaskDefinition.Filter pass test
         await processor.ProcessAsync("https://172.16.17.15/");
-        Assert.True(repository.JoinedQueryable.Any(t => t.Definition.ShortName == "ffuf_common"));
+        Assert.True(TaskDbRepository.JoinedQueryable().Any(t => t.Definition.ShortName == "ffuf_common"));
 
         // Task added on existing asset
         exampleUrl = new
@@ -402,26 +402,26 @@ public sealed class Tests
             }
         };
         await processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(exampleUrl));
-        Assert.True(repository.JoinedQueryable.Any(t => t.Definition.ShortName == "shortname_scanner"));
+        Assert.True(TaskDbRepository.JoinedQueryable().Any(t => t.Definition.ShortName == "shortname_scanner"));
 
         // multiple interpolation test
         await processor.ProcessAsync("sub.tesla.com");
-        var resolutionTask = repository.JoinedQueryable
+        var resolutionTask = TaskDbRepository.JoinedQueryable()
                                     .First(t => t.Record.DomainName.Name == "sub.tesla.com"
                                              && t.Definition.ShortName == "domain_resolution");
         Assert.Equal("dig +short sub.tesla.com | awk '{print \"sub.tesla.com IN A \" $1}'", resolutionTask.Command);
 
         // blacklist test
-        Assert.False(repository.JoinedQueryable.Any(t => t.Definition.ShortName == "subfinder"));
+        Assert.False(TaskDbRepository.JoinedQueryable().Any(t => t.Definition.ShortName == "subfinder"));
 
         // Keyword test
-        var cloudEnumTask = repository.JoinedQueryable.First(t => t.Definition.ShortName == "cloud_enum");
+        var cloudEnumTask = TaskDbRepository.JoinedQueryable().First(t => t.Definition.ShortName == "cloud_enum");
         Assert.Equal("cloud-enum.sh tesla", cloudEnumTask.Command);
 
         await processor.ProcessAsync("https://tesla.s3.amazonaws.com");
         var record = context.AssetRecords.Include(r => r.HttpEndpoint).First(r => r.HttpEndpoint.Url == "https://tesla.s3.amazonaws.com/");
         
-        var task = repository.JoinedQueryable.First(t => t.Definition.ShortName == "second_order_takeover");
+        var task = TaskDbRepository.JoinedQueryable().First(t => t.Definition.ShortName == "second_order_takeover");
         Assert.NotNull(task);
 
         task.Queued();
@@ -504,7 +504,7 @@ public sealed class Tests
         // process same asset twice and make sure tasks are only assigned once
         await processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl));
         endpointRecord = repository.ListEndpointsAsync().Result.First(ep => ep.HttpEndpoint.Url == "https://iis.tesla.com/");
-        var tasks = taskRepository.JoinedQueryable.Where(t => t.Record.Id == endpointRecord.Asset.Id).ToList();
+        var tasks = TaskDbRepository.JoinedQueryable().Where(t => t.Record.Id == endpointRecord.Asset.Id).ToList();
         Assert.True(!tasks.GroupBy(t => t.DefinitionId).Any(g => g.Count() > 1));
         srvTag = endpointRecord.Tags.First(t => t.Name == "protocol");
         Assert.Equal("IIS", srvTag.Value);
@@ -524,7 +524,7 @@ public sealed class Tests
         await processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(apacheTeslaUrl));
         endpointRecord = repository.ListEndpointsAsync().Result.First(r => r.HttpEndpoint.Url == "https://apache.tesla.com/");
 
-        tasks = taskRepository.JoinedQueryable.Where(t => t.Record.Id == endpointRecord.Id).ToList();
+        tasks = TaskDbRepository.JoinedQueryable().Where(t => t.Record.Id == endpointRecord.Id).ToList();
         Assert.DoesNotContain(tasks, t => t.Definition.ShortName == "shortname_scanner");
 
         var sshService = new

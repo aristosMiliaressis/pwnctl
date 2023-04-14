@@ -8,8 +8,9 @@ namespace pwnctl.infra.Repositories
 {
     public sealed class TaskDbRepository
     {
-        private PwnctlDbContext _context = new PwnctlDbContext();
-        public IQueryable<TaskEntry> JoinedQueryable => _context.TaskEntries
+        private static PwnctlDbContext _context = new PwnctlDbContext();
+        public static Func<IQueryable<TaskEntry>> JoinedQueryable = 
+                () => _context.TaskEntries
                             .Include(r => r.Record)
                                 .ThenInclude(r => r.Program)
                             .Include(r => r.Definition)
@@ -48,18 +49,26 @@ namespace pwnctl.infra.Repositories
                                 .ThenInclude(r => r.Email)
                                 .ThenInclude(r => r.DomainName);
 
+        private static Func<PwnctlDbContext, int, Task<TaskEntry>> FindEntryQuery
+                                = EF.CompileAsyncQuery<PwnctlDbContext, int, TaskEntry>(
+                        (context, id) => JoinedQueryable()
+                                            .AsNoTracking()
+                                            .FirstOrDefault(r => r.Id == id));
+
+        private static Func<PwnctlDbContext, Task<List<TaskEntry>>> ListPendingQuery
+                                = EF.CompileAsyncQuery<PwnctlDbContext, List<TaskEntry>>(
+                        (context) => JoinedQueryable()
+                                            .Where(r => r.State == TaskState.PENDING)
+                                            .ToList());
+
         public async Task<TaskEntry> GetEntryAsync(int taskId)
         {
-            return await JoinedQueryable
-                        .AsNoTracking()
-                        .FirstOrDefaultAsync(r => r.Id == taskId);
+            return await FindEntryQuery(_context, taskId);
         }
 
         public async Task<List<TaskEntry>> ListPendingAsync(CancellationToken token = default)
         {
-            return await JoinedQueryable
-                        .Where(r => r.State == TaskState.PENDING)
-                        .ToListAsync(token);
+            return await ListPendingQuery(_context);
         }
 
         public async Task UpdateAsync(TaskEntry task)

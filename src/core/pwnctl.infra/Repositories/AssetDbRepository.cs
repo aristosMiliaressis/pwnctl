@@ -27,21 +27,26 @@ namespace pwnctl.infra.Repositories
             _context = context;
         }
 
+        private static Func<PwnctlDbContext, Guid, Task<AssetRecord>> FindRecordQuery 
+                            = EF.CompileAsyncQuery<PwnctlDbContext, Guid, AssetRecord>(
+                    (context, id) => context.AssetRecords
+                                            .Include(r => r.Tags)
+                                            .Include(r => r.FoundByTask)
+                                            .Include(r => r.NetworkRange)
+                                            .Include(r => r.NetworkHost)
+                                            .Include(r => r.NetworkSocket)
+                                            .Include(r => r.DomainName)
+                                            .Include(r => r.DomainNameRecord)
+                                            .Include(r => r.HttpHost)
+                                            .Include(r => r.HttpEndpoint)
+                                            .Include(r => r.HttpParameter)
+                                            .Include(r => r.Email)
+                                            .FirstOrDefault(r => r.Id == id));
+
+
         public async Task<AssetRecord> FindRecordAsync(Asset asset)
         {
-            return await _context.AssetRecords
-                            .Include(r => r.Tags)
-                            .Include(r => r.FoundByTask)
-                            .Include(r => r.NetworkRange)
-                            .Include(r => r.NetworkHost)
-                            .Include(r => r.NetworkSocket)
-                            .Include(r => r.DomainName)
-                            .Include(r => r.DomainNameRecord)
-                            .Include(r => r.HttpHost)
-                            .Include(r => r.HttpEndpoint)
-                            .Include(r => r.HttpParameter)
-                            .Include(r => r.Email)
-                            .FirstOrDefaultAsync(r => r.Id == UUIDv5ValueGenerator.Generate(asset));
+            return await FindRecordQuery(_context, UUIDv5ValueGenerator.Generate(asset));
         }
 
         public Asset FindMatching(Asset asset)
