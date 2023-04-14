@@ -9,12 +9,12 @@ using pwnctl.app.Notifications.Enums;
 
 public class PwnLogger : AppLogger
 {
-    private LogSinks _defaultSinkBitMap;
+    private int _defaultSinkBitMap;
     private ILogger _consoleLogger;
     private ILogger _fileLogger;
     private NotificationSender _notificationSender;
 
-    public PwnLogger(LogSinks sinkBitMap, NotificationSender sender, ILogger fileLogger, ILogger consoleLogger)
+    public PwnLogger(int sinkBitMap, NotificationSender sender, ILogger fileLogger, ILogger consoleLogger)
     {
         _defaultSinkBitMap = sinkBitMap;
         _notificationSender = sender;
@@ -52,7 +52,7 @@ public class PwnLogger : AppLogger
         Log(LogEventLevel.Fatal, _defaultSinkBitMap, messageTemplate, args);
     }
 
-    public void Log(LogEventLevel level, LogSinks sinkBitMap, string messageTemplate, params string[] args)
+    public void Log(LogEventLevel level, int sinkBitMap, string messageTemplate, params string[] args)
     {
         string message = args.Any()
                     ? string.Format(messageTemplate, args)
@@ -61,17 +61,17 @@ public class PwnLogger : AppLogger
         if (sinkBitMap == default)
             sinkBitMap = _defaultSinkBitMap;
 
-        if ((sinkBitMap & LogSinks.File) > 0)
+        if ((sinkBitMap & (int)LogSinks.File) > 0)
         {
             _fileLogger.Write(level, message);
         }
 
-        if ((sinkBitMap & LogSinks.Console) > 0)
+        if ((sinkBitMap & (int)LogSinks.Console) > 0 || (sinkBitMap & (int)LogSinks.CloudWatch) > 0)
         {
             _consoleLogger.Write(level, message);
         }
 
-        if ((sinkBitMap & LogSinks.Notification) > 0)
+        if ((sinkBitMap & (int)LogSinks.Notification) > 0)
         {
             _notificationSender.Send("["+EnvironmentVariables.HOSTNAME+"] "+message, NotificationTopic.status);
         }

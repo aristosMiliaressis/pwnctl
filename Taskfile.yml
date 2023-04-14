@@ -46,7 +46,7 @@ tasks:
       - sudo chown $USER /etc/pwnctl/
       - sudo mv src/pwnctl.cli/bin/Release/net6.0/linux-x64/publish/config.ini /etc/pwnctl/
       - sudo ./src/core/pwnctl.svc/scripts/get-psl.sh /etc/pwnctl/
-      - sudo cp -r  ./src/core/pwnctl.infra/Persistence/seed /etc/pwnctl
+      - sudo cp -r ./src/core/pwnctl.infra/Persistence/seed /etc/pwnctl
   
   bootstrap-aws:
     cmds:
@@ -84,7 +84,7 @@ tasks:
 
   get-logs:
     cmds:
-      - awslogs get -s 1440m -G --timestamp /aws/ecs/pwnctl
+      - awslogs get -s 1440m -G --timestamp /aws/ecs/worker
 
   destroy:
     cmds:

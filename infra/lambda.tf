@@ -47,8 +47,9 @@ resource "aws_iam_role_policy_attachment" "attach_efs_client_full_access" {
 }
 
 resource "aws_cloudwatch_log_group" "api" {
-  name              = "/aws/lambda/api"
+  name              = "/aws/lambda/pwnctl_lambda_${random_id.id.hex}"
   retention_in_days = 7
+
   lifecycle {
     prevent_destroy = false
   }

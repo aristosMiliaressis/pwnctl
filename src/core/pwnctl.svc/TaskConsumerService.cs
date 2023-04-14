@@ -22,14 +22,14 @@ namespace pwnctl.svc
         {
             hostApplicationLifetime.ApplicationStopping.Register(() => 
             {
-                PwnInfraContext.Logger.Log(LogEventLevel.Information, LogSinks.Console | LogSinks.Notification, 
+                PwnInfraContext.Logger.Log(LogEventLevel.Information, (int)LogSinks.All, 
                                         $"{nameof(TaskConsumerService)} stoped.");
             });
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            PwnInfraContext.Logger.Log(LogEventLevel.Information, LogSinks.Console | LogSinks.Notification, 
+            PwnInfraContext.Logger.Log(LogEventLevel.Information, (int)LogSinks.All, 
                                     $"{nameof(TaskConsumerService)} started.");
 
             while (!stoppingToken.IsCancellationRequested)
@@ -47,8 +47,8 @@ namespace pwnctl.svc
 
         private async Task ExecuteTaskAsync(PendingTaskDTO taskDTO, CancellationToken stoppingToken)
         {
-            // create a linked token that cancels the task when the timeout passes or 
-            // when a SIGTERM is received due to an ECS scale in event
+            // create a linked token that cancels the task when the max task timeout 
+            // passes or when a SIGTERM is received due to a scale in event
             var cts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
             cts.CancelAfter(PwnInfraContext.Config.Worker.MaxTaskTimeout * 1000);
 
@@ -67,7 +67,9 @@ namespace pwnctl.svc
                 task.Started();
                 await _taskRepo.UpdateAsync(task);
 
-                (int exitCode, StringBuilder stdout, StringBuilder stderr) = await CommandExecutor.ExecuteAsync(task.Command, token: cts.Token);
+                (int exitCode, 
+                StringBuilder stdout, 
+                StringBuilder stderr) = await CommandExecutor.ExecuteAsync(task.Command, token: cts.Token);
 
                 await _queueService.DequeueAsync(taskDTO);
 
@@ -79,18 +81,17 @@ namespace pwnctl.svc
                 if (!string.IsNullOrWhiteSpace(stderr.ToString()))
                     PwnInfraContext.Logger.Error(stderr.ToString());
 
-                OutputBatchDTO outputBatch = new();
-                for (int i = 0; outputBatch.Lines == null || outputBatch.Lines.Count == 10; i++)
+                var lines = stdout.ToString()
+                                .Split("\n")
+                                .Where(l => !string.IsNullOrEmpty(l));
+                
+                OutputBatchDTO outputBatch = null;
+                for (int s = 10, i = 0; outputBatch == null || outputBatch.Lines.Count == s; i++)
                 {
                     outputBatch = new()
                     {
                         TaskId = taskDTO.TaskId,
-                        Lines = stdout.ToString()
-                                        .Split("\n")
-                                        .Where(l => !string.IsNullOrEmpty(l))
-                                        .Skip(i * 10)
-                                        .Take(10)
-                                        .ToList()
+                        Lines = lines.Skip(i * s).Take(s).ToList()
                     };
                     
                     await _queueService.EnqueueAsync(outputBatch);
@@ -105,7 +106,7 @@ namespace pwnctl.svc
                 await _queueService.ChangeMessageVisibilityAsync(taskDTO, 0);
             }
         }
-    
+
         private async Task ProcessOutputBatchAsync(CancellationToken stoppingToken)
         {
             var batchDTO = await _queueService.ReceiveAsync<OutputBatchDTO>(stoppingToken);

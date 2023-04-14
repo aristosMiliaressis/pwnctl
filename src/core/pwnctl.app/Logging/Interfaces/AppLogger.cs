@@ -16,5 +16,5 @@ public interface AppLogger
 
     void Fatal(string messageTemplate, params string[] args);
 
-    void Log(LogEventLevel level, LogSinks sinkBitMap, string messageTemplate, params string[] args);
+    void Log(LogEventLevel level, int sinkBitMap, string messageTemplate, params string[] args);
 }

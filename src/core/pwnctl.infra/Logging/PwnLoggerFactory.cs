@@ -15,7 +15,9 @@ namespace pwnctl.infra.Logging
     {
         public static AppLogger Create(AppConfig config, NotificationSender sender)
         {
-            var defaultSink = EnvironmentVariables.IN_VPC ? LogSinks.Console : LogSinks.File;
+            var defaultSink =  EnvironmentVariables.IN_VPC 
+                            ? (int)(LogSinks.File | LogSinks.CloudWatch)
+                            : (int)LogSinks.File;
 
             return new PwnLogger(defaultSink, sender,
                         fileLogger: CreateFileLogger(config),
@@ -25,6 +27,7 @@ namespace pwnctl.infra.Logging
         private static Logger CreateCloudWatchLogger(AppConfig config)
         {
             var configuration = new AWSLoggerConfig(config.Logging.LogGroup);
+            configuration.LogStreamNamePrefix = EnvironmentVariables.HOSTNAME;
 
             return new LoggerConfiguration()
                     .MinimumLevel.Is(Enum.Parse<LogEventLevel>(config.Logging.MinLevel))
