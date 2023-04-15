@@ -6,6 +6,10 @@ using Be.Vlaanderen.Basisregisters.Generators.Guid;
 
 namespace pwnctl.infra.Persistence.IdGenerators
 {
+    /// <summary>
+    /// This class generates UUIDv5 primary keys for assets & AssetRecords by hashing the 
+    /// string notation of the asset and effectivly prevents duplicate entries.
+    /// </summary>
     public sealed class UUIDv5ValueGenerator : GuidValueGenerator
     {
         private static Guid _assetNamespace = Deterministic.Namespaces.IsoOid;

@@ -32,7 +32,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 RUN curl -sSL https://dot.net/v1/dotnet-install.sh \
-    | bash /dev/stdin -Channel 7.0 -Runtime aspnetcore -InstallDir /usr/share/dotnet --architecture x64 \
+    | bash /dev/stdin -Channel 6.0 -Runtime aspnetcore -InstallDir /usr/share/dotnet --architecture x64 \
     && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet
 
 # Setting up python
@@ -165,7 +165,7 @@ RUN git clone https://github.com/xnl-h4ck3r/waymore.git \
     && python3 setup.py install
 RUN go install github.com/detectify/page-fetch@latest
 
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 
 # building worker service & cli
 COPY ["/pwnctl.kernel/pwnctl.kernel.csproj", "/src/pwnctl.kernel/"]

@@ -83,8 +83,8 @@ resource "aws_iam_role_policy_attachment" "api_logging" {
 
 data "archive_file" "this" {
   type = "zip"
-  source_dir = "../src/pwnctl.api/bin/Release/net7.0/"
-  output_path = "../src/pwnctl.api/bin/Release/net7.0/lambda.zip"
+  source_dir = "../src/pwnctl.api/bin/Release/net6.0/"
+  output_path = "../src/pwnctl.api/bin/lambda.zip"
 }
 
 resource "aws_lambda_function" "this" {
@@ -100,12 +100,12 @@ resource "aws_lambda_function" "this" {
     aws_iam_role.lambda
   ]
 
-  filename = "../src/pwnctl.api/bin/Release/net7.0/lambda.zip"
+  filename = "../src/pwnctl.api/bin/lambda.zip"
   function_name = "pwnctl_api_${random_id.id.hex}"
   role = aws_iam_role.lambda.arn
   handler = "pwnctl.api"
   source_code_hash = data.archive_file.this.output_base64sha256
-  runtime = "dotnet7"
+  runtime = "dotnet6"
   timeout = 120
   memory_size = 3072
   
