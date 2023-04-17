@@ -55,12 +55,6 @@ namespace pwnctl.infra.Repositories
                                             .AsNoTracking()
                                             .FirstOrDefault(r => r.Id == id));
 
-        private static Func<PwnctlDbContext, Task<List<TaskEntry>>> ListPendingQuery
-                                = EF.CompileAsyncQuery<PwnctlDbContext, List<TaskEntry>>(
-                        (context) => JoinedQueryable()
-                                            .Where(r => r.State == TaskState.PENDING)
-                                            .ToList());
-
         public async Task<TaskEntry> GetEntryAsync(int taskId)
         {
             return await FindEntryQuery(_context, taskId);
@@ -68,7 +62,9 @@ namespace pwnctl.infra.Repositories
 
         public async Task<List<TaskEntry>> ListPendingAsync(CancellationToken token = default)
         {
-            return await ListPendingQuery(_context);
+            return await JoinedQueryable()
+                        .Where(r => r.State == TaskState.PENDING)
+                        .ToListAsync(token);
         }
 
         public async Task UpdateAsync(TaskEntry task)
