@@ -13,8 +13,4 @@
     <ProjectReference Include="..\pwnctl.kernel\pwnctl.kernel.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Serilog" Version="2.12.0" />
-  </ItemGroup>
-
 </Project>

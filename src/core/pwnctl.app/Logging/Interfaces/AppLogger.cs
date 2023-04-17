@@ -1,7 +1,5 @@
 namespace pwnctl.app.Logging.Interfaces;
 
-using Serilog.Events;
-
 public interface AppLogger
 {
     void Exception(Exception ex);
@@ -15,6 +13,4 @@ public interface AppLogger
     void Error(string messageTemplate, params string[] args);
 
     void Fatal(string messageTemplate, params string[] args);
-
-    void Log(LogEventLevel level, int sinkBitMap, string messageTemplate, params string[] args);
 }

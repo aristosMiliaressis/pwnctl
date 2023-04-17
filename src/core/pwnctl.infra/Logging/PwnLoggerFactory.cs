@@ -6,22 +6,18 @@ using AWS.Logger;
 using pwnctl.infra.Configuration;
 using pwnctl.app.Configuration;
 using pwnctl.app.Logging.Interfaces;
-using pwnctl.app.Notifications.Interfaces;
-using pwnctl.app.Logging;
 
 namespace pwnctl.infra.Logging
 {
     public static class PwnLoggerFactory
     {
-        public static AppLogger Create(AppConfig config, NotificationSender sender)
+        public static AppLogger Create(AppConfig config)
         {
-            var defaultSink =  EnvironmentVariables.IN_VPC 
-                            ? (int)(LogSinks.File | LogSinks.CloudWatch)
-                            : (int)LogSinks.File;
+            var logger = EnvironmentVariables.IN_VPC 
+                        ? CreateCloudWatchLogger(config)
+                        : CreateFileLogger(config);
 
-            return new PwnLogger(defaultSink, sender,
-                        fileLogger: CreateFileLogger(config),
-                        consoleLogger: CreateCloudWatchLogger(config));
+            return new PwnLogger(logger);
         }
 
         private static Logger CreateCloudWatchLogger(AppConfig config)
@@ -39,20 +35,13 @@ namespace pwnctl.infra.Logging
         {
             return new LoggerConfiguration()
                     .MinimumLevel.Is(Enum.Parse<LogEventLevel>(config.Logging.MinLevel))
+                    .WriteTo.Console(LogEventLevel.Warning, _consoleOutputTemplate)
                     .WriteTo.File(path: Path.Combine(config.Logging.FilePath, "pwnctl.log"),
                                   outputTemplate: _outputTemplate)
                     .CreateLogger();
         }
 
-        private static Logger CreateConsoleLogger(AppConfig config)
-        {
-            return new LoggerConfiguration()
-                    .MinimumLevel.Is(Enum.Parse<LogEventLevel>(config.Logging.MinLevel))
-                    .WriteTo.Console(outputTemplate: _consoleOutputTemplate)
-                    .CreateLogger();
-        }
-
         private static string _outputTemplate = $"[{{Timestamp:yyyy-MM-dd HH:mm:ss.fff}} {EnvironmentVariables.HOSTNAME} {{Level:u3}}] {{Message:lj}}\n";
-        private static string _consoleOutputTemplate = $"[{{Level:u3}}] {{Message:lj}}\n";
+        private static string _consoleOutputTemplate = "[{Level:u3}] {Message:lj}\n";
     }
 }

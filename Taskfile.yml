@@ -81,7 +81,7 @@ tasks:
 
   get-logs:
     cmds:
-      - awslogs get -s 1440m -G --timestamp /aws/ecs/worker
+      - awslogs get -s 1440m -G --timestamp /aws/ecs/worker | tee pwnctl.log
 
   destroy:
     cmds:

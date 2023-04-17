@@ -1,79 +1,54 @@
 using pwnctl.app.Logging;
 using pwnctl.app.Logging.Interfaces;
-using pwnctl.app.Notifications.Interfaces;
 using pwnctl.kernel.Extensions;
-using pwnctl.infra.Configuration;
 using Serilog;
 using Serilog.Events;
-using pwnctl.app.Notifications.Enums;
 
 public class PwnLogger : AppLogger
 {
-    private int _defaultSinkBitMap;
-    private ILogger _consoleLogger;
-    private ILogger _fileLogger;
-    private NotificationSender _notificationSender;
+    private ILogger _logger;
 
-    public PwnLogger(int sinkBitMap, NotificationSender sender, ILogger fileLogger, ILogger consoleLogger)
+    public PwnLogger(ILogger logger)
     {
-        _defaultSinkBitMap = sinkBitMap;
-        _notificationSender = sender;
-        _fileLogger = fileLogger;
-        _consoleLogger = consoleLogger;
+        _logger = logger;
     }
 
     public void Exception(Exception ex)
     {
-        Log(LogEventLevel.Error, _defaultSinkBitMap, ex.ToRecursiveExInfo());
+        Log(LogEventLevel.Error, ex.ToRecursiveExInfo());
     }
 
     public void Debug(string messageTemplate, params string[] args)
     {
-        Log(LogEventLevel.Debug, _defaultSinkBitMap, messageTemplate, args);
+        Log(LogEventLevel.Debug, messageTemplate, args);
     }
 
     public void Information(string messageTemplate, params string[] args)
     {
-        Log(LogEventLevel.Information, _defaultSinkBitMap, messageTemplate, args);
+        Log(LogEventLevel.Information, messageTemplate, args);
     }
 
     public void Warning(string messageTemplate, params string[] args)
     {
-        Log(LogEventLevel.Warning, _defaultSinkBitMap, messageTemplate, args);
+        Log(LogEventLevel.Warning, messageTemplate, args);
     }
 
     public void Error(string messageTemplate, params string[] args)
     {
-        Log(LogEventLevel.Error, _defaultSinkBitMap, messageTemplate, args);
+        Log(LogEventLevel.Error, messageTemplate, args);
     }
 
     public void Fatal(string messageTemplate, params string[] args)
     {
-        Log(LogEventLevel.Fatal, _defaultSinkBitMap, messageTemplate, args);
+        Log(LogEventLevel.Fatal, messageTemplate, args);
     }
 
-    public void Log(LogEventLevel level, int sinkBitMap, string messageTemplate, params string[] args)
+    private void Log(LogEventLevel level, string messageTemplate, params string[] args)
     {
         string message = args.Any()
                     ? string.Format(messageTemplate, args)
                     : messageTemplate;
 
-        if (sinkBitMap == default)
-            sinkBitMap = _defaultSinkBitMap;
-
-        if ((sinkBitMap & (int)LogSinks.File) > 0)
-        {
-            _fileLogger.Write(level, message);
-        }
-
-        if ((sinkBitMap & (int)LogSinks.Console) > 0 || (sinkBitMap & (int)LogSinks.CloudWatch) > 0)
-        {
-            _consoleLogger.Write(level, message);
-        }
-
-        if ((sinkBitMap & (int)LogSinks.Notification) > 0)
-        {
-            _notificationSender.Send("["+EnvironmentVariables.HOSTNAME+"] "+message, NotificationTopic.status);
-        }
+        _logger.Write(level, message);
     }
 }

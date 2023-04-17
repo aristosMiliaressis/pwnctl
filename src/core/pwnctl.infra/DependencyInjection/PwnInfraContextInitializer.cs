@@ -22,7 +22,8 @@ public static class PwnInfraContextInitializer
         var sender = EnvironmentVariables.TEST_RUN
                     ? (NotificationSender)new MockNotificationSender()
                     : (NotificationSender)new DiscordNotificationSender();
-        var logger = PwnLoggerFactory.Create(config, sender);
+                    
+        var logger = PwnLoggerFactory.Create(config);
         var serializer = new AppJsonSerializer();
         var evaluator = new CSharpFilterEvaluator();
 

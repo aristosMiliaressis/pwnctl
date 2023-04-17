@@ -2,13 +2,12 @@ using pwnctl.app;
 using pwnctl.app.Assets;
 using pwnctl.app.Queueing.DTO;
 using pwnctl.app.Queueing.Interfaces;
-using pwnctl.app.Logging;
+using pwnctl.app.Notifications.Enums;
 using pwnctl.infra;
 using pwnctl.infra.Commands;
 using pwnctl.infra.Queueing;
 using pwnctl.infra.Repositories;
 using System.Text;
-using Serilog.Events;
 
 namespace pwnctl.svc
 {
@@ -22,15 +21,13 @@ namespace pwnctl.svc
         {
             hostApplicationLifetime.ApplicationStopping.Register(() => 
             {
-                PwnInfraContext.Logger.Log(LogEventLevel.Information, (int)LogSinks.All, 
-                                        $"{nameof(TaskConsumerService)} stoped.");
+                PwnInfraContext.NotificationSender.Send($"{nameof(TaskConsumerService)} stoped.", NotificationTopic.status);
             });
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            PwnInfraContext.Logger.Log(LogEventLevel.Information, (int)LogSinks.All, 
-                                    $"{nameof(TaskConsumerService)} started.");
+            PwnInfraContext.NotificationSender.Send($"{nameof(TaskConsumerService)} started.", NotificationTopic.status);
 
             while (!stoppingToken.IsCancellationRequested)
             {
