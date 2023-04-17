@@ -123,6 +123,8 @@ namespace pwnctl.svc
 
                 foreach (var line in batchDTO.Lines)
                 {
+                    PwnInfraContext.Logger.Debug("Processing: "+line);
+
                     await _processor.TryProcessAsync(line, task);
 
                     var pendingTasks = await _taskRepo.ListPendingAsync();
