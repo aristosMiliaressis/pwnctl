@@ -1,4 +1,4 @@
-﻿using Amazon.SQS;
+using Amazon.SQS;
 using Amazon.SQS.Model;
 using pwnctl.app;
 using pwnctl.app.Queueing.Interfaces;
@@ -32,7 +32,8 @@ namespace pwnctl.infra.Queueing
         /// pushes a task to the pending queue.
         /// </summary>
         /// <param name="command"></param>
-        public async Task EnqueueAsync(QueueMessage message, CancellationToken token = default)
+        public async Task EnqueueAsync<TMessage>(TMessage message, CancellationToken token = default)
+            where TMessage : QueueMessage
         {
             PwnInfraContext.Logger.Debug("Enqueue: "+message.TaskId);
 
@@ -41,7 +42,7 @@ namespace pwnctl.infra.Queueing
                 var request = new SendMessageRequest
                 {
                     MessageGroupId = message.TaskId.ToString(),
-                    QueueUrl = this[message.GetType().Name],
+                    QueueUrl = this[typeof(TMessage).Name],
                     MessageBody = PwnInfraContext.Serializer.Serialize(message)
                 };
 
@@ -58,7 +59,8 @@ namespace pwnctl.infra.Queueing
             }
         }
 
-        public async Task<TMessage> ReceiveAsync<TMessage>(CancellationToken token = default) where TMessage : QueueMessage
+        public async Task<TMessage> ReceiveAsync<TMessage>(CancellationToken token = default)
+            where TMessage : QueueMessage
         {
             try
             {
