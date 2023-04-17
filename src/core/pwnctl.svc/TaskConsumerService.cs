@@ -83,13 +83,16 @@ namespace pwnctl.svc
                                 .Where(l => !string.IsNullOrEmpty(l));
                 
                 OutputBatchDTO outputBatch = null;
-                for (int s = 10, i = 0; outputBatch == null || outputBatch.Lines.Count == s; i++)
+                for (int s = 10, i = 0; true; i++)
                 {
                     outputBatch = new()
                     {
                         TaskId = taskDTO.TaskId,
                         Lines = lines.Skip(i * s).Take(s).ToList()
                     };
+
+                    if (!outputBatch.Lines.Any())
+                        break;
                     
                     await _queueService.EnqueueAsync(outputBatch);
                 }
