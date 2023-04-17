@@ -247,7 +247,7 @@ resource "aws_appautoscaling_policy" "this" {
     metric_aggregation_type = "Maximum"
 
     step_adjustment {
-      metric_interval_upper_bound = 0
+      metric_interval_upper_bound = 1
       scaling_adjustment = 0
     } 
 
@@ -255,14 +255,14 @@ resource "aws_appautoscaling_policy" "this" {
       for_each = toset([for i in range(0, var.ecs_task.max_instances/3, 1) : i])
 
       content {
-        metric_interval_lower_bound = 10 * step_adjustment.value
-        metric_interval_upper_bound = 10 * (step_adjustment.value + 1)
+        metric_interval_lower_bound = 10 * step_adjustment.value + 1
+        metric_interval_upper_bound = 10 * (step_adjustment.value + 1) + 1
         scaling_adjustment = (step_adjustment.value+1) * 3 + (var.ecs_task.max_instances%3)
       }
     }
 
     step_adjustment {
-      metric_interval_lower_bound = 10 * (var.ecs_task.max_instances/3)
+      metric_interval_lower_bound = 10 * (var.ecs_task.max_instances/3) + 1
       scaling_adjustment = var.ecs_task.max_instances
     } 
   }
