@@ -1,6 +1,5 @@
 using pwnctl.domain.BaseClasses;
 using pwnctl.kernel.BaseClasses;
-using System.Text.Json.Serialization;
 using pwnctl.domain.Entities;
 using System.Text.RegularExpressions;
 using pwnctl.app.Scope.Enums;
@@ -12,17 +11,7 @@ namespace pwnctl.app.Scope.Entities
         public ScopeType Type { get; init; }
         public string Pattern { get; init; }
 
-        [JsonIgnore]
-        public int? ProgramId { get; private init; }
-        [JsonIgnore]
-        public Program Program { get; private init; }
-
         public ScopeDefinition() {}
-
-        public ScopeDefinition(Program program)
-        {
-            Program = program;
-        }
 
         public bool Matches(Asset asset)
         {

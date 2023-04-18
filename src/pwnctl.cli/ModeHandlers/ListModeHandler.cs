@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 
 using pwnctl.dto.Assets.Queries;
-using pwnctl.dto.Targets.Queries;
+using pwnctl.dto.Operations.Queries;
 using pwnctl.app;
 using pwnctl.cli.Interfaces;
 
@@ -39,7 +39,7 @@ namespace pwnctl.cli.ModeHandlers
                 "netranges" => await client.Send(new ListNetRangesQuery()),
                 "dnsrecords" => await client.Send(new ListDnsRecordsQuery()),
                 "emails" => await client.Send(new ListEmailsQuery()),
-                "targets" => await client.Send(new ListTargetsQuery()),
+                "ops" => await client.Send(new ListOperationsQuery()),
                  _ => throw new NotSupportedException("Not supported class " + @class)
             };
             
@@ -51,7 +51,7 @@ namespace pwnctl.cli.ModeHandlers
             Console.WriteLine($"\t{ModeName}");
             Console.WriteLine($"\t\tlists asset of the specified sealed class in jsonline format.");
             Console.WriteLine($"\t\tArguments:");
-            Console.WriteLine($"\t\t\t--class\tthe asset sealed class (hosts/endpoints/domains/services/dnsrecords/netranges/emails).");
+            Console.WriteLine($"\t\t\t--class\tthe asset sealed class (hosts/endpoints/domains/services/dnsrecords/netranges/emails/ops).");
         }
     }
 }

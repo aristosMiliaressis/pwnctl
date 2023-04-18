@@ -1,9 +1,9 @@
 namespace pwnctl.infra.Configuration.Validation;
 
-using System.Text.RegularExpressions;
 using pwnctl.app;
 using pwnctl.app.Assets.Aggregates;
 using pwnctl.app.Notifications.Entities;
+using pwnctl.app.Operations.Entities;
 using pwnctl.app.Tasks.Entities;
 using pwnctl.domain.BaseClasses;
 using pwnctl.domain.Entities;
@@ -14,8 +14,6 @@ using YamlDotNet.Serialization.NamingConventions;
 
 public static class ConfigValidator
 {
-    private static readonly Regex _shortNameCharSet = new Regex("^[a-zA-Z0-9_]{0,64}$");
-
     private static Dictionary<AssetClass, Asset> _mockAssets = new Dictionary<AssetClass, Asset>
     {
         { AssetClass.Create(nameof(DomainName)), new DomainName("example.com") },
@@ -56,12 +54,6 @@ public static class ConfigValidator
             return false;
         }
 
-        if (file.Profiles.Any(p => p == null || !_shortNameCharSet.Match(p).Success))
-        {
-            errorMessage = $"Illegal Character in profile";
-            return false;
-        }
-
         if (!file.TaskDefinitions.Any())
         {
             errorMessage = $"At least one task definition is required";
@@ -76,19 +68,13 @@ public static class ConfigValidator
 
         foreach (var definition in file.TaskDefinitions)
         {
-            if (string.IsNullOrEmpty(definition.ShortName))
+            if (string.IsNullOrEmpty(definition.ShortName.Value))
             {
                 errorMessage = "Null or Empty ShortName";
                 return false;
             }
 
-            if (!_shortNameCharSet.Match(definition.ShortName).Success)
-            {
-                errorMessage = "Illegal Character in ShortName " + definition.ShortName;
-                return false;
-            }            
-
-            if (definition.SubjectClass == null || string.IsNullOrEmpty(definition.SubjectClass.Class))
+            if (definition.SubjectClass == null || string.IsNullOrEmpty(definition.SubjectClass.Value))
             {
                 errorMessage = "Null or Empty Subject on " + definition.ShortName;
                 return false;
@@ -99,7 +85,8 @@ public static class ConfigValidator
             {
                 var asset = _mockAssets[definition.SubjectClass];
                 record = new AssetRecord(asset);
-                var taskEntry = new TaskEntry(definition, record);
+                var op = new Operation();
+                var taskEntry = new TaskEntry(op, definition, record);
                 var test = taskEntry.Command;
             }
             catch (Exception ex)
@@ -148,19 +135,13 @@ public static class ConfigValidator
 
         foreach (var rule in notificationRules)
         {
-            if (string.IsNullOrEmpty(rule.ShortName))
+            if (string.IsNullOrEmpty(rule.ShortName.Value))
             {
                 errorMessage = "Null or Empty ShortName";
                 return false;
             }
 
-            if (!_shortNameCharSet.Match(rule.ShortName).Success)
-            {
-                errorMessage = "Illegal Character in ShortName " + rule.ShortName;
-                return false;
-            }
-
-            if (rule.SubjectClass == null || string.IsNullOrEmpty(rule.SubjectClass.Class))
+            if (rule.SubjectClass == null || string.IsNullOrEmpty(rule.SubjectClass.Value))
             {
                 errorMessage = "Null or Empty Subject on " + rule.ShortName;
                 return false;

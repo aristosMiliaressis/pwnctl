@@ -69,67 +69,67 @@ tags are a way to store arbitary metadata relating to an asset, they can be used
 
 **`task-definitions.yml`**
 ```YAML
-- ShortName: ping_sweep
+- Name: ping_sweep
   CommandTemplate: ping-sweep.sh {{CIDR}}
   Subject: NetworkRange
 
-- ShortName: reverse_range_lookup
+- Name: reverse_range_lookup
   CommandTemplate: reverse-range-lookup.sh {{CIDR}}
   Subject: NetworkRange
 
-- ShortName: domain_resolution
+- Name: domain_resolution
   CommandTemplate: dig +short {{Name}} | awk '{print "{{Name}} IN A " $1}'
   Subject: DomainName
 
-- ShortName: httpx
+- Name: httpx
   CommandTemplate: echo {{Name}} | httpx -silent
   Subject: DomainName
 
-- ShortName: zone_trasfer
+- Name: zone_trasfer
   CommandTemplate: zone-transfer.sh {{Name}}
   Subject: DomainName
 
-- ShortName: sub_enum
+- Name: sub_enum
   CommandTemplate: sub-enum.sh {{Name}}
   Filter: DomainName.ZoneDepth <= 2
   Subject: DomainName
 
-- ShortName: asn_lookup
+- Name: asn_lookup
   CommandTemplate: asn-lookup.sh {{IP}}
   Subject: NetworkHost
 
-- ShortName: reverse_lookup
+- Name: reverse_lookup
   CommandTemplate: dig +short -x {{IP}}
   Subject: NetworkHost
 
-- ShortName: tcp_scan
+- Name: tcp_scan
   CommandTemplate: tcp-scan.sh {{IP}}
   Subject: NetworkHost
 
-- ShortName: udp_scan
+- Name: udp_scan
   CommandTemplate: udp-scan.sh {{IP}}
   Subject: NetworkHost
 
-- ShortName: tls_probe
+- Name: tls_probe
   CommandTemplate: tls-probe.sh {{Address}}
   Subject: NetworkSocket
 
-- ShortName: get_all_urls
+- Name: get_all_urls
   CommandTemplate: get-all-urls.sh {{Url}}
   Subject: HttpEndpoint
   Filter: HttpEndpoint.Path == "/"
 
-- ShortName: dir_brute_common
+- Name: dir_brute_common
   CommandTemplate: dir-brute.sh {{Url}} /opt/wordlists/common.txt
   Filter: HttpEndpoint.Path == "/"
   Subject: HttpEndpoint
 
-- ShortName: file_brute_config
+- Name: file_brute_config
   CommandTemplate: file-brute.sh {{Url}} /opt/wordlists/config.txt
   Filter: HttpEndpoint.Path == "/"
   Subject: HttpEndpoint
 
-- ShortName: webcrawl
+- Name: webcrawl
   CommandTemplate: webcrawl.sh '{{Url}}'
   Filter: HttpEndpoint.Path == "/" || Tags["Content-Type"].Contains("/html") || Tags["Content-Type"].Contains("/xhtml")
   Subject: HttpEndpoint
@@ -143,27 +143,27 @@ tags are a way to store arbitary metadata relating to an asset, they can be used
 
 **`notification-rules.yml`**
 ```YAML
-- ShortName: default_creds
+- Name: default_creds
   Subject: NetworkSocket
   Filter: Tags["vuln-default-creds"] == "true"
   Topic: misconfigs
   
-- ShortName: cors_misconfig
+- Name: cors_misconfig
   Subject: HttpEndpoint
   Filter: Tags["cors-misconfig"] == "true"
   Topic: misconfigs
 
-- ShortName: shortname_misconfig
+- Name: shortname_misconfig
   Subject: HttpEndpoint
   Filter: Tags["shortname-misconfig"] == "true"
   Topic: misconfigs
 
-- ShortName: node_debug
+- Name: node_debug
   Subject: NetworkSocket
   Filter: NetworkSocket.Port == 9228 || NetworkSocket.Port == 9229
   Topic: misconfigs
 
-- ShortName: docker_api
+- Name: docker_api
   Subject: NetworkSocket
   Filter: NetworkSocket.Port == 2735 || NetworkSocket.Port == 2736
   Topic: misconfigs

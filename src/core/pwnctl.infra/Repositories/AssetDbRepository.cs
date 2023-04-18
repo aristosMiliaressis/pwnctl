@@ -113,8 +113,9 @@ namespace pwnctl.infra.Repositories
 
         public async Task SaveAsync(AssetRecord record)
         {
-            record.Program = null;
+            record.Scope = null;
             record.Tasks.ForEach(t => t.Definition = null);
+            record.Tasks.ForEach(t => t.Operation = null);
 
             var existingAsset = FindMatching(record.Asset);
             if (existingAsset == null)
@@ -153,7 +154,7 @@ namespace pwnctl.infra.Repositories
                             .Include(e => e.NetworkHost)
                                 .ThenInclude(e => e.AARecords)
                                 .ThenInclude(e => e.DomainName)
-                            .Where(r => r.SubjectClass.Class == nameof(NetworkHost))
+                            .Where(r => r.SubjectClass.Value == nameof(NetworkHost))
                             .AsNoTracking()
                             .ToListAsync();
         }
@@ -167,7 +168,7 @@ namespace pwnctl.infra.Repositories
                             .Include(e => e.Tasks)
                             .Include(e => e.DomainName)
                                 .ThenInclude(e => e.ParentDomain)
-                            .Where(r => r.SubjectClass.Class == nameof(DomainName))
+                            .Where(r => r.SubjectClass.Value == nameof(DomainName))
                             .AsNoTracking()
                             .ToListAsync();
         }
@@ -183,7 +184,7 @@ namespace pwnctl.infra.Repositories
                                 .ThenInclude(e => e.DomainName)
                             .Include(e => e.DomainNameRecord)
                                 .ThenInclude(e => e.NetworkHost)
-                            .Where(r => r.SubjectClass.Class == nameof(DomainNameRecord))
+                            .Where(r => r.SubjectClass.Value == nameof(DomainNameRecord))
                             .AsNoTracking()
                             .ToListAsync();
         }
@@ -201,7 +202,7 @@ namespace pwnctl.infra.Repositories
                             .Include(e => e.HttpEndpoint)
                                 .ThenInclude(e => e.Socket)
                                     .ThenInclude(s => s.DomainName)
-                            .Where(r => r.SubjectClass.Class == nameof(HttpEndpoint))
+                            .Where(r => r.SubjectClass.Value == nameof(HttpEndpoint))
                             .AsNoTracking()
                             .ToListAsync();
         }
@@ -214,7 +215,7 @@ namespace pwnctl.infra.Repositories
                             .Include(e => e.Tags)
                             .Include(e => e.Tasks)
                             .Include(e => e.NetworkRange)
-                            .Where(r => r.SubjectClass.Class == nameof(NetworkRange))
+                            .Where(r => r.SubjectClass.Value == nameof(NetworkRange))
                             .AsNoTracking()
                             .ToListAsync();
         }
@@ -234,7 +235,7 @@ namespace pwnctl.infra.Repositories
                                 .ThenInclude(e => e.Endpoint)
                                 .ThenInclude(e => e.Socket)
                                 .ThenInclude(s => s.DomainName)
-                            .Where(r => r.SubjectClass.Class == nameof(HttpParameter))
+                            .Where(r => r.SubjectClass.Value == nameof(HttpParameter))
                             .AsNoTracking()
                             .ToListAsync();
         }
@@ -250,7 +251,7 @@ namespace pwnctl.infra.Repositories
                                 .ThenInclude(s => s.NetworkHost)
                             .Include(e => e.NetworkSocket)
                                 .ThenInclude(s => s.DomainName)
-                            .Where(r => r.SubjectClass.Class == nameof(NetworkSocket))
+                            .Where(r => r.SubjectClass.Value == nameof(NetworkSocket))
                             .AsNoTracking()
                             .ToListAsync();
         }
@@ -264,7 +265,7 @@ namespace pwnctl.infra.Repositories
                             .Include(e => e.Tasks)
                             .Include(e => e.Email)
                                 .ThenInclude(e => e.DomainName)
-                            .Where(r => r.SubjectClass.Class == nameof(Email))
+                            .Where(r => r.SubjectClass.Value == nameof(Email))
                             .AsNoTracking()
                             .ToListAsync();
         }

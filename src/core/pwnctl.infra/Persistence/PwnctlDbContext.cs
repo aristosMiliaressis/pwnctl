@@ -7,6 +7,7 @@ using pwnctl.infra.Persistence.IdGenerators;
 using pwnctl.app;
 using pwnctl.app.Tasks.Entities;
 using pwnctl.app.Scope.Entities;
+using pwnctl.app.Operations.Entities;
 using pwnctl.app.Notifications.Entities;
 using pwnctl.domain.Entities;
 using pwnctl.app.Tagging.Entities;
@@ -45,8 +46,10 @@ namespace pwnctl.infra.Persistence
         public DbSet<HttpEndpoint> HttpEndpoints { get; set; }
         public DbSet<HttpParameter> HttpParameters { get; set; }
         public DbSet<Email> Emails { get; set; }
-        public DbSet<Program> Programs { get; set; }
-        public DbSet<OperationalPolicy> OperationalPolicies { get; set; }
+        public DbSet<Operation> Operations { get; set; }
+        public DbSet<Policy> Policies { get; set; }
+        public DbSet<ScopeAggregate> ScopeAggregates { get; set; }
+        public DbSet<ScopeDefinitionAggregate> ScopeDefinitionAggregates { get; set; }
         public DbSet<ScopeDefinition> ScopeDefinitions { get; set; }
         public DbSet<TaskProfile> TaskProfiles { get; set; }
         public DbSet<TaskDefinition> TaskDefinitions { get; set; }

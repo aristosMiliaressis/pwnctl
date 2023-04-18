@@ -1,3 +1,4 @@
+using pwnctl.app.Common.ValueObjects;
 using pwnctl.app.Tasks.Entities;
 
 namespace pwnctl.infra.Configuration;

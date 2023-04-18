@@ -8,17 +8,6 @@ namespace pwnctl.infra.Persistence.Extensions
 {
     public static class DbContextExtensions
     {        
-        public static List<Program> ListPrograms(this PwnctlDbContext context)
-        {
-            return context.Programs
-                            .Include(p => p.Policy)
-                            .Include(p => p.TaskProfile)
-                                .ThenInclude(p => p.TaskDefinitions)
-                            .Include(p => p.Scope)
-                            .AsNoTracking()
-                            .ToList();
-        }
-
         public static Entity FirstFromLambda(this DbContext context, LambdaExpression lambda)
         {
             var type = lambda.Parameters.First().Type;

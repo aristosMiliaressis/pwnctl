@@ -11,15 +11,15 @@ namespace pwnctl.app.Assets.Aggregates;
 
 public sealed class AssetRecord : Entity<Guid>
 {
-    public Asset Asset =>(Asset)typeof(AssetRecord).GetProperty(SubjectClass.Class).GetValue(this);
+    public Asset Asset =>(Asset)typeof(AssetRecord).GetProperty(SubjectClass.Value).GetValue(this);
     
     public DateTime FoundAt { get; set; }
     public TaskEntry FoundByTask { get; set; }
     public int? FoundByTaskId { get; set; }
-    public bool InScope { get; set; }
 
-    public int? ProgramId { get; set; }
-    public Program Program { get; set; }
+    public bool InScope { get; set; }
+    public ScopeDefinition Scope { get; set; }
+    public int? ScopeId { get; set; }
 
     public List<Tag> Tags { get; private init; } = new List<Tag>();
     public List<TaskEntry> Tasks { get; private init; } = new List<TaskEntry>();
@@ -58,7 +58,7 @@ public sealed class AssetRecord : Entity<Guid>
     public AssetRecord(Asset asset)
     {
         SubjectClass = AssetClass.Create(asset.GetType().Name);
-        typeof(AssetRecord).GetProperty(SubjectClass.Class).SetValue(this, asset);
+        typeof(AssetRecord).GetProperty(SubjectClass.Value).SetValue(this, asset);
     }
 
     public AssetRecord(Asset asset, TaskEntry foundBy)
@@ -67,11 +67,11 @@ public sealed class AssetRecord : Entity<Guid>
         FoundByTaskId = foundBy?.Id;
     }
 
-    public void SetOwningProgram(Program program)
+    public void SetScope(ScopeDefinition scope)
     {
-        Program = program;
-        ProgramId = program?.Id;
-        InScope = Program != null;
+        Scope = scope;
+        ScopeId = scope?.Id;
+        InScope = Scope != null;
     }
 
     public void UpdateTags(Dictionary<string, object> tags)

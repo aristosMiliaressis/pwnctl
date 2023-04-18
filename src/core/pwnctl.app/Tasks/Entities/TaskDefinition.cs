@@ -1,4 +1,5 @@
 using pwnctl.app.Assets.Aggregates;
+using pwnctl.app.Common.ValueObjects;
 using pwnctl.domain.ValueObjects;
 using pwnctl.kernel.BaseClasses;
 
@@ -6,7 +7,7 @@ namespace pwnctl.app.Tasks.Entities
 {
     public sealed class TaskDefinition : Entity<int>
     {
-        public string ShortName { get; private init; }
+        public ShortName ShortName { get; private init; }
         public string CommandTemplate { get; set; }
         public bool IsActive { get; private init; }
         public int Aggressiveness { get; private init; }
@@ -18,6 +19,7 @@ namespace pwnctl.app.Tasks.Entities
         public int ProfileId { get; private init; }
 
         public string Subject { init { SubjectClass = AssetClass.Create(value); } }
+        public string Name { init { ShortName = ShortName.Create(value); } }
 
         public TaskDefinition() { }
 
@@ -28,7 +30,7 @@ namespace pwnctl.app.Tasks.Entities
 
         public bool Matches(AssetRecord record)
         {
-            if (SubjectClass.Class != record.Asset.GetType().Name)
+            if (SubjectClass.Value != record.Asset.GetType().Name)
                 return false;
 
             if (string.IsNullOrEmpty(Filter))

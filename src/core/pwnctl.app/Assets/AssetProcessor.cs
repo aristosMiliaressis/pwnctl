@@ -3,7 +3,6 @@ using pwnctl.app.Assets.Interfaces;
 using pwnctl.app.Tasks.Entities;
 using pwnctl.app.Notifications.Entities;
 using pwnctl.app.Assets.Aggregates;
-using pwnctl.app.Scope.Entities;
 using pwnctl.app.Assets.DTO;
 
 namespace pwnctl.app.Assets
@@ -12,13 +11,13 @@ namespace pwnctl.app.Assets
     {
         private readonly AssetRepository _assetRepository;
         private readonly List<NotificationRule> _notificationRules;
-        private readonly List<Program> _programs;
+        private readonly List<TaskDefinition> _outOfScopeTasks;
 
-        public AssetProcessor(AssetRepository assetRepository, List<NotificationRule> rules, List<Program> programs)
+        public AssetProcessor(AssetRepository assetRepository, List<NotificationRule> rules, List<TaskDefinition> outOfScopeTasks)
         {
             _assetRepository = assetRepository;
+            _outOfScopeTasks = outOfScopeTasks;
             _notificationRules = rules;
-            _programs = programs;
         }
 
         public async Task<bool> TryProcessAsync(string assetText, TaskEntry foundByTask = null)
@@ -35,7 +34,7 @@ namespace pwnctl.app.Assets
             }
         }
 
-        public async Task ProcessAsync(string assetText, TaskEntry foundByTask = null)
+        public async Task ProcessAsync(string assetText, TaskEntry foundByTask)
         {
             AssetDTO dto = TagParser.Parse(assetText);
 
@@ -78,35 +77,38 @@ namespace pwnctl.app.Assets
             record = await _assetRepository.UpdateRecordReferences(record, asset);
             record.UpdateTags(tags);
 
-            var program = _programs.FirstOrDefault(program => program.Scope.Any(scope => scope.Matches(record.Asset)));
-            if (program != null)
-                record.SetOwningProgram(program);
-
-            foreach (var rule in _notificationRules.Where(rule => (record.InScope || rule.CheckOutOfScope) && rule.Check(record)))
+            if (foundByTask != null)
             {
-                // only send notifications once
-                var notification = _assetRepository.FindNotification(record.Asset, rule);
-                if (notification != null)
-                    continue;
-                
-                notification = new Notification(record, rule);
+                var scope = foundByTask.Operation.Scope.Definitions.FirstOrDefault(scope => scope.Definition.Matches(record.Asset));
+                if (scope != null)
+                    record.SetScope(scope.Definition);
 
-                PwnInfraContext.NotificationSender.Send(notification);
-                notification.SentAt = DateTime.UtcNow;
-                record.Notifications.Add(notification);
-            }
+                foreach (var rule in _notificationRules.Where(rule => (record.InScope || rule.CheckOutOfScope) && rule.Check(record)))
+                {
+                    // only send notifications once
+                    var notification = _assetRepository.FindNotification(record.Asset, rule);
+                    if (notification != null)
+                        continue;
+                    
+                    notification = new Notification(record, rule);
 
-            var allowedTasks = record?.Program?.GetAllowedTasks() ?? new List<TaskDefinition>();
-            allowedTasks.AddRange(_programs.First().TaskProfile.TaskDefinitions.Where(d => d.MatchOutOfScope));
+                    PwnInfraContext.NotificationSender.Send(notification);
+                    notification.SentAt = DateTime.UtcNow;
+                    record.Notifications.Add(notification);
+                }
 
-            foreach (var definition in allowedTasks.Where(def => def.Matches(record)))
-            {
-                // only queue tasks once per definition/asset pair
-                var task = _assetRepository.FindTaskEntry(record.Asset, definition);
-                if (task != null)
-                    continue;
+                var allowedTasks = foundByTask.Operation.Policy.GetAllowedTasks();
+                allowedTasks.AddRange(_outOfScopeTasks);
 
-                record.Tasks.Add(new TaskEntry(definition, record));
+                foreach (var definition in allowedTasks.Where(def => def.Matches(record)))
+                {
+                    // only queue tasks once per definition/asset pair
+                    var task = _assetRepository.FindTaskEntry(record.Asset, definition);
+                    if (task != null)
+                        continue;
+
+                    record.Tasks.Add(new TaskEntry(foundByTask.Operation, definition, record));
+                }
             }
 
             await _assetRepository.SaveAsync(record);

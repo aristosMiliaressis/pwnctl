@@ -1,7 +1,7 @@
 Profiles: [ "all" ]
 
 TaskDefinitions:
-  - ShortName: nmap_basic
+  - Name: nmap_basic
     CommandTemplate: nmap -Pn {{CIDR}}
     IsActive: true
     Aggressiveness: 5

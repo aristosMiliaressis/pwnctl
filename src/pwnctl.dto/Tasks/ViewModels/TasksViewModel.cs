@@ -5,12 +5,12 @@ using pwnctl.app.Tasks.Entities;
 
 public sealed class TasksViewModel
 {
-    public IEnumerable<TaskDTO> Tasks { get; init; }
+    public IEnumerable<TaskEntryDTO> Tasks { get; init; }
 
     public TasksViewModel() { }
 
     public TasksViewModel(List<TaskEntry> tasks)
     {
-        Tasks = tasks.Select(t => new TaskDTO(t));
+        Tasks = tasks.Select(t => new TaskEntryDTO(t));
     }
 }

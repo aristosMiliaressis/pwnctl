@@ -5,24 +5,24 @@ using pwnctl.kernel.BaseClasses;
 
 public sealed class AssetClass : ValueObject
 {
-    public string Class { get; }
+    public string Value { get; }
 
-    private AssetClass(string @class)
+    private AssetClass(string value)
     {
-        if (!_assetClasses.Contains(@class))
-            throw new ArgumentException("Invalid Asset Class: " + @class, nameof(@class));
+        if (!_assetClasses.Contains(value))
+            throw new ArgumentException("Invalid Asset Class: " + value, nameof(value));
 
-        Class = @class;
+        Value = value;
     }
 
-    public static AssetClass Create(string @class)
+    public static AssetClass Create(string value)
     {
-        return new AssetClass(@class);
+        return new AssetClass(value);
     }
 
     protected override IEnumerable<object> GetEqualityComponents()
     {
-        yield return Class;
+        yield return Value;
     }
 
     private static readonly IEnumerable<string> _assetClasses =

@@ -17,6 +17,10 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
             builder.HasOne(t => t.Record)
                 .WithMany(r => r.Tasks)
                 .HasForeignKey(t => t.RecordId);
+
+            builder.HasOne(t => t.Operation)
+                .WithMany()
+                .HasForeignKey(t => t.OperationId);
         }
     }
 
@@ -26,7 +30,9 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
         {
             builder.HasKey(d => d.Id);
 
-            builder.OwnsOne(d => d.SubjectClass).Property(s => s.Class).IsRequired();
+            builder.OwnsOne(e => e.ShortName).Property(e => e.Value).IsRequired();
+
+            builder.OwnsOne(d => d.SubjectClass).Property(s => s.Value).IsRequired();
         }
     }
 
@@ -35,6 +41,8 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
         public void Configure(EntityTypeBuilder<TaskProfile> builder)
         {
             builder.HasKey(d => d.Id);
+
+            builder.OwnsOne(e => e.ShortName).Property(e => e.Value).IsRequired();
 
             builder.HasMany(p => p.TaskDefinitions)
               .WithOne(d => d.Profile)

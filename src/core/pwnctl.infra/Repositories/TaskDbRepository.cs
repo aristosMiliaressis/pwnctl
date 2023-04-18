@@ -11,8 +11,12 @@ namespace pwnctl.infra.Repositories
         private static PwnctlDbContext _context = new PwnctlDbContext();
         public static Func<IQueryable<TaskEntry>> JoinedQueryable = 
                 () => _context.TaskEntries
+                            .Include(r => r.Operation)
+                                .ThenInclude(r => r.Policy)
+                                .ThenInclude(r => r.TaskProfile)
+                                .ThenInclude(r => r.TaskDefinitions)
                             .Include(r => r.Record)
-                                .ThenInclude(r => r.Program)
+                                .ThenInclude(r => r.Scope)
                             .Include(r => r.Definition)
                             .Include(r => r.Record)
                                 .ThenInclude(r => r.NetworkHost)
@@ -77,8 +81,8 @@ namespace pwnctl.infra.Repositories
             _context.Entry(task.Definition).State = EntityState.Detached;
             _context.Entry(task.Record).State = EntityState.Detached;
             _context.Entry(task.Record.Asset).State = EntityState.Detached;
-            if (task.Record.Program != null)
-                _context.Entry(task.Record.Program).State = EntityState.Detached;
+            if (task.Record.Scope != null)
+                _context.Entry(task.Record.Scope).State = EntityState.Detached;
         }
     }
 }

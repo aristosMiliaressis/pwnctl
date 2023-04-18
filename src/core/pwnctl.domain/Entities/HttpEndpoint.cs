@@ -15,7 +15,7 @@ namespace pwnctl.domain.Entities
         public HttpEndpoint ParentEndpoint { get; private set; }
         public List<HttpParameter> HttpParameters { get; private set; }
 
-        public string Scheme { get; init; } // TODO validate
+        public string Scheme { get; init; }
         public string Path { get; init; }
         public string Filename 
         {

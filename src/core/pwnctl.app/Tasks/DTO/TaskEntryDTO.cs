@@ -1,11 +1,12 @@
+using pwnctl.app.Common.ValueObjects;
 using pwnctl.app.Tasks.Entities;
 
 namespace pwnctl.app.Tasks.DTO;
 
-public sealed class TaskDTO
+public sealed class TaskEntryDTO
 {
     public int Id { get; set; }
-    public string ShortName { get; set; }
+    public ShortName ShortName { get; set; }
     public string Subject { get; set; }
     public string Asset { get; set; }
     public string State { get; set; }
@@ -15,13 +16,13 @@ public sealed class TaskDTO
     public double Duration { get; set; }
     public int? ExitCode { get; set; }
 
-    public TaskDTO() { }
+    public TaskEntryDTO() { }
 
-    public TaskDTO(TaskEntry entry)
+    public TaskEntryDTO(TaskEntry entry)
     {
         Id = entry.Id;
         ShortName = entry.Definition.ShortName;
-        Subject = entry.Definition.SubjectClass.Class;
+        Subject = entry.Definition.SubjectClass.Value;
         Asset = entry.Record.Asset.ToString();
         State = entry.State.ToString();
         QueuedAt = entry.QueuedAt;

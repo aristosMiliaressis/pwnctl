@@ -1,53 +1,53 @@
 Profiles: [ "basic", "all" ]
 
 TaskDefinitions:
-  - ShortName: domain_resolution
+  - Name: domain_resolution
     CommandTemplate: resolve.sh {{Name}}
     Subject: DomainName
 
-  - ShortName: httpx
+  - Name: httpx
     CommandTemplate: echo {{Name}} | httpx -silent
     Subject: DomainName
 
-  - ShortName: sub_enum
+  - Name: sub_enum
     CommandTemplate: sub-enum.sh {{Name}}
     Filter: DomainName.ZoneDepth <= 2
     Subject: DomainName
 
-  - ShortName: dns_record_enum
+  - Name: dns_record_enum
     CommandTemplate: dns-record-enum.sh {{Name}}
     Subject: DomainName
 
-  - ShortName: get_all_urls
+  - Name: get_all_urls
     CommandTemplate: get-all-urls.sh {{Name}}
     Subject: DomainName
     Filter: DomainName.ZoneDepth == 1
 
-  - ShortName: waybackurls
+  - Name: waybackurls
     CommandTemplate: waybackurls.sh {{Name}}
     Subject: DomainName
     Filter: DomainName.ZoneDepth == 1
 
-  - ShortName: reverse_whois
+  - Name: reverse_whois
     CommandTemplate: reverse-whois.sh {{Address}}
     Subject: Email
     MatchOutOfScope: true
 
-  - ShortName: zone_trasfer
+  - Name: zone_trasfer
     CommandTemplate: zone-transfer.sh {{Name}}
     Subject: DomainName
 
-  - ShortName: zone_walking
+  - Name: zone_walking
     CommandTemplate: ldns-walk {{Key}} | tail -n +2 | cut -d ' ' -f 1
     Filter: DomainNameRecord.Type == pwnctl.domain.Enums.DnsRecordType.NSEC
     Subject: DomainNameRecord
 
-  - ShortName: cname_takeover_check
+  - Name: cname_takeover_check
     CommandTemplate: cloud_misconfig_scan.sh {{Value}}
     Subject: DomainNameRecord
     Filter: DomainNameRecord.Type == pwnctl.domain.Enums.DnsRecordType.CNAME
 
-  - ShortName: s3_scan
+  - Name: s3_scan
     CommandTemplate: s3-scan.sh {{Name}}
     Subject: DomainName
     Filter: DomainName.Name.Contains("amazonaws.com") && DomainName.Name.Contains("s3")

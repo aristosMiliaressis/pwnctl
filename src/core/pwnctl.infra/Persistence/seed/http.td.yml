@@ -1,52 +1,52 @@
 Profiles: [ "basic", "all" ]
 
 TaskDefinitions:
-  - ShortName: wafw00f
+  - Name: wafw00f
     CommandTemplate: wafw00f.sh {{Url}}
     Filter: HttpEndpoint.Path == "/"
     Subject: HttpEndpoint
 
-  - ShortName: grab_url_metadata
+  - Name: grab_url_metadata
     CommandTemplate: grab-url-metadata.sh {{Url}}
     Filter: HttpEndpoint.Path == "/"
     Subject: HttpEndpoint
 
-  - ShortName: webanalyze
+  - Name: webanalyze
     CommandTemplate: webanalyze.sh {{Url}}
     Filter: HttpEndpoint.Path == "/"
     Subject: HttpEndpoint
 
-  - ShortName: webcrawl
+  - Name: webcrawl
     CommandTemplate: webcrawl.sh {{Url}}
     Filter: HttpEndpoint.Path == "/" || Tags["Content-Type"].Contains("/html") || Tags["Content-Type"].Contains("/xhtml")
     Subject: HttpEndpoint
 
-  # - ShortName: link_finder
+  # - Name: link_finder
   #   CommandTemplate: link-finder.sh {{Url}}
   #   Filter: HttpEndpoint.Extension == "js" || HttpEndpoint.Extension == "jsm" || Tags["Content-Type"].Contains("/javascript")
   #   Subject: HttpEndpoint
 
-  # - ShortName: screenshot
+  # - Name: screenshot
   #   CommandTemplate: screenshot.sh {{Url}}
   #   Filter: HttpEndpoint.Path == "/"
   #   Subject: HttpEndpoint
 
-  - ShortName: cors_check
+  - Name: cors_check
     CommandTemplate: check-cors.sh {{Url}}
     Subject: HttpEndpoint
     Filter: HttpEndpoint.Path == "/" || Tags["Content-Type"].Contains("/json") || Tags["Content-Type"].Contains("/xml")
 
-  - ShortName: shortname_scanning
-    CommandTemplate: shortname-check.sh {{Url}}
+  - Name: Name_scanning
+    CommandTemplate: Name-check.sh {{Url}}
     Subject: HttpEndpoint
     Filter: Tags["Title"].Contains("Internet Information Services")|| Tags["Title"].Contains("IIS")||Tags["Server"].Contains("IIS")||Tags["Server"].Contains("Microsoft-HTTPAPI")
 
-  - ShortName: shortname_scanning_srv
-    CommandTemplate: shortname-check.sh {{Address}}
+  - Name: Name_scanning_srv
+    CommandTemplate: Name-check.sh {{Address}}
     Subject: NetworkSocket
     Filter: Tags["Version"].Contains("IIS") || Tags["Version"].Contains("Microsoft HTTPAPI")
 
-  # - ShortName: second_order_takeover
+  # - Name: second_order_takeover
   #   CommandTemplate: cloud_misconfig_scan.sh {{Url}}
   #   Subject: HttpEndpoint
   #   Filter: CloudServiceRepository.Instance.IsCloudService(HttpEndpoint)

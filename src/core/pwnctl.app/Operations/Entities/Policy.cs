@@ -1,22 +1,32 @@
 using pwnctl.kernel.BaseClasses;
 using pwnctl.app.Tasks.Entities;
+using System.Text.Json.Serialization;
 
-namespace pwnctl.app.Scope.Entities
+namespace pwnctl.app.Operations.Entities
 {
-    public sealed class OperationalPolicy : Entity<int>
+    public sealed class Policy : Entity<int>
     {
-        public string Blacklist { get; init; }
-        public string Whitelist { get; init; }
-        public uint? MaxAggressiveness { get; init; }
-        public bool AllowActive { get; init; }
+        public string Blacklist { get; set; }
+        public string Whitelist { get; set; }
+        public uint? MaxAggressiveness { get; set; }
+        public bool OnlyPassive { get; set; }
 
-        public OperationalPolicy() {}
+        [JsonIgnore]
+        public int TaskProfileId { get; init; }
+        public TaskProfile TaskProfile { get; set; }
 
-        public List<TaskDefinition> GetAllowedTasks(List<TaskDefinition> definitions)
+        public Policy() { }
+
+        public Policy(TaskProfile profile) 
+        { 
+            TaskProfile = profile;
+        }
+
+        public List<TaskDefinition> GetAllowedTasks()
         {
             List<TaskDefinition> allowedTasks = new();
 
-            foreach (var definition in definitions)
+            foreach (var definition in TaskProfile.TaskDefinitions)
             {
                 if (Allows(definition))
                 {
@@ -32,15 +42,15 @@ namespace pwnctl.app.Scope.Entities
             var whitelist = Whitelist?.Split(",") ?? new string[0];
             var blacklist = Blacklist?.Split(",") ?? new string[0];
 
-            if (blacklist.Contains(definition.ShortName))
+            if (blacklist.Contains(definition.ShortName.Value))
             {
                 return false;
             }
-            else if (whitelist.Contains(definition.ShortName))
+            else if (whitelist.Contains(definition.ShortName.Value))
             {
                 return true;
             }
-            else if (definition.IsActive && !AllowActive)
+            else if (definition.IsActive && OnlyPassive)
             {
                 return false;
             }

@@ -1,34 +1,34 @@
 Profiles: [ "all" ]
 
 TaskDefinitions:
-  - ShortName: ffuf_common
+  - Name: ffuf_common
     CommandTemplate: "ffuf -H 'User-Agent: Mozilla/5.0' -H 'X-Forwarded-For: 127.0.0.1' -w /opt/SecLists/Discovery/Web-Content/common.txt {{Url}}/FUZZ"
     IsActive: true
     Aggressiveness: 8
     Subject: HttpEndpoint
     Filter: HttpEndpoint.Path == "/"
     
-  - ShortName: shortname_scanner
+  - Name: shortname_scanner
     CommandTemplate: shortname_scanner
     IsActive: true
     Aggressiveness: 5
     Subject: HttpEndpoint
     Filter: HttpEndpoint.Path == "/" && Tags["Protocol"] == "IIS"
 
-  - ShortName: hakrawler
+  - Name: hakrawler
     CommandTemplate: "hakrawler -plain -h 'User-Agent: Mozilla/5.0' {{Url}}"
     IsActive: true
     Aggressiveness: 3
     Subject: HttpEndpoint
     Filter: Tags["Content-Type"].Contains("/html")
 
-  - ShortName: sqlmap
+  - Name: sqlmap
     CommandTemplate: sqlmap {{Url}}
     IsActive: true
     Aggressiveness: 1000
     Subject: HttpEndpoint
 
-  - ShortName: second_order_takeover
+  - Name: second_order_takeover
     CommandTemplate: nuclei -t /opt/nuclei-templates/cname_takeovers
     Subject: HttpEndpoint
     Filter: CloudServiceRepository.Instance.IsCloudService(HttpEndpoint)

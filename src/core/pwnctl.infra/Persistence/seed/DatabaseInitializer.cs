@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using pwnctl.app.Tasks.Entities;
-using pwnctl.app.Scope.Entities;
 using pwnctl.app.Notifications.Entities;
 using Microsoft.Extensions.FileSystemGlobbing;
 using YamlDotNet.Serialization;
@@ -42,11 +41,6 @@ namespace pwnctl.infra.Persistence
             if (!context.NotificationRules.Any())
             {
                 await SeedNotificationRulesAsync(context);
-            }
-
-            if (!context.Programs.Any())
-            {
-                await SeedTargetsAsync(context);
             }
 
             string assetSeed = Path.Combine(EnvironmentVariables.INSTALL_PATH, "seed/assets.txt");
@@ -96,7 +90,7 @@ namespace pwnctl.infra.Persistence
 
                 foreach (var profileName in file.Profiles)
                 {
-                    var profile = context.TaskProfiles.FirstOrDefault(p => p.ShortName == profileName);
+                    var profile = context.TaskProfiles.FirstOrDefault(p => p.ShortName.Value == profileName);
                     if (profile == null)
                     {
                         profile = new TaskProfile(profileName, file.TaskDefinitions);
@@ -134,27 +128,6 @@ namespace pwnctl.infra.Persistence
                 var notificationRules = _deserializer.Deserialize<List<NotificationRule>>(taskText);
 
                 context.NotificationRules.AddRange(notificationRules);
-                await context.SaveChangesAsync();
-            }
-        }
-    
-        private static async Task SeedTargetsAsync(PwnctlDbContext context)
-        {
-            Matcher matcher = new();
-            matcher.AddInclude("target-*.yml");
-
-            foreach (string file in matcher.GetResultsInFullPath(Path.Combine(EnvironmentVariables.INSTALL_PATH, "seed/"))) 
-            {
-                var programText = File.ReadAllText(file);
-                var target = _deserializer.Deserialize<TargetFile>(programText);
-                var profile = context.TaskProfiles.FirstOrDefault(p => p.ShortName == target.TaskProfile);
-                if (profile == null)
-                {
-                    throw new ConfigValidationException(file, $"Task Profile {target.TaskProfile} not found");
-                }
-
-                var program = new Program(target.Name, profile, target.Policy, target.Scope);
-                context.Programs.Add(program);
                 await context.SaveChangesAsync();
             }
         }

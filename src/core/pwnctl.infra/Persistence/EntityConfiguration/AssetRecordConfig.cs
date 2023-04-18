@@ -13,9 +13,13 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
             
             builder.HasKey(r => r.Id);
 
-            builder.OwnsOne(r => r.SubjectClass).Property(s => s.Class).IsRequired();
-            
-            builder.HasOne(r => r.Program).WithMany(p => p.Assets).HasForeignKey(r => r.ProgramId).IsRequired(false);
+            builder.OwnsOne(r => r.SubjectClass).Property(s => s.Value).IsRequired();
+
+            builder.HasMany(r => r.Tasks);
+            builder.HasMany(r => r.Tags);
+
+            builder.HasOne(r => r.Scope).WithMany().HasForeignKey(r => r.ScopeId).IsRequired(false);
+            builder.HasOne(r => r.FoundByTask).WithMany().HasForeignKey(r => r.FoundByTaskId).IsRequired(false);
 
             builder.HasOne(r => r.DomainName).WithMany().HasForeignKey(r => r.DomainNameId).IsRequired(false);
             builder.HasOne(r => r.NetworkHost).WithMany().HasForeignKey(r => r.NetworkHostId).IsRequired(false);
@@ -26,11 +30,6 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
             builder.HasOne(r => r.HttpHost).WithMany().HasForeignKey(r => r.HttpHostId).IsRequired(false);
             builder.HasOne(r => r.HttpEndpoint).WithMany().HasForeignKey(r => r.HttpEndpointId).IsRequired(false);
             builder.HasOne(r => r.HttpParameter).WithMany().HasForeignKey(r => r.HttpParameterId).IsRequired(false);
-
-            builder.HasOne(r => r.FoundByTask).WithMany().HasForeignKey(r => r.FoundByTaskId).IsRequired(false);
-
-            builder.HasMany(r => r.Tasks);
-            builder.HasMany(r => r.Tags);
         }
     }
 }

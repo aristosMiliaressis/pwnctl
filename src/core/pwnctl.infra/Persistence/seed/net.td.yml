@@ -1,31 +1,31 @@
 Profiles: [ "basic", "all" ]
 
 TaskDefinitions:
-  - ShortName: ping_sweep
+  - Name: ping_sweep
     CommandTemplate: ping-sweep.sh {{CIDR}}
     Subject: NetworkRange
 
-  - ShortName: reverse_range_lookup
+  - Name: reverse_range_lookup
     CommandTemplate: reverse-range-lookup.sh {{CIDR}}
     Subject: NetworkRange
 
-  - ShortName: asn_lookup
+  - Name: asn_lookup
     CommandTemplate: asn-lookup.sh {{IP}}
     Subject: NetworkHost
 
-  - ShortName: reverse_dns_lookup
+  - Name: reverse_dns_lookup
     CommandTemplate: dig +short -x {{IP}}
     Subject: NetworkHost
 
-  - ShortName: tcp_scan
+  - Name: tcp_scan
     CommandTemplate: tcp-scan.sh {{IP}}
     Subject: NetworkHost
 
-  - ShortName: tls_probe
+  - Name: tls_probe
     CommandTemplate: tls-probe.sh {{Address}}
     Subject: NetworkSocket
 
-  - ShortName: http_probe
+  - Name: http_probe
     CommandTemplate: http-probe.sh {{Address}}
     Subject: NetworkSocket
     Filter: Tags["protocol"].Contains("http")
