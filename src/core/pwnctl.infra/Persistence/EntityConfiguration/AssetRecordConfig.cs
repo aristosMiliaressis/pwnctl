@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Humanizer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using pwnctl.app.Assets.Aggregates;
 using pwnctl.infra.Persistence.IdGenerators;
@@ -9,6 +10,8 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
     {
         public void Configure(EntityTypeBuilder<AssetRecord> builder)
         {
+            builder.ToTable(builder.GetType().GenericTypeArguments[0].Name.Underscore().Pluralize());
+
             builder.Property(r => r.Id).HasValueGenerator<UUIDv5ValueGenerator>();
             
             builder.HasKey(r => r.Id);

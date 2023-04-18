@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using pwnctl.app.Scope.Entities;
+using Humanizer;
 
 namespace pwnctl.infra.Persistence.EntityConfiguration
 {
@@ -8,6 +9,8 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
     {
         public void Configure(EntityTypeBuilder<ScopeDefinition> builder)
         {
+            builder.ToTable(builder.GetType().GenericTypeArguments[0].Name.Underscore().Pluralize());
+
             builder.HasKey(p => p.Id);
         }
     }
@@ -16,6 +19,8 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
     {
         public void Configure(EntityTypeBuilder<ScopeAggregate> builder)
         {
+            builder.ToTable(builder.GetType().GenericTypeArguments[0].Name.Underscore().Pluralize());
+
             builder.HasKey(p => p.Id);
 
             builder.OwnsOne(e => e.ShortName).Property(e => e.Value).IsRequired();
@@ -26,6 +31,8 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
     {
         public void Configure(EntityTypeBuilder<ScopeDefinitionAggregate> builder)
         {
+            builder.ToTable(builder.GetType().GenericTypeArguments[0].Name.Underscore().Pluralize());
+
             builder.HasKey(p => new { p.AggregateId, p.DefinitionId });
 
             builder.HasOne(e => e.Aggregate)

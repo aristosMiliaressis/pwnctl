@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using pwnctl.app.Tagging.Entities;
+using Humanizer;
 
 namespace pwnctl.infra.Persistence.EntityConfiguration
 {
@@ -8,6 +9,8 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
     {
         public void Configure(EntityTypeBuilder<Tag> builder)
         {
+            builder.ToTable(builder.GetType().GenericTypeArguments[0].Name.Underscore().Pluralize());
+
             builder.HasKey(t => t.Id);
 
             builder.HasOne(t => t.Record)

@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using pwnctl.app.Operations.Entities;
-using pwnctl.app.Notifications.Entities;
+using Humanizer;
 
 namespace pwnctl.infra.Persistence.EntityConfiguration
 {
@@ -9,6 +9,8 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
     {
         public void Configure(EntityTypeBuilder<Operation> builder)
         {
+            builder.ToTable(builder.GetType().GenericTypeArguments[0].Name.Underscore().Pluralize());
+
             builder.HasKey(p => p.Id);
 
             builder.OwnsOne(e => e.ShortName).Property(e => e.Value).IsRequired();
@@ -27,6 +29,8 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
     {
         public void Configure(EntityTypeBuilder<Policy> builder)
         {
+            builder.ToTable(builder.GetType().GenericTypeArguments[0].Name.Underscore().Pluralize());
+
             builder.HasKey(p => p.Id);
 
             builder.HasOne(p => p.TaskProfile)

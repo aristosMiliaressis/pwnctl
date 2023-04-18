@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using pwnctl.domain.Entities;
 using pwnctl.infra.Persistence.IdGenerators;
+using Humanizer;
 
 namespace pwnctl.infra.Persistence.EntityConfiguration
 {
@@ -9,6 +10,8 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
     {
         public void Configure(EntityTypeBuilder<Email> builder)
         {
+            builder.ToTable(builder.GetType().GenericTypeArguments[0].Name.Underscore().Pluralize());
+
             builder.Property(c => c.Id).HasValueGenerator<UUIDv5ValueGenerator>();
 
             builder.HasKey(t => t.Id);

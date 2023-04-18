@@ -12,8 +12,8 @@ using pwnctl.infra.Persistence;
 namespace pwnctl.infra.Migrations
 {
     [DbContext(typeof(PwnctlDbContext))]
-    [Migration("20230417123823_operations")]
-    partial class operations
+    [Migration("20230418152243_pwnctl_schema")]
+    partial class pwnctl_schema
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -93,7 +93,7 @@ namespace pwnctl.infra.Migrations
 
                     b.HasIndex("ScopeId");
 
-                    b.ToTable("AssetRecords");
+                    b.ToTable("asset_records", (string)null);
                 });
 
             modelBuilder.Entity("pwnctl.app.Notifications.Entities.Notification", b =>
@@ -119,7 +119,7 @@ namespace pwnctl.infra.Migrations
 
                     b.HasIndex("RuleId");
 
-                    b.ToTable("Notifications");
+                    b.ToTable("notifications", (string)null);
                 });
 
             modelBuilder.Entity("pwnctl.app.Notifications.Entities.NotificationRule", b =>
@@ -136,9 +136,6 @@ namespace pwnctl.infra.Migrations
                     b.Property<string>("Filter")
                         .HasColumnType("text");
 
-                    b.Property<string>("ShortName")
-                        .HasColumnType("text");
-
                     b.Property<string>("Template")
                         .HasColumnType("text");
 
@@ -147,7 +144,7 @@ namespace pwnctl.infra.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("NotificationRules");
+                    b.ToTable("notification_rules", (string)null);
                 });
 
             modelBuilder.Entity("pwnctl.app.Operations.Entities.Operation", b =>
@@ -157,9 +154,6 @@ namespace pwnctl.infra.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
 
                     b.Property<int?>("PolicyId")
                         .HasColumnType("integer");
@@ -178,7 +172,7 @@ namespace pwnctl.infra.Migrations
                     b.HasIndex("ScopeId")
                         .IsUnique();
 
-                    b.ToTable("Operations");
+                    b.ToTable("operations", (string)null);
                 });
 
             modelBuilder.Entity("pwnctl.app.Operations.Entities.Policy", b =>
@@ -189,14 +183,14 @@ namespace pwnctl.infra.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("AllowActive")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("Blacklist")
                         .HasColumnType("text");
 
                     b.Property<long?>("MaxAggressiveness")
                         .HasColumnType("bigint");
+
+                    b.Property<bool>("OnlyPassive")
+                        .HasColumnType("boolean");
 
                     b.Property<int>("TaskProfileId")
                         .HasColumnType("integer");
@@ -208,7 +202,7 @@ namespace pwnctl.infra.Migrations
 
                     b.HasIndex("TaskProfileId");
 
-                    b.ToTable("Policies");
+                    b.ToTable("policies", (string)null);
                 });
 
             modelBuilder.Entity("pwnctl.app.Scope.Entities.ScopeAggregate", b =>
@@ -222,12 +216,9 @@ namespace pwnctl.infra.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<string>("ShortName")
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
-                    b.ToTable("ScopeAggregates");
+                    b.ToTable("scope_aggregates", (string)null);
                 });
 
             modelBuilder.Entity("pwnctl.app.Scope.Entities.ScopeDefinition", b =>
@@ -246,7 +237,7 @@ namespace pwnctl.infra.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ScopeDefinitions");
+                    b.ToTable("scope_definitions", (string)null);
                 });
 
             modelBuilder.Entity("pwnctl.app.Scope.Entities.ScopeDefinitionAggregate", b =>
@@ -261,7 +252,7 @@ namespace pwnctl.infra.Migrations
 
                     b.HasIndex("DefinitionId");
 
-                    b.ToTable("ScopeDefinitionAggregates");
+                    b.ToTable("scope_definition_aggregates", (string)null);
                 });
 
             modelBuilder.Entity("pwnctl.app.Tagging.Entities.Tag", b =>
@@ -286,7 +277,7 @@ namespace pwnctl.infra.Migrations
                     b.HasIndex("RecordId", "Name")
                         .IsUnique();
 
-                    b.ToTable("Tags");
+                    b.ToTable("tags", (string)null);
                 });
 
             modelBuilder.Entity("pwnctl.app.Tasks.Entities.TaskDefinition", b =>
@@ -315,14 +306,11 @@ namespace pwnctl.infra.Migrations
                     b.Property<int>("ProfileId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("ShortName")
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ProfileId");
 
-                    b.ToTable("TaskDefinitions");
+                    b.ToTable("task_definitions", (string)null);
                 });
 
             modelBuilder.Entity("pwnctl.app.Tasks.Entities.TaskEntry", b =>
@@ -365,7 +353,7 @@ namespace pwnctl.infra.Migrations
 
                     b.HasIndex("RecordId");
 
-                    b.ToTable("TaskEntries");
+                    b.ToTable("task_entries", (string)null);
                 });
 
             modelBuilder.Entity("pwnctl.app.Tasks.Entities.TaskProfile", b =>
@@ -376,12 +364,9 @@ namespace pwnctl.infra.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ShortName")
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
-                    b.ToTable("TaskProfiles");
+                    b.ToTable("task_profiles", (string)null);
                 });
 
             modelBuilder.Entity("pwnctl.domain.Entities.DomainName", b =>
@@ -406,7 +391,7 @@ namespace pwnctl.infra.Migrations
 
                     b.HasIndex("ParentDomainId");
 
-                    b.ToTable("Domains");
+                    b.ToTable("domain_names", (string)null);
                 });
 
             modelBuilder.Entity("pwnctl.domain.Entities.DomainNameRecord", b =>
@@ -439,7 +424,7 @@ namespace pwnctl.infra.Migrations
                     b.HasIndex("Type", "Key", "Value")
                         .IsUnique();
 
-                    b.ToTable("DNSRecords");
+                    b.ToTable("domain_name_records", (string)null);
                 });
 
             modelBuilder.Entity("pwnctl.domain.Entities.Email", b =>
@@ -461,7 +446,7 @@ namespace pwnctl.infra.Migrations
 
                     b.HasIndex("DomainId");
 
-                    b.ToTable("Emails");
+                    b.ToTable("emails", (string)null);
                 });
 
             modelBuilder.Entity("pwnctl.domain.Entities.HttpEndpoint", b =>
@@ -494,7 +479,7 @@ namespace pwnctl.infra.Migrations
                     b.HasIndex("Url")
                         .IsUnique();
 
-                    b.ToTable("HttpEndpoints");
+                    b.ToTable("http_endpoints", (string)null);
                 });
 
             modelBuilder.Entity("pwnctl.domain.Entities.HttpHost", b =>
@@ -519,7 +504,7 @@ namespace pwnctl.infra.Migrations
                     b.HasIndex("Name", "SocketAddress")
                         .IsUnique();
 
-                    b.ToTable("HttpHosts");
+                    b.ToTable("http_hosts", (string)null);
                 });
 
             modelBuilder.Entity("pwnctl.domain.Entities.HttpParameter", b =>
@@ -550,7 +535,7 @@ namespace pwnctl.infra.Migrations
                     b.HasIndex("Url", "Name", "Type")
                         .IsUnique();
 
-                    b.ToTable("HttpParameters");
+                    b.ToTable("http_parameters", (string)null);
                 });
 
             modelBuilder.Entity("pwnctl.domain.Entities.NetworkHost", b =>
@@ -570,7 +555,7 @@ namespace pwnctl.infra.Migrations
                     b.HasIndex("IP")
                         .IsUnique();
 
-                    b.ToTable("Hosts");
+                    b.ToTable("network_hosts", (string)null);
                 });
 
             modelBuilder.Entity("pwnctl.domain.Entities.NetworkRange", b =>
@@ -590,7 +575,7 @@ namespace pwnctl.infra.Migrations
                     b.HasIndex("FirstAddress", "NetPrefixBits")
                         .IsUnique();
 
-                    b.ToTable("NetworkRanges");
+                    b.ToTable("network_ranges", (string)null);
                 });
 
             modelBuilder.Entity("pwnctl.domain.Entities.NetworkSocket", b =>
@@ -623,7 +608,7 @@ namespace pwnctl.infra.Migrations
 
                     b.HasIndex("NetworkHostId");
 
-                    b.ToTable("Sockets");
+                    b.ToTable("network_sockets", (string)null);
                 });
 
             modelBuilder.Entity("pwnctl.app.Assets.Aggregates.AssetRecord", b =>
@@ -677,13 +662,13 @@ namespace pwnctl.infra.Migrations
                             b1.Property<Guid>("AssetRecordId")
                                 .HasColumnType("uuid");
 
-                            b1.Property<string>("Class")
+                            b1.Property<string>("Value")
                                 .IsRequired()
                                 .HasColumnType("text");
 
                             b1.HasKey("AssetRecordId");
 
-                            b1.ToTable("AssetRecords");
+                            b1.ToTable("asset_records");
 
                             b1.WithOwner()
                                 .HasForeignKey("AssetRecordId");
@@ -735,22 +720,41 @@ namespace pwnctl.infra.Migrations
 
             modelBuilder.Entity("pwnctl.app.Notifications.Entities.NotificationRule", b =>
                 {
-                    b.OwnsOne("pwnctl.domain.ValueObjects.AssetClass", "SubjectClass", b1 =>
+                    b.OwnsOne("pwnctl.app.Common.ValueObjects.ShortName", "ShortName", b1 =>
                         {
                             b1.Property<int>("NotificationRuleId")
                                 .HasColumnType("integer");
 
-                            b1.Property<string>("Class")
+                            b1.Property<string>("Value")
                                 .IsRequired()
                                 .HasColumnType("text");
 
                             b1.HasKey("NotificationRuleId");
 
-                            b1.ToTable("NotificationRules");
+                            b1.ToTable("notification_rules");
 
                             b1.WithOwner()
                                 .HasForeignKey("NotificationRuleId");
                         });
+
+                    b.OwnsOne("pwnctl.domain.ValueObjects.AssetClass", "SubjectClass", b1 =>
+                        {
+                            b1.Property<int>("NotificationRuleId")
+                                .HasColumnType("integer");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.HasKey("NotificationRuleId");
+
+                            b1.ToTable("notification_rules");
+
+                            b1.WithOwner()
+                                .HasForeignKey("NotificationRuleId");
+                        });
+
+                    b.Navigation("ShortName");
 
                     b.Navigation("SubjectClass");
                 });
@@ -767,9 +771,28 @@ namespace pwnctl.infra.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.OwnsOne("pwnctl.app.Common.ValueObjects.ShortName", "ShortName", b1 =>
+                        {
+                            b1.Property<int>("OperationId")
+                                .HasColumnType("integer");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.HasKey("OperationId");
+
+                            b1.ToTable("operations");
+
+                            b1.WithOwner()
+                                .HasForeignKey("OperationId");
+                        });
+
                     b.Navigation("Policy");
 
                     b.Navigation("Scope");
+
+                    b.Navigation("ShortName");
                 });
 
             modelBuilder.Entity("pwnctl.app.Operations.Entities.Policy", b =>
@@ -781,6 +804,28 @@ namespace pwnctl.infra.Migrations
                         .IsRequired();
 
                     b.Navigation("TaskProfile");
+                });
+
+            modelBuilder.Entity("pwnctl.app.Scope.Entities.ScopeAggregate", b =>
+                {
+                    b.OwnsOne("pwnctl.app.Common.ValueObjects.ShortName", "ShortName", b1 =>
+                        {
+                            b1.Property<int>("ScopeAggregateId")
+                                .HasColumnType("integer");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.HasKey("ScopeAggregateId");
+
+                            b1.ToTable("scope_aggregates");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ScopeAggregateId");
+                        });
+
+                    b.Navigation("ShortName");
                 });
 
             modelBuilder.Entity("pwnctl.app.Scope.Entities.ScopeDefinitionAggregate", b =>
@@ -821,24 +866,43 @@ namespace pwnctl.infra.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsOne("pwnctl.domain.ValueObjects.AssetClass", "SubjectClass", b1 =>
+                    b.OwnsOne("pwnctl.app.Common.ValueObjects.ShortName", "ShortName", b1 =>
                         {
                             b1.Property<int>("TaskDefinitionId")
                                 .HasColumnType("integer");
 
-                            b1.Property<string>("Class")
+                            b1.Property<string>("Value")
                                 .IsRequired()
                                 .HasColumnType("text");
 
                             b1.HasKey("TaskDefinitionId");
 
-                            b1.ToTable("TaskDefinitions");
+                            b1.ToTable("task_definitions");
+
+                            b1.WithOwner()
+                                .HasForeignKey("TaskDefinitionId");
+                        });
+
+                    b.OwnsOne("pwnctl.domain.ValueObjects.AssetClass", "SubjectClass", b1 =>
+                        {
+                            b1.Property<int>("TaskDefinitionId")
+                                .HasColumnType("integer");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.HasKey("TaskDefinitionId");
+
+                            b1.ToTable("task_definitions");
 
                             b1.WithOwner()
                                 .HasForeignKey("TaskDefinitionId");
                         });
 
                     b.Navigation("Profile");
+
+                    b.Navigation("ShortName");
 
                     b.Navigation("SubjectClass");
                 });
@@ -868,6 +932,28 @@ namespace pwnctl.infra.Migrations
                     b.Navigation("Operation");
 
                     b.Navigation("Record");
+                });
+
+            modelBuilder.Entity("pwnctl.app.Tasks.Entities.TaskProfile", b =>
+                {
+                    b.OwnsOne("pwnctl.app.Common.ValueObjects.ShortName", "ShortName", b1 =>
+                        {
+                            b1.Property<int>("TaskProfileId")
+                                .HasColumnType("integer");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.HasKey("TaskProfileId");
+
+                            b1.ToTable("task_profiles");
+
+                            b1.WithOwner()
+                                .HasForeignKey("TaskProfileId");
+                        });
+
+                    b.Navigation("ShortName");
                 });
 
             modelBuilder.Entity("pwnctl.domain.Entities.DomainName", b =>

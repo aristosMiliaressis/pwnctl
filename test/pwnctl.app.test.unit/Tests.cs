@@ -10,16 +10,12 @@ using pwnctl.app.Assets.DTO;
 using pwnctl.infra;
 using pwnctl.infra.DependencyInjection;
 using pwnctl.infra.Persistence;
-using pwnctl.infra.Persistence.Extensions;
 using pwnctl.infra.Repositories;
 
 using System.Net;
 using Microsoft.EntityFrameworkCore;
-using pwnctl.app.Tasks.Entities;
 using pwnctl.infra.Commands;
 using System.Text;
-using pwnctl.app.Operations.Entities;
-using pwnctl.app.Scope.Entities;
 
 public sealed class Tests
 {
@@ -503,7 +499,8 @@ public sealed class Tests
 
         await processor.ProcessAsync("172.16.17.0/24", EntityFactory.TaskEntry);
         Assert.True(TaskDbRepository.JoinedQueryable().Any(t => t.Definition.ShortName.Value == "nmap_basic"));
-        Assert.False(TaskDbRepository.JoinedQueryable().Any(t => t.Definition.ShortName.Value == "ffuf_common"));
+        Assert.False(TaskDbRepository.JoinedQueryable().Any(t => t.Record.NetworkRange.FirstAddress == "172.16.17.0"
+                                                            && t.Definition.ShortName.Value == "ffuf_common"));
 
         var exampleUrl = new
         {

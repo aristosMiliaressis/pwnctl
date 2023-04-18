@@ -17,6 +17,7 @@
     <PackageReference Include="Amazon.Extensions.Configuration.SystemsManager" Version="4.0.0" />
     <PackageReference Include="AWS.Logger.SeriLog" Version="3.2.0" />
     <PackageReference Include="Be.Vlaanderen.Basisregisters.Generators.Guid.Deterministic" Version="3.0.1" />
+    <PackageReference Include="Humanizer" Version="2.14.1" />
     <PackageReference Include="Kralizek.Extensions.Configuration.AWSSecretsManager" Version="1.6.3" />
     <PackageReference Include="AWSSDK.SQS" Version="3.7.2.108" />
     <PackageReference Include="AWSSDK.SecretsManager.Caching" Version="1.0.4" />
