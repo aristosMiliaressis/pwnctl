@@ -27,8 +27,7 @@ namespace pwnctl.cli.ModeHandlers
                 Query = query
             };
 
-            var client = new PwnctlApiClient();
-            var result = await client.Send(command);
+            var result = await PwnctlApiClient.Default.Send(command);
 
             if (result != null)
                 Console.WriteLine(PwnInfraContext.Serializer.Serialize(result));

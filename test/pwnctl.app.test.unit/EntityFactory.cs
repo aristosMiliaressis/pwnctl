@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using pwnctl.app.Assets.Aggregates;
 using pwnctl.app.Operations.Entities;
+using pwnctl.app.Operations.Enums;
 using pwnctl.app.Scope.Entities;
 using pwnctl.app.Tasks.Entities;
 using pwnctl.domain.Entities;
@@ -74,7 +75,7 @@ namespace pwnctl.app.test.unit
                 context.Add(policy);
                 context.SaveChanges();
 
-                var operation = new Operation("test", policy, ScopeAggregate);
+                var operation = new Operation("test", OperationType.Crawl, policy, ScopeAggregate);
                 context.Entry(operation.Scope).State = EntityState.Unchanged;
                 context.Add(operation);
                 context.SaveChanges();

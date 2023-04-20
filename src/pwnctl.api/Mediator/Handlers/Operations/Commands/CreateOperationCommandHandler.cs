@@ -4,6 +4,10 @@ using pwnctl.infra.Persistence;
 using pwnctl.dto.Operations.Commands;
 
 using MediatR;
+using pwnctl.app.Operations.Entities;
+using pwnctl.app.Operations.Enums;
+using pwnctl.infra.Repositories;
+using pwnctl.infra;
 
 namespace pwnctl.api.Mediator.Handlers.Operations.Commands
 {
@@ -13,26 +17,67 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
 
         public async Task<MediatedResponse> Handle(CreateOperationCommand command, CancellationToken cancellationToken)
         {
-            var existingProgram = await _context.Operations.FirstOrDefaultAsync(p => p.ShortName == command.ShortName);
+            var existingProgram = await _context.Operations.FirstOrDefaultAsync(p => p.ShortName.Value == command.ShortName);
             if (existingProgram != null)
-                return MediatedResponse.Error("Target {0} already exists.", command.ShortName.Value);
+                return MediatedResponse.Error("Target {0} already exists.", command.ShortName);
 
-            var scopeAggregate = _context.ScopeAggregates.FirstOrDefault(a => a.ShortName == command.Scope.ShortName);
+            var scopeAggregate = _context.ScopeAggregates.FirstOrDefault(a => a.ShortName.Value == command.Scope.ShortName);
             if (scopeAggregate == null)
-                return MediatedResponse.Error("Scope Aggregate {0} not found.", command.Scope.ShortName.Value);
+                return MediatedResponse.Error("Scope Aggregate {0} not found.", command.Scope.ShortName);
 
-            command.Scope = scopeAggregate;
-
-            var taskProfile = _context.TaskProfiles.FirstOrDefault(p => p.ShortName == command.Policy.TaskProfile.ShortName);
+            var taskProfile = _context.TaskProfiles.FirstOrDefault(p => p.ShortName.Value == command.Policy.TaskProfile);
             if (taskProfile == null)
-                return MediatedResponse.Error("Task Profile {0} not found.", command.Policy.TaskProfile.ShortName.Value);
+                return MediatedResponse.Error("Task Profile {0} not found.", command.Policy.TaskProfile);
 
-            command.Policy.TaskProfile = taskProfile;
+            var policy = new Policy(taskProfile);
+            policy.Whitelist = command.Policy.Whitelist;
+            policy.Blacklist = command.Policy.Blacklist;
+            policy.MaxAggressiveness = command.Policy.MaxAggressiveness;
+            policy.OnlyPassive = command.Policy.OnlyPassive;
 
-            _context.Operations.Add(command);
+            var op = new Operation(command.ShortName, command.Type, policy, scopeAggregate);
+
+            _context.Operations.Add(op);
             await _context.SaveChangesAsync();
 
+            if (command.Type == OperationType.Crawl)
+            {
+                await StartCrawlOperation(op, command.Input);
+            }
+            else if (command.Type == OperationType.Scan)
+            {
+                StartScanOperation(op);
+            }
+
             return MediatedResponse.Success();
+        }
+
+        private async Task StartCrawlOperation(Operation op, IEnumerable<string> input)
+        {
+            var repo = new TaskDbRepository();
+
+            var processor = AssetProcessorFactory.Create();
+
+            foreach (var asset in input.Where(a => !string.IsNullOrEmpty(a)))
+            {
+                await processor.TryProcessAsync(asset);
+            }
+
+            // // leaves TaskEntries in a PENDING state inorder to 
+            // // return the tasks to the client for queueing, that way we 
+            // // eliminate the need for a VpcEndpoint to access the SQS API
+            // var pendingTasks = await repo.ListPendingAsync();
+            // foreach (var task in pendingTasks)
+            // {
+            //     task.Queued();
+            //     await repo.UpdateAsync(task);
+            // }
+            throw new NotImplementedException();
+        }
+
+        private void StartScanOperation(Operation op)
+        {
+            throw new NotImplementedException();
         }
     }
 }

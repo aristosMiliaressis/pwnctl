@@ -1,0 +1,16 @@
+namespace pwnctl.dto.Assets.Models;
+
+using pwnctl.app.Assets.Aggregates;
+using pwnctl.app.Assets.DTO;
+
+public sealed class EmailListViewModel
+{
+    public IEnumerable<AssetDTO> Emails { get; init; }
+
+    public EmailListViewModel() { }
+
+    public EmailListViewModel(List<AssetRecord> emails)
+    {
+        Emails = emails.Select(e => new AssetDTO(e));
+    }
+}

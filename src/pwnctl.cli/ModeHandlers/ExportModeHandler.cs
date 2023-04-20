@@ -6,71 +6,62 @@ using pwnctl.app;
 using pwnctl.dto.Assets.Queries;
 using pwnctl.cli.Interfaces;
 using pwnctl.app.Assets.DTO;
-using pwnctl.dto.Targets.Queries;
+using pwnctl.dto.Tasks.Queries;
+using CommandLine;
 
 namespace pwnctl.cli.ModeHandlers
 {
     public sealed class ExportModeHandler : ModeHandler
     {
         public string ModeName => "export";
-        
+
+        [Option('p', "path", Required = true, HelpText = "Path to the export file.")]
+        public string ExportPath { get; set; }
+
         public async Task Handle(string[] args)
         {
-            if (args.Length < 2 || args[1] != "--path")
+            await Parser.Default.ParseArguments<ExportModeHandler>(args).WithParsedAsync(async opt =>
             {
-                Console.WriteLine("--path option is required");
-                PrintHelpSection();
-                return;
-            }
-            else if (args.Length < 3)
-            {
-                Console.WriteLine("No value provided for --path option");
-                PrintHelpSection();
-                return;
-            }
+                try
+                {
+                    Directory.CreateDirectory(opt.ExportPath);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception($"Unable to create export directory {opt.ExportPath}", ex);
+                }
 
-            var path = args[2];
 
-            try
-            {
-                Directory.CreateDirectory(path);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Unable to create export directory {path}", ex);
-            }
+                var domains = await PwnctlApiClient.Default.Send(new ListDomainsQuery());
+                WriteToFile(Path.Combine(opt.ExportPath, "domains.json"), domains.Domains);
 
-            var client = new PwnctlApiClient();
+                var hosts = await PwnctlApiClient.Default.Send(new ListHostsQuery());
+                WriteToFile(Path.Combine(opt.ExportPath, "hosts.json"), hosts.Hosts);
 
-            var domains = await client.Send(new ListDomainsQuery());
-            WriteToFile(Path.Combine(path, "domains.json"), domains.Domains);
+                var endpoints = await PwnctlApiClient.Default.Send(new ListEndpointsQuery());
+                WriteToFile(Path.Combine(opt.ExportPath, "endpoints.json"), endpoints.Endpoints);
 
-            var hosts = await client.Send(new ListHostsQuery());
-            WriteToFile(Path.Combine(path, "hosts.json"), hosts.Hosts);
+                var services = await PwnctlApiClient.Default.Send(new ListServicesQuery());
+                WriteToFile(Path.Combine(opt.ExportPath, "services.json"), services.Services);
 
-            var endpoints = await client.Send(new ListEndpointsQuery());
-            WriteToFile(Path.Combine(path, "endpoints.json"), endpoints.Endpoints);
+                var records = await PwnctlApiClient.Default.Send(new ListDnsRecordsQuery());
+                WriteToFile(Path.Combine(opt.ExportPath, "records.json"), records.DNSRecords);
 
-            var services = await client.Send(new ListServicesQuery());
-            WriteToFile(Path.Combine(path, "services.json"), services.Services);
+                var netRanges = await PwnctlApiClient.Default.Send(new ListNetRangesQuery());
+                WriteToFile(Path.Combine(opt.ExportPath, "netRanges.json"), netRanges.NetRanges);
 
-            var records = await client.Send(new ListDnsRecordsQuery());
-            WriteToFile(Path.Combine(path, "records.json"), records.DNSRecords);
+                var emails = await PwnctlApiClient.Default.Send(new ListEmailsQuery());
+                WriteToFile(Path.Combine(opt.ExportPath, "emails.json"), emails.Emails);
 
-            var netRanges = await client.Send(new ListNetRangesQuery());
-            WriteToFile(Path.Combine(path, "netRanges.json"), netRanges.NetRanges);
+                var parameters = await PwnctlApiClient.Default.Send(new ListParametersQuery());
+                WriteToFile(Path.Combine(opt.ExportPath, "parameters.json"), parameters.Parameters);
 
-            var emails = await client.Send(new ListEmailsQuery());
-            WriteToFile(Path.Combine(path, "emails.json"), emails.Emails);
-
-            var parameters = await client.Send(new ListParametersQuery());
-            WriteToFile(Path.Combine(path, "parameters.json"), parameters.Parameters);
-
-            var tasks = await client.Send(new ListTasksQuery());
-            foreach (var task in tasks.Tasks)
-            {
-                File.AppendAllText(Path.Combine(path, "tasks.json"), PwnInfraContext.Serializer.Serialize(task) + "\n");
-            }
+                var tasks = await PwnctlApiClient.Default.Send(new ListTaskEntriesQuery());
+                foreach (var task in tasks.Tasks)
+                {
+                    File.AppendAllText(Path.Combine(opt.ExportPath, "tasks.json"), PwnInfraContext.Serializer.Serialize(task) + "\n");
+                }
+            });
         }
         
         private void WriteToFile(string filename, IEnumerable<AssetDTO> assets)

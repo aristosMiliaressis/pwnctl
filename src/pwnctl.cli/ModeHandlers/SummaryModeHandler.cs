@@ -13,8 +13,7 @@ namespace pwnctl.cli.ModeHandlers
         
         public async Task Handle(string[] args)
         {
-            var client = new PwnctlApiClient();
-            var model = await client.Send(new SummaryQuery());
+            var model = await PwnctlApiClient.Default.Send(new SummaryQuery());
 
             Console.WriteLine($"NetworkRanges: {model.NetworkRangeCount}, InScope: {model.InScopeRangesCount}");
             Console.WriteLine($"NetworkHosts: {model.HostCount}, InScope: {model.InScopeHostCount}");

@@ -5,45 +5,46 @@ using pwnctl.dto.Assets.Queries;
 using pwnctl.dto.Operations.Queries;
 using pwnctl.app;
 using pwnctl.cli.Interfaces;
+using pwnctl.dto.Scope.Queries;
+using pwnctl.dto.Mediator;
+using pwnctl.dto.Tasks.Queries;
+using System.Collections.Generic;
+using CommandLine;
 
 namespace pwnctl.cli.ModeHandlers
 {
     public sealed class ListModeHandler : ModeHandler
     {
         public string ModeName => "list";
-        
+
+        [Option('r', "resource", Required = true, HelpText = "The resource type to be created.")]
+        public string Resource { get; set; }
+
+        private static Dictionary<string, Type> ResourceMap = new()
+        {
+            { "hosts", typeof(ListHostsQuery) },
+            { "endpoints", typeof(ListEndpointsQuery) },
+            { "domains", typeof(ListDomainsQuery) },
+            { "services", typeof(ListServicesQuery) },
+            { "netranges", typeof(ListNetRangesQuery) },
+            { "dnsrecords", typeof(ListDnsRecordsQuery) },
+            { "emails", typeof(ListEmailsQuery) },
+            { "ops", typeof(ListOperationsQuery) },
+            { "scope", typeof(ListScopeAggregatesQuery) },
+            { "task-profiles", typeof(ListTaskProfilesQuery) },
+            { "task-definitions", typeof(ListTaskDefinitionsQuery) }
+        };
+
         public async Task Handle(string[] args)
         {
-            if (args.Length < 2 || args[1] != "--class")
+            await Parser.Default.ParseArguments<ListModeHandler>(args).WithParsedAsync(async opt =>
             {
-                Console.WriteLine("--class option is required");
-                PrintHelpSection();
-                return;
-            }
-            else if (args.Length < 3)
-            {
-                Console.WriteLine("No value provided for --class option");
-                PrintHelpSection();
-                return;
-            }
+                var request = (MediatedRequest<object>)Activator.CreateInstance(ResourceMap[opt.Resource]);
 
-            var @class = args[2].ToLower();
-            var client = new PwnctlApiClient();
+                object result = await PwnctlApiClient.Default.Send(request);
 
-            object result = @class switch
-            {
-                "hosts" => await client.Send(new ListHostsQuery()),
-                "endpoints" => await client.Send(new ListEndpointsQuery()),
-                "domains" => await client.Send(new ListDomainsQuery()),
-                "services" => await client.Send(new ListServicesQuery()),
-                "netranges" => await client.Send(new ListNetRangesQuery()),
-                "dnsrecords" => await client.Send(new ListDnsRecordsQuery()),
-                "emails" => await client.Send(new ListEmailsQuery()),
-                "ops" => await client.Send(new ListOperationsQuery()),
-                 _ => throw new NotSupportedException("Not supported class " + @class)
-            };
-            
-            Console.WriteLine(PwnInfraContext.Serializer.Serialize(result));
+                Console.WriteLine(PwnInfraContext.Serializer.Serialize(result));
+            });
         }
 
         public void PrintHelpSection()
@@ -51,7 +52,11 @@ namespace pwnctl.cli.ModeHandlers
             Console.WriteLine($"\t{ModeName}");
             Console.WriteLine($"\t\tlists asset of the specified sealed class in jsonline format.");
             Console.WriteLine($"\t\tArguments:");
-            Console.WriteLine($"\t\t\t--class\tthe asset sealed class (hosts/endpoints/domains/services/dnsrecords/netranges/emails/ops).");
+            Console.WriteLine($"\t\t\t-r, --resource\t");
+            foreach (var resource in ResourceMap.Keys)
+            {
+                Console.WriteLine($"\t\t\t\t{resource}");
+            }
         }
     }
 }

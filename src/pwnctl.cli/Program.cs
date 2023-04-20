@@ -40,7 +40,7 @@ internal sealed class Program
         await provider.Handle(args);
     }
 
-    static void PrintHelpPage()
+    static void PrintHelpPage() // TODO: help all method
     {
         Console.WriteLine();
         Console.WriteLine($"USAGE: {Assembly.GetExecutingAssembly().GetName().Name} <mode> [arguments]");

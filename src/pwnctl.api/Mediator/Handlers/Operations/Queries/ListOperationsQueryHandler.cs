@@ -1,5 +1,5 @@
 using pwnctl.dto.Operations.Queries;
-using pwnctl.dto.Operations.ViewModels;
+using pwnctl.dto.Operations.Models;
 using pwnctl.dto.Mediator;
 using pwnctl.infra.Persistence;
 

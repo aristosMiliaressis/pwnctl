@@ -19,6 +19,8 @@ public sealed class PwnctlApiClient
 {
     private readonly HttpClient _httpClient;
 
+    public static PwnctlApiClient Default = new();
+
     public PwnctlApiClient()
     {
         _httpClient = new HttpClient();

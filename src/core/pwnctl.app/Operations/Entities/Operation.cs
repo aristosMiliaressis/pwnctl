@@ -20,9 +20,10 @@ namespace pwnctl.app.Operations.Entities
 
         public Operation() { }
 
-        public Operation(string name, Policy policy, ScopeAggregate scope)
+        public Operation(string name, OperationType type, Policy policy, ScopeAggregate scope)
         {
             ShortName = ShortName.Create(name);
+            Type = type;
             Policy = policy;
             Scope = scope;
         }

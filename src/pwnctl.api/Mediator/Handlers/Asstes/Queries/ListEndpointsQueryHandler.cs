@@ -4,7 +4,7 @@ using pwnctl.infra.Persistence;
 using MediatR;
 using pwnctl.infra.Repositories;
 using pwnctl.dto.Assets.Queries;
-using pwnctl.dto.Assets.ViewModels;
+using pwnctl.dto.Assets.Models;
 
 namespace pwnctl.api.Mediator.Handlers.Targets.Queries
 {

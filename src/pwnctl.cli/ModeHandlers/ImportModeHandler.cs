@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using CommandLine;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileSystemGlobbing;
@@ -16,47 +17,38 @@ namespace pwnctl.cli.ModeHandlers
     {
         public string ModeName => "import";
 
+        [Option('p', "path", Required = true, HelpText = "Path to the import file.")]
+        public string ImportPath { get; set; }
+
         public async Task Handle(string[] args)
         {
-            if (args.Length < 2 || args[1] != "--path")
-            {
-                Console.WriteLine("--path option is required");
-                PrintHelpSection();
-                return;
-            }
-            else if (args.Length < 3)
-            {
-                Console.WriteLine("No value provided for --path option");
-                PrintHelpSection();
-                return;
-            }
+           await Parser.Default.ParseArguments<ImportModeHandler>(args).WithParsedAsync(async opt =>
+           {
+               Matcher matcher = new();
+               matcher.AddInclude("*.json");
 
-            var path = args[2];
+               //PwnInfraContextInitializer.Setup(mock: true);
+               await DatabaseInitializer.InitializeAsync();
+               var context = new PwnctlDbContext();
+               var processor = AssetProcessorFactory.Create();
 
-            Matcher matcher = new();
-            matcher.AddInclude("*.json");
+               // var existingProgram = await context.Programs.FirstOrDefaultAsync(p => p.Name == command.Name);
+               // if (existingProgram != null)
+               //     continue;
 
-            //PwnInfraContextInitializer.Setup(mock: true);
-            await DatabaseInitializer.InitializeAsync();
-            var context = new PwnctlDbContext();
-            var processor = AssetProcessorFactory.Create();
+               // context.Programs.Add(command);
+               // await context.SaveChangesAsync();
 
-            // var existingProgram = await context.Programs.FirstOrDefaultAsync(p => p.Name == command.Name);
-            // if (existingProgram != null)
-            //     continue;
+               foreach (string file in matcher.GetResultsInFullPath(opt.ImportPath))
+               {
+                   var assetLines = File.ReadAllLines(file);
 
-            // context.Programs.Add(command);
-            // await context.SaveChangesAsync();
-
-            foreach (string file in matcher.GetResultsInFullPath(path))
-            {
-                var assetLines = File.ReadAllLines(file);
-
-                foreach (var asset in assetLines)
-                {
-                    await processor.TryProcessAsync(asset);
-                }
-            }
+                   foreach (var asset in assetLines)
+                   {
+                       await processor.TryProcessAsync(asset);
+                   }
+               }
+           });
         }
 
         public void PrintHelpSection()

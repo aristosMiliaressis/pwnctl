@@ -1,6 +1,6 @@
 using pwnctl.dto.Mediator;
 using pwnctl.dto.Db.Queries;
-using pwnctl.dto.Db.ViewModels;
+using pwnctl.dto.Db.Models;
 using pwnctl.infra.Persistence;
 
 using Microsoft.EntityFrameworkCore;

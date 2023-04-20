@@ -1,6 +1,6 @@
 namespace pwnctl.dto.Assets.Queries;
 
-using pwnctl.dto.Assets.ViewModels;
+using pwnctl.dto.Assets.Models;
 using pwnctl.dto.Mediator;
 
 public sealed class ListDomainsQuery : MediatedRequest<DomainListViewModel>
