@@ -47,13 +47,11 @@ namespace pwnctl.cli.ModeHandlers
 
         public void PrintHelpSection()
         {
-            Console.WriteLine($"\t{ModeName}");
-            Console.WriteLine($"\t\tUpdate a resource");
-            Console.WriteLine($"\t\tArguments:");
-            Console.WriteLine($"\t\t\t-r, --resource\t");
+            Console.WriteLine($"\t{ModeName}\tUpdate a resource");
+            Console.WriteLine($"\t\t-r, --resource\t");
             foreach (var resource in ResourceMap.Keys)
             {
-                Console.WriteLine($"\t\t\t\t{resource}");
+                Console.WriteLine($"\t\t\t{resource}");
             }
         }
     }

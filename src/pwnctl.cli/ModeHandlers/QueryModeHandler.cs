@@ -35,8 +35,7 @@ namespace pwnctl.cli.ModeHandlers
 
         public void PrintHelpSection()
         {
-            Console.WriteLine($"\t{ModeName}");
-            Console.WriteLine("\t\tQuery mode (reads SQL from stdin executes and prints output to stdout)");
+            Console.WriteLine($"\t{ModeName}\tQuery mode (reads SQL from stdin executes and prints output to stdout)");
         }
     }
 }

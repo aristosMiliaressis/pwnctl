@@ -34,7 +34,7 @@ namespace pwnctl.cli.ModeHandlers
         {
             await Parser.Default.ParseArguments<DeleteModeHandler>(args).WithParsedAsync(async opt =>
             {
-                var request = (MediatedRequest)PwnInfraContext.Serializer.Deserialize($$"""{"ShortName":"{{opt.ShortName}}"}""", ResourceMap[opt.Resource]);
+                var request = (MediatedRequest)PwnInfraContext.Serializer.Deserialize($"{{\"ShortName\":\"{opt.ShortName}\"}}", ResourceMap[opt.Resource]);
 
                 await PwnctlApiClient.Default.Send(request);
             });
@@ -42,13 +42,11 @@ namespace pwnctl.cli.ModeHandlers
 
         public void PrintHelpSection()
         {
-            Console.WriteLine($"\t{ModeName}");
-            Console.WriteLine($"\t\tDelete a resource");
-            Console.WriteLine($"\t\tArguments:");
-            Console.WriteLine($"\t\t\t-r, --resource\t");
+            Console.WriteLine($"\t{ModeName}\tDelete a resource");
+            Console.WriteLine($"\t\t-r, --resource\t");
             foreach (var resource in ResourceMap.Keys)
             {
-                Console.WriteLine($"\t\t\t\t{resource}");
+                Console.WriteLine($"\t\t\t{resource}");
             }
         }
     }

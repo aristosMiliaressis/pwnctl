@@ -53,10 +53,8 @@ namespace pwnctl.cli.ModeHandlers
 
         public void PrintHelpSection()
         {
-            Console.WriteLine($"\t{ModeName}");
-            Console.WriteLine($"\t\timports assets in jsonline format from the specified path.");
-            Console.WriteLine($"\t\tArguments:");
-            Console.WriteLine($"\t\t\t--path\tthe export path.");
+            Console.WriteLine($"\t{ModeName}\timports assets in jsonline format from the specified path.");
+            Console.WriteLine($"\t\t--path\tthe export path.");
         }
     }
 }

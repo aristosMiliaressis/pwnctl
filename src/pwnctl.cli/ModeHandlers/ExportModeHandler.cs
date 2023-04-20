@@ -31,7 +31,6 @@ namespace pwnctl.cli.ModeHandlers
                     throw new Exception($"Unable to create export directory {opt.ExportPath}", ex);
                 }
 
-
                 var domains = await PwnctlApiClient.Default.Send(new ListDomainsQuery());
                 WriteToFile(Path.Combine(opt.ExportPath, "domains.json"), domains.Domains);
 
@@ -74,10 +73,8 @@ namespace pwnctl.cli.ModeHandlers
 
         public void PrintHelpSection()
         {
-            Console.WriteLine($"\t{ModeName}");
-            Console.WriteLine($"\t\texports assets in jsonline format at the specified path.");
-            Console.WriteLine($"\t\tArguments:");
-            Console.WriteLine($"\t\t\t--path\tthe export path.");
+            Console.WriteLine($"\t{ModeName}\texports assets in jsonline format at the specified path.");
+            Console.WriteLine($"\t\t--path\tthe export path.");
         }
     }
 }

@@ -46,8 +46,7 @@ namespace pwnctl.cli.ModeHandlers
 
         public void PrintHelpSection()
         {
-            Console.WriteLine($"\t{ModeName}");
-            Console.WriteLine($"\t\tprints a summary of the found assets and queued tasks");
+            Console.WriteLine($"\t{ModeName}\tprints a summary of the found assets and queued tasks");
         }
     }
 }

@@ -49,13 +49,11 @@ namespace pwnctl.cli.ModeHandlers
 
         public void PrintHelpSection()
         {
-            Console.WriteLine($"\t{ModeName}");
-            Console.WriteLine($"\t\tlists asset of the specified sealed class in jsonline format.");
-            Console.WriteLine($"\t\tArguments:");
-            Console.WriteLine($"\t\t\t-r, --resource\t");
+            Console.WriteLine($"\t{ModeName}\tlists asset of the specified sealed class in jsonline format.");
+            Console.WriteLine($"\t\t-r, --resource\t");
             foreach (var resource in ResourceMap.Keys)
             {
-                Console.WriteLine($"\t\t\t\t{resource}");
+                Console.WriteLine($"\t\t\t{resource}");
             }
         }
     }

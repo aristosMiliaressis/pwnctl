@@ -29,14 +29,14 @@ namespace pwnctl.cli.ModeHandlers
 
         public async Task Handle(string[] args)
         {
-            string line, json = string.Empty;
-            while (!string.IsNullOrEmpty(line = Console.ReadLine()))
-            {
-                json += line + "\n";
-            }
-
             await Parser.Default.ParseArguments<CreateModeHandler>(args).WithParsedAsync(async opt => 
             {
+                string line, json = string.Empty;
+                while (!string.IsNullOrEmpty(line = Console.ReadLine()))
+                {
+                    json += line + "\n";
+                }
+
                 var request = (MediatedRequest)PwnInfraContext.Serializer.Deserialize(json, ResourceMap[opt.Resource]);
 
                 await PwnctlApiClient.Default.Send(request);
@@ -45,13 +45,11 @@ namespace pwnctl.cli.ModeHandlers
 
         public void PrintHelpSection()
         {
-            Console.WriteLine($"\t{ModeName}");
-            Console.WriteLine($"\t\tCreate a resource");
-            Console.WriteLine($"\t\tArguments:");
-            Console.WriteLine($"\t\t\t-r, --resource\t");
+            Console.WriteLine($"\t{ModeName}\tCreate a resource");
+            Console.WriteLine($"\t\t-r, --resource\t");
             foreach (var resource in ResourceMap.Keys)
             {
-                Console.WriteLine($"\t\t\t\t{resource}");
+                Console.WriteLine($"\t\t\t{resource}");
             }
         }
     }

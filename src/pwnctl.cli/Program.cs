@@ -49,6 +49,7 @@ internal sealed class Program
         foreach (var provider in _modeProviders.Values)
         {
             provider.PrintHelpSection();
+            Console.WriteLine();
         }
     }
 }
