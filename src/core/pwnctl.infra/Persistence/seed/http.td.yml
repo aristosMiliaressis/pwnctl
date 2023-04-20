@@ -36,13 +36,13 @@ TaskDefinitions:
     Subject: HttpEndpoint
     Filter: HttpEndpoint.Path == "/" || Tags["Content-Type"].Contains("/json") || Tags["Content-Type"].Contains("/xml")
 
-  - Name: Name_scanning
-    CommandTemplate: Name-check.sh {{Url}}
+  - Name: short_name_scanning
+    CommandTemplate: shortname-check.sh {{Url}}
     Subject: HttpEndpoint
     Filter: Tags["Title"].Contains("Internet Information Services")|| Tags["Title"].Contains("IIS")||Tags["Server"].Contains("IIS")||Tags["Server"].Contains("Microsoft-HTTPAPI")
 
-  - Name: Name_scanning_srv
-    CommandTemplate: Name-check.sh {{Address}}
+  - Name: short_name_scanning_srv
+    CommandTemplate: shortname-check.sh {{Address}}
     Subject: NetworkSocket
     Filter: Tags["Version"].Contains("IIS") || Tags["Version"].Contains("Microsoft HTTPAPI")
 
