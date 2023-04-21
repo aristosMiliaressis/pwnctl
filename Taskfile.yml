@@ -45,25 +45,12 @@ tasks:
       - sudo mv src/pwnctl.cli/bin/Release/net6.0/linux-x64/publish/config.ini /etc/pwnctl/
       - sudo ./src/core/pwnctl.svc/scripts/get-psl.sh /etc/pwnctl/
       - sudo cp -r ./src/core/pwnctl.infra/Persistence/seed /etc/pwnctl
-  
-  bootstrap-aws:
-    cmds:
-      - region=$(aws configure get region)
-      - accountId=$(aws sts get-caller-identity --query "Account" --output text)
-      - cdk bootstrap aws://${accountId}/${region} -o src/core/pwnctl.infra.cdk/cdk.out
 
   deploy-app:
     deps: [build-api, install-cli]
     cmds:
       - cd infra && echo yes | terraform apply
       - cd -
-      - ./bin/upload-conf.sh
-
-  deploy-app-cdk:
-    deps: [clean-cdk, build-api, install-cli]
-    cmds:
-      - cdk deploy -o src/core/pwnctl.infra.cdk/cdk.out
-      - chmod +x ./bin/*
       - ./bin/upload-conf.sh
 
   debug-svc:
@@ -74,11 +61,7 @@ tasks:
         docker run -e PWNCTL_TEST_RUN=true -e PWNCTL_INSTALL_PATH=/mnt/efs \
                    -e PWNCTL_Logging__FilePath=/mnt/efs -e PWNCTL_Logging__MinLevel=Debug \
                    -v "$(pwd)"/deployment:/mnt/efs -t public.ecr.aws/i0m2p7r6/pwnctl:latest
-
-  clean-cdk:
-    cmds:
-      - rm -rf src/core/pwnctl.infra.cdk/cdk.out
-
+  
   get-logs:
     cmds:
       - awslogs get -s 1440m -G --timestamp /aws/ecs/worker | tee pwnctl.log
@@ -88,11 +71,6 @@ tasks:
       - cd infra && echo yes | terraform destroy
       - cd -
     
-  destroy-cdk:
-    cmds:
-      - cdk destroy -o src/core/pwnctl.infra.cdk/cdk.out
-
   install-deps:
     cmds:
       - ./bin/install-deps.sh
-        
