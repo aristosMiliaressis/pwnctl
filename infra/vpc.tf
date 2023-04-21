@@ -85,3 +85,22 @@ resource "aws_route_table_association" "private" {
   subnet_id = each.value.id
   route_table_id = aws_route_table.private.id
 }
+
+
+
+module "nat" {
+  source = "int128/nat-instance/aws"
+
+  name                        = "main"
+  vpc_id                      = aws_vpc.main.id
+  public_subnet               = aws_subnet.public["a"].id
+  private_subnets_cidr_blocks = [for k, v in aws_subnet.private : aws_subnet.private[k].cidr_block]
+  private_route_table_ids     = toset([aws_route_table.private.id])
+}
+
+resource "aws_eip" "nat" {
+  network_interface = module.nat.eni_id
+  tags = {
+    "Name" = "nat-instance-main"
+  }
+}

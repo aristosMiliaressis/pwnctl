@@ -10,6 +10,14 @@ data "aws_iam_policy" "efs_client_full_access" {
   name = "AmazonElasticFileSystemClientFullAccess"
 }
 
+data "aws_iam_policy" "ssm_readonly_access" {
+  name = "AmazonSSMReadOnlyAccess"
+}
+
+data "aws_iam_policy" "sm_readwrite_access" {
+  name = "SecretsManagerReadWrite"
+}
+
 resource "aws_iam_role" "lambda" {
   name = "pwnctl_${random_id.id.hex}_lambda_service_role"
 
@@ -46,34 +54,19 @@ resource "aws_iam_role_policy_attachment" "attach_efs_client_full_access" {
   policy_arn = data.aws_iam_policy.efs_client_full_access.arn
 }
 
-resource "aws_cloudwatch_log_group" "api" {
-  name              = "/aws/lambda/pwnctl_lambda_${random_id.id.hex}"
-  retention_in_days = 7
-
-  lifecycle {
-    prevent_destroy = false
-  }
+resource "aws_iam_role_policy_attachment" "attach_ssm_readonly_access" {
+  role       = aws_iam_role.lambda.name
+  policy_arn = data.aws_iam_policy.ssm_readonly_access.arn
 }
 
-data "aws_iam_policy_document" "api_logging" {
-  statement {
-    effect = "Allow"
-
-    actions = [
-      "logs:CreateLogGroup",
-      "logs:CreateLogStream",
-      "logs:PutLogEvents",
-    ]
-
-    resources = ["arn:aws:logs:*:*:*"]
-  }
+resource "aws_iam_role_policy_attachment" "attach_sm_readwrite_access" {
+  role       = aws_iam_role.lambda.name
+  policy_arn = data.aws_iam_policy.sm_readwrite_access.arn
 }
 
-resource "aws_iam_policy" "api_logging" {
-  name        = "api_logging"
-  path        = "/"
-  description = "IAM policy for logging from a lambda"
-  policy      = data.aws_iam_policy_document.api_logging.json
+resource "aws_iam_role_policy_attachment" "attach_sqs_rw_to_lambda" {
+  role       = aws_iam_role.lambda.name
+  policy_arn = aws_iam_policy.sqs_rw_policy.arn
 }
 
 resource "aws_iam_role_policy_attachment" "api_logging" {
@@ -95,7 +88,7 @@ resource "aws_lambda_function" "this" {
   depends_on = [
     aws_efs_mount_target.this,
     aws_iam_role_policy_attachment.api_logging,
-    aws_cloudwatch_log_group.api,
+    aws_iam_role_policy_attachment.attach_sqs_rw_to_lambda,
     aws_security_group.allow_https_from_internet,
     aws_iam_role.lambda
   ]
@@ -129,7 +122,7 @@ resource "aws_lambda_function" "this" {
           PWNCTL_OutputQueue__VisibilityTimeout = tostring(var.sqs_visibility_timeout), 
           PWNCTL_Logging__MinLevel = "Debug"
           PWNCTL_Logging__FilePath = var.efs_mount_point
-          PWNCTL_Logging__LogGroup = aws_cloudwatch_log_group.api.name
+          #PWNCTL_Logging__LogGroup = aws_cloudwatch_log_group.api.name
           PWNCTL_Db__Name = var.rds_postgres_databasename
           PWNCTL_Db__Username = var.rds_postgres_username
           PWNCTL_Db__Password = aws_secretsmanager_secret_version.password.secret_string

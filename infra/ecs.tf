@@ -24,27 +24,9 @@ resource "aws_iam_role" "ecs" {
   }
 }
 
-resource "aws_iam_role_policy" "sqs_policy" {
-  name = "sqs_policy"
-  role = aws_iam_role.ecs.id
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = [
-          "sqs:ChangeMessageVisibility",
-          "sqs:DeleteMessage",
-          "sqs:GetQueueAttributes",
-          "sqs:GetQueueUrl",
-          "sqs:ReceiveMessage",
-          "sqs:SendMessage"
-        ],
-        Effect   = "Allow"
-        Resource = "*"
-      },
-    ]
-  })
+resource "aws_iam_role_policy_attachment" "attach_sqs_rw_to_ecs" {
+  role       = aws_iam_role.ecs.name
+  policy_arn = aws_iam_policy.sqs_rw_policy.arn
 }
 
 data "aws_iam_policy" "ecs_task_execution_role_policy" {
@@ -113,7 +95,7 @@ resource "aws_ecs_task_definition" "this" {
       "stopTimeout": 120,
       "environment": [
         {
-          "name": "PWNCTL_IN_VPC",
+          "name": "PWNCTL_IS_ECS",
           "value": "true"
         },
         {

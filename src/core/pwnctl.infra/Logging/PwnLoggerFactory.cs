@@ -13,9 +13,14 @@ namespace pwnctl.infra.Logging
     {
         public static AppLogger Create(AppConfig config)
         {
-            var logger = EnvironmentVariables.IN_VPC 
-                        ? CreateCloudWatchLogger(config)
-                        : CreateFileLogger(config);
+            Logger logger = null;
+            
+            if (EnvironmentVariables.IS_LAMBDA)
+                logger = CreateConsoleLogger(config);
+            else if (EnvironmentVariables.IS_ECS)
+                logger = CreateCloudWatchLogger(config);
+            else
+                logger = CreateFileLogger(config);
 
             return new PwnLogger(logger);
         }
@@ -38,6 +43,14 @@ namespace pwnctl.infra.Logging
                     .WriteTo.Console(LogEventLevel.Warning, _consoleOutputTemplate)
                     .WriteTo.File(path: Path.Combine(config.Logging.FilePath, "pwnctl.log"),
                                   outputTemplate: _outputTemplate)
+                    .CreateLogger();
+        }
+
+        private static Logger CreateConsoleLogger(AppConfig config)
+        {
+            return new LoggerConfiguration()
+                    .MinimumLevel.Is(Enum.Parse<LogEventLevel>(config.Logging.MinLevel))
+                    .WriteTo.Console(outputTemplate: _consoleOutputTemplate)
                     .CreateLogger();
         }
 
