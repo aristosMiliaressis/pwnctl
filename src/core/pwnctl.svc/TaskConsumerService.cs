@@ -59,7 +59,7 @@ namespace pwnctl.svc
 
             try
             {
-                var task = await _taskRepo.GetEntryAsync(taskDTO.TaskId);
+                var task = await _taskRepo.FindAsync(taskDTO.TaskId);
 
                 task.Started();
                 await _taskRepo.UpdateAsync(task);
@@ -87,7 +87,7 @@ namespace pwnctl.svc
                 {
                     outputBatch = new()
                     {
-                        TaskId = taskDTO.TaskId,
+                        TaskId = task.Id,
                         Lines = lines.Skip(i * s).Take(s).ToList()
                     };
 
@@ -119,21 +119,13 @@ namespace pwnctl.svc
 
             try
             {
-                var task = await _taskRepo.GetEntryAsync(batchDTO.TaskId);
+                var task = await _taskRepo.FindAsync(batchDTO.TaskId);
 
                 foreach (var line in batchDTO.Lines)
                 {
                     PwnInfraContext.Logger.Debug("Processing: "+line);
 
-                    await _processor.TryProcessAsync(line, task);
-
-                    var pendingTasks = await _taskRepo.ListPendingAsync();
-                    foreach (var t in pendingTasks)
-                    {
-                        await _queueService.EnqueueAsync(new PendingTaskDTO(t));
-                        t.Queued();
-                        await _taskRepo.UpdateAsync(t);
-                    }
+                    await _processor.TryProcessAsync(line, task.Operation, task);
                 }
 
                 await _queueService.DequeueAsync(batchDTO);

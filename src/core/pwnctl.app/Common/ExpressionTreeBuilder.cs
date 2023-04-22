@@ -42,18 +42,18 @@ namespace pwnctl.app.Common
         /// <summary>
         /// builds a LambdaExpression object that matches a task of the provided TaskDefinition that has been queued against the provided asset.
         /// </summary>
-        public static LambdaExpression BuildTaskMatchingLambda(Asset asset, TaskDefinition definition)
+        public static LambdaExpression BuildTaskMatchingLambda(Guid assetId, int definitionId)
         {
             var type = typeof(TaskEntry);
 
             var _param = Expression.Parameter(type, "t");
 
             var lref = Expression.PropertyOrField(_param, nameof(TaskEntry.DefinitionId));
-            var rval = Expression.Constant(definition.Id);
+            var rval = Expression.Constant(definitionId);
             var expression = Expression.Equal(lref, rval);
 
             lref = Expression.PropertyOrField(_param, nameof(Tag.RecordId));
-            rval = Expression.Constant(asset.Id);
+            rval = Expression.Constant(assetId);
             var assetExpression = Expression.Equal(lref, rval);
 
             expression = Expression.AndAlso(expression, assetExpression);
@@ -64,18 +64,18 @@ namespace pwnctl.app.Common
             return lambda;
         }
 
-        public static LambdaExpression BuildNotificationMatchingLambda(Asset asset, NotificationRule rule)
+        public static LambdaExpression BuildNotificationMatchingLambda(Guid assetId, int ruleId)
         {
             var type = typeof(Notification);
 
             var _param = Expression.Parameter(type, "n");
 
             var lref = Expression.PropertyOrField(_param, nameof(Notification.RuleId));
-            var rval = Expression.Constant(rule.Id);
+            var rval = Expression.Constant(ruleId);
             var expression = Expression.Equal(lref, rval);
 
             lref = Expression.PropertyOrField(_param, nameof(Tag.RecordId));
-            rval = Expression.Constant(asset.Id);
+            rval = Expression.Constant(assetId);
             var assetExpression = Expression.Equal(lref, rval);
 
             expression = Expression.AndAlso(expression, assetExpression);

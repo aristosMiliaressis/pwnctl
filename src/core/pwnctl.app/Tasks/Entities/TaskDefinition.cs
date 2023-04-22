@@ -15,7 +15,7 @@ namespace pwnctl.app.Tasks.Entities
         public string Filter { get; set; }
         public bool MatchOutOfScope { get; set; }
 
-        public TaskProfile Profile { get; private init; }
+        public TaskProfile Profile { get; set; }
         public int ProfileId { get; private init; }
 
         public string Subject { init { SubjectClass = AssetClass.Create(value); } }

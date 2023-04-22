@@ -15,10 +15,10 @@ namespace pwnctl.infra.Persistence.IdGenerators
         private static Guid _assetNamespace = Deterministic.Namespaces.IsoOid;
 
         public override bool GeneratesTemporaryValues => false;
-        public override Guid Next(EntityEntry entry) => UUIDv5ValueGenerator.Generate(entry.Entity);
-        protected override object NextValue(EntityEntry entry) => UUIDv5ValueGenerator.Generate(entry.Entity);
+        public override Guid Next(EntityEntry entry) => Generate(entry.Entity);
+        protected override object NextValue(EntityEntry entry) => Generate(entry.Entity);
 
-        public static Guid Generate(object entity)
+        private Guid Generate(object entity)
         {
             Asset asset = null;
 
@@ -32,7 +32,12 @@ namespace pwnctl.infra.Persistence.IdGenerators
                 asset = entity as Asset;
             }
 
-            return Deterministic.Create(_assetNamespace, asset.ToString(), 5);
+            return GenerateByString(asset.ToString());
+        }
+
+        public static Guid GenerateByString(string asset)
+        {
+            return Deterministic.Create(_assetNamespace, asset, 5);
         }
     }
 }

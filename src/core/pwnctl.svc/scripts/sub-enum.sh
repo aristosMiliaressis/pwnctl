@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# TODO: add subfinder & assetfinder & finddomain
-
 domain=$1
 dict='/opt/wordlists/subdomains-top-20000.txt'
 RESOLVERS_FILE='/opt/wordlists/dns/resolvers.txt'

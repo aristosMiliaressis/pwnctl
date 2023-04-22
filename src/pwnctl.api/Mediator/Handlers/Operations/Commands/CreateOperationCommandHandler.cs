@@ -8,6 +8,8 @@ using pwnctl.app.Operations.Entities;
 using pwnctl.app.Operations.Enums;
 using pwnctl.infra.Repositories;
 using pwnctl.infra;
+using pwnctl.api.Mediator.Handlers.Scope.Commands;
+using pwnctl.app;
 
 namespace pwnctl.api.Mediator.Handlers.Operations.Commands
 {
@@ -23,9 +25,16 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
 
             var scopeAggregate = _context.ScopeAggregates.FirstOrDefault(a => a.ShortName.Value == command.Scope.ShortName);
             if (scopeAggregate == null)
-                return MediatedResponse.Error("Scope Aggregate {0} not found.", command.Scope.ShortName);
+            {
+                if (command.Scope.ScopeDefinitions == null || !command.Scope.ScopeDefinitions.Any())
+                    return MediatedResponse.Error("Scope Aggregate {0} not found.", command.Scope.ShortName);
 
-            var taskProfile = _context.TaskProfiles.FirstOrDefault(p => p.ShortName.Value == command.Policy.TaskProfile);
+                scopeAggregate = await CreateScopeAggregateCommandHandler.CreateScopeAggregate(_context, command.Scope, cancellationToken);
+            }
+
+            var taskProfile = _context.TaskProfiles
+                                        .Include(p => p.TaskDefinitions)
+                                        .FirstOrDefault(p => p.ShortName.Value == command.Policy.TaskProfile);
             if (taskProfile == null)
                 return MediatedResponse.Error("Task Profile {0} not found.", command.Policy.TaskProfile);
 
@@ -54,25 +63,12 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
 
         private async Task StartCrawlOperation(Operation op, IEnumerable<string> input)
         {
-            var repo = new TaskDbRepository();
-
             var processor = AssetProcessorFactory.Create();
 
             foreach (var asset in input.Where(a => !string.IsNullOrEmpty(a)))
             {
-                await processor.TryProcessAsync(asset);
+                await processor.TryProcessAsync(asset, op);
             }
-
-            // // leaves TaskEntries in a PENDING state inorder to 
-            // // return the tasks to the client for queueing, that way we 
-            // // eliminate the need for a VpcEndpoint to access the SQS API
-            // var pendingTasks = await repo.ListPendingAsync();
-            // foreach (var task in pendingTasks)
-            // {
-            //     task.Queued();
-            //     await repo.UpdateAsync(task);
-            // }
-            throw new NotImplementedException();
         }
 
         private void StartScanOperation(Operation op)

@@ -3,13 +3,13 @@ using pwnctl.domain.Entities;
 using pwnctl.app.Assets.Aggregates;
 using pwnctl.app.Assets.Interfaces;
 using pwnctl.app.Common;
-using pwnctl.app.Tasks.Entities;
 using pwnctl.infra.Persistence;
 using pwnctl.infra.Persistence.Extensions;
 using pwnctl.infra.Persistence.IdGenerators;
 
 using Microsoft.EntityFrameworkCore;
 using pwnctl.app.Notifications.Entities;
+using pwnctl.domain.ValueObjects;
 
 namespace pwnctl.infra.Repositories
 {
@@ -46,28 +46,21 @@ namespace pwnctl.infra.Repositories
 
         public async Task<AssetRecord> FindRecordAsync(Asset asset)
         {
-            return await FindRecordQuery(_context, UUIDv5ValueGenerator.Generate(asset));
+            return await FindRecordQuery(_context, UUIDv5ValueGenerator.GenerateByString(asset.ToString()));
         }
 
         public Asset FindMatching(Asset asset)
         {
             var lambda = ExpressionTreeBuilder.BuildAssetMatchingLambda(asset);
 
-            return (Asset) _context.FirstFromLambda(lambda);
+            return _context.FirstFromLambda<Asset>(lambda);
         }
 
-        public TaskEntry FindTaskEntry(Asset asset, TaskDefinition def)
+        public async Task<Notification> FindNotificationAsync(Asset asset, NotificationRule rule)
         {
-            var lambda = ExpressionTreeBuilder.BuildTaskMatchingLambda(asset, def);
+            var lambda = ExpressionTreeBuilder.BuildNotificationMatchingLambda(asset.Id, rule.Id);
 
-            return (TaskEntry)_context.FirstNotTrackedFromLambda(lambda);
-        }
-
-        public Notification FindNotification(Asset asset, NotificationRule rule)
-        {
-            var lambda = ExpressionTreeBuilder.BuildNotificationMatchingLambda(asset, rule);
-
-            return (Notification)_context.FirstNotTrackedFromLambda(lambda);
+            return await _context.FirstNotTrackedFromLambdaAsync<Notification>(lambda);
         }
 
         public async Task<AssetRecord> UpdateRecordReferences(AssetRecord record, Asset asset)
@@ -76,6 +69,7 @@ namespace pwnctl.infra.Repositories
                 .GetProperties()
                 .Where(p => p.PropertyType.IsAssignableTo(typeof(Asset))
                          && p.GetValue(asset) != null);
+            record.SubjectClass = AssetClass.Create(asset.GetType().Name);
 
             foreach (var reference in assetReferences)
             {

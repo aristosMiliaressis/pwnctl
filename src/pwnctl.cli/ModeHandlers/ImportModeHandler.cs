@@ -45,7 +45,7 @@ namespace pwnctl.cli.ModeHandlers
 
                    foreach (var asset in assetLines)
                    {
-                       await processor.TryProcessAsync(asset);
+                       await processor.TryProcessAsync(asset, null);
                    }
                }
            });

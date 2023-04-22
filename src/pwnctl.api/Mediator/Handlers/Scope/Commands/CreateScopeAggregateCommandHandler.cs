@@ -5,6 +5,7 @@ using pwnctl.infra.Persistence;
 using MediatR;
 using pwnctl.dto.Scope.Commands;
 using pwnctl.app.Common.ValueObjects;
+using pwnctl.dto.Scope.Models;
 
 namespace pwnctl.api.Mediator.Handlers.Scope.Commands
 {
@@ -18,7 +19,14 @@ namespace pwnctl.api.Mediator.Handlers.Scope.Commands
             if (scopeAggregate != null)
                 return MediatedResponse.Error("Scope Aggregate {0} already exists.", command.ShortName);
 
-            scopeAggregate = new app.Scope.Entities.ScopeAggregate
+            await CreateScopeAggregate(_context, command, cancellationToken);
+
+            return MediatedResponse.Success();
+        }
+
+        public static async Task<ScopeAggregate> CreateScopeAggregate(PwnctlDbContext context, ScopeRequestModel command, CancellationToken cancellationToken = default)
+        {
+            var scopeAggregate = new ScopeAggregate
             {
                 ShortName = ShortName.Create(command.ShortName),
                 Description = command.Description
@@ -26,7 +34,7 @@ namespace pwnctl.api.Mediator.Handlers.Scope.Commands
 
             foreach (var def in command.ScopeDefinitions)
             {
-                var scopeDef = _context.ScopeDefinitions.FirstOrDefault(d => d.Pattern == def.Pattern && d.Type == def.Type);
+                var scopeDef = context.ScopeDefinitions.FirstOrDefault(d => d.Pattern == def.Pattern && d.Type == def.Type);
                 if (scopeDef == null)
                 {
                     scopeDef = new ScopeDefinition
@@ -35,16 +43,16 @@ namespace pwnctl.api.Mediator.Handlers.Scope.Commands
                         Pattern = def.Pattern
                     };
 
-                    _context.ScopeDefinitions.Add(scopeDef);
+                    context.ScopeDefinitions.Add(scopeDef);
                 }
 
                 scopeAggregate.Definitions.Add(new ScopeDefinitionAggregate(scopeAggregate, scopeDef));
             }
 
-            _context.Add(scopeAggregate);
-            await _context.SaveChangesAsync(cancellationToken);
+            context.Add(scopeAggregate);
+            await context.SaveChangesAsync(cancellationToken);
 
-            return MediatedResponse.Success();
+            return scopeAggregate;
         }
     }
 }

@@ -1,11 +1,11 @@
 namespace pwnctl.infra;
 
 using pwnctl.infra.Persistence;
-using pwnctl.infra.Persistence.Extensions;
 using pwnctl.infra.Repositories;
 using pwnctl.app.Assets;
 
 using Microsoft.EntityFrameworkCore;
+using pwnctl.infra.Queueing;
 
 public static class AssetProcessorFactory
 {
@@ -13,11 +13,18 @@ public static class AssetProcessorFactory
     {
         var context = new PwnctlDbContext();
 
-        var assetRepository = new AssetDbRepository(context);
+        var assetRepo = new AssetDbRepository(context);
+        var taskRepo = new TaskDbRepository();
 
-        var rules = context.NotificationRules.AsNoTracking().ToList(); // TODO: cache in-memory
-        var outOfScopeTasks = context.TaskDefinitions.Where(d => d.MatchOutOfScope).AsNoTracking().ToList(); // TODO: cache in-memory
+        var taskQueueService = TaskQueueServiceFactory.Create();
 
-        return new AssetProcessor(assetRepository, rules, outOfScopeTasks);
+        // TODO: maybe cache in-memory?
+        var rules = context.NotificationRules.AsNoTracking().ToList();
+        var outOfScopeTasks = context.TaskDefinitions
+                                    .Where(d => d.MatchOutOfScope)
+                                    .AsNoTracking()
+                                    .ToList();
+
+        return new AssetProcessor(assetRepo, taskRepo, taskQueueService, rules, outOfScopeTasks);
     }
 }

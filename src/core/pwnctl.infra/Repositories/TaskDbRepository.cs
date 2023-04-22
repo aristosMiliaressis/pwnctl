@@ -2,73 +2,77 @@
 using pwnctl.app.Tasks.Entities;
 using pwnctl.infra.Persistence;
 using Microsoft.EntityFrameworkCore;
-using pwnctl.app.Tasks.Enums;
+using pwnctl.app.Tasks.Interfaces;
+using pwnctl.infra.Persistence.Extensions;
+using pwnctl.app.Common;
+using pwnctl.app.Assets.Aggregates;
 
 namespace pwnctl.infra.Repositories
 {
-    public sealed class TaskDbRepository
+    public sealed class TaskDbRepository : TaskRepository
     {
-        private static PwnctlDbContext _context = new PwnctlDbContext();
-        public static Func<IQueryable<TaskEntry>> JoinedQueryable = 
-                () => _context.TaskEntries
-                            .Include(r => r.Operation)
-                                .ThenInclude(r => r.Policy)
-                                .ThenInclude(r => r.TaskProfile)
-                                .ThenInclude(r => r.TaskDefinitions)
-                            .Include(r => r.Record)
-                                .ThenInclude(r => r.Scope)
-                            .Include(r => r.Definition)
-                            .Include(r => r.Record)
-                                .ThenInclude(r => r.NetworkHost)
-                                .ThenInclude(r => r.AARecords)
-                            .Include(r => r.Record)
-                                .ThenInclude(r => r.NetworkRange)
-                            .Include(r => r.Record)
-                                .ThenInclude(r => r.NetworkSocket)
-                                .ThenInclude(r => r.NetworkHost)
-                            .Include(r => r.Record)
-                                .ThenInclude(r => r.NetworkSocket)
-                                .ThenInclude(r => r.DomainName)
-                            .Include(r => r.Record)
-                                .ThenInclude(r => r.DomainName)
-                            .Include(r => r.Record)
-                                .ThenInclude(r => r.DomainNameRecord)
-                                .ThenInclude(r => r.DomainName)
-                            .Include(r => r.Record)
-                                .ThenInclude(r => r.DomainNameRecord)
-                                .ThenInclude(r => r.NetworkHost)
-                            .Include(r => r.Record)
-                                .ThenInclude(r => r.HttpHost)
-                            .Include(r => r.Record)
-                                .ThenInclude(r => r.HttpEndpoint)
-                                .ThenInclude(s => s.Socket)
-                                .ThenInclude(s => s.DomainName)
-                            .Include(r => r.Record)
-                                .ThenInclude(r => r.HttpEndpoint)
-                                .ThenInclude(s => s.Socket)
-                                .ThenInclude(s => s.NetworkHost)
-                            .Include(r => r.Record)
-                                .ThenInclude(r => r.HttpParameter)
-                            .Include(r => r.Record)
-                                .ThenInclude(r => r.Email)
-                                .ThenInclude(r => r.DomainName);
-
+        private PwnctlDbContext _context = new PwnctlDbContext();
         private static Func<PwnctlDbContext, int, Task<TaskEntry>> FindEntryQuery
                                 = EF.CompileAsyncQuery<PwnctlDbContext, int, TaskEntry>(
-                        (context, id) => JoinedQueryable()
-                                            .AsNoTracking()
-                                            .FirstOrDefault(r => r.Id == id));
+                        (context, id) => context.TaskEntries
+                                    .Include(r => r.Definition)
+                                    .Include(r => r.Record)
+                                        .ThenInclude(r => r.NetworkHost)
+                                        .ThenInclude(r => r.AARecords)
+                                    .Include(r => r.Record)
+                                        .ThenInclude(r => r.NetworkRange)
+                                    .Include(r => r.Record)
+                                        .ThenInclude(r => r.NetworkSocket)
+                                        .ThenInclude(r => r.NetworkHost)
+                                    .Include(r => r.Record)
+                                        .ThenInclude(r => r.NetworkSocket)
+                                        .ThenInclude(r => r.DomainName)
+                                    .Include(r => r.Record)
+                                        .ThenInclude(r => r.DomainName)
+                                    .Include(r => r.Record)
+                                        .ThenInclude(r => r.DomainNameRecord)
+                                        .ThenInclude(r => r.DomainName)
+                                    .Include(r => r.Record)
+                                        .ThenInclude(r => r.DomainNameRecord)
+                                        .ThenInclude(r => r.NetworkHost)
+                                    .Include(r => r.Record)
+                                        .ThenInclude(r => r.HttpHost)
+                                    .Include(r => r.Record)
+                                        .ThenInclude(r => r.HttpEndpoint)
+                                        .ThenInclude(s => s.Socket)
+                                        .ThenInclude(s => s.DomainName)
+                                    .Include(r => r.Record)
+                                        .ThenInclude(r => r.HttpEndpoint)
+                                        .ThenInclude(s => s.Socket)
+                                        .ThenInclude(s => s.NetworkHost)
+                                    .Include(r => r.Record)
+                                        .ThenInclude(r => r.HttpParameter)
+                                    .Include(r => r.Record)
+                                        .ThenInclude(r => r.Email)
+                                        .ThenInclude(r => r.DomainName)
+                                    .Include(r => r.Record)
+                                        .ThenInclude(r => r.Scope)
+                                    .Include(r => r.Operation)
+                                        .ThenInclude(r => r.Policy)
+                                        .ThenInclude(r => r.TaskProfile)
+                                        .ThenInclude(r => r.TaskDefinitions)
+                                    .Include(r => r.Operation)
+                                        .ThenInclude(o => o.Scope)
+                                        .ThenInclude(o => o.Definitions)
+                                        .ThenInclude(o => o.Definition)
+                                    .AsNoTracking()
+                                    .FirstOrDefault(r => r.Id == id));
 
-        public async Task<TaskEntry> GetEntryAsync(int taskId)
+        public async Task<TaskEntry> FindAsync(int taskId)
         {
             return await FindEntryQuery(_context, taskId);
         }
 
-        public async Task<List<TaskEntry>> ListPendingAsync(CancellationToken token = default)
+        public TaskEntry Find(AssetRecord asset, TaskDefinition definition)
         {
-            return await JoinedQueryable()
-                        .Where(r => r.State == TaskState.PENDING)
-                        .ToListAsync(token);
+            var lambda = ExpressionTreeBuilder.BuildTaskMatchingLambda(asset.Id, definition.Id);
+
+            return _context.FirstFromLambda<TaskEntry>(lambda);
         }
 
         public async Task UpdateAsync(TaskEntry task)
@@ -83,6 +87,17 @@ namespace pwnctl.infra.Repositories
             _context.Entry(task.Record.Asset).State = EntityState.Detached;
             if (task.Record.Scope != null)
                 _context.Entry(task.Record.Scope).State = EntityState.Detached;
+        }
+
+        public async Task AddAsync(TaskEntry task)
+        {
+            _context.Entry(task).State = EntityState.Added;
+            if (task.Record.Id == default)
+            {
+                _context.Entry(task.Record).State = EntityState.Added;
+                _context.Entry(task.Record.Asset).State = EntityState.Added;
+            }
+            await _context.SaveChangesAsync();
         }
     }
 }

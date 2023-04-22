@@ -1,15 +1,14 @@
 using Microsoft.EntityFrameworkCore;
-using pwnctl.app.Tasks.Entities;
-using pwnctl.app.Notifications.Entities;
 using Microsoft.Extensions.FileSystemGlobbing;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
+using pwnctl.app.Tasks.Entities;
+using pwnctl.app.Notifications.Entities;
 using pwnctl.infra.Configuration.Validation.Exceptions;
 using pwnctl.infra.Configuration.Validation;
 using pwnctl.infra.Configuration;
 using pwnctl.infra.Queueing;
 using pwnctl.infra.Repositories;
-using pwnctl.app.Queueing.DTO;
 
 namespace pwnctl.infra.Persistence
 {
@@ -51,18 +50,7 @@ namespace pwnctl.infra.Persistence
                 var taskRepo = new TaskDbRepository();
                 foreach (var line in File.ReadAllLines(assetSeed))
                 {
-                    await processor.TryProcessAsync(line);
-
-                    var tasks = await taskRepo.ListPendingAsync();
-
-                    foreach (var task in tasks)
-                    {
-                        task.Queued();
-                        await queueService.EnqueueAsync(new PendingTaskDTO(task));
-                        await taskRepo.UpdateAsync(task);
-                    }
-
-                    await context.SaveChangesAsync();
+                    await processor.TryProcessAsync(line, null); 
                 }
             }
         }

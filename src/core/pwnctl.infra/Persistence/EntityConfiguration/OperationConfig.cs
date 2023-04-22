@@ -16,8 +16,8 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
             builder.OwnsOne(e => e.ShortName).Property(e => e.Value).IsRequired();
 
             builder.HasOne(p => p.Scope)
-                .WithOne()
-                .HasForeignKey<Operation>(p => p.ScopeId);
+                .WithMany()
+                .HasForeignKey(p => p.ScopeId);
 
             builder.HasOne(p => p.Policy)
                 .WithOne()

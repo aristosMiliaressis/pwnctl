@@ -1,30 +1,39 @@
 ﻿using pwnctl.domain.BaseClasses;
 using pwnctl.app.Assets.Interfaces;
+using pwnctl.app.Queueing.Interfaces;
 using pwnctl.app.Tasks.Entities;
 using pwnctl.app.Notifications.Entities;
 using pwnctl.app.Assets.Aggregates;
 using pwnctl.app.Assets.DTO;
+using pwnctl.app.Queueing.DTO;
+using pwnctl.app.Operations.Entities;
+using pwnctl.app.Tasks.Interfaces;
 
 namespace pwnctl.app.Assets
 {
     public sealed class AssetProcessor
     {
         private readonly AssetRepository _assetRepository;
+        private readonly TaskRepository _taskRepository;
+        private readonly TaskQueueService _taskQueueService;
         private readonly List<NotificationRule> _notificationRules;
         private readonly List<TaskDefinition> _outOfScopeTasks;
 
-        public AssetProcessor(AssetRepository assetRepository, List<NotificationRule> rules, List<TaskDefinition> outOfScopeTasks)
+        public AssetProcessor(AssetRepository assetRepo, TaskRepository taskRepo, TaskQueueService taskQueueService, 
+                            List<NotificationRule> rules, List<TaskDefinition> outOfScopeTasks)
         {
-            _assetRepository = assetRepository;
+            _assetRepository = assetRepo;
+            _taskRepository = taskRepo;
+            _taskQueueService = taskQueueService;
             _outOfScopeTasks = outOfScopeTasks;
             _notificationRules = rules;
         }
 
-        public async Task<bool> TryProcessAsync(string assetText, TaskEntry foundByTask = null)
+        public async Task<bool> TryProcessAsync(string assetText, Operation operation, TaskEntry foundByTask = null)
         {
             try
             {
-                await ProcessAsync(assetText, foundByTask);
+                await ProcessAsync(assetText, operation, foundByTask);
                 return true;
             }
             catch (Exception ex)
@@ -34,7 +43,7 @@ namespace pwnctl.app.Assets
             }
         }
 
-        public async Task ProcessAsync(string assetText, TaskEntry foundByTask)
+        public async Task ProcessAsync(string assetText, Operation operation, TaskEntry foundByTask)
         {
             AssetDTO dto = TagParser.Parse(assetText);
 
@@ -46,11 +55,11 @@ namespace pwnctl.app.Assets
             //   / \
             //  B   C
             // TODO: optimize & decuple the reference graph traversal, from the asset processing
-            await ProcessAssetAsync(asset, dto.Tags, foundByTask);
-            await ProcessAssetAsync(asset, dto.Tags, foundByTask);
+            await ProcessAssetAsync(asset, dto.Tags, operation, foundByTask);
+            await ProcessAssetAsync(asset, dto.Tags, operation, foundByTask);
         }
 
-        private async Task ProcessAssetAsync(Asset asset, Dictionary<string, object> tags, TaskEntry foundByTask, List<Asset> refChain = null)
+        private async Task ProcessAssetAsync(Asset asset, Dictionary<string, object> tags, Operation operation, TaskEntry foundByTask, List<Asset> refChain = null)
         {
             refChain = refChain == null
                     ? new List<Asset>()
@@ -65,7 +74,7 @@ namespace pwnctl.app.Assets
             // starting from the botton of the ref tree.
             foreach (var refAsset in GetReferencedAssets(asset))
             {
-                await ProcessAssetAsync(refAsset, null, foundByTask, refChain);
+                await ProcessAssetAsync(refAsset, null, operation, foundByTask, refChain);
             }
 
             var record = await _assetRepository.FindRecordAsync(asset);
@@ -77,16 +86,16 @@ namespace pwnctl.app.Assets
             record = await _assetRepository.UpdateRecordReferences(record, asset);
             record.UpdateTags(tags);
 
-            if (foundByTask != null)
+            if (operation != null)
             {
-                var scope = foundByTask.Operation.Scope.Definitions.FirstOrDefault(scope => scope.Definition.Matches(record.Asset));
+                var scope = operation.Scope.Definitions.FirstOrDefault(scope => scope.Definition.Matches(record.Asset));
                 if (scope != null)
                     record.SetScope(scope.Definition);
 
                 foreach (var rule in _notificationRules.Where(rule => (record.InScope || rule.CheckOutOfScope) && rule.Check(record)))
                 {
                     // only send notifications once
-                    var notification = _assetRepository.FindNotification(record.Asset, rule);
+                    var notification = await _assetRepository.FindNotificationAsync(record.Asset, rule);
                     if (notification != null)
                         continue;
                     
@@ -97,17 +106,23 @@ namespace pwnctl.app.Assets
                     record.Notifications.Add(notification);
                 }
 
-                var allowedTasks = foundByTask.Operation.Policy.GetAllowedTasks();
+                var allowedTasks = operation.Policy.GetAllowedTasks();
                 allowedTasks.AddRange(_outOfScopeTasks);
 
                 foreach (var definition in allowedTasks.Where(def => def.Matches(record)))
                 {
                     // only queue tasks once per definition/asset pair
-                    var task = _assetRepository.FindTaskEntry(record.Asset, definition);
+                    var task = _taskRepository.Find(record, definition);
                     if (task != null)
                         continue;
 
-                    record.Tasks.Add(new TaskEntry(foundByTask.Operation, definition, record));
+                    task = new TaskEntry(operation, definition, record);
+                    await _taskRepository.AddAsync(task);
+
+                    await _taskQueueService.EnqueueAsync(new PendingTaskDTO(task));
+
+                    task.Queued();
+                    record.Tasks.Add(task);
                 }
             }
 

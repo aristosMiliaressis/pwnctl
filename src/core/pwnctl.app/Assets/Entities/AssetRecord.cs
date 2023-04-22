@@ -11,7 +11,7 @@ namespace pwnctl.app.Assets.Aggregates;
 
 public sealed class AssetRecord : Entity<Guid>
 {
-    public Asset Asset =>(Asset)typeof(AssetRecord).GetProperty(SubjectClass.Value).GetValue(this);
+    public Asset Asset => (Asset)typeof(AssetRecord).GetProperty(SubjectClass.Value).GetValue(this);
     
     public DateTime FoundAt { get; set; }
     public TaskEntry FoundByTask { get; set; }
@@ -24,7 +24,7 @@ public sealed class AssetRecord : Entity<Guid>
     public List<Tag> Tags { get; private init; } = new List<Tag>();
     public List<TaskEntry> Tasks { get; private init; } = new List<TaskEntry>();
     public List<Notification> Notifications { get; private init; } = new List<Notification>();
-    public AssetClass SubjectClass { get; private set; }
+    public AssetClass SubjectClass { get; set; }
 
     public NetworkHost NetworkHost { get; set; }
     public Guid? NetworkHostId { get; set; }

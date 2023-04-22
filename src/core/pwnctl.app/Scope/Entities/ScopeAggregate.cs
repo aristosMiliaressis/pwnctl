@@ -8,6 +8,6 @@ namespace pwnctl.app.Scope.Entities
         public ShortName ShortName { get; set; }
         public string Description { get; set; }
 
-        public List<ScopeDefinitionAggregate> Definitions { get; set; }
+        public List<ScopeDefinitionAggregate> Definitions { get; set; } = new();
     }
 }
