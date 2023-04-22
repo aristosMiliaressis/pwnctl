@@ -1,79 +1,3 @@
-data "aws_iam_policy" "lambda_basic_execution" {
-  name = "AWSLambdaBasicExecutionRole"
-}
-
-data "aws_iam_policy" "lambda_vpc_access" {
-  name = "AWSLambdaVPCAccessExecutionRole"
-}
-
-data "aws_iam_policy" "efs_client_full_access" {
-  name = "AmazonElasticFileSystemClientFullAccess"
-}
-
-data "aws_iam_policy" "ssm_readonly_access" {
-  name = "AmazonSSMReadOnlyAccess"
-}
-
-data "aws_iam_policy" "sm_readwrite_access" {
-  name = "SecretsManagerReadWrite"
-}
-
-resource "aws_iam_role" "lambda" {
-  name = "pwnctl_${random_id.id.hex}_lambda_service_role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Principal = {
-          Service = "lambda.amazonaws.com"
-        }
-      },
-    ]
-  })
-
-  tags = {
-    Name = "pwnctl_lambda_role_${random_id.id.hex}"
-  }
-}
-
-resource "aws_iam_role_policy_attachment" "attach_lambda_basic_execution" {
-  role       = aws_iam_role.lambda.name
-  policy_arn = data.aws_iam_policy.lambda_basic_execution.arn
-}
-
-resource "aws_iam_role_policy_attachment" "attach_lambda_vpc_access" {
-  role       = aws_iam_role.lambda.name
-  policy_arn = data.aws_iam_policy.lambda_vpc_access.arn
-}
-
-resource "aws_iam_role_policy_attachment" "attach_efs_client_full_access" {
-  role       = aws_iam_role.lambda.name
-  policy_arn = data.aws_iam_policy.efs_client_full_access.arn
-}
-
-resource "aws_iam_role_policy_attachment" "attach_ssm_readonly_access" {
-  role       = aws_iam_role.lambda.name
-  policy_arn = data.aws_iam_policy.ssm_readonly_access.arn
-}
-
-resource "aws_iam_role_policy_attachment" "attach_sm_readwrite_access" {
-  role       = aws_iam_role.lambda.name
-  policy_arn = data.aws_iam_policy.sm_readwrite_access.arn
-}
-
-resource "aws_iam_role_policy_attachment" "attach_sqs_rw_to_lambda" {
-  role       = aws_iam_role.lambda.name
-  policy_arn = aws_iam_policy.sqs_rw_policy.arn
-}
-
-resource "aws_iam_role_policy_attachment" "api_logging" {
-  role       = aws_iam_role.lambda.name
-  policy_arn = aws_iam_policy.api_logging.arn
-}
-
 data "archive_file" "this" {
   type = "zip"
   source_dir = "../src/pwnctl.api/bin/Release/net6.0/"
@@ -87,8 +11,6 @@ resource "aws_lambda_function" "this" {
 
   depends_on = [
     aws_efs_mount_target.this,
-    aws_iam_role_policy_attachment.api_logging,
-    aws_iam_role_policy_attachment.attach_sqs_rw_to_lambda,
     aws_security_group.allow_https_from_internet,
     aws_iam_role.lambda
   ]
