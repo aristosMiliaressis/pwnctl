@@ -1,8 +1,6 @@
 PWNCTL ![ci: tag](https://github.com/aristosMiliaressis/pwnctl/actions/workflows/ci.yml/badge.svg)
 ==
 
-serverless configuration driven framework for recon automation.
-
 </br>
 
 **Table of Contents**
@@ -14,11 +12,11 @@ serverless configuration driven framework for recon automation.
   - [Operations](#operations)
 - [How to set it up?](#how-to-set-it-up)
 
-### What is this?
+## What is this?
 
 a framework for external recon operations that facilitates discovering, scanning and monitoring assets trough a configurable engine running on autoscaling aws infrastructure.
 
-### How does it Work?
+## How does it Work?
 
 <p align="center">
   <img src="https://github.com/aristosMiliaressis/pwnctl/blob/master/img/arch-phase1.png?raw=true">
@@ -27,11 +25,9 @@ a framework for external recon operations that facilitates discovering, scanning
 tasks are placed in an sqs queue that causes container instances to spin up perform the recon tasks and process the output according to configuration.
 
 
-#### Assets & Tags
+### Assets & Tags
 
 task output is processed line by line, each line is classified into one of the following asset classes.
-
-**asset classification**
 
 | Asset            |   Notation                                       |
 |------------------|:------------------------------------------------:|  
@@ -57,7 +53,7 @@ sub2.example.com
 
 **Tags** are a way to store arbitary metadata relating to an asset, they can be used in the `Filter` field (trough an indexer on the asset base class) to chain tasks into workflows where one task (e.g nmap) discovers some metadata relating to an asset (e.g. IIS service banner) which than causes a metadata specific task to be queued (e.g. IIS shortname scanning)
 
-#### Scope
+### Scope
 
 scope is determined trough explicit matching of `ScopeDefinition` patterns or trough a set of relationship rules
 
@@ -83,7 +79,7 @@ aside from direct matching assets will be considered inscope according to the fo
 }
 ```
 
-#### Tasks & Notifications
+### Tasks & Notifications
 
 tasks are configured trough TaskDefinitions and can be organized into TaskProfiles.
 
@@ -201,7 +197,7 @@ TaskDefinitions:
   Topic: misconfigs
 ```
 
-#### Operations
+### Operations
 
 there are three types of operations Crawl, Scan & Monitor.
 
@@ -216,7 +212,7 @@ every operation has a ScopeAggregate and a TaskProfile.
 **To Do**
 - [ ] Implement schedule based Monitor operations with EventBridge
 
-### How to set it up?
+## How to set it up?
 
 1. create an aws Administrator user for use with terraform
 2. put all configuration/seed/script files in the `deployment/` folder

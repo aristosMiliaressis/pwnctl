@@ -37,7 +37,6 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Commands
             viewModel.InScopeParamCount = await context.AssetRecords.Where(r => r.SubjectClass == AssetClass.Create(nameof(HttpParameter)) && r.InScope).CountAsync();
             viewModel.InScopeEmailCount = await context.AssetRecords.Where(r => r.SubjectClass == AssetClass.Create(nameof(Email)) && r.InScope).CountAsync();
 
-            viewModel.PendingTaskCount = await context.TaskEntries.Where(t => t.State == TaskState.QUEUED).CountAsync();
             viewModel.QueuedTaskCount = await context.TaskEntries.Where(t => t.State == TaskState.QUEUED).CountAsync();
             viewModel.RunningTaskCount = await context.TaskEntries.Where(t => t.State == TaskState.RUNNING).CountAsync();
             viewModel.FinishedTaskCount = await context.TaskEntries.Where(t => t.State == TaskState.FINISHED).CountAsync();

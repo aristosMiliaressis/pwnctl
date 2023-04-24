@@ -6,10 +6,10 @@ TaskDefinitions:
   #   Subject: DomainName
   #   Filter: DomainName.ZoneDepth == 1
 
-  - Name: cloud_enum
-    CommandTemplate: cloud-enum.sh {{Word}}
-    Subject: DomainName
-    Filter: DomainName.ZoneDepth == 1
+  # - Name: cloud_enum
+  #   CommandTemplate: cloud-enum.sh {{Word}}
+  #   Subject: DomainName
+  #   Filter: DomainName.ZoneDepth == 1
 
   - Name: email_finder
     CommandTemplate: email-finder.sh {{Name}}

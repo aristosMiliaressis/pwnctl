@@ -68,12 +68,11 @@ namespace pwnctl.svc
                 StringBuilder stdout, 
                 StringBuilder stderr) = await CommandExecutor.ExecuteAsync(task.Command, token: cts.Token);
 
+                timer.Dispose();
                 await _queueService.DequeueAsync(taskDTO);
 
                 task.Finished(exitCode);
                 await _taskRepo.UpdateAsync(task);
-
-                timer.Dispose();
 
                 if (!string.IsNullOrWhiteSpace(stderr.ToString()))
                     PwnInfraContext.Logger.Error(stderr.ToString());
@@ -83,7 +82,7 @@ namespace pwnctl.svc
                                 .Where(l => !string.IsNullOrEmpty(l));
 
                 OutputBatchDTO outputBatch = new(task.Id);
-                for (int max = 10, i = 0; i <= lines.Count(); i++)
+                for (int max = 10, i = 0; i < lines.Count(); i++)
                 {
                     var line = lines.ElementAt(i);
                     if ((string.Join(",", outputBatch.Lines).Length + line.Length) < 8000)
@@ -117,6 +116,14 @@ namespace pwnctl.svc
                 return;
             }
 
+            // Change the message visibility if the visibility window is exheeded
+            // this allows us to keep a smaller visibility window without effecting 
+            // the max task timeout.
+            var timer = new System.Timers.Timer((PwnInfraContext.Config.TaskQueue.VisibilityTimeout - 90) * 1000);
+            timer.Elapsed += async (_, _) =>
+                await _queueService.ChangeMessageVisibilityAsync(batchDTO, PwnInfraContext.Config.TaskQueue.VisibilityTimeout);
+            timer.Start();
+
             try
             {
                 var task = await _taskRepo.FindAsync(batchDTO.TaskId);
@@ -128,6 +135,7 @@ namespace pwnctl.svc
                     await _processor.TryProcessAsync(line, task.Operation, task);
                 }
 
+                timer.Dispose();
                 await _queueService.DequeueAsync(batchDTO);
             }
             catch (Exception ex)

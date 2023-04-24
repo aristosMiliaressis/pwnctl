@@ -1,6 +1,5 @@
 using System.Text.Json.Serialization;
 using pwnctl.app.Queueing.Interfaces;
-using pwnctl.app.Tasks.Entities;
 
 namespace pwnctl.app.Queueing.DTO;
 

@@ -6,7 +6,7 @@ namespace pwnctl.app.Tasks.DTO;
 public sealed class TaskEntryDTO
 {
     public int Id { get; set; }
-    public ShortName ShortName { get; set; }
+    public string ShortName { get; set; }
     public string Subject { get; set; }
     public string Asset { get; set; }
     public string State { get; set; }
@@ -21,7 +21,7 @@ public sealed class TaskEntryDTO
     public TaskEntryDTO(TaskEntry entry)
     {
         Id = entry.Id;
-        ShortName = entry.Definition.ShortName;
+        ShortName = entry.Definition.ShortName.Value;
         Subject = entry.Definition.SubjectClass.Value;
         Asset = entry.Record.Asset.ToString();
         State = entry.State.ToString();

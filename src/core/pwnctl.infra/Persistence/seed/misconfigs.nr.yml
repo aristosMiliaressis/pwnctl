@@ -9,14 +9,14 @@
   Filter: Tags["cors-misconfig"] == "true"
   Topic: misconfigs
 
-- Name: Name_misconfig
+- Name: shortname_misconfig
   Subject: HttpEndpoint
-  Filter: Tags["Name-misconfig"] == "true"
+  Filter: Tags["shortname-misconfig"] == "true"
   Topic: misconfigs
 
-- Name: Name_misconfig_srv
+- Name: shortname_misconfig_srv
   Subject: NetworkSocket
-  Filter: Tags["Name-misconfig"] == "true"
+  Filter: Tags["shortname-misconfig"] == "true"
   Topic: misconfigs
 
 - Name: s3_misconfig

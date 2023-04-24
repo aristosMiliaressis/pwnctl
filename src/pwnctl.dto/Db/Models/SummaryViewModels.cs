@@ -19,7 +19,6 @@ public sealed class SummaryViewModel
     public int InScopeEndpointCount { get; set; }
     public int InScopeParamCount { get; set; }
     public int InScopeEmailCount { get; set; }
-    public int PendingTaskCount { get; set; }
     public int QueuedTaskCount { get; set; }
     public int RunningTaskCount { get; set; }
     public int FinishedTaskCount { get; set; }

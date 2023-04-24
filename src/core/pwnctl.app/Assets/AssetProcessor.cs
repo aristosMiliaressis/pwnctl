@@ -109,7 +109,7 @@ namespace pwnctl.app.Assets
                 var allowedTasks = operation.Policy.GetAllowedTasks();
                 allowedTasks.AddRange(_outOfScopeTasks);
 
-                foreach (var definition in allowedTasks.Where(def => def.Matches(record)))
+                foreach (var definition in allowedTasks.Where(def => (record.InScope || def.MatchOutOfScope) && def.Matches(record)))
                 {
                     // only queue tasks once per definition/asset pair
                     var task = _taskRepository.Find(record, definition);
