@@ -81,20 +81,20 @@ namespace pwnctl.svc
                 var lines = stdout.ToString()
                                 .Split("\n")
                                 .Where(l => !string.IsNullOrEmpty(l));
-                
-                OutputBatchDTO outputBatch = null;
-                for (int s = 10, i = 0; true; i++)
-                {
-                    outputBatch = new()
-                    {
-                        TaskId = task.Id,
-                        Lines = lines.Skip(i * s).Take(s).ToList()
-                    };
 
-                    if (!outputBatch.Lines.Any())
-                        break;
-                    
-                    await _queueService.EnqueueAsync(outputBatch);
+                OutputBatchDTO outputBatch = new(task.Id);
+                for (int max = 10, i = 0; i <= lines.Count(); i++)
+                {
+                    var line = lines.ElementAt(i);
+                    if ((string.Join(",", outputBatch.Lines).Length + line.Length) < 8000)
+                        outputBatch.Lines.Add(line);
+
+                    if (outputBatch.Lines.Count == max || (string.Join(",", outputBatch.Lines).Length + line.Length) >= 8000)
+                    {
+                        await _queueService.EnqueueAsync(outputBatch);
+                        outputBatch = new(task.Id);
+                        outputBatch.Lines.Add(line);
+                    }
                 }
             }
             catch (Exception ex)

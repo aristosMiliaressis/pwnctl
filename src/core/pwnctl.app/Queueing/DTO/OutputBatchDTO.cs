@@ -14,9 +14,8 @@ public sealed class OutputBatchDTO : QueueMessage
 
     public OutputBatchDTO() { }
 
-    public OutputBatchDTO(TaskEntry entry, List<string> lines)
+    public OutputBatchDTO(int taskId)
     {
-        TaskId = entry.Id;
-        Lines = lines;
+        TaskId = taskId;
     }
 }
