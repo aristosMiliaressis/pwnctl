@@ -6,19 +6,19 @@ serverless configuration driven framework for recon automation.
 </br>
 
 **Table of Contents**
-1. [What is this?](#what)
-2. [How does it Work?](#how)</br>
-  2.1. [Assets & Tags](#assets)</br>
-  2.2. [Scope](#scope)</br>
-  2.3. [Tasks & Notifications](#tasks)</br>
-  2.4. [Operations](#ops)
-3. [How to set it up?](#setup)
+- [What is this?](#what-is-this)
+- [How does it Work?](#how-does-it-work)</br>
+  - [Assets & Tags](#assets--tags)</br>
+  - [Scope](#scope)</br>
+  - [Tasks & Notifications](#tasks--notifications)</br>
+  - [Operations](#operations)
+- [How to set it up?](#how-to-set-it-up)
 
 ### [What is this?](#what)
 
 a framework for external recon operations that facilitates discovering, scanning and monitoring assets trough a configurable engine running on autoscaling aws infrastructure.
 
-### [How does it Work?](#how)
+### How does it Work?
 
 <p align="center">
   <img src="https://github.com/aristosMiliaressis/pwnctl/blob/master/img/arch-phase1.png?raw=true">
@@ -27,7 +27,7 @@ a framework for external recon operations that facilitates discovering, scanning
 tasks are placed in an sqs queue that causes container instances to spin up perform the recon tasks and process the output according to configuration.
 
 
-#### [Assets & Tags](#assets)
+#### Assets & Tags
 
 task output is processed line by line, each line is classified into one of the following asset classes.
 
