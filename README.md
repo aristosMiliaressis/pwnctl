@@ -14,7 +14,7 @@ serverless configuration driven framework for recon automation.
   - [Operations](#operations)
 - [How to set it up?](#how-to-set-it-up)
 
-### [What is this?](#what)
+### What is this?
 
 a framework for external recon operations that facilitates discovering, scanning and monitoring assets trough a configurable engine running on autoscaling aws infrastructure.
 
@@ -57,7 +57,7 @@ sub2.example.com
 
 **Tags** are a way to store arbitary metadata relating to an asset, they can be used in the `Filter` field (trough an indexer on the asset base class) to chain tasks into workflows where one task (e.g nmap) discovers some metadata relating to an asset (e.g. IIS service banner) which than causes a metadata specific task to be queued (e.g. IIS shortname scanning)
 
-#### [Scope](#scope)
+#### Scope
 
 scope is determined trough explicit matching of `ScopeDefinition` patterns or trough a set of relationship rules
 
@@ -83,7 +83,7 @@ aside from direct matching assets will be considered inscope according to the fo
 }
 ```
 
-#### [Tasks & Notifications](#tasks)
+#### Tasks & Notifications
 
 tasks are configured trough TaskDefinitions and can be organized into TaskProfiles.
 
@@ -201,7 +201,7 @@ TaskDefinitions:
   Topic: misconfigs
 ```
 
-#### [Operations](#ops)
+#### Operations
 
 there are three types of operations Crawl, Scan & Monitor.
 
@@ -216,7 +216,7 @@ every operation has a ScopeAggregate and a TaskProfile.
 **To Do**
 - [ ] Implement schedule based Monitor operations with EventBridge
 
-### [How to set it up?](#setup)
+### How to set it up?
 
 1. create an aws Administrator user for use with terraform
 2. put all configuration/seed/script files in the `deployment/` folder
