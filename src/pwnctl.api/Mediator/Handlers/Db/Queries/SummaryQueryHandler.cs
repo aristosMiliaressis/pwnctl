@@ -45,15 +45,15 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Commands
             viewModel.LastTask = (await context.TaskEntries.OrderByDescending(t => t.QueuedAt).FirstOrDefaultAsync())?.QueuedAt;
             viewModel.LastFinishedTask = (await context.TaskEntries.OrderByDescending(t => t.FinishedAt).FirstOrDefaultAsync())?.FinishedAt;
             viewModel.TaskDetails = new List<SummaryViewModel.TaskDefinitionDetails>();
-            foreach (var def in context.TaskDefinitions.ToList())
+            foreach (var def in context.TaskDefinitions.AsEnumerable().GroupBy(d => d.ShortName.Value).ToList())
             {
-                var entries = context.TaskEntries.Where(e => e.DefinitionId == def.Id).ToList();
+                var entries = context.TaskEntries.Where(e => def.Select(d => d.Id).Contains(e.DefinitionId)).ToList();
                 viewModel.TaskDetails.Add(new SummaryViewModel.TaskDefinitionDetails
                 {
-                    ShortName = def.ShortName.Value,
+                    ShortName = def.First().ShortName.Value,
                     Count = entries.Count,
                     Duration = TimeSpan.FromSeconds(entries.Where(e => e.State == TaskState.FINISHED).Select(e => e.FinishedAt - e.StartedAt).Sum(e => e.TotalSeconds)),
-                    Findings = context.AssetRecords.Include(r => r.FoundByTask).Where(r => r.FoundByTask.DefinitionId == def.Id).Count()
+                    Findings = context.AssetRecords.Include(r => r.FoundByTask).Where(r => def.Select(d => d.Id).Contains(r.FoundByTask.DefinitionId)).Count()
                 });
             }
 
