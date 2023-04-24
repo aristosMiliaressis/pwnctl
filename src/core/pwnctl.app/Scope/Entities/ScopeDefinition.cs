@@ -8,10 +8,16 @@ namespace pwnctl.app.Scope.Entities
 {
     public class ScopeDefinition : Entity<int>
     {
-        public ScopeType Type { get; init; }
+        public ScopeType Type { get; private init; }
         public string Pattern { get; init; }
 
         public ScopeDefinition() {}
+
+        public ScopeDefinition(ScopeType type, string pattern)
+        {
+            Type = type;
+            Pattern = pattern;
+        }
 
         public bool Matches(Asset asset)
         {

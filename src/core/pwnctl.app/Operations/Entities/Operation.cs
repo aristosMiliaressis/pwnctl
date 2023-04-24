@@ -8,14 +8,14 @@ namespace pwnctl.app.Operations.Entities
 {
     public class Operation : Entity<int>
     {
-        public ShortName ShortName { get; init; }
-        public OperationType Type { get; init; }
+        public ShortName ShortName { get; private init; }
+        public OperationType Type { get; private init; }
 
         [JsonIgnore]
         public int? PolicyId { get; private init; }
-        public Policy Policy { get; init; }
+        public Policy Policy { get; private init; }
 
-        public ScopeAggregate Scope { get; set; }
+        public ScopeAggregate Scope { get; private init; }
         public int ScopeId { get; private init; }
 
         public Operation() { }

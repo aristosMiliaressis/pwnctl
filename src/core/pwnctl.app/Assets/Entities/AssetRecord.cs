@@ -13,45 +13,45 @@ public sealed class AssetRecord : Entity<Guid>
 {
     public Asset Asset => (Asset)typeof(AssetRecord).GetProperty(SubjectClass.Value).GetValue(this);
     
-    public DateTime FoundAt { get; set; }
-    public TaskEntry FoundByTask { get; set; }
-    public int? FoundByTaskId { get; set; }
+    public DateTime FoundAt { get; private init; }
+    public TaskEntry FoundByTask { get; private init; }
+    public int? FoundByTaskId { get; private init; }
 
-    public bool InScope { get; set; }
+    public bool InScope { get; private set; }
     public ScopeDefinition Scope { get; set; }
-    public int? ScopeId { get; set; }
+    public int? ScopeId { get; private set; }
 
     public List<Tag> Tags { get; private init; } = new List<Tag>();
     public List<TaskEntry> Tasks { get; private init; } = new List<TaskEntry>();
     public List<Notification> Notifications { get; private init; } = new List<Notification>();
     public AssetClass SubjectClass { get; set; }
 
-    public NetworkHost NetworkHost { get; set; }
-    public Guid? NetworkHostId { get; set; }
+    public NetworkHost NetworkHost { get; private init; }
+    public Guid? NetworkHostId { get; private init; }
 
-    public NetworkSocket NetworkSocket { get; set; }
-    public Guid? NetworkSocketId { get; set; }
+    public NetworkSocket NetworkSocket { get; private init; }
+    public Guid? NetworkSocketId { get; private init; }
 
-    public HttpEndpoint HttpEndpoint { get; set; }
-    public Guid? HttpEndpointId { get; set; }
+    public HttpEndpoint HttpEndpoint { get; private init; }
+    public Guid? HttpEndpointId { get; private init; }
 
-    public DomainName DomainName { get; set; }
-    public Guid? DomainNameId { get; set; }
+    public DomainName DomainName { get; private init; }
+    public Guid? DomainNameId { get; private init; }
 
-    public DomainNameRecord DomainNameRecord { get; set; }
-    public Guid? DomainNameRecordId { get; set; }
+    public DomainNameRecord DomainNameRecord { get; private init; }
+    public Guid? DomainNameRecordId { get; private init; }
 
-    public NetworkRange NetworkRange { get; set; }
-    public Guid? NetworkRangeId { get; set; }
+    public NetworkRange NetworkRange { get; private init; }
+    public Guid? NetworkRangeId { get; private init; }
 
-    public Email Email { get; set; }
-    public Guid? EmailId { get; set; }
+    public Email Email { get; private init; }
+    public Guid? EmailId { get; private init; }
 
-    public HttpParameter HttpParameter { get; set; }
-    public Guid? HttpParameterId { get; set; }
+    public HttpParameter HttpParameter { get; private init; }
+    public Guid? HttpParameterId { get; private init; }
 
-    public HttpHost HttpHost { get; set; }
-    public Guid? HttpHostId { get; set; }
+    public HttpHost HttpHost { get; private init; }
+    public Guid? HttpHostId { get; private init; }
 
     private AssetRecord() {}
 
@@ -65,6 +65,7 @@ public sealed class AssetRecord : Entity<Guid>
         : this(asset)
     {
         FoundByTaskId = foundBy?.Id;
+        FoundAt = DateTime.UtcNow;
     }
 
     public void SetScope(ScopeDefinition scope)

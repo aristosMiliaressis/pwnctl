@@ -2,6 +2,7 @@ using pwnctl.dto.Mediator;
 using pwnctl.dto.Scope.Commands;
 using pwnctl.infra.Persistence;
 using MediatR;
+using pwnctl.app.Common.ValueObjects;
 
 namespace pwnctl.api.Mediator.Handlers.Scope.Commands
 {
@@ -11,7 +12,7 @@ namespace pwnctl.api.Mediator.Handlers.Scope.Commands
 
         public async Task<MediatedResponse> Handle(DeleteScopeAggregateCommand command, CancellationToken cancellationToken)
         {
-            var scopeAggregate = _context.ScopeAggregates.FirstOrDefault(a => a.ShortName.Value == command.ShortName);
+            var scopeAggregate = _context.ScopeAggregates.FirstOrDefault(a => a.ShortName == ShortName.Create(command.ShortName));
             if (scopeAggregate == null)
                 return MediatedResponse.Error("Scope Aggregate {0} not found.", command.ShortName);
 

@@ -5,7 +5,7 @@ namespace pwnctl.app.Tasks.Entities
 {
     public sealed class TaskProfile : Entity<int>
     {
-        public ShortName ShortName { get; init; }
+        public ShortName ShortName { get; private init; }
         public List<TaskDefinition> TaskDefinitions { get; private set;}
 
         public TaskProfile() { }

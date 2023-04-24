@@ -117,12 +117,10 @@ namespace pwnctl.app.Assets
                         continue;
 
                     task = new TaskEntry(operation, definition, record);
-                    await _taskRepository.AddAsync(task);
-
-                    await _taskQueueService.EnqueueAsync(new PendingTaskDTO(task));
-
-                    task.Queued();
                     record.Tasks.Add(task);
+
+                    await _taskRepository.AddAsync(task);
+                    await _taskQueueService.EnqueueAsync(new PendingTaskDTO(task));
                 }
             }
 

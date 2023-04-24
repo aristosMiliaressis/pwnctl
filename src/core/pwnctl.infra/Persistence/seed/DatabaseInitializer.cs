@@ -9,6 +9,7 @@ using pwnctl.infra.Configuration.Validation;
 using pwnctl.infra.Configuration;
 using pwnctl.infra.Queueing;
 using pwnctl.infra.Repositories;
+using pwnctl.app.Common.ValueObjects;
 
 namespace pwnctl.infra.Persistence
 {
@@ -78,15 +79,26 @@ namespace pwnctl.infra.Persistence
 
                 foreach (var profileName in file.Profiles)
                 {
-                    var profile = context.TaskProfiles.FirstOrDefault(p => p.ShortName.Value == profileName);
+                    var definitions = file.TaskDefinitions.Select(d => new TaskDefinition
+                    {
+                        Name = d.ShortName.Value,
+                        Subject = d.SubjectClass.Value,
+                        CommandTemplate = d.CommandTemplate,
+                        IsActive = d.IsActive,
+                        Aggressiveness = d.Aggressiveness,
+                        Filter = d.Filter,
+                        MatchOutOfScope = d.MatchOutOfScope
+                    }).ToList();
+
+                    var profile = context.TaskProfiles.FirstOrDefault(p => p.ShortName == ShortName.Create(profileName));
                     if (profile == null)
                     {
-                        profile = new TaskProfile(profileName, file.TaskDefinitions);
+                        profile = new TaskProfile(profileName, definitions);
                         context.Add(profile);
                         continue;
                     }
 
-                    profile.TaskDefinitions.AddRange(file.TaskDefinitions);
+                    profile.TaskDefinitions.AddRange(definitions);
                     context.Update(profile);
                 }
 

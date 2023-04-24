@@ -2,10 +2,10 @@ namespace pwnctl.app.Scope.Entities;
 
 public class ScopeDefinitionAggregate
 {
-    public int AggregateId { get; set; }
-    public ScopeAggregate Aggregate { get; set; }
-    public int DefinitionId { get; set; }
-    public ScopeDefinition Definition { get; set; }
+    public int AggregateId { get; private init; }
+    public ScopeAggregate Aggregate { get; private init; }
+    public int DefinitionId { get; private init; }
+    public ScopeDefinition Definition { get; private init; }
 
     private ScopeDefinitionAggregate() {}
 

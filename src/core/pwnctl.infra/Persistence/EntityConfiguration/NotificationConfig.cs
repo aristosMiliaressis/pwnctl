@@ -2,6 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Humanizer;
 using pwnctl.app.Notifications.Entities;
+using pwnctl.domain.ValueObjects;
+using pwnctl.app.Common.ValueObjects;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace pwnctl.infra.Persistence.EntityConfiguration
 {
@@ -13,9 +16,13 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
 
             builder.HasKey(r => r.Id);
 
-            builder.OwnsOne(r => r.SubjectClass).Property(s => s.Value).IsRequired();
+            builder.Property(c => c.SubjectClass)
+                    .HasConversion(subject => subject.Value, value => AssetClass.Create(value),
+                    new ValueComparer<AssetClass>((l, r) => l == r, v => v.GetHashCode()));
 
-            builder.OwnsOne(r => r.ShortName).Property(s => s.Value).IsRequired();
+            builder.Property(c => c.ShortName)
+                    .HasConversion(name => name.Value, value => ShortName.Create(value),
+                    new ValueComparer<ShortName>((l, r) => l == r, v => v.GetHashCode())); 
         }
     }
 

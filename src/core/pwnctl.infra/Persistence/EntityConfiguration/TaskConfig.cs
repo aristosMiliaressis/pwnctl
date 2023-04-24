@@ -2,6 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using pwnctl.app.Tasks.Entities;
 using Humanizer;
+using pwnctl.domain.ValueObjects;
+using pwnctl.app.Common.ValueObjects;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace pwnctl.infra.Persistence.EntityConfiguration
 {
@@ -35,9 +38,13 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
 
             builder.HasKey(d => d.Id);
 
-            builder.OwnsOne(e => e.ShortName).Property(e => e.Value).IsRequired();
+            builder.Property(c => c.ShortName)
+                    .HasConversion(name => name.Value, value => ShortName.Create(value),
+                    new ValueComparer<ShortName>((l, r) => l == r, v => v.GetHashCode()));
 
-            builder.OwnsOne(d => d.SubjectClass).Property(s => s.Value).IsRequired();
+            builder.Property(c => c.SubjectClass)
+                    .HasConversion(subject => subject.Value, value => AssetClass.Create(value),
+                    new ValueComparer<AssetClass>((l, r) => l == r, v => v.GetHashCode()));
         }
     }
 
@@ -49,7 +56,9 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
 
             builder.HasKey(d => d.Id);
 
-            builder.OwnsOne(e => e.ShortName).Property(e => e.Value).IsRequired();
+            builder.Property(c => c.ShortName)
+                    .HasConversion(name => name.Value, value => ShortName.Create(value),
+                    new ValueComparer<ShortName>((l, r) => l == r, v => v.GetHashCode()));
 
             builder.HasMany(p => p.TaskDefinitions)
               .WithOne(d => d.Profile)

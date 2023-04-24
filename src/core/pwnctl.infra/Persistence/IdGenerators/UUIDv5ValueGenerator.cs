@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
-using pwnctl.domain.BaseClasses;
 using pwnctl.app.Assets.Aggregates;
 using Be.Vlaanderen.Basisregisters.Generators.Guid;
 
@@ -18,19 +17,16 @@ namespace pwnctl.infra.Persistence.IdGenerators
         public override Guid Next(EntityEntry entry) => Generate(entry.Entity);
         protected override object NextValue(EntityEntry entry) => Generate(entry.Entity);
 
-        private Guid Generate(object entity)
+        private Guid Generate(object asset)
         {
-            Asset asset = null;
-
-            if (entity is AssetRecord)
+            if (asset is AssetRecord)
             {
-                var record = entity as AssetRecord;
+                var record = asset as AssetRecord;
                 asset = record.Asset;
             }
-            else
-            {
-                asset = entity as Asset;
-            }
+
+            if (asset == null)
+                return default;
 
             return GenerateByString(asset.ToString());
         }

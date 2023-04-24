@@ -6,6 +6,7 @@ using pwnctl.infra.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using pwnctl.dto.Tasks.Commands;
+using pwnctl.app.Common.ValueObjects;
 
 namespace pwnctl.api.Mediator.Handlers.Tasks.Commands
 {
@@ -15,7 +16,7 @@ namespace pwnctl.api.Mediator.Handlers.Tasks.Commands
 
         public async Task<MediatedResponse> Handle(DeleteTaskProfileCommand command, CancellationToken cancellationToken)
         {
-            var profile = _context.TaskProfiles.FirstOrDefault(a => a.ShortName.Value == command.ShortName);
+            var profile = _context.TaskProfiles.FirstOrDefault(a => a.ShortName == ShortName.Create(command.ShortName));
             if (profile == null)
                 return MediatedResponse.Error("Task Profile {0} not found.", command.ShortName);
 

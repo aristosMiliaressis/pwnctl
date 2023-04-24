@@ -8,12 +8,12 @@ namespace pwnctl.app.Operations.Entities
     {
         public string Blacklist { get; set; }
         public string Whitelist { get; set; }
-        public uint? MaxAggressiveness { get; set; }
+        public uint MaxAggressiveness { get; set; }
         public bool OnlyPassive { get; set; }
 
         [JsonIgnore]
-        public int TaskProfileId { get; init; }
-        public TaskProfile TaskProfile { get; set; }
+        public int TaskProfileId { get; private init; }
+        public TaskProfile TaskProfile { get; private init; }
 
         public Policy() { }
 
@@ -54,7 +54,7 @@ namespace pwnctl.app.Operations.Entities
             {
                 return false;
             }
-            else if (definition.Aggressiveness <= MaxAggressiveness)
+            else if (definition.Aggressiveness <= MaxAggressiveness || MaxAggressiveness == 0)
             {
                 return true;
             }

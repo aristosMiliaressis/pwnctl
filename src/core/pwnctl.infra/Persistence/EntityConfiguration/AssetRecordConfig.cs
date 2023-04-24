@@ -1,7 +1,9 @@
 ﻿using Humanizer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using pwnctl.app.Assets.Aggregates;
+using pwnctl.domain.ValueObjects;
 using pwnctl.infra.Persistence.IdGenerators;
 
 namespace pwnctl.infra.Persistence.EntityConfiguration
@@ -16,7 +18,9 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
             
             builder.HasKey(r => r.Id);
 
-            builder.OwnsOne(r => r.SubjectClass).Property(s => s.Value).IsRequired();
+            builder.Property(c => c.SubjectClass)
+                    .HasConversion(subject => subject.Value, value => AssetClass.Create(value), 
+                    new ValueComparer<AssetClass>((l, r) => l == r, v => v.GetHashCode()));
 
             builder.HasMany(r => r.Tasks);
             builder.HasMany(r => r.Tags);

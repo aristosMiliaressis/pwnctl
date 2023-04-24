@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using MediatR;
 using pwnctl.app.Tasks.Enums;
 using pwnctl.domain.Entities;
+using pwnctl.domain.ValueObjects;
 
 namespace pwnctl.api.Mediator.Handlers.Targets.Commands
 {
@@ -27,20 +28,20 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Commands
             viewModel.HttpParamCount = await context.HttpParameters.CountAsync();
             viewModel.EmailCount = await context.Emails.CountAsync();
             viewModel.TagCount = await context.Tags.CountAsync();
-            viewModel.InScopeRangesCount = await context.AssetRecords.Where(r => r.SubjectClass.Value == nameof(NetworkRange) && r.InScope).CountAsync();
-            viewModel.InScopeHostCount = await context.AssetRecords.Where(r => r.SubjectClass.Value == nameof(NetworkHost) && r.InScope).CountAsync();
-            viewModel.InScopeDomainCount = await context.AssetRecords.Where(r => r.SubjectClass.Value == nameof(DomainName) && r.InScope).CountAsync();
-            viewModel.InScopeRecordCount = await context.AssetRecords.Where(r => r.SubjectClass.Value == nameof(DomainNameRecord) && r.InScope).CountAsync();
-            viewModel.InScopeServiceCount = await context.AssetRecords.Where(r => r.SubjectClass.Value == nameof(NetworkSocket) && r.InScope).CountAsync();
-            viewModel.InScopeEndpointCount = await context.AssetRecords.Where(r => r.SubjectClass.Value == nameof(domain.Entities.HttpEndpoint) && r.InScope).CountAsync();
-            viewModel.InScopeParamCount = await context.AssetRecords.Where(r => r.SubjectClass.Value == nameof(HttpParameter) && r.InScope).CountAsync();
-            viewModel.InScopeEmailCount = await context.AssetRecords.Where(r => r.SubjectClass.Value == nameof(Email) && r.InScope).CountAsync();
+            viewModel.InScopeRangesCount = await context.AssetRecords.Where(r => r.SubjectClass == AssetClass.Create(nameof(NetworkRange)) && r.InScope).CountAsync();
+            viewModel.InScopeHostCount = await context.AssetRecords.Where(r => r.SubjectClass == AssetClass.Create(nameof(NetworkHost)) && r.InScope).CountAsync();
+            viewModel.InScopeDomainCount = await context.AssetRecords.Where(r => r.SubjectClass == AssetClass.Create(nameof(DomainName)) && r.InScope).CountAsync();
+            viewModel.InScopeRecordCount = await context.AssetRecords.Where(r => r.SubjectClass == AssetClass.Create(nameof(DomainNameRecord)) && r.InScope).CountAsync();
+            viewModel.InScopeServiceCount = await context.AssetRecords.Where(r => r.SubjectClass == AssetClass.Create(nameof(NetworkSocket)) && r.InScope).CountAsync();
+            viewModel.InScopeEndpointCount = await context.AssetRecords.Where(r => r.SubjectClass == AssetClass.Create(nameof(domain.Entities.HttpEndpoint)) && r.InScope).CountAsync();
+            viewModel.InScopeParamCount = await context.AssetRecords.Where(r => r.SubjectClass == AssetClass.Create(nameof(HttpParameter)) && r.InScope).CountAsync();
+            viewModel.InScopeEmailCount = await context.AssetRecords.Where(r => r.SubjectClass == AssetClass.Create(nameof(Email)) && r.InScope).CountAsync();
 
-            viewModel.PendingTaskCount = await context.TaskEntries.Where(t => t.State == TaskState.PENDING).CountAsync();
+            viewModel.PendingTaskCount = await context.TaskEntries.Where(t => t.State == TaskState.QUEUED).CountAsync();
             viewModel.QueuedTaskCount = await context.TaskEntries.Where(t => t.State == TaskState.QUEUED).CountAsync();
             viewModel.RunningTaskCount = await context.TaskEntries.Where(t => t.State == TaskState.RUNNING).CountAsync();
             viewModel.FinishedTaskCount = await context.TaskEntries.Where(t => t.State == TaskState.FINISHED).CountAsync();
-            viewModel.FirstTask = (await context.TaskEntries.Where(t => t.State != TaskState.PENDING).OrderBy(t => t.QueuedAt).FirstOrDefaultAsync())?.QueuedAt;
+            viewModel.FirstTask = (await context.TaskEntries.OrderBy(t => t.QueuedAt).FirstOrDefaultAsync())?.QueuedAt;
             viewModel.LastTask = (await context.TaskEntries.OrderByDescending(t => t.QueuedAt).FirstOrDefaultAsync())?.QueuedAt;
             viewModel.LastFinishedTask = (await context.TaskEntries.OrderByDescending(t => t.FinishedAt).FirstOrDefaultAsync())?.FinishedAt;
             viewModel.TaskDetails = new List<SummaryViewModel.TaskDefinitionDetails>();

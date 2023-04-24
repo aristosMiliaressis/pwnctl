@@ -15,7 +15,7 @@ namespace pwnctl.api.Mediator.Handlers.Scope.Commands
 
         public async Task<MediatedResponse> Handle(CreateScopeAggregateCommand command, CancellationToken cancellationToken)
         {
-            var scopeAggregate = _context.ScopeAggregates.FirstOrDefault(a => a.ShortName.Value == command.ShortName);
+            var scopeAggregate = _context.ScopeAggregates.FirstOrDefault(a => a.ShortName == ShortName.Create(command.ShortName));
             if (scopeAggregate != null)
                 return MediatedResponse.Error("Scope Aggregate {0} already exists.", command.ShortName);
 
@@ -26,22 +26,14 @@ namespace pwnctl.api.Mediator.Handlers.Scope.Commands
 
         public static async Task<ScopeAggregate> CreateScopeAggregate(PwnctlDbContext context, ScopeRequestModel command, CancellationToken cancellationToken = default)
         {
-            var scopeAggregate = new ScopeAggregate
-            {
-                ShortName = ShortName.Create(command.ShortName),
-                Description = command.Description
-            };
+            var scopeAggregate = new ScopeAggregate(command.ShortName, command.Description);
 
             foreach (var def in command.ScopeDefinitions)
             {
                 var scopeDef = context.ScopeDefinitions.FirstOrDefault(d => d.Pattern == def.Pattern && d.Type == def.Type);
                 if (scopeDef == null)
                 {
-                    scopeDef = new ScopeDefinition
-                    {
-                        Type = def.Type,
-                        Pattern = def.Pattern
-                    };
+                    scopeDef = new ScopeDefinition(def.Type, def.Pattern);
 
                     context.ScopeDefinitions.Add(scopeDef);
                 }

@@ -6,10 +6,9 @@ using pwnctl.dto.Operations.Commands;
 using MediatR;
 using pwnctl.app.Operations.Entities;
 using pwnctl.app.Operations.Enums;
-using pwnctl.infra.Repositories;
 using pwnctl.infra;
 using pwnctl.api.Mediator.Handlers.Scope.Commands;
-using pwnctl.app;
+using pwnctl.app.Common.ValueObjects;
 
 namespace pwnctl.api.Mediator.Handlers.Operations.Commands
 {
@@ -19,11 +18,11 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
 
         public async Task<MediatedResponse> Handle(CreateOperationCommand command, CancellationToken cancellationToken)
         {
-            var existingProgram = await _context.Operations.FirstOrDefaultAsync(p => p.ShortName.Value == command.ShortName);
+            var existingProgram = await _context.Operations.FirstOrDefaultAsync(p => p.ShortName == ShortName.Create(command.ShortName));
             if (existingProgram != null)
                 return MediatedResponse.Error("Target {0} already exists.", command.ShortName);
 
-            var scopeAggregate = _context.ScopeAggregates.FirstOrDefault(a => a.ShortName.Value == command.Scope.ShortName);
+            var scopeAggregate = _context.ScopeAggregates.FirstOrDefault(a => a.ShortName == ShortName.Create(command.Scope.ShortName));
             if (scopeAggregate == null)
             {
                 if (command.Scope.ScopeDefinitions == null || !command.Scope.ScopeDefinitions.Any())
@@ -34,7 +33,7 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
 
             var taskProfile = _context.TaskProfiles
                                         .Include(p => p.TaskDefinitions)
-                                        .FirstOrDefault(p => p.ShortName.Value == command.Policy.TaskProfile);
+                                        .FirstOrDefault(p => p.ShortName == ShortName.Create(command.Policy.TaskProfile));
             if (taskProfile == null)
                 return MediatedResponse.Error("Task Profile {0} not found.", command.Policy.TaskProfile);
 

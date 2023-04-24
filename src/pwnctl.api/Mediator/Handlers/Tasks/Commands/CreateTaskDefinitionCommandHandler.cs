@@ -3,6 +3,7 @@ using pwnctl.infra.Persistence;
 
 using MediatR;
 using pwnctl.dto.Tasks.Commands;
+using pwnctl.app.Common.ValueObjects;
 
 namespace pwnctl.api.Mediator.Handlers.Tasks.Commands
 {
@@ -12,7 +13,7 @@ namespace pwnctl.api.Mediator.Handlers.Tasks.Commands
 
         public async Task<MediatedResponse> Handle(CreateTaskDefinitionCommand command, CancellationToken cancellationToken)
         {
-            var definition = _context.TaskDefinitions.FirstOrDefault(a => a.ShortName.Value == command.ShortName);
+            var definition = _context.TaskDefinitions.FirstOrDefault(a => a.ShortName == ShortName.Create(command.ShortName));
             if (definition != null)
                 return MediatedResponse.Error("Task Definition {0} already exists.", command.ShortName);
 

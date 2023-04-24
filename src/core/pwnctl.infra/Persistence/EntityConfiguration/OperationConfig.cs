@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using pwnctl.app.Operations.Entities;
 using Humanizer;
+using pwnctl.app.Common.ValueObjects;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace pwnctl.infra.Persistence.EntityConfiguration
 {
@@ -13,7 +15,9 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
 
             builder.HasKey(p => p.Id);
 
-            builder.OwnsOne(e => e.ShortName).Property(e => e.Value).IsRequired();
+            builder.Property(c => c.ShortName)
+                    .HasConversion(name => name.Value, value => ShortName.Create(value),
+                    new ValueComparer<ShortName>((l, r) => l == r, v => v.GetHashCode()));
 
             builder.HasOne(p => p.Scope)
                 .WithMany()

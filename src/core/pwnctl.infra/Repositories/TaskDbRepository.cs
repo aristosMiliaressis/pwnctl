@@ -77,16 +77,11 @@ namespace pwnctl.infra.Repositories
 
         public async Task UpdateAsync(TaskEntry task)
         {
-            if (_context.Entry(task).State == EntityState.Detached)
-                _context.Entry(task).State = EntityState.Modified;
+            _context.Entry(task).State = EntityState.Modified;
             
             await _context.SaveChangesAsync();
-            _context.Entry(task).State = EntityState.Detached;
-            _context.Entry(task.Definition).State = EntityState.Detached;
-            _context.Entry(task.Record).State = EntityState.Detached;
-            _context.Entry(task.Record.Asset).State = EntityState.Detached;
-            if (task.Record.Scope != null)
-                _context.Entry(task.Record.Scope).State = EntityState.Detached;
+
+            _context.Entry(task).DetachReferenceGraph();
         }
 
         public async Task AddAsync(TaskEntry task)
@@ -97,7 +92,10 @@ namespace pwnctl.infra.Repositories
                 _context.Entry(task.Record).State = EntityState.Added;
                 _context.Entry(task.Record.Asset).State = EntityState.Added;
             }
+            
             await _context.SaveChangesAsync();
+
+            _context.Entry(task).DetachReferenceGraph();
         }
     }
 }

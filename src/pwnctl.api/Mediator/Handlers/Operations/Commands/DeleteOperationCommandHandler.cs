@@ -2,6 +2,7 @@ using pwnctl.dto.Mediator;
 using pwnctl.infra.Persistence;
 using MediatR;
 using pwnctl.dto.Operations.Commands;
+using pwnctl.app.Common.ValueObjects;
 
 namespace pwnctl.api.Mediator.Handlers.Operations.Commands
 {
@@ -11,7 +12,7 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
 
         public async Task<MediatedResponse> Handle(DeleteOperationCommand command, CancellationToken cancellationToken)
         {
-            var op = _context.Operations.FirstOrDefault(a => a.ShortName.Value == command.ShortName);
+            var op = _context.Operations.FirstOrDefault(a => a.ShortName == ShortName.Create(command.ShortName));
             if (op == null)
                 return MediatedResponse.Error("Operation {0} not found.", command.ShortName);
 

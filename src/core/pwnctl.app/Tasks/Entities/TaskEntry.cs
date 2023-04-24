@@ -22,14 +22,15 @@ namespace pwnctl.app.Tasks.Entities
         public int DefinitionId { get; private init; }
         public TaskDefinition Definition { get; set; }
 
-        public AssetRecord Record { get; set; }
+        public AssetRecord Record { get; private init; }
         public Guid RecordId { get; private init; }
 
         private TaskEntry() {}
 
         public TaskEntry(Operation operation, TaskDefinition definition, AssetRecord record)
         {
-            State = TaskState.PENDING;
+            State = TaskState.QUEUED;
+            QueuedAt = DateTime.UtcNow;
             Operation = operation;
             OperationId = operation.Id;
             Definition = definition;
@@ -37,20 +38,9 @@ namespace pwnctl.app.Tasks.Entities
             Record = record;
         }
 
-        public void Queued()
-        {
-            if (State != TaskState.PENDING)
-                throw new TaskStateException(State, TaskState.QUEUED);
-
-            State = TaskState.QUEUED;
-            QueuedAt = DateTime.UtcNow;
-        }
-
         public void Started()
         {
-            if (State == TaskState.PENDING)
-                PwnInfraContext.Logger.Warning($"TaskEntry {Id} started from PENDING state.");
-            else if (State == TaskState.FINISHED)
+            if (State == TaskState.FINISHED)
                 throw new TaskStateException(State, TaskState.RUNNING);
 
             State = TaskState.RUNNING;

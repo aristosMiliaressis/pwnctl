@@ -69,7 +69,6 @@ namespace pwnctl.infra.Repositories
                 .GetProperties()
                 .Where(p => p.PropertyType.IsAssignableTo(typeof(Asset))
                          && p.GetValue(asset) != null);
-            record.SubjectClass = AssetClass.Create(asset.GetType().Name);
 
             foreach (var reference in assetReferences)
             {
@@ -114,8 +113,6 @@ namespace pwnctl.infra.Repositories
             var existingAsset = FindMatching(record.Asset);
             if (existingAsset == null)
             {
-                record.FoundAt = DateTime.UtcNow;
-
                 _context.Entry(record.Asset).State = EntityState.Added;
 
                 _context.Add(record);
@@ -148,7 +145,7 @@ namespace pwnctl.infra.Repositories
                             .Include(e => e.NetworkHost)
                                 .ThenInclude(e => e.AARecords)
                                 .ThenInclude(e => e.DomainName)
-                            .Where(r => r.SubjectClass.Value == nameof(NetworkHost))
+                            .Where(r => r.SubjectClass == AssetClass.Create(nameof(NetworkHost)))
                             .AsNoTracking()
                             .ToListAsync();
         }
@@ -162,7 +159,7 @@ namespace pwnctl.infra.Repositories
                             .Include(e => e.Tasks)
                             .Include(e => e.DomainName)
                                 .ThenInclude(e => e.ParentDomain)
-                            .Where(r => r.SubjectClass.Value == nameof(DomainName))
+                            .Where(r => r.SubjectClass == AssetClass.Create(nameof(DomainName)))
                             .AsNoTracking()
                             .ToListAsync();
         }
@@ -178,7 +175,7 @@ namespace pwnctl.infra.Repositories
                                 .ThenInclude(e => e.DomainName)
                             .Include(e => e.DomainNameRecord)
                                 .ThenInclude(e => e.NetworkHost)
-                            .Where(r => r.SubjectClass.Value == nameof(DomainNameRecord))
+                            .Where(r => r.SubjectClass == AssetClass.Create(nameof(DomainNameRecord)))
                             .AsNoTracking()
                             .ToListAsync();
         }
@@ -196,7 +193,7 @@ namespace pwnctl.infra.Repositories
                             .Include(e => e.HttpEndpoint)
                                 .ThenInclude(e => e.Socket)
                                     .ThenInclude(s => s.DomainName)
-                            .Where(r => r.SubjectClass.Value == nameof(HttpEndpoint))
+                            .Where(r => r.SubjectClass == AssetClass.Create(nameof(HttpEndpoint)))
                             .AsNoTracking()
                             .ToListAsync();
         }
@@ -209,7 +206,7 @@ namespace pwnctl.infra.Repositories
                             .Include(e => e.Tags)
                             .Include(e => e.Tasks)
                             .Include(e => e.NetworkRange)
-                            .Where(r => r.SubjectClass.Value == nameof(NetworkRange))
+                            .Where(r => r.SubjectClass == AssetClass.Create(nameof(NetworkRange)))
                             .AsNoTracking()
                             .ToListAsync();
         }
@@ -229,7 +226,7 @@ namespace pwnctl.infra.Repositories
                                 .ThenInclude(e => e.Endpoint)
                                 .ThenInclude(e => e.Socket)
                                 .ThenInclude(s => s.DomainName)
-                            .Where(r => r.SubjectClass.Value == nameof(HttpParameter))
+                            .Where(r => r.SubjectClass == AssetClass.Create(nameof(HttpParameter)))
                             .AsNoTracking()
                             .ToListAsync();
         }
@@ -245,7 +242,7 @@ namespace pwnctl.infra.Repositories
                                 .ThenInclude(s => s.NetworkHost)
                             .Include(e => e.NetworkSocket)
                                 .ThenInclude(s => s.DomainName)
-                            .Where(r => r.SubjectClass.Value == nameof(NetworkSocket))
+                            .Where(r => r.SubjectClass == AssetClass.Create(nameof(NetworkSocket)))
                             .AsNoTracking()
                             .ToListAsync();
         }
@@ -259,7 +256,7 @@ namespace pwnctl.infra.Repositories
                             .Include(e => e.Tasks)
                             .Include(e => e.Email)
                                 .ThenInclude(e => e.DomainName)
-                            .Where(r => r.SubjectClass.Value == nameof(Email))
+                            .Where(r => r.SubjectClass == AssetClass.Create(nameof(Email)))
                             .AsNoTracking()
                             .ToListAsync();
         }
