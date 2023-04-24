@@ -206,6 +206,21 @@ resource "aws_cloudwatch_metric_alarm" "task_queue_depth_metric" {
   }
 
   metric_query {
+    id          = "visibleOutputMessages"
+
+    metric {
+      metric_name = "ApproximateNumberOfMessagesVisible"
+      namespace   = "AWS/SQS"
+      period      = 60
+      stat        = "Maximum"
+
+      dimensions = {
+        QueueName = aws_sqs_queue.output.name
+      }
+    }
+  }
+
+  metric_query {
     id          = "inFlightMessages"
     
     metric {
@@ -222,7 +237,7 @@ resource "aws_cloudwatch_metric_alarm" "task_queue_depth_metric" {
 
   metric_query {
     id          = "allMessages"
-    expression  = "visibleMessages + inFlightMessages"
+    expression  = "visibleMessages + inFlightMessages + visibleOutputMessages"
     return_data = "true"
   }
 
