@@ -8,9 +8,9 @@
   "profile": "",
   "region": "",
   "configuration": "Release",
-  "function-runtime": "dotnet6",
+  "function-runtime": "provided.al2",
   "function-memory-size": 256,
   "function-timeout": 900,
-  "function-handler": "pwnctl.api",
+  "function-handler": "bootstrap",
   "function-url-enable": true
 }

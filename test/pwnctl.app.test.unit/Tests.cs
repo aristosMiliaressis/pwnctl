@@ -580,6 +580,23 @@ public sealed class Tests
                             .First(t => t.Definition.ShortName == ShortName.Create("second_order_takeover"));
         Assert.NotNull(task);
 
+        var outOfScope = new
+        {
+            asset = "https://outofscope.com/api/token",
+            tags = new Dictionary<string, string>{
+               {"Content-Type", "text/html"}
+            }
+        };
+
+        // out of scope test
+        await processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(outOfScope), EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry);
+        var xx = context.AssetRecords
+                        .Include(r => r.HttpEndpoint)
+                        .Include(r => r.Tasks)
+                        .Where(r => r.HttpEndpoint.Url == "https://outofscope.com/api/token/")
+                        .First();
+        Assert.Empty(xx.Tasks);
+
         // TODO: AllowActive = false test, csv black&whitelist test
         // TODO: test TaskDefinition.MatchOutOfScope
         // TODO: test NotificationRule.CheckOutOfScope
