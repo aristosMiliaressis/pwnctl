@@ -5,6 +5,7 @@ using Humanizer;
 using pwnctl.domain.ValueObjects;
 using pwnctl.app.Common.ValueObjects;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using pwnctl.app;
 
 namespace pwnctl.infra.Persistence.EntityConfiguration
 {
@@ -37,6 +38,11 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
             builder.ToTable(builder.GetType().GenericTypeArguments[0].Name.Underscore().Pluralize());
 
             builder.HasKey(d => d.Id);
+
+            builder.Property(d => d.MonitorRules)
+                    .HasConversion(
+                        v => PwnInfraContext.Serializer.Serialize(v),
+                        v => PwnInfraContext.Serializer.Deserialize<MonitorRules>(v));
 
             builder.Property(c => c.ShortName)
                     .HasConversion(name => name.Value, value => ShortName.Create(value),

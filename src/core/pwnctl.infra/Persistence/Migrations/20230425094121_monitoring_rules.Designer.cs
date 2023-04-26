@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using pwnctl.infra.Persistence;
@@ -11,9 +12,10 @@ using pwnctl.infra.Persistence;
 namespace pwnctl.infra.Migrations
 {
     [DbContext(typeof(PwnctlDbContext))]
-    partial class PwnctlDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230425094121_monitoring_rules")]
+    partial class monitoring_rules
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -161,9 +163,6 @@ namespace pwnctl.infra.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CronSchedule")
-                        .HasColumnType("text");
 
                     b.Property<int?>("PolicyId")
                         .HasColumnType("integer");

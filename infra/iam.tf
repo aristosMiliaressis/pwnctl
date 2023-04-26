@@ -196,3 +196,42 @@ resource "aws_iam_role_policy_attachment" "grant_ecs_sm_readwrite_access" {
   role       = aws_iam_role.ecs.name
   policy_arn = data.aws_iam_policy.sm_readwrite_access.arn
 }
+
+# EventBridge Role
+data "aws_iam_policy_document" "assume_role" {
+  statement {
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["events.amazonaws.com"]
+    }
+
+    actions = ["sts:AssumeRole"]
+  }
+}
+
+resource "aws_iam_role" "ecs_events" {
+  name               = "ecs_events"
+  assume_role_policy = data.aws_iam_policy_document.assume_role.json
+}
+
+data "aws_iam_policy_document" "ecs_events_run_task_with_any_role" {
+  statement {
+    effect    = "Allow"
+    actions   = ["iam:PassRole"]
+    resources = ["*"]
+  }
+
+  statement {
+    effect    = "Allow"
+    actions   = ["ecs:RunTask"]
+    resources = [replace(aws_ecs_task_definition.this.arn, "/:\\d+$/", ":*")]
+  }
+}
+
+resource "aws_iam_role_policy" "ecs_events_run_task_with_any_role" {
+  name   = "ecs_events_run_task_with_any_role"
+  role   = aws_iam_role.ecs_events.id
+  policy = data.aws_iam_policy_document.ecs_events_run_task_with_any_role.json
+}

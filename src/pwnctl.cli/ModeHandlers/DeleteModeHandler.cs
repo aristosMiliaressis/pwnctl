@@ -34,7 +34,7 @@ namespace pwnctl.cli.ModeHandlers
         {
             await Parser.Default.ParseArguments<DeleteModeHandler>(args).WithParsedAsync(async opt =>
             {
-                var request = (MediatedRequest)PwnInfraContext.Serializer.Deserialize($"{{\"ShortName\":\"{opt.ShortName}\"}}", ResourceMap[opt.Resource]);
+                var request = (MediatedRequest)PwnInfraContext.Serializer.Deserialize($$"""{"ShortName":"{{opt.ShortName}}"}""", ResourceMap[opt.Resource]);
 
                 await PwnctlApiClient.Default.Send(request);
             });

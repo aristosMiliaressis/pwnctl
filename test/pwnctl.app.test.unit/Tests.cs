@@ -483,7 +483,7 @@ public sealed class Tests
         Assert.True(record.InScope);
         Assert.Equal("tcp://abc.tesla.com:443", record.NetworkSocket.Address);
 
-        await processor.ProcessAsync("{\"Asset\":\"https://qwe.tesla.com\",\"FoundBy\":\"httpx\"}", EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry);
+        await processor.ProcessAsync($$"""{"Asset":"https://qwe.tesla.com","FoundBy":"httpx"}""", EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry);
         serv = context.Sockets.First(s => s.Address == "tcp://qwe.tesla.com:443");
         Assert.NotNull(serv);
 
@@ -634,7 +634,7 @@ public sealed class Tests
         Assert.Equal(task.Definition.ShortName, record?.FoundByTask.Definition.ShortName);
         Assert.DoesNotContain("foundby", record?.Tags.Select(t => t.Name));
 
-        (_, stdout, _) = await CommandExecutor.ExecuteAsync("echo '{\"Asset\":\"example2.com\"}'");
+        (_, stdout, _) = await CommandExecutor.ExecuteAsync($$"""echo '{"Asset":"example2.com"}'""");
 
         foreach (var line in stdout.ToString().Split("\n").Where(l => !string.IsNullOrEmpty(l)))
         {
@@ -651,7 +651,7 @@ public sealed class Tests
         Assert.Equal(EntityFactory.TaskEntry.Definition.ShortName, record?.FoundByTask.Definition.ShortName);
         Assert.DoesNotContain("foundby", record?.Tags.Select(t => t.Name));
 
-        (_, stdout, _) = await CommandExecutor.ExecuteAsync("echo '{\"Asset\":\"sub.example3.com\",\"tags\":{\"test\":\"tag\"}}'");
+        (_, stdout, _) = await CommandExecutor.ExecuteAsync($$$"""echo '{"Asset":"sub.example3.com","tags":{"test":"tag"}}'""");
 
         foreach (var line in stdout.ToString().Split("\n").Where(l => !string.IsNullOrEmpty(l)))
         {

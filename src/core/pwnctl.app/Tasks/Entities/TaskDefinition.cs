@@ -21,6 +21,8 @@ namespace pwnctl.app.Tasks.Entities
         public string Subject { init { SubjectClass = AssetClass.Create(value); } }
         public string Name { init { ShortName = ShortName.Create(value); } }
 
+        public MonitorRules MonitorRules { get; set; }
+
         public TaskDefinition() { }
 
         public TaskDefinition(TaskProfile profile) 
@@ -38,5 +40,13 @@ namespace pwnctl.app.Tasks.Entities
 
             return PwnInfraContext.FilterEvaluator.Evaluate(Filter, record);
         }
+    }
+
+    public struct MonitorRules
+    {
+        public string Schedule { get; set; }
+        public string PreCondition { get; set; }
+        public string PostCondition { get; set; }
+        public string NotificationTemplate { get; set; }
     }
 }

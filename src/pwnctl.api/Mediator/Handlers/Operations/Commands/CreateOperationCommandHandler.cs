@@ -7,6 +7,7 @@ using MediatR;
 using pwnctl.app.Operations.Entities;
 using pwnctl.app.Operations.Enums;
 using pwnctl.infra;
+using pwnctl.infra.Scheduling;
 using pwnctl.api.Mediator.Handlers.Scope.Commands;
 using pwnctl.app.Common.ValueObjects;
 
@@ -14,7 +15,8 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
 {
     public sealed class CreateOperationCommandHandler : IRequestHandler<CreateOperationCommand, MediatedResponse>
     {
-        private readonly PwnctlDbContext _context = new PwnctlDbContext();
+        private readonly PwnctlDbContext _context = new();
+        private readonly EventBridgeScheduler _scheduler = new();
 
         public async Task<MediatedResponse> Handle(CreateOperationCommand command, CancellationToken cancellationToken)
         {
@@ -44,6 +46,7 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
             policy.OnlyPassive = command.Policy.OnlyPassive;
 
             var op = new Operation(command.ShortName, command.Type, policy, scopeAggregate);
+            op.CronSchedule = command.CronSchedule;
 
             _context.Operations.Add(op);
             await _context.SaveChangesAsync();
@@ -55,6 +58,11 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
             else if (command.Type == OperationType.Scan)
             {
                 StartScanOperation(op);
+            }
+
+            if (command.CronSchedule != null)
+            {
+                await _scheduler.ScheduleOperation(op);
             }
 
             return MediatedResponse.Success();
