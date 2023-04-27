@@ -51,20 +51,22 @@ sub.example.com
 sub2.example.com
 ```
 
-**Tags** are a way to store arbitary metadata relating to an asset, they can be used in the `Filter` field (trough an indexer on the asset base class) to chain tasks into workflows where one task (e.g nmap) discovers some metadata relating to an asset (e.g. IIS service banner) which than causes a metadata specific task to be queued (e.g. IIS shortname scanning)
+**Tags** are a way to store arbitary metadata relating to an asset, they can be used in the `Filter` field (trough an indexer on the asset base class) to chain tasks into workflows where one task (e.g nmap) discovers some metadata relating to an asset (e.g. IIS service banner) which than causes a specific task to be queued (e.g. IIS shortname scanning)
 
 ### Scope
 
-scope is determined trough explicit matching of `ScopeDefinition` patterns or trough a set of relationship rules
+scope is determined trough explicit matching of `ScopeDefinition` patterns or trough a set of implicit relationship rules
 
-scope definitions can be one of three types (DomainRegex, UrlRegex & CIDR), and can be grouped into ScopeAggregates
+scope definitions can be one of three types (`DomainRegex`, `UrlRegex` or `CIDR`), and can be grouped into ScopeAggregates
 
 aside from direct matching assets will be considered inscope according to the following rules
 - DomainNameRecords beloinging to  in scope domain are inscope
 - Ip addreses connected to inscope domain trough A/AAAA record are also inscope
 - Domains connected to inscope domain trough CNAME record are NOT inscope
-- NetworkSockets/HttpEndpoints/HttpParameters containing inscope ips or domains are also inscope
+- NetworkSockets/HttpEndpoints/HttpParameters routing to inscope ips or domains are inscope
 - Emails containing inscope domain are in scope
+
+scope definitions & scope aggregates can be created trough the rest api & cli.
 
 **sample ScopeAggregate creation request**
 ```json
@@ -86,6 +88,8 @@ tasks are configured trough TaskDefinitions and can be organized into TaskProfil
 tasks definitions are specific to an assset class (i.e domain_resolution task only runs on DomainName assets)
 
 assets can be filtered trough the CSharpScript `Filter` field that has access to the asset class and associated Tags.
+
+task definitions & task profiles can be seeded trough yaml files or created trough the rest api & cli.
 
 **`task-definitions.yml`**
 ```YAML
@@ -159,9 +163,16 @@ TaskDefinitions:
 
 **Notification Configuration**
 
+a notify `provider-config.yaml` file with valid discord configuration should be placed in the `deployment/` directory to enable notifications.
+
 1. worker instances send status notification at start up & shutdown
-2. cronjob sends report detailing findings by asset class & task status (pending/completed/failed) [!WorkInProgress!]
-3. configurable notification rules with CSharpScript `Filter` field like `TaskDefinitions` 
+2. configurable notification rules with CSharpScript `Filter` field like `TaskDefinitions` 
+
+notification rules can be seeded trough yaml files or created trough the rest api & cli.
+
+**To Do**
+- [ ] periodic status notification
+- [ ] terraform discord server
 
 **`notification-rules.yml`**
 ```YAML
@@ -199,18 +210,19 @@ TaskDefinitions:
 
 ### Operations
 
-there are three types of operations Crawl, Scan & Monitor.
+there are three types of operations `Crawl`, `Scan` & `Monitor`.
 
-every operation has a ScopeAggregate and a TaskProfile.
+every operation has an associated `ScopeAggregate` and `TaskProfile`.
 
-**Crawl** operations have an addition Input list that contains the initial assets that should be processed to start a recursive discovery loop.
+**Crawl** operations have an addition Input list that contains the initial assets that should be processed to start a recursive loop where tasks will find new assets and further tasks will be queued for the new assets to keep the loop going untill all the discoverable scope has been crawled according to the `TaskProfile` configuration.
 
-**Scan** operations can be used to expand on the collected assets and discover misconfigurations in a controlled manner.
+**Scan** operations can be used to expand on the collected assets or discover misconfigurations in a controlled manner where pre-discovered assets will get assigned tasks but outputs will not be recursivly processed like in crawl mode.
 
 **Monitor** operations allow you to periodicly monitor assets for change.
 
 **To Do**
 - [ ] Implement schedule based Monitor operations with EventBridge
+- [ ] Implement scan operations
 
 ## How to set it up?
 
@@ -222,4 +234,4 @@ every operation has a ScopeAggregate and a TaskProfile.
 
 **To Do**
 - [ ] terraform private ecr registry
-- [ ] terraform discord server
+- [ ] bearer based api auth
