@@ -42,11 +42,11 @@ data "aws_iam_policy_document" "sqs_readwrite" {
 
     actions = [
       "sqs:ChangeMessageVisibility",
-          "sqs:DeleteMessage",
-          "sqs:GetQueueAttributes",
-          "sqs:GetQueueUrl",
-          "sqs:ReceiveMessage",
-          "sqs:SendMessage"
+      "sqs:DeleteMessage",
+      "sqs:GetQueueAttributes",
+      "sqs:GetQueueUrl",
+      "sqs:ReceiveMessage",
+      "sqs:SendMessage"
     ]
 
     resources = ["*"]
@@ -60,6 +60,31 @@ resource "aws_iam_policy" "sqs_readwrite" {
   policy      = data.aws_iam_policy_document.sqs_readwrite.json
 }
 
+data "aws_iam_policy_document" "eventbridge_scheduler" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "ecs:ListClusters",
+      "ecs:ListTaskDefinitions",
+      "iam:ListRoles",
+      "iam:PassRole",
+      "events:PutRule",
+      "events:PutTargets",
+      "events:DeleteRule",
+      "events:DeleteTargets",
+    ]
+
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_policy" "eventbridge_scheduler" {
+  name        = "eventbridge_scheduler"
+  path        = "/"
+  description = "IAM policy to create & delete event bridge schedules"
+  policy      = data.aws_iam_policy_document.eventbridge_scheduler.json
+}
 
 data "aws_iam_policy_document" "cloud_watch_logs_access" {
   statement {
@@ -132,6 +157,11 @@ resource "aws_iam_role_policy_attachment" "grant_lambda_sm_readwrite_access" {
 resource "aws_iam_role_policy_attachment" "grant_lambda_sqs_readwrite_access" {
   role       = aws_iam_role.lambda.name
   policy_arn = aws_iam_policy.sqs_readwrite.arn
+}
+
+resource "aws_iam_role_policy_attachment" "grant_lambda_eventbridge_scheduler_access" {
+  role       = aws_iam_role.lambda.name
+  policy_arn = aws_iam_policy.eventbridge_scheduler.arn
 }
 
 resource "aws_iam_role_policy_attachment" "grant_lambda_cloud_watch_logs_access" {
