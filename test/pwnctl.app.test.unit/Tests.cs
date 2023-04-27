@@ -593,7 +593,7 @@ public sealed class Tests
         var xx = context.AssetRecords
                         .Include(r => r.HttpEndpoint)
                         .Include(r => r.Tasks)
-                        .Where(r => r.HttpEndpoint.Url == "https://outofscope.com/api/token/")
+                        .Where(r => r.HttpEndpoint.Url == "https://outofscope.com/api/token")
                         .First();
         Assert.Empty(xx.Tasks);
 
