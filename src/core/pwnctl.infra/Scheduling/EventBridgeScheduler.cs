@@ -1,5 +1,6 @@
 using Amazon.CloudWatchEvents;
 using Amazon.CloudWatchEvents.Model;
+using Amazon.EC2;
 using Amazon.ECS;
 using Amazon.IdentityManagement;
 using pwnctl.app.Operations.Entities;
@@ -12,7 +13,10 @@ public class EventBridgeScheduler
     {
         var client = new AmazonCloudWatchEventsClient();
         var ecsClient = new AmazonECSClient();
+        var ec2Client = new AmazonEC2Client();
         var iamClient = new AmazonIdentityManagementServiceClient();
+
+        var subnets = await ec2Client.DescribeSubnetsAsync();
 
         var cluster = await ecsClient.ListClustersAsync(new());
 
@@ -42,7 +46,19 @@ public class EventBridgeScheduler
                         EcsParameters = new EcsParameters
                         {
                             TaskCount = 1,
-                            TaskDefinitionArn = taskDefinition.TaskDefinitionArns.First()
+                            TaskDefinitionArn = taskDefinition.TaskDefinitionArns.First(),
+                            LaunchType = Amazon.CloudWatchEvents.LaunchType.FARGATE,
+                            NetworkConfiguration = new()
+                            {
+                                AwsvpcConfiguration = new()
+                                {
+                                    AssignPublicIp = Amazon.CloudWatchEvents.AssignPublicIp.ENABLED,
+                                    Subnets = subnets.Subnets
+                                                    .Where(s => s.Tags.Any(t => t.Key == "Name" && t.Value.Contains("Public")))
+                                                    .Select(n => n.SubnetId)
+                                                    .ToList()
+                                }
+                            }
                         },
                         Input = $$$"""{"ContainerOverrides":{"environment":[{"name":"PWNCTL_Operation","value":"{{{op.Id}}}"}]}}"""
                     }
