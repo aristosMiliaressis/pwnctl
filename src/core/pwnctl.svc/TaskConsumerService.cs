@@ -8,6 +8,7 @@ using pwnctl.infra.Commands;
 using pwnctl.infra.Queueing;
 using pwnctl.infra.Repositories;
 using System.Text;
+using pwnctl.app.Operations;
 
 namespace pwnctl.svc
 {
@@ -15,7 +16,11 @@ namespace pwnctl.svc
     {
         private readonly AssetProcessor _processor = AssetProcessorFactory.Create();
         private readonly TaskQueueService _queueService = TaskQueueServiceFactory.Create();
-        private readonly TaskDbRepository _taskRepo = new TaskDbRepository();
+        private readonly TaskDbRepository _taskRepo = new();
+        private readonly OperationInitializer _initializer = new(new OperationDbRepository(), 
+                                                                new AssetDbRepository(), 
+                                                                new TaskDbRepository(),
+                                                                TaskQueueServiceFactory.Create());
 
         public TaskConsumerService(IHostApplicationLifetime hostApplicationLifetime)
         {
@@ -29,6 +34,12 @@ namespace pwnctl.svc
         {
             PwnInfraContext.NotificationSender.Send($"{nameof(TaskConsumerService)} started.", NotificationTopic.status);
 
+            if (int.TryParse(Environment.GetEnvironmentVariable("PWNCTL_Operation"), out int opId))
+            {
+                await _initializer.InitializeAsync(opId);
+                return;
+            }
+
             while (!stoppingToken.IsCancellationRequested)
             {
                 var taskDTO = await _queueService.ReceiveAsync<PendingTaskDTO>(stoppingToken);
@@ -38,11 +49,12 @@ namespace pwnctl.svc
                     continue;
                 }
 
-                await ExecuteTaskAsync(taskDTO, stoppingToken);
+                await ExecutePendingTaskAsync(taskDTO, stoppingToken);
             }
         }
 
-        private async Task ExecuteTaskAsync(PendingTaskDTO taskDTO, CancellationToken stoppingToken)
+
+        private async Task ExecutePendingTaskAsync(PendingTaskDTO taskDTO, CancellationToken stoppingToken)
         {
             // create a linked token that cancels the task when the max task timeout 
             // passes or when a SIGTERM is received due to a scale in event
@@ -112,7 +124,7 @@ namespace pwnctl.svc
             if (batchDTO == null)
             {
                 PwnInfraContext.Logger.Information("no work found");
-                Thread.Sleep(1000 * 60 * 3);
+                Thread.Sleep(1000 * 60);
                 return;
             }
 

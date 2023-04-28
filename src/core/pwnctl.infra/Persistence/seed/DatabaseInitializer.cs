@@ -42,18 +42,6 @@ namespace pwnctl.infra.Persistence
             {
                 await SeedNotificationRulesAsync(context);
             }
-
-            string assetSeed = Path.Combine(EnvironmentVariables.INSTALL_PATH, "seed/assets.txt");
-            if (EnvironmentVariables.TEST_RUN && File.Exists(assetSeed))
-            {
-                var processor = AssetProcessorFactory.Create();
-                var queueService = TaskQueueServiceFactory.Create();
-                var taskRepo = new TaskDbRepository();
-                foreach (var line in File.ReadAllLines(assetSeed))
-                {
-                    await processor.TryProcessAsync(line, null); 
-                }
-            }
         }
 
         private static async Task SeedTaskDefinitionsAsync(PwnctlDbContext context)

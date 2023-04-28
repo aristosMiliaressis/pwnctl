@@ -8,6 +8,8 @@ TaskDefinitions:
   - Name: reverse_range_lookup
     CommandTemplate: reverse-range-lookup.sh {{CIDR}}
     Subject: NetworkRange
+    MonitoringRules:
+      Schedule: 0 * * * ? *
 
   - Name: asn_lookup
     CommandTemplate: asn-lookup.sh {{IP}}

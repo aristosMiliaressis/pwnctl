@@ -49,6 +49,22 @@ namespace pwnctl.infra.Repositories
             return await FindRecordQuery(_context, UUIDv5ValueGenerator.GenerateByString(asset.ToString()));
         }
 
+        public async Task<List<AssetRecord>> ListInScopeAsync(int scopeId, CancellationToken token = default)
+        {
+            var aggregate = await _context.ScopeAggregates
+                                    .Include(a => a.Definitions)
+                                        .ThenInclude(d => d.Definition)
+                                    .FirstOrDefaultAsync(a => a.Id == scopeId);
+            
+            var scopeDefinitionIds = aggregate.Definitions.Select(d => d.DefinitionId).ToList();
+            
+            return await _context.AssetRecords
+                                .Include(r => r.Tasks)
+                                    .ThenInclude(t => t.Definition)
+                                .Where(a => a.ScopeId.HasValue && scopeDefinitionIds.Contains(a.ScopeId.Value))
+                                .ToListAsync(token);
+        }
+
         public Asset FindMatching(Asset asset)
         {
             var lambda = ExpressionTreeBuilder.BuildAssetMatchingLambda(asset);

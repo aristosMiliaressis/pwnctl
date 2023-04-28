@@ -2,6 +2,7 @@ using pwnctl.app.Assets.Aggregates;
 using pwnctl.app.Common.ValueObjects;
 using pwnctl.domain.ValueObjects;
 using pwnctl.kernel.BaseClasses;
+using NCrontab;
 
 namespace pwnctl.app.Tasks.Entities
 {
@@ -37,6 +38,23 @@ namespace pwnctl.app.Tasks.Entities
 
             if (string.IsNullOrEmpty(Filter))
                 return true;
+
+            if (MonitorRules.Schedule != null)
+            {
+                var schedule = CrontabSchedule.Parse(MonitorRules.Schedule);
+                
+                if (record.Tasks.Any(t => t.Definition.ShortName == ShortName
+                                       && schedule.GetNextOccurrence(t.StartedAt) > DateTime.UtcNow))
+                {
+                    return false;
+                }
+                
+                if (MonitorRules.PreCondition != null)
+                {
+                    return PwnInfraContext.FilterEvaluator.Evaluate(MonitorRules.PreCondition, record)
+                        && PwnInfraContext.FilterEvaluator.Evaluate(Filter, record);
+                }
+            }
 
             return PwnInfraContext.FilterEvaluator.Evaluate(Filter, record);
         }

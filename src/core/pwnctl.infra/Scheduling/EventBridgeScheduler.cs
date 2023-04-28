@@ -3,6 +3,7 @@ using Amazon.CloudWatchEvents.Model;
 using Amazon.EC2;
 using Amazon.ECS;
 using Amazon.IdentityManagement;
+using pwnctl.app;
 using pwnctl.app.Operations.Entities;
 
 namespace pwnctl.infra.Scheduling;
@@ -33,36 +34,38 @@ public class EventBridgeScheduler
             ScheduleExpression = $"cron({op.CronSchedule})"
         });
 
-        await client.PutTargetsAsync(new PutTargetsRequest
+        var respone = await client.PutTargetsAsync(new PutTargetsRequest
         {
             Rule = $"{op.ShortName.Value}_schedule",
             Targets = new List<Target>
+            {
+                new Target
                 {
-                    new Target
+                    Id = $"{op.ShortName.Value}_target",
+                    Arn = cluster.ClusterArns.First(),
+                    RoleArn = roles.Roles.First(r => r.RoleName == "ecs_events").Arn,
+                    EcsParameters = new EcsParameters
                     {
-                        Id = $"{op.ShortName.Value}_target",
-                        Arn = cluster.ClusterArns.First(),
-                        RoleArn = roles.Roles.First(r => r.RoleName == "ecs_events").Arn,
-                        EcsParameters = new EcsParameters
+                        TaskCount = 1,
+                        TaskDefinitionArn = taskDefinition.TaskDefinitionArns.First(),
+                        LaunchType = Amazon.CloudWatchEvents.LaunchType.FARGATE,
+                        NetworkConfiguration = new()
                         {
-                            TaskCount = 1,
-                            TaskDefinitionArn = taskDefinition.TaskDefinitionArns.First(),
-                            LaunchType = Amazon.CloudWatchEvents.LaunchType.FARGATE,
-                            NetworkConfiguration = new()
+                            AwsvpcConfiguration = new()
                             {
-                                AwsvpcConfiguration = new()
-                                {
-                                    AssignPublicIp = Amazon.CloudWatchEvents.AssignPublicIp.ENABLED,
-                                    Subnets = subnets.Subnets
-                                                    .Where(s => s.Tags.Any(t => t.Key == "Name" && t.Value.Contains("Public")))
-                                                    .Select(n => n.SubnetId)
-                                                    .ToList()
-                                }
+                                AssignPublicIp = Amazon.CloudWatchEvents.AssignPublicIp.ENABLED,
+                                Subnets = subnets.Subnets
+                                                .Where(s => s.Tags.Any(t => t.Key == "Name" && t.Value.Contains("Public")))
+                                                .Select(n => n.SubnetId)
+                                                .ToList()
                             }
-                        },
-                        Input = $$$"""{"ContainerOverrides":{"environment":[{"name":"PWNCTL_Operation","value":"{{{op.Id}}}"}]}}"""
-                    }
+                        }
+                    },
+                    Input = $$$"""{"containerOverrides":[{"name":"pwnctl","environment":[{"name":"PWNCTL_Operation","value":"{{{op.Id}}}"}]}]}"""
                 }
+            }
         });
+
+        respone.FailedEntries.ForEach(fail => PwnInfraContext.Logger.Error($"{fail.ErrorCode}:{fail.ErrorMessage}"));
     }
 }

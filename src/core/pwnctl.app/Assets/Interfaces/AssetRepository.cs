@@ -12,6 +12,8 @@ namespace pwnctl.app.Assets.Interfaces
         Task<AssetRecord> UpdateRecordReferences(AssetRecord record, Asset asset);
         Task SaveAsync(AssetRecord asset);
 
+        Task<List<AssetRecord>> ListInScopeAsync(int scopeId, CancellationToken token = default);
+
         Task<List<AssetRecord>> ListHostsAsync();
         Task<List<AssetRecord>> ListEndpointsAsync();
         Task<List<AssetRecord>> ListServicesAsync();

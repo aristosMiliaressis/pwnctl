@@ -8,6 +8,7 @@ using pwnctl.app.Assets.DTO;
 using pwnctl.app.Queueing.DTO;
 using pwnctl.app.Operations.Entities;
 using pwnctl.app.Tasks.Interfaces;
+using pwnctl.app.Operations.Enums;
 
 namespace pwnctl.app.Assets
 {
@@ -59,7 +60,7 @@ namespace pwnctl.app.Assets
             await ProcessAssetAsync(asset, dto.Tags, operation, foundByTask);
         }
 
-        private async Task ProcessAssetAsync(Asset asset, Dictionary<string, object> tags, Operation operation, TaskEntry foundByTask, List<Asset> refChain = null)
+        internal async Task ProcessAssetAsync(Asset asset, Dictionary<string, object> tags, Operation operation, TaskEntry foundByTask, List<Asset> refChain = null)
         {
             refChain = refChain == null
                     ? new List<Asset>()
@@ -86,45 +87,62 @@ namespace pwnctl.app.Assets
             record = await _assetRepository.UpdateRecordReferences(record, asset);
             record.UpdateTags(tags);
 
-            if (operation != null)
+            var scope = operation.Scope.Definitions.FirstOrDefault(scope => scope.Definition.Matches(record.Asset));
+            if (scope != null)
+                record.SetScope(scope.Definition);
+
+            if (operation == null)
             {
-                var scope = operation.Scope.Definitions.FirstOrDefault(scope => scope.Definition.Matches(record.Asset));
-                if (scope != null)
-                    record.SetScope(scope.Definition);
+                await _assetRepository.SaveAsync(record);
+                return;
+            }
 
-                foreach (var rule in _notificationRules.Where(rule => (record.InScope || rule.CheckOutOfScope) && rule.Check(record)))
-                {
-                    // only send notifications once
-                    var notification = await _assetRepository.FindNotificationAsync(record.Asset, rule);
-                    if (notification != null)
-                        continue;
-                    
-                    notification = new Notification(record, rule);
+            foreach (var rule in _notificationRules.Where(rule => (record.InScope || rule.CheckOutOfScope) && rule.Check(record)))
+            {
+                // only send notifications once
+                var notification = await _assetRepository.FindNotificationAsync(record.Asset, rule);
+                if (notification != null)
+                    continue;
 
-                    PwnInfraContext.NotificationSender.Send(notification);
-                    notification.SentAt = DateTime.UtcNow;
-                    record.Notifications.Add(notification);
-                }
+                notification = new Notification(record, rule);
 
-                var allowedTasks = operation.Policy.GetAllowedTasks();
-                allowedTasks.AddRange(_outOfScopeTasks);
+                PwnInfraContext.NotificationSender.Send(notification);
+                notification.SentAt = DateTime.UtcNow;
+                record.Notifications.Add(notification);
+            }
 
-                foreach (var definition in allowedTasks.Where(def => (record.InScope || def.MatchOutOfScope) && def.Matches(record)))
-                {
-                    // only queue tasks once per definition/asset pair
-                    var task = _taskRepository.Find(record, definition);
-                    if (task != null)
-                        continue;
-
-                    task = new TaskEntry(operation, definition, record);
-                    record.Tasks.Add(task);
-
-                    await _taskRepository.AddAsync(task);
-                    await _taskQueueService.EnqueueAsync(new PendingTaskDTO(task));
-                }
+            if (operation.Type == OperationType.Crawl)
+            {
+                record = await GenerateCrawlingTasksAsync(operation, record);
+            }
+            else if (operation.Type == OperationType.Monitor)
+            {
+                // TODO: PostCondition & NotificationTemplate
             }
 
             await _assetRepository.SaveAsync(record);
+        }
+
+        private async Task<AssetRecord> GenerateCrawlingTasksAsync(Operation operation, AssetRecord record)
+        {
+            var allowedTasks = operation.Policy.GetAllowedTasks();
+            allowedTasks.AddRange(_outOfScopeTasks);
+
+            foreach (var definition in allowedTasks.Where(def => (record.InScope || def.MatchOutOfScope) && def.Matches(record)))
+            {
+                // only queue tasks once per definition/asset pair
+                var task = _taskRepository.Find(record, definition);
+                if (task != null)
+                    continue;
+
+                task = new TaskEntry(operation, definition, record);
+                record.Tasks.Add(task);
+
+                await _taskRepository.AddAsync(task);
+                await _taskQueueService.EnqueueAsync(new PendingTaskDTO(task));
+            }
+
+            return record;
         }
 
         private List<Asset> GetReferencedAssets(Asset asset)
