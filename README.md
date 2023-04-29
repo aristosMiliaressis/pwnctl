@@ -1,8 +1,6 @@
 PWNCTL ![ci: tag](https://github.com/aristosMiliaressis/pwnctl/actions/workflows/ci.yml/badge.svg)
 ==
 
-</br>
-
 **Table of Contents**
 - [What is this?](#what-is-this)
 - [How does it Work?](#how-does-it-work)</br>
