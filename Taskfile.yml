@@ -1,21 +1,25 @@
 version: '3'
 
 tasks:
-  simple-setup: 
+  simple-setup:
     deps: [install-deps, build-svc-image, push-svc-image, bootstrap-aws, deploy-app, install-cli, init-app]
 
   test:
     cmds:
-      - dotnet test
-  
+      - dotnet test --filter "FullyQualifiedName~test.unit"
+
+  test-svc:
+    cmds:
+      - dotnet test --filter "FullyQualifiedName~pwnctl.svc"
+
   build-api:
     cmds:
       - dotnet build src/pwnctl.api/pwnctl.api.csproj -c Release
-  
+
   build-cli:
     cmds:
       - dotnet publish src/pwnctl.cli/pwnctl.cli.csproj -c Release
-  
+
   build-svc:
     cmds:
       - dotnet publish src/core/pwnctl.svc/pwnctl.svc.csproj -c Release
@@ -31,10 +35,10 @@ tasks:
         aws ecr-public get-login-password --region $region \
           | docker login --username AWS --password-stdin public.ecr.aws/i0m2p7r6
         docker push public.ecr.aws/i0m2p7r6/pwnctl:latest
-        
-  build-all: 
+
+  build-all:
     deps: [build-cli, build-api, build-svc-image]
-    
+
   install-cli:
     deps: [build-cli]
     cmds:
@@ -61,7 +65,7 @@ tasks:
         docker run -e PWNCTL_TEST_RUN=true -e PWNCTL_INSTALL_PATH=/mnt/efs \
                    -e PWNCTL_Logging__FilePath=/mnt/efs -e PWNCTL_Logging__MinLevel=Debug \
                    -v "$(pwd)"/deployment:/mnt/efs -t public.ecr.aws/i0m2p7r6/pwnctl:latest
-  
+
   get-logs:
     cmds:
       - awslogs get -s 1440m -G --timestamp /aws/ecs/worker | tee pwnctl.log
@@ -70,7 +74,7 @@ tasks:
     cmds:
       - cd infra && echo yes | terraform destroy
       - cd -
-    
+
   install-deps:
     cmds:
       - ./bin/install-deps.sh

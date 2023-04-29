@@ -1,0 +1,250 @@
+[{
+
+        "Service": "S3",
+        "Provider": "AWS",
+        "Scope": [{
+            "Type": 0,
+            "Pattern": "s3.*amazonaws.com"
+        }],
+        "Templates": [
+            "subdomain_takeover/aws-bucket-takeover.yaml",
+            "misconfigs/s3-torrent.yaml"
+        ]
+    },
+    {
+
+        "Service": "Elastic Beanstalk",
+        "Provider": "AWS",
+        "Scope": [{
+            "Type": 0,
+            "Pattern": "elasticbeanstalk.com$"
+        }],
+        "Templates": [
+            "subdomain_takeover/elasticbeantalk-takeover.yaml"
+        ]
+    },
+    {
+        "Scope": [{
+            "Type": 0,
+            "Pattern": "accesscontrol.windows.net"
+        }],
+        "Service": "Azure Access Control Service",
+        "Provider": "Azure"
+    },
+    {
+        "Scope": [{
+            "Type": 0,
+            "Pattern": "graph.windows.net"
+        }],
+        "Service": "Azure Active Directory",
+        "Provider": "Azure"
+    },
+    {
+        "Scope": [{
+            "Type": 0,
+            "Pattern": "onmicrosoft.com"
+        }],
+        "Service": "Azure Active Directory",
+        "Provider": "Azure"
+    },
+    {
+        "Scope": [{
+            "Type": 0,
+            "Pattern": "azure-api.net"
+        }],
+        "Service": "Azure API Management",
+        "Provider": "Azure"
+    },
+    {
+        "Scope": [{
+            "Type": 0,
+            "Pattern": "biztalk.windows.net"
+        }],
+        "Service": "Azure BizTalk Services",
+        "Provider": "Azure"
+    },
+    {
+        "Scope": [{
+            "Type": 0,
+            "Pattern": "blob.core.windows.net"
+        }],
+        "Service": "Azure Blob storage",
+        "Provider": "Azure"
+    },
+    {
+        "Scope": [{
+            "Type": 0,
+            "Pattern": "cloudapp.net"
+        }],
+        "Service": "Azure Cloud Services and Azure Virtual Machines",
+        "Provider": "Azure"
+    },
+    {
+        "Scope": [{
+            "Type": 0,
+            "Pattern": "cloudapp.azure.com"
+        }],
+        "Service": "Azure Cloud Services and Azure Virtual Machines",
+        "Provider": "Azure"
+    },
+    {
+        "Scope": [{
+            "Type": 0,
+            "Pattern": "azurecr.io"
+        }],
+        "Service": "Azure Container Registry",
+        "Provider": "Azure"
+    },
+    {
+        "Scope": [{
+            "Type": 0,
+            "Pattern": "azurecontainer.io"
+        }],
+        "Service": "Azure Container Service (ACS)",
+        "Provider": "Azure"
+    },
+    {
+        "Scope": [{
+            "Type": 0,
+            "Pattern": "vo.msecnd.net"
+        }],
+        "Service": "Azure Content Delivery Network",
+        "Provider": "Azure"
+    },
+    {
+        "Scope": [{
+            "Type": 0,
+            "Pattern": "cosmos.azure.com"
+        }],
+        "Service": "Azure Cosmos DB",
+        "Provider": "Azure"
+    },
+    {
+        "Scope": [{
+            "Type": 0,
+            "Pattern": "documents.azure.com"
+        }],
+        "Service": "Azure Cosmos DB",
+        "Provider": "Azure"
+    },
+    {
+        "Scope": [{
+            "Type": 0,
+            "Pattern": "file.core.windows.net"
+        }],
+        "Service": "Azure Files",
+        "Provider": "Azure"
+    },
+    {
+        "Scope": [{
+            "Type": 0,
+            "Pattern": "azurefd.net"
+        }],
+        "Service": "Azure Front Door",
+        "Provider": "Azure"
+    },
+    {
+        "Scope": [{
+            "Type": 0,
+            "Pattern": "vault.azure.net"
+        }],
+        "Service": "Azure Key Vault",
+        "Provider": "Azure"
+    },
+    {
+        "Scope": [{
+            "Type": 0,
+            "Pattern": "management.core.windows.net"
+        }],
+        "Service": "Azure Management Services",
+        "Provider": "Azure"
+    },
+    {
+        "Scope": [{
+            "Type": 0,
+            "Pattern": "origin.mediaservices.windows.net"
+        }],
+        "Service": "Azure Media Services",
+        "Provider": "Azure"
+    },
+    {
+        "Scope": [{
+            "Type": 0,
+            "Pattern": "azure-mobile.net"
+        }],
+        "Service": "Azure Mobile Apps",
+        "Provider": "Azure"
+    },
+    {
+        "Scope": [{
+            "Type": 0,
+            "Pattern": "queue.core.windows.net"
+        }],
+        "Service": "Azure Queue Storage",
+        "Provider": "Azure"
+    },
+    {
+        "Scope": [{
+            "Type": 0,
+            "Pattern": "servicebus.windows.net"
+        }],
+        "Service": "Azure Service Bus",
+        "Provider": "Azure"
+    },
+    {
+        "Scope": [{
+            "Type": 0,
+            "Pattern": "database.windows.net"
+        }],
+        "Service": "Azure SQL Database",
+        "Provider": "Azure"
+    },
+    {
+        "Scope": [{
+            "Type": 0,
+            "Pattern": "azureedge.net"
+        }],
+        "Service": "Azure Stack Edge and Azure IoT Edge",
+        "Provider": "Azure"
+    },
+    {
+        "Scope": [{
+            "Type": 0,
+            "Pattern": "table.core.windows.net"
+        }],
+        "Service": "Azure Table Storage",
+        "Provider": "Azure"
+    },
+    {
+        "Scope": [{
+            "Type": 0,
+            "Pattern": "trafficmanager.net"
+        }],
+        "Service": "Azure Traffic Manager",
+        "Provider": "Azure"
+    },
+    {
+        "Scope": [{
+            "Type": 0,
+            "Pattern": "azurewebsites.net"
+        }],
+        "Service": "Azure Websites",
+        "Provider": "Azure"
+    },
+    {
+        "Scope": [{
+            "Type": 0,
+            "Pattern": "visualstudio.com"
+        }],
+        "Service": "Visual Studio Codespaces",
+        "Provider": "Azure"
+    },
+    {
+        "Scope": [{
+            "Type": 0,
+            "Pattern": "rds.amazonaws.com"
+        }],
+        "Service": "Amazon RDS",
+        "Provider": "Amazon"
+    }
+]

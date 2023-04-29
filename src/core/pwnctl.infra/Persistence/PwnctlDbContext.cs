@@ -84,7 +84,7 @@ namespace pwnctl.infra.Persistence
 
                 if (EnvironmentVariables.TEST_RUN)
                 {
-                    optionsBuilder.UseSqlite("Data Source=./pwnctl.db", x => x.MigrationsHistoryTable("__EFMigrationHistory"));
+                    optionsBuilder.UseSqlite("Data Source="+Path.Combine(EnvironmentVariables.INSTALL_PATH, "pwnctl.db"), x => x.MigrationsHistoryTable("__EFMigrationHistory"));
                     return;
                 }
 

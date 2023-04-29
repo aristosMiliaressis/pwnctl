@@ -3,20 +3,20 @@ namespace pwnctl.app.test.unit;
 using pwnctl.domain.BaseClasses;
 using pwnctl.domain.Entities;
 using pwnctl.domain.Enums;
-using pwnctl.domain.Interfaces;
 using pwnctl.app.Assets;
 using pwnctl.app.Assets.Aggregates;
 using pwnctl.app.Assets.DTO;
+using pwnctl.app.Common.ValueObjects;
 using pwnctl.infra;
+using pwnctl.infra.Commands;
 using pwnctl.infra.DependencyInjection;
 using pwnctl.infra.Persistence;
 using pwnctl.infra.Repositories;
 
+using Xunit;
 using System.Net;
-using Microsoft.EntityFrameworkCore;
-using pwnctl.infra.Commands;
 using System.Text;
-using pwnctl.app.Common.ValueObjects;
+using Microsoft.EntityFrameworkCore;
 
 public sealed class Tests
 {
@@ -28,42 +28,6 @@ public sealed class Tests
         Environment.SetEnvironmentVariable("PWNCTL_Logging__MinLevel", "Debug");
 
         PwnInfraContextInitializer.Setup();
-    }
-
-    [Fact]
-    public void PublicSuffixRepository_Tests()
-    {
-        var exampleDomain = new DomainName("xyz.example.com");
-
-        Assert.Equal("example.com", exampleDomain.GetRegistrationDomain());
-        Assert.Equal("com", PublicSuffixRepository.Instance.GetSuffix(exampleDomain.Name).Value);
-
-        var exampleSubDomain = new DomainName("sub.example.azurewebsites.net");
-
-        Assert.Equal("example.azurewebsites.net", exampleSubDomain.GetRegistrationDomain());
-        Assert.Equal("azurewebsites.net", PublicSuffixRepository.Instance.GetSuffix(exampleSubDomain.Name).Value);
-
-        var ep1 = new HttpEndpoint("https", new NetworkSocket(new DomainName("example.com"), 443), "/");
-        var ep2 = new HttpEndpoint("https", new NetworkSocket(new DomainName("example.s3.amazonaws.com"), 443), "/");
-
-        Assert.False(CloudServiceRepository.Instance.IsCloudService(ep1));
-        Assert.True(CloudServiceRepository.Instance.IsCloudService(ep2));
-    }
-
-    [Fact]
-    public void CloudServiceRepository_Tests()
-    {
-        // TODO: Implement
-    }
-
-    [Fact]
-    public void DomainEntity_Tests()
-    {
-        // TODO: Implement
-        //Domain.GetRegistrationDomain/Word
-        //DomainNameRecord.ParseSPFString(spfv1&spfv2)
-        //HttpEndpoint.Path/Filename/Extension
-        //NetworkRagne.RouteTo(ipv4|ipv6)
     }
 
     [Fact]
@@ -163,7 +127,7 @@ public sealed class Tests
         asset = AssetParser.Parse("https://xyz.example.com:8443/api/token?_u=xxx&second=test");
         Assert.IsType<HttpEndpoint>(asset);
         Assert.Equal(2, ((HttpEndpoint)asset).HttpParameters.Count);
-        
+
         // ipv6 parsing
         asset = AssetParser.Parse("http://[FD00:DEAD:BEEF:64:35::2]:80/ipv6test");
         Assert.IsType<HttpEndpoint>(asset);
@@ -192,51 +156,51 @@ public sealed class Tests
     public void ScopeChecking_Tests()
     {
         // net range
-        Assert.Contains(EntityFactory.ScopeAggregate.Definitions, 
+        Assert.Contains(EntityFactory.ScopeAggregate.Definitions,
             scope => scope.Definition.Matches(new NetworkRange(System.Net.IPAddress.Parse("172.16.17.0"), 24)));
-        Assert.DoesNotContain(EntityFactory.ScopeAggregate.Definitions, 
+        Assert.DoesNotContain(EntityFactory.ScopeAggregate.Definitions,
             scope => scope.Definition.Matches(new NetworkRange(System.Net.IPAddress.Parse("172.16.16.0"), 24)));
 
         // host in netrange
-        Assert.Contains(EntityFactory.ScopeAggregate.Definitions, 
+        Assert.Contains(EntityFactory.ScopeAggregate.Definitions,
             scope => scope.Definition.Matches(new NetworkHost(IPAddress.Parse("172.16.17.4"))));
-        Assert.DoesNotContain(EntityFactory.ScopeAggregate.Definitions, 
+        Assert.DoesNotContain(EntityFactory.ScopeAggregate.Definitions,
             scope => scope.Definition.Matches(new NetworkHost(IPAddress.Parse("172.16.16.5"))));
 
         // endpoint in net range
-        Assert.Contains(EntityFactory.ScopeAggregate.Definitions, 
+        Assert.Contains(EntityFactory.ScopeAggregate.Definitions,
             scope => scope.Definition.Matches(new HttpEndpoint("https", new NetworkSocket(new NetworkHost(IPAddress.Parse("172.16.17.15")), 443), "/api/token")));
-        Assert.DoesNotContain(EntityFactory.ScopeAggregate.Definitions, 
+        Assert.DoesNotContain(EntityFactory.ScopeAggregate.Definitions,
             scope => scope.Definition.Matches(new HttpEndpoint("https", new NetworkSocket(new NetworkHost(IPAddress.Parse("172.16.16.15")), 443), "/api/token")));
 
         // domain
-        Assert.Contains(EntityFactory.ScopeAggregate.Definitions, 
+        Assert.Contains(EntityFactory.ScopeAggregate.Definitions,
             scope => scope.Definition.Matches(new DomainName("tesla.com")));
-        Assert.DoesNotContain(EntityFactory.ScopeAggregate.Definitions, 
+        Assert.DoesNotContain(EntityFactory.ScopeAggregate.Definitions,
             scope => scope.Definition.Matches(new DomainName("tttesla.com")));
-        Assert.DoesNotContain(EntityFactory.ScopeAggregate.Definitions, 
+        Assert.DoesNotContain(EntityFactory.ScopeAggregate.Definitions,
             scope => scope.Definition.Matches(new DomainName("tesla.com.net")));
-        Assert.DoesNotContain(EntityFactory.ScopeAggregate.Definitions, 
+        Assert.DoesNotContain(EntityFactory.ScopeAggregate.Definitions,
             scope => scope.Definition.Matches(new DomainName("tesla2.com")));
 
         // Emails
-        Assert.Contains(EntityFactory.ScopeAggregate.Definitions, 
+        Assert.Contains(EntityFactory.ScopeAggregate.Definitions,
             scope => scope.Definition.Matches(new Email(new DomainName("tesla.com"), "no-reply@tesla.com")));
-        Assert.DoesNotContain(EntityFactory.ScopeAggregate.Definitions, 
+        Assert.DoesNotContain(EntityFactory.ScopeAggregate.Definitions,
             scope => scope.Definition.Matches(new Email(new DomainName("tesla2.com"), "no-reply@tesla2.com")));
 
         //subdomain
-        Assert.Contains(EntityFactory.ScopeAggregate.Definitions, 
+        Assert.Contains(EntityFactory.ScopeAggregate.Definitions,
             scope => scope.Definition.Matches(new DomainName("xyz.tesla.com")));
-        Assert.DoesNotContain(EntityFactory.ScopeAggregate.Definitions, 
+        Assert.DoesNotContain(EntityFactory.ScopeAggregate.Definitions,
             scope => scope.Definition.Matches(new DomainName("xyz.tesla2.com")));
 
         // DNS records
-        Assert.Contains(EntityFactory.ScopeAggregate.Definitions, 
+        Assert.Contains(EntityFactory.ScopeAggregate.Definitions,
             scope => scope.Definition.Matches(new DomainNameRecord(DnsRecordType.A, "xyz.tesla.com", "1.3.3.7")));
-        Assert.Contains(EntityFactory.ScopeAggregate.Definitions, 
+        Assert.Contains(EntityFactory.ScopeAggregate.Definitions,
             scope => scope.Definition.Matches(new DomainNameRecord(DnsRecordType.A, "example.com", "172.16.17.15")));
-        Assert.DoesNotContain(EntityFactory.ScopeAggregate.Definitions, 
+        Assert.DoesNotContain(EntityFactory.ScopeAggregate.Definitions,
             scope => scope.Definition.Matches(new DomainNameRecord(DnsRecordType.A, "example.com", "172.16.16.15")));
     }
 
