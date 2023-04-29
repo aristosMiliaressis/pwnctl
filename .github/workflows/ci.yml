@@ -108,7 +108,7 @@ jobs:
   #       run: dotnet test --filter  --filter "FullyQualifiedName~pwnctl.svc"
 
   push-wroker:
-    needs: test-worker
+    needs: build-worker
     runs-on: ubuntu-latest
     steps:
       - name: Set up Docker Buildx
