@@ -2,7 +2,6 @@ using pwnctl.app.Assets.Aggregates;
 using pwnctl.app.Common.ValueObjects;
 using pwnctl.domain.ValueObjects;
 using pwnctl.kernel.BaseClasses;
-using NCrontab;
 
 namespace pwnctl.app.Tasks.Entities
 {
@@ -26,8 +25,8 @@ namespace pwnctl.app.Tasks.Entities
 
         public TaskDefinition() { }
 
-        public TaskDefinition(TaskProfile profile) 
-        { 
+        public TaskDefinition(TaskProfile profile)
+        {
             Profile = profile;
         }
 
@@ -39,16 +38,14 @@ namespace pwnctl.app.Tasks.Entities
             if (string.IsNullOrEmpty(Filter))
                 return true;
 
-            if (MonitorRules.Schedule != null)
+            if (MonitorRules.CronSchedule != null)
             {
-                var schedule = CrontabSchedule.Parse(MonitorRules.Schedule);
-                
                 if (record.Tasks.Any(t => t.Definition.ShortName == ShortName
-                                       && schedule.GetNextOccurrence(t.StartedAt) > DateTime.UtcNow))
+                                       && MonitorRules.CronSchedule.GetNextOccurrence(t.StartedAt) > DateTime.UtcNow))
                 {
                     return false;
                 }
-                
+
                 if (MonitorRules.PreCondition != null)
                 {
                     return PwnInfraContext.FilterEvaluator.Evaluate(MonitorRules.PreCondition, record)
@@ -62,9 +59,11 @@ namespace pwnctl.app.Tasks.Entities
 
     public struct MonitorRules
     {
-        public string Schedule { get; set; }
+        public CronExpression CronSchedule { get; set; }
         public string PreCondition { get; set; }
         public string PostCondition { get; set; }
         public string NotificationTemplate { get; set; }
+
+        public string Schedule { init { CronSchedule = CronExpression.Create(value); } }
     }
 }

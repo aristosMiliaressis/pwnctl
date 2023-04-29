@@ -10,7 +10,7 @@ namespace pwnctl.app.Operations.Entities
     {
         public ShortName ShortName { get; private init; }
         public OperationType Type { get; private init; }
-        public string CronSchedule { get; set; }
+        public CronExpression Schedule { get; set; }
 
         [JsonIgnore]
         public int? PolicyId { get; private init; }

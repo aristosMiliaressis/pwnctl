@@ -31,7 +31,7 @@ public class EventBridgeScheduler
         await client.PutRuleAsync(new PutRuleRequest
         {
             Name = $"{op.ShortName.Value}_schedule",
-            ScheduleExpression = $"cron({op.CronSchedule})"
+            ScheduleExpression = $"cron({op.Schedule.Value} *)"
         });
 
         var respone = await client.PutTargetsAsync(new PutTargetsRequest

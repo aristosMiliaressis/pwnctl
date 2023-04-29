@@ -76,7 +76,7 @@ public static class ConfigValidator
 
             if (definition.SubjectClass == null || string.IsNullOrEmpty(definition.SubjectClass.Value))
             {
-                errorMessage = "Null or Empty Subject on " + definition.ShortName;
+                errorMessage = "Null or Empty Subject on " + definition.ShortName.Value;
                 return false;
             }
 
@@ -92,7 +92,7 @@ public static class ConfigValidator
             catch (Exception ex)
             {
                 PwnInfraContext.Logger.Error(ex.ToRecursiveExInfo());
-                errorMessage = $"task definition {definition.ShortName} failed to interpolate CommandTemplate arguments";
+                errorMessage = $"task definition {definition.ShortName.Value} failed to interpolate CommandTemplate arguments";
                 return false;
             }
 
@@ -103,7 +103,7 @@ public static class ConfigValidator
             catch (Exception ex)
             {
                 PwnInfraContext.Logger.Error(ex.ToRecursiveExInfo());
-                errorMessage = $"task definition {definition.ShortName} Filter through exception";
+                errorMessage = $"task definition {definition.ShortName.Value} Filter through exception";
                 return false;
             }
         }
@@ -143,7 +143,7 @@ public static class ConfigValidator
 
             if (rule.SubjectClass == null || string.IsNullOrEmpty(rule.SubjectClass.Value))
             {
-                errorMessage = "Null or Empty Subject on " + rule.ShortName;
+                errorMessage = "Null or Empty Subject on " + rule.ShortName.Value;
                 return false;
             }
 
@@ -156,7 +156,7 @@ public static class ConfigValidator
             catch (Exception ex)
             {
                 PwnInfraContext.Logger.Error(ex.ToRecursiveExInfo());
-                errorMessage = $"notification rule {rule.ShortName} Filter through exception";
+                errorMessage = $"notification rule {rule.ShortName.Value} Filter through exception";
                 return false;
             }
         }

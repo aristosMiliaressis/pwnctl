@@ -46,7 +46,7 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
             policy.OnlyPassive = command.Policy.OnlyPassive;
 
             var op = new Operation(command.ShortName, command.Type, policy, scopeAggregate);
-            op.CronSchedule = command.CronSchedule;
+            op.Schedule = CronExpression.Create(command.CronSchedule);
 
             _context.Operations.Add(op);
             await _context.SaveChangesAsync();

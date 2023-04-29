@@ -4,8 +4,8 @@ TaskDefinitions:
   - Name: domain_resolution
     CommandTemplate: resolve.sh {{Name}}
     Subject: DomainName
-    MonitoringRules:
-      Schedule: 0 * * * ? *
+    MonitorRules:
+      Schedule: 0 * * * *
       PreCondition: Tags["rcode"] == "NX" || Tags["rcode"] == "SERVFAIL"
 
   - Name: httpx
@@ -49,8 +49,8 @@ TaskDefinitions:
     CommandTemplate: cloud_misconfig_scan.sh {{Value}}
     Subject: DomainNameRecord
     Filter: DomainNameRecord.Type == pwnctl.domain.Enums.DnsRecordType.CNAME
-    MonitoringRules:
-      Schedule: 0 * * * ? *
+    MonitorRules:
+      Schedule: 0 * * * *
 
   - Name: s3_scan
     CommandTemplate: s3-scan.sh {{Name}}
