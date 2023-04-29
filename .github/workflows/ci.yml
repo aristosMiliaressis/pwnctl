@@ -35,7 +35,7 @@ jobs:
         run: dotnet test --filter "FullyQualifiedName~test.unit"
 
   build-cli:
-    needs: test-app
+    needs: unit-test
     runs-on: ubuntu-latest
     container:
       image: mcr.microsoft.com/dotnet/sdk:7.0
@@ -54,7 +54,7 @@ jobs:
         run: dotnet publish "src/pwnctl.cli/pwnctl.cli.csproj" -c Release -o ./pwnctl
 
   build-api:
-    needs: test-app
+    needs: unit-test
     runs-on: ubuntu-latest
     container:
       image: mcr.microsoft.com/dotnet/sdk:6.0
@@ -73,7 +73,7 @@ jobs:
         run: dotnet build src/pwnctl.api/pwnctl.api.csproj
 
   build-worker:
-    needs: test-app
+    needs: unit-test
     runs-on: ubuntu-latest
     steps:
       - name: Set up Docker Buildx
