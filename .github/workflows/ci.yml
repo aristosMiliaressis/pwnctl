@@ -72,7 +72,7 @@ jobs:
       - name: build api
         run: dotnet build src/pwnctl.api/pwnctl.api.csproj
 
-  build-worker:
+  build-worker-img:
     needs: unit-test
     runs-on: ubuntu-latest
     steps:
@@ -100,15 +100,15 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  # test-wroker:
-  #   needs: build-worker
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Test worker image
-  #       run: dotnet test --filter  --filter "FullyQualifiedName~pwnctl.svc"
+  test-wroker-img:
+    needs: build-worker-img
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test worker image
+        run: dotnet test --filter  --filter "FullyQualifiedName~pwnctl.svc"
 
-  push-wroker:
-    needs: build-worker
+  push-wroker-img:
+    needs: test-worker-img
     runs-on: ubuntu-latest
     steps:
       - name: Set up Docker Buildx
