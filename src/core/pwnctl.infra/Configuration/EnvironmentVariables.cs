@@ -7,4 +7,5 @@ public static class EnvironmentVariables
     public static bool IS_ECS => !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("PWNCTL_IS_ECS"));
     public static bool IS_LAMBDA => !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AWS_LAMBDA_FUNCTION_NAME"));
     public static bool TEST_RUN => Environment.GetEnvironmentVariable("PWNCTL_TEST_RUN")?.Equals("true") ?? false;
+    public static bool DELETE_DB => Environment.GetEnvironmentVariable("PWNCTL_DELETE_DB")?.Equals("true") ?? false;
 }

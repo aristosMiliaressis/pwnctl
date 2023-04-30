@@ -23,6 +23,7 @@ public sealed class Tests
     public Tests()
     {
         Environment.SetEnvironmentVariable("PWNCTL_TEST_RUN", "true");
+        Environment.SetEnvironmentVariable("PWNCTL_DELETE_DB", "true");
         Environment.SetEnvironmentVariable("PWNCTL_INSTALL_PATH", ".");
         Environment.SetEnvironmentVariable("PWNCTL_Logging__FilePath", ".");
         Environment.SetEnvironmentVariable("PWNCTL_Logging__MinLevel", "Debug");

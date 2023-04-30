@@ -5,7 +5,7 @@ using pwnctl.app.Notifications.Enums;
 
 namespace pwnctl.infra.Notifications
 {
-    public sealed class MockNotificationSender : NotificationSender
+    public sealed class StubNotificationSender : NotificationSender
     {
         public void Send(Notification notification)
         {

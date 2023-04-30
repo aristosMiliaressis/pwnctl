@@ -5,11 +5,11 @@ using pwnctl.infra.Commands;
 
 namespace pwnctl.infra.Queueing
 {
-    public sealed class MockTaskQueueService : TaskQueueService
+    public sealed class FakeTaskQueueService : TaskQueueService
     {
         private static readonly string _queuePath = "./queue";
 
-        public MockTaskQueueService()
+        public FakeTaskQueueService()
         {
             CommandExecutor.ExecuteAsync($"touch {_queuePath}").Wait();
         }
@@ -22,7 +22,7 @@ namespace pwnctl.infra.Queueing
             where TMessage : QueueMessage
         {
             var json = PwnInfraContext.Serializer.Serialize(task);
-            
+
             await CommandExecutor.ExecuteAsync($"echo '{json}' >> {_queuePath}");
         }
 

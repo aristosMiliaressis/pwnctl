@@ -31,7 +31,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pwnctl.domain.test.unit", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pwnctl.app.test.unit", "test\pwnctl.app.test.unit\pwnctl.app.test.unit.csproj", "{986902BB-D63D-4874-8530-6C9DFA4F47C1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pwnctl.svc.test.mock", "test\pwnctl.svc.test.mock\pwnctl.svc.test.mock.csproj", "{26B1FA98-955B-4306-9248-CFF7C4EF617D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pwnctl.svc.test.int", "test\pwnctl.svc.test.int\pwnctl.svc.test.int.csproj", "{26B1FA98-955B-4306-9248-CFF7C4EF617D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -82,15 +82,6 @@ jobs:
       - name: Checkout subject branch
         uses: actions/checkout@v3
 
-    #   - name: Login to Public ECR
-    #     uses: docker/login-action@v2
-    #     with:
-    #       registry: public.ecr.aws
-    #       username: ${{ secrets.AWS_ACCESS_KEY_ID }}
-    #       password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    #     env:
-    #       AWS_REGION: us-east-1
-
       - name: Build worker image
         uses: docker/build-push-action@v3
         with:
@@ -99,15 +90,17 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  # test-wroker-img:
-  #   needs: build-worker-img
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Test worker image
-  #       run: dotnet test --filter  --filter "FullyQualifiedName~pwnctl.svc"
+  test-wroker-img:
+    needs: build-worker-img
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/dotnet/sdk:7.0
+    steps:
+      - name: Test worker image
+        run: dotnet test --filter "FullyQualifiedName~pwnctl.svc"
 
   push-wroker-img:
-    needs: build-worker-img
+    needs: test-worker-img
     runs-on: ubuntu-latest
     steps:
       - name: Set up Docker Buildx

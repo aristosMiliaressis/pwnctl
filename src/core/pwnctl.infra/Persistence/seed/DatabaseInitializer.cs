@@ -18,12 +18,12 @@ namespace pwnctl.infra.Persistence
         private static IDeserializer _deserializer = new DeserializerBuilder()
                 .WithNamingConvention(PascalCaseNamingConvention.Instance)
                 .Build();
-        
+
         public static async Task InitializeAsync()
         {
             PwnctlDbContext context = new();
 
-            if (EnvironmentVariables.TEST_RUN)
+            if (EnvironmentVariables.TEST_RUN && EnvironmentVariables.DELETE_DB)
             {
                 await context.Database.EnsureDeletedAsync();
             }

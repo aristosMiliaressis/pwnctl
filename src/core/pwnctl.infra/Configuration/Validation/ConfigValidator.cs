@@ -14,7 +14,7 @@ using YamlDotNet.Serialization.NamingConventions;
 
 public static class ConfigValidator
 {
-    private static Dictionary<AssetClass, Asset> _mockAssets = new Dictionary<AssetClass, Asset>
+    private static Dictionary<AssetClass, Asset> _sampleAssets = new Dictionary<AssetClass, Asset>
     {
         { AssetClass.Create(nameof(DomainName)), new DomainName("example.com") },
         { AssetClass.Create(nameof(HttpEndpoint)), new HttpEndpoint("http", new NetworkSocket(new DomainName("example.com"), 80), "/") },
@@ -83,7 +83,7 @@ public static class ConfigValidator
             AssetRecord record;
             try
             {
-                var asset = _mockAssets[definition.SubjectClass];
+                var asset = _sampleAssets[definition.SubjectClass];
                 record = new AssetRecord(asset);
                 var op = new Operation();
                 var taskEntry = new TaskEntry(op, definition, record);
@@ -147,7 +147,7 @@ public static class ConfigValidator
                 return false;
             }
 
-            AssetRecord record = new AssetRecord(_mockAssets[rule.SubjectClass]);
+            AssetRecord record = new AssetRecord(_sampleAssets[rule.SubjectClass]);
 
             try
             {
