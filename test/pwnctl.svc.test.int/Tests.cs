@@ -15,6 +15,8 @@ using pwnctl.domain.BaseClasses;
 using System.Net;
 using pwnctl.domain.ValueObjects;
 using pwnctl.app.Tasks.Entities;
+using pwnctl.app.Common.ValueObjects;
+using pwnctl.app;
 
 public sealed class Tests
 {
@@ -45,11 +47,16 @@ public sealed class Tests
             new ScopeDefinitionAggregate(scope, new ScopeDefinition(ScopeType.UrlRegex, "(.*:\\/\\/tsl\\.com\\/app\\/.*$)")),
             new ScopeDefinitionAggregate(scope, new ScopeDefinition(ScopeType.CIDR, "172.16.17.0/24"))
         };
-        var policy = new Policy(context.TaskProfiles.First());
+        var taskProfile = context.TaskProfiles.Include(p => p.TaskDefinitions).First();
+        var policy = new Policy(taskProfile);
         var op = new Operation("test", OperationType.Monitor, policy, scope);
         context.Add(op);
         await context.SaveChangesAsync();
-        // TODO: add assets
+        var domain = new DomainName("tesla.com");
+        var record = new AssetRecord(domain);
+        record.Scope = scope.Definitions.First().Definition;
+        context.Add(record);
+        await context.SaveChangesAsync();
 
         var container = new ContainerBuilder()
             .WithImage("public.ecr.aws/i0m2p7r6/pwnctl:latest")
@@ -65,10 +72,12 @@ public sealed class Tests
 
         await container.StartAsync(_cts.Token).ConfigureAwait(false);
 
-        // wait until container exits
+        op = context.Operations.Find(op.Id);
+        // TODO: InitiatedAt
 
-        // TODO: check operation.InitiatedAt
-        // TODO: check taskEntries
+        // context.TaskEntries.Where(t => t.Definition.ShortName == ShortName.Create("domain_resolution")
+        //                             && t.Record.DomainName.Name == "tesla.com")
+        //                     .First();
     }
 
     // [Fact]
