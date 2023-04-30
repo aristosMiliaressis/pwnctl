@@ -22,7 +22,8 @@ public sealed class Tests
 
     public Tests()
     {
-        Directory.CreateDirectory("deployment/seed");
+        Directory.CreateDirectory(_deploymentPath);
+        Directory.CreateDirectory($"{_deploymentPath}/seed");
 
         foreach (var file in Directory.GetFiles("../../../../../src/core/pwnctl.infra/Persistence/seed"))
             File.Copy(file, Path.Combine("./deployment/seed/", Path.GetFileName(file)), true);
