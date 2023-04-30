@@ -20,12 +20,11 @@ using pwnctl.app;
 
 public sealed class Tests
 {
-    private static readonly string _deploymentPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "deployment");
+    private static readonly string _deploymentPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory+"/../../../", "deployment");
 
     public Tests()
     {
-        Directory.CreateDirectory(_deploymentPath);
-        Directory.CreateDirectory($"{_deploymentPath}/seed");
+        Directory.CreateDirectory($"{AppDomain.CurrentDomain.BaseDirectory}/deployment/seed");
 
         foreach (var file in Directory.GetFiles("../../../../../src/core/pwnctl.infra/Persistence/seed"))
             File.Copy(file, Path.Combine("./deployment/seed/", Path.GetFileName(file)), true);

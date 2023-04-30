@@ -92,9 +92,6 @@ jobs:
       - name: Checkout subject branch
         uses: actions/checkout@v3
 
-      - name: build tests
-        run: dotnet build test/pwnctl.svc.test.int/pwnctl.svc.test.int.csproj
-
       - name: Cache Nuget packages
         uses: actions/cache@v3
         with:
