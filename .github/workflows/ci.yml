@@ -24,13 +24,6 @@ jobs:
           key: nuget-${{ hashFiles('**/packages.lock.json') }}
           restore-keys: nuget
 
-    #   - name: Configure AWS Credentials
-    #     uses: aws-actions/configure-aws-credentials@v1-node16
-    #     with:
-    #       aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-    #       aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    #       aws-region: us-east-1
-
       - name: Run Unit Tests
         run: dotnet test --filter "FullyQualifiedName~test.unit"
 
