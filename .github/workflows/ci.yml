@@ -90,7 +90,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  test-wroker-img:
+  test-worker-img:
     needs: build-worker-img
     runs-on: ubuntu-latest
     container:
