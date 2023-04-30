@@ -24,12 +24,12 @@ jobs:
           key: nuget-${{ hashFiles('**/packages.lock.json') }}
           restore-keys: nuget
 
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1-node16
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+    #   - name: Configure AWS Credentials
+    #     uses: aws-actions/configure-aws-credentials@v1-node16
+    #     with:
+    #       aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #       aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    #       aws-region: us-east-1
 
       - name: Run Unit Tests
         run: dotnet test --filter "FullyQualifiedName~test.unit"
@@ -96,6 +96,16 @@ jobs:
     container:
       image: mcr.microsoft.com/dotnet/sdk:7.0
     steps:
+      - name: Checkout subject branch
+        uses: actions/checkout@v3
+
+      - name: Cache Nuget packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: nuget
+
       - name: Test worker image
         run: dotnet test --filter "FullyQualifiedName~pwnctl.svc"
 
