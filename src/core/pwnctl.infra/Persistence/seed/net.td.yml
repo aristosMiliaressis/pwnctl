@@ -4,6 +4,8 @@ TaskDefinitions:
   - Name: ping_sweep
     CommandTemplate: ping-sweep.sh {{CIDR}}
     Subject: NetworkRange
+    MonitorRules:
+      Schedule: 0 * * * *
 
   - Name: reverse_range_lookup
     CommandTemplate: reverse-range-lookup.sh {{CIDR}}

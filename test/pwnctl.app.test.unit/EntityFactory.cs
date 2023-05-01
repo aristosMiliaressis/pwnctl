@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using pwnctl.app.Assets.Aggregates;
 using pwnctl.app.Operations.Entities;

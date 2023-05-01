@@ -28,10 +28,15 @@ public class EventBridgeScheduler
 
         var roles = await iamClient.ListRolesAsync();
 
+        // if no schedule provided, schedule immediatly (i.e in 5 minutes)
+        var schedule = op.Schedule.Value == null
+                     ? DateTime.UtcNow.AddMinutes(5).ToString("m H d M * yyyy")
+                     : op.Schedule.Value;
+
         await client.PutRuleAsync(new PutRuleRequest
         {
             Name = $"{op.ShortName.Value}_schedule",
-            ScheduleExpression = $"cron({op.Schedule.Value} *)"
+            ScheduleExpression = $"cron({schedule})"
         });
 
         var respone = await client.PutTargetsAsync(new PutTargetsRequest
@@ -67,5 +72,15 @@ public class EventBridgeScheduler
         });
 
         respone.FailedEntries.ForEach(fail => PwnInfraContext.Logger.Error($"{fail.ErrorCode}:{fail.ErrorMessage}"));
+    }
+
+    public async Task DisableScheduledOperation(Operation op)
+    {
+        var client = new AmazonCloudWatchEventsClient();
+
+        await client.DeleteRuleAsync(new DeleteRuleRequest
+        {
+            Name = $"{op.ShortName.Value}_schedule"
+        });
     }
 }

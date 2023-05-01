@@ -70,6 +70,7 @@ data "aws_iam_policy_document" "eventbridge_scheduler" {
       "iam:ListRoles",
       "iam:PassRole",
       "events:PutRule",
+      "events:DeleteRule",
       "events:PutTargets",
       "events:DeleteRule",
       "events:DeleteTargets",

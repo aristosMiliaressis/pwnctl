@@ -1,5 +1,6 @@
 namespace pwnctl.domain.test.unit;
 
+using System;
 using pwnctl.domain.Entities;
 using pwnctl.domain.Interfaces;
 using pwnctl.infra.DependencyInjection;

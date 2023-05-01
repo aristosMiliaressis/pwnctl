@@ -9,6 +9,8 @@ using pwnctl.app.Queueing.DTO;
 using pwnctl.app.Operations.Entities;
 using pwnctl.app.Tasks.Interfaces;
 using pwnctl.app.Operations.Enums;
+using pwnctl.app.Notifications.Enums;
+using pwnctl.app.Common.Extensions;
 
 namespace pwnctl.app.Assets
 {
@@ -20,7 +22,7 @@ namespace pwnctl.app.Assets
         private readonly List<NotificationRule> _notificationRules;
         private readonly List<TaskDefinition> _outOfScopeTasks;
 
-        public AssetProcessor(AssetRepository assetRepo, TaskRepository taskRepo, TaskQueueService taskQueueService, 
+        public AssetProcessor(AssetRepository assetRepo, TaskRepository taskRepo, TaskQueueService taskQueueService,
                             List<NotificationRule> rules, List<TaskDefinition> outOfScopeTasks)
         {
             _assetRepository = assetRepo;
@@ -117,7 +119,7 @@ namespace pwnctl.app.Assets
             }
             else if (operation.Type == OperationType.Monitor)
             {
-                // TODO: PostCondition & NotificationTemplate
+                NotifyMonitoringFindings(record, foundByTask);
             }
 
             await _assetRepository.SaveAsync(record);
@@ -143,6 +145,24 @@ namespace pwnctl.app.Assets
             }
 
             return record;
+        }
+
+        private void NotifyMonitoringFindings(AssetRecord record, TaskEntry foundByTask)
+        {
+            var rules = foundByTask.Definition.MonitorRules;
+            if (string.IsNullOrEmpty(rules.NotificationTemplate))
+                return;
+
+            if (!string.IsNullOrEmpty(rules.PostCondition) &&
+                !PwnInfraContext.FilterEvaluator.Evaluate(rules.PostCondition, record))
+                return;
+
+            // is asset new?
+            // PostCondition on tags?
+
+            var message = rules.NotificationTemplate.Interpolate(record.Asset);
+
+            PwnInfraContext.NotificationSender.Send(message, NotificationTopic.monitoring);
         }
 
         private List<Asset> GetReferencedAssets(Asset asset)

@@ -55,7 +55,7 @@ public sealed class CronExpression : ValueObject
 
         // append year part (required by event bridge)
         if (parts.Count() == 5)
-            parts.Append("*");
+            parts = parts.Append("*").ToArray();
 
         return string.Join(" ", parts);
     }

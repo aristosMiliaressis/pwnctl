@@ -360,6 +360,7 @@ src/**/bin/
 test/**/bin/
 *.log
 *.db
+*.db-*
 
 deployment/*
 

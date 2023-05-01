@@ -24,7 +24,10 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
             if (existingProgram != null)
                 return MediatedResponse.Error("Target {0} already exists.", command.ShortName);
 
-            var scopeAggregate = _context.ScopeAggregates.FirstOrDefault(a => a.ShortName == ShortName.Create(command.Scope.ShortName));
+            var scopeAggregate = _context.ScopeAggregates
+                                        .Include(a => a.Definitions)
+                                            .ThenInclude(d => d.Definition)
+                                        .FirstOrDefault(a => a.ShortName == ShortName.Create(command.Scope.ShortName));
             if (scopeAggregate == null)
             {
                 if (command.Scope.ScopeDefinitions == null || !command.Scope.ScopeDefinitions.Any())
@@ -46,7 +49,8 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
             policy.OnlyPassive = command.Policy.OnlyPassive;
 
             var op = new Operation(command.ShortName, command.Type, policy, scopeAggregate);
-            op.Schedule = CronExpression.Create(command.CronSchedule);
+            if (command.CronSchedule != null)
+                op.Schedule = CronExpression.Create(command.CronSchedule);
 
             _context.Operations.Add(op);
             await _context.SaveChangesAsync();
@@ -55,12 +59,7 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
             {
                 await StartCrawlOperation(op, command.Input);
             }
-            else if (command.Type == OperationType.Scan)
-            {
-                StartScanOperation(op);
-            }
-
-            if (command.CronSchedule != null)
+            else if (command.Type == OperationType.Scan || command.CronSchedule != null)
             {
                 await _scheduler.ScheduleOperation(op);
             }
@@ -76,11 +75,6 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
             {
                 await processor.TryProcessAsync(asset, op);
             }
-        }
-
-        private void StartScanOperation(Operation op)
-        {
-            throw new NotImplementedException();
         }
     }
 }

@@ -11,6 +11,7 @@ namespace pwnctl.app.Operations.Entities
         public ShortName ShortName { get; private init; }
         public OperationType Type { get; private init; }
         public CronExpression Schedule { get; set; }
+        public DateTime InitiatedAt { get; set; }
 
         [JsonIgnore]
         public int? PolicyId { get; private init; }
@@ -27,6 +28,10 @@ namespace pwnctl.app.Operations.Entities
             Type = type;
             Policy = policy;
             Scope = scope;
+            if (Schedule == null)
+            {
+                InitiatedAt = DateTime.UtcNow;
+            }
         }
     }
 }

@@ -1,26 +1,32 @@
 namespace pwnctl.svc.test.integration;
 
-using Xunit;
-using DotNet.Testcontainers.Builders;
-using pwnctl.infra.DependencyInjection;
-using pwnctl.infra.Persistence;
-using pwnctl.app.Operations.Entities;
-using pwnctl.app.Operations.Enums;
-using pwnctl.app.Scope.Entities;
-using pwnctl.app.Scope.Enums;
-using pwnctl.domain.Entities;
-using pwnctl.app.Assets.Aggregates;
-using Microsoft.EntityFrameworkCore;
 using pwnctl.domain.BaseClasses;
-using System.Net;
+using pwnctl.domain.Entities;
 using pwnctl.domain.ValueObjects;
 using pwnctl.app.Tasks.Entities;
 using pwnctl.app.Common.ValueObjects;
 using pwnctl.app;
+using pwnctl.app.Operations.Entities;
+using pwnctl.app.Operations.Enums;
+using pwnctl.app.Scope.Entities;
+using pwnctl.app.Scope.Enums;
+using pwnctl.app.Assets.Aggregates;
+using pwnctl.infra.DependencyInjection;
+using pwnctl.infra.Persistence;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Xunit;
+using DotNet.Testcontainers.Builders;
 
 public sealed class Tests
 {
-    private static readonly string _deploymentPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory+"/../../../", "deployment");
+    private static readonly string _deploymentPath = Path.Combine(string.Join("/", AppDomain.CurrentDomain.BaseDirectory.Split("/").Reverse().Skip(4).Reverse()), "deployment");
 
     public Tests()
     {

@@ -29,12 +29,16 @@ public class OperationInitializer
     {
         var op = await _opRepo.FindAsync(opId);
 
+        op.InitiatedAt = DateTime.UtcNow;
+
         var records = await _assetRepo.ListInScopeAsync(op.ScopeId);
 
         foreach (var record in records)
         {
             await GenerateScheduledTasksAsync(op, record);
         }
+
+        //TODO: _opRepo.Save(op);
     }
 
     public async Task GenerateScheduledTasksAsync(Operation op, AssetRecord record)
