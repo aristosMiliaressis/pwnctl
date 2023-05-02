@@ -1,5 +1,6 @@
 namespace pwnctl.infra.Configuration.Validation;
 
+using System.Net;
 using pwnctl.app;
 using pwnctl.app.Assets.Aggregates;
 using pwnctl.app.Notifications.Entities;
@@ -7,6 +8,7 @@ using pwnctl.app.Operations.Entities;
 using pwnctl.app.Tasks.Entities;
 using pwnctl.domain.BaseClasses;
 using pwnctl.domain.Entities;
+using pwnctl.domain.Enums;
 using pwnctl.domain.ValueObjects;
 using pwnctl.kernel.Extensions;
 using YamlDotNet.Serialization;
@@ -18,11 +20,11 @@ public static class ConfigValidator
     {
         { AssetClass.Create(nameof(DomainName)), new DomainName("example.com") },
         { AssetClass.Create(nameof(HttpEndpoint)), new HttpEndpoint("http", new NetworkSocket(new DomainName("example.com"), 80), "/") },
-        { AssetClass.Create(nameof(NetworkHost)), new NetworkHost() },
-        { AssetClass.Create(nameof(NetworkRange)), new NetworkRange() },
-        { AssetClass.Create(nameof(NetworkSocket)), new NetworkSocket() },
-        { AssetClass.Create(nameof(DomainNameRecord)), new DomainNameRecord() },
-        { AssetClass.Create(nameof(Email)), new Email() },
+        { AssetClass.Create(nameof(NetworkHost)), new NetworkHost(IPAddress.Parse("1.3.3.7")) },
+        { AssetClass.Create(nameof(NetworkRange)), new NetworkRange(IPAddress.Parse("1.3.3.0"), 24) },
+        { AssetClass.Create(nameof(NetworkSocket)), new NetworkSocket(new DomainName("example.com"), 443) },
+        { AssetClass.Create(nameof(DomainNameRecord)), new DomainNameRecord(DnsRecordType.A, "example.com", "1.3.3.7") },
+        { AssetClass.Create(nameof(Email)), new Email(new DomainName("example.com"), "mail@example.com") },
         { AssetClass.Create(nameof(HttpParameter)), new HttpParameter() },
     };
 

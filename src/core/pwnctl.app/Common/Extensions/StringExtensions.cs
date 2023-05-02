@@ -27,7 +27,7 @@ public static class StringExtensions
 
             var arg = prop.GetValue(source);
 
-            arguments.Add((string)arg);
+            arguments.Add(arg.ToString());
         }
 
         string result = template;

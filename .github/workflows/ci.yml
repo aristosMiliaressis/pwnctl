@@ -88,6 +88,8 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: mcr.microsoft.com/dotnet/sdk:7.0
+      volumes:
+        - /tmp/:/__w/pwnctl/
     steps:
       - name: Checkout subject branch
         uses: actions/checkout@v3
