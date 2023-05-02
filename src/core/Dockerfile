@@ -127,7 +127,7 @@ RUN git clone https://github.com/s0md3v/Corsy.git \
 RUN git clone https://github.com/cramppet/regulator && cd regulator && pip3 install -r requirements.txt
 RUN pip3 install py-altdns==1.0.2
 RUN git clone https://github.com/dcsync/recontools.git
-RUN curl -L https://github.com/OWASP/Amass/releases/download/v3.19.3/amass_linux_amd64.zip -o /tmp/amass_linux_amd64.zip \
+RUN curl -L https://github.com/OWASP/Amass/releases/download/v3.22.2/amass_linux_amd64.zip -o /tmp/amass_linux_amd64.zip \
     && unzip -o /tmp/amass_linux_amd64.zip -d /opt/tools/amass/ \
     && rm /tmp/amass_linux_amd64.zip \
     && ln -s /opt/tools/amass/amass_linux_amd64/amass /usr/local/bin

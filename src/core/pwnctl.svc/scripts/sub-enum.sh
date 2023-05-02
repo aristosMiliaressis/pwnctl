@@ -1,6 +1,7 @@
 #!/bin/bash
 
 domain=$1
+zoneDepth=$2
 dict='/opt/wordlists/subdomains-top-20000.txt'
 RESOLVERS_FILE='/opt/wordlists/dns/resolvers.txt'
 TRUSTED_RESOLVERS_FILE='/opt/wordlists/dns/trusted-resolvers.txt'
@@ -11,18 +12,19 @@ potential_subs_file=`mktemp`
 valid_subs_file=`mktemp`
 osint_domains=`mktemp`
 amass_temp=`mktemp`
-trap "rm $potential_subs_file $valid_subs_file $amass_temp $osint_domains" EXIT 
+trap "rm $potential_subs_file $valid_subs_file $amass_temp $osint_domains" EXIT
 
 passive_subdomain_enum() {
-    amass enum -d $domain -nolocaldb -nocolor -passive -silent -json $amass_temp
+    amass enum -d $domain -nolocaldb -nocolor -silent -src -passive -json $amass_temp
 
 	cat $amass_temp \
-		| jq -r .name \
-		| tee $potential_subs_file \
-		| xargs -I {} -n1 echo '{"Asset":"{}", "Tags":{"tool":"amass"}}'
+        | jq -c '{Asset:.name,Tags:{tool:"amass",source:.sources|@csv}}'
+
+    cat $amass_temp \
+		| jq -r .name > $potential_subs_file
 
 	if [ -f $GITHUB_TOKENS_FILE ]
-	then 
+	then
 		github-subdomains -raw -d $domain -t $GITHUB_TOKENS_FILE \
 			| anew $potential_subs_file \
 			| xargs -I {} -n1 echo '{"Asset":"{}", "Tags":{"tool":"github-subdomains"}}'
@@ -55,15 +57,20 @@ generate_ai_learned_alts() {
 	cd - >/dev/null
 }
 
-passive_subdomain_enum | tee $osint_domains
+if [ $zoneDepth -eq 1 ]
+then
+    passive_subdomain_enum | tee $osint_domains
+
+    resolve_domains > $valid_subs_file
+fi
 
 generate_brute_gueses | anew $potential_subs_file > /dev/null
 
 resolve_domains \
-	| tee $valid_subs_file \
+	| anew $valid_subs_file \
 	| xargs -I {} -n1 echo '{"Asset":"{}", "Tags":{"tool":"dictionary_brute"}}'
 
-generate_wordlist_alts 
+generate_wordlist_alts
 
 resolve_domains \
 	| anew $valid_subs_file \
