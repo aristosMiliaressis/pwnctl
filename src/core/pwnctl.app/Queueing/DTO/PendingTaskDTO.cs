@@ -10,14 +10,15 @@ public sealed class PendingTaskDTO : QueueMessage
     public string Command { get; init; }
 
     [JsonIgnore]
-    public Dictionary<string, string> Metadata { get; set; }
+    public Dictionary<string, string> Metadata { get; set; } = new();
 
-  
+
     public PendingTaskDTO() { }
 
     public PendingTaskDTO(TaskEntry entry)
     {
         TaskId = entry.Id;
         Command = entry.Command;
+        Metadata["MessageGroupId"] = entry.Id.ToString();
     }
 }

@@ -13,7 +13,7 @@ TaskDefinitions:
     Subject: DomainName
 
   - Name: sub_enum
-    CommandTemplate: sub-enum.sh {{Name}}
+    CommandTemplate: sub-enum.sh {{Name}} {{ZoneDepth}}
     Filter: DomainName.ZoneDepth <= 2
     Subject: DomainName
 

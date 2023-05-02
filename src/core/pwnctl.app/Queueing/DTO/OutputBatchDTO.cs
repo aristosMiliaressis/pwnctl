@@ -9,7 +9,7 @@ public sealed class OutputBatchDTO : QueueMessage
     public List<string> Lines { get; set; } = new List<string>();
 
     [JsonIgnore]
-    public Dictionary<string, string> Metadata { get; set; }
+    public Dictionary<string, string> Metadata { get; set; } = new();
 
     public OutputBatchDTO() { }
 

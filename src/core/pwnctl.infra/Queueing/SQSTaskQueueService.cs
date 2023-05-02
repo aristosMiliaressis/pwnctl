@@ -41,7 +41,7 @@ namespace pwnctl.infra.Queueing
             {
                 var request = new SendMessageRequest
                 {
-                    MessageGroupId = message.TaskId.ToString(),
+                    MessageGroupId = message.Metadata["MessageGroupId"],
                     QueueUrl = this[typeof(TMessage).Name],
                     MessageBody = PwnInfraContext.Serializer.Serialize(message)
                 };
@@ -77,7 +77,7 @@ namespace pwnctl.infra.Queueing
                     PwnInfraContext.Logger.Warning("HttpStatusCode: "+messageResponse.HttpStatusCode);
                 }
 
-                return messageResponse.Messages.Select(msg => 
+                return messageResponse.Messages.Select(msg =>
                 {
                     var task = PwnInfraContext.Serializer.Deserialize<TMessage>(msg.Body);
                     PwnInfraContext.Logger.Debug("Received[" + typeof(TMessage).Name + "] : " + task.TaskId + ", MessageId: " + msg.MessageId);

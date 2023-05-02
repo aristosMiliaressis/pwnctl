@@ -9,6 +9,7 @@ using pwnctl.infra.Queueing;
 using pwnctl.infra.Repositories;
 using System.Text;
 using pwnctl.app.Operations;
+using System.Security.Cryptography;
 
 namespace pwnctl.svc
 {
@@ -17,14 +18,14 @@ namespace pwnctl.svc
         private readonly AssetProcessor _processor = AssetProcessorFactory.Create();
         private readonly TaskQueueService _queueService = TaskQueueServiceFactory.Create();
         private readonly TaskDbRepository _taskRepo = new();
-        private readonly OperationInitializer _initializer = new(new OperationDbRepository(), 
-                                                                new AssetDbRepository(), 
+        private readonly OperationInitializer _initializer = new(new OperationDbRepository(),
+                                                                new AssetDbRepository(),
                                                                 new TaskDbRepository(),
                                                                 TaskQueueServiceFactory.Create());
 
         public TaskConsumerService(IHostApplicationLifetime hostApplicationLifetime)
         {
-            hostApplicationLifetime.ApplicationStopping.Register(() => 
+            hostApplicationLifetime.ApplicationStopping.Register(() =>
             {
                 PwnInfraContext.NotificationSender.Send($"{nameof(TaskConsumerService)} stoped.", NotificationTopic.status);
             });
@@ -45,7 +46,7 @@ namespace pwnctl.svc
                 var taskDTO = await _queueService.ReceiveAsync<PendingTaskDTO>(stoppingToken);
                 if (taskDTO == null)
                 {
-                    await ProcessOutputBatchAsync(stoppingToken);                    
+                    await ProcessOutputBatchAsync(stoppingToken);
                     continue;
                 }
 
@@ -56,13 +57,13 @@ namespace pwnctl.svc
 
         private async Task ExecutePendingTaskAsync(PendingTaskDTO taskDTO, CancellationToken stoppingToken)
         {
-            // create a linked token that cancels the task when the max task timeout 
+            // create a linked token that cancels the task when the max task timeout
             // passes or when a SIGTERM is received due to a scale in event
             var cts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
             cts.CancelAfter(PwnInfraContext.Config.Worker.MaxTaskTimeout * 1000);
 
             // Change the message visibility if the visibility window is exheeded
-            // this allows us to keep a smaller visibility window without effecting 
+            // this allows us to keep a smaller visibility window without effecting
             // the max task timeout.
             var timer = new System.Timers.Timer((PwnInfraContext.Config.TaskQueue.VisibilityTimeout - 90) * 1000);
             timer.Elapsed += async (_, _) =>
@@ -76,8 +77,8 @@ namespace pwnctl.svc
                 task.Started();
                 await _taskRepo.UpdateAsync(task);
 
-                (int exitCode, 
-                StringBuilder stdout, 
+                (int exitCode,
+                StringBuilder stdout,
                 StringBuilder stderr) = await CommandExecutor.ExecuteAsync(task.Command, token: cts.Token);
 
                 timer.Dispose();
@@ -102,6 +103,12 @@ namespace pwnctl.svc
 
                     if (outputBatch.Lines.Count == max || (string.Join(",", outputBatch.Lines).Length + line.Length) >= 8000)
                     {
+                        using (MD5 md5 = MD5.Create())
+                        {
+                            var md5Bytes = md5.ComputeHash(Encoding.ASCII.GetBytes(string.Join(",", outputBatch)));
+                            outputBatch.Metadata["MessageGroupId"] = Convert.ToHexString(md5Bytes);
+                        }
+
                         await _queueService.EnqueueAsync(outputBatch);
                         outputBatch = new(task.Id);
                         outputBatch.Lines.Add(line);
@@ -129,7 +136,7 @@ namespace pwnctl.svc
             }
 
             // Change the message visibility if the visibility window is exheeded
-            // this allows us to keep a smaller visibility window without effecting 
+            // this allows us to keep a smaller visibility window without effecting
             // the max task timeout.
             var timer = new System.Timers.Timer((PwnInfraContext.Config.TaskQueue.VisibilityTimeout - 90) * 1000);
             timer.Elapsed += async (_, _) =>
