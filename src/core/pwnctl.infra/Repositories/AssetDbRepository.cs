@@ -27,7 +27,7 @@ namespace pwnctl.infra.Repositories
             _context = context;
         }
 
-        private static Func<PwnctlDbContext, Guid, Task<AssetRecord>> FindRecordQuery 
+        private static Func<PwnctlDbContext, Guid, Task<AssetRecord>> FindRecordQuery
                             = EF.CompileAsyncQuery<PwnctlDbContext, Guid, AssetRecord>(
                     (context, id) => context.AssetRecords
                                             .Include(r => r.Tags)
@@ -55,12 +55,21 @@ namespace pwnctl.infra.Repositories
                                     .Include(a => a.Definitions)
                                         .ThenInclude(d => d.Definition)
                                     .FirstOrDefaultAsync(a => a.Id == scopeId);
-            
+
             var scopeDefinitionIds = aggregate.Definitions.Select(d => d.DefinitionId).ToList();
-            
+
             return await _context.AssetRecords
                                 .Include(r => r.Tasks)
                                     .ThenInclude(t => t.Definition)
+                                .Include(r => r.NetworkRange)
+                                .Include(r => r.NetworkHost)
+                                .Include(r => r.NetworkSocket)
+                                .Include(r => r.DomainName)
+                                .Include(r => r.DomainNameRecord)
+                                .Include(r => r.HttpHost)
+                                .Include(r => r.HttpEndpoint)
+                                .Include(r => r.HttpParameter)
+                                .Include(r => r.Email)
                                 .Where(a => a.ScopeId.HasValue && scopeDefinitionIds.Contains(a.ScopeId.Value))
                                 .ToListAsync(token);
         }

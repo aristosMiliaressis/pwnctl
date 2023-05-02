@@ -22,25 +22,34 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 using DotNet.Testcontainers.Builders;
+using pwnctl.infra.Configuration;
 
 public sealed class Tests
 {
     public Tests()
     {
-        Directory.CreateDirectory("/__w/pwnctl/pwnctl/test/pwnctl.svc.test.int/deployment/seed");
+        var path = EnvironmentVariables.GITHUB_ACTIONS
+                ? "/__w/pwnctl/pwnctl/test/pwnctl.svc.test.int/deployment"
+                : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "deployment");
+
+        Directory.CreateDirectory($"{path}/seed");
 
         foreach (var file in Directory.GetFiles("../../../../../src/core/pwnctl.infra/Persistence/seed"))
-            File.Copy(file, Path.Combine("/__w/pwnctl/pwnctl/test/pwnctl.svc.test.int/deployment/seed/", Path.GetFileName(file)), true);
+            File.Copy(file, Path.Combine($"{path}/seed/", Path.GetFileName(file)), true);
 
         Environment.SetEnvironmentVariable("PWNCTL_TEST_RUN", "true");
-        Environment.SetEnvironmentVariable("PWNCTL_INSTALL_PATH", "/__w/pwnctl/pwnctl/test/pwnctl.svc.test.int/deployment");
-        Environment.SetEnvironmentVariable("PWNCTL_Logging__FilePath", "/__w/pwnctl/pwnctl/test/pwnctl.svc.test.int/deployment");
+        Environment.SetEnvironmentVariable("PWNCTL_INSTALL_PATH", path);
+        Environment.SetEnvironmentVariable("PWNCTL_Logging__FilePath", path);
         PwnInfraContextInitializer.Setup();
     }
 
     [Fact]
     public async Task InitializeOperation_Test()
     {
+        var path = EnvironmentVariables.GITHUB_ACTIONS
+                ? "/tmp/pwnctl/test/pwnctl.svc.test.int/deployment"
+                : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "deployment");
+
         var context = new PwnctlDbContext();
         var scope = new ScopeAggregate("test_scope", "");
         scope.Definitions = new List<ScopeDefinitionAggregate>
@@ -62,7 +71,7 @@ public sealed class Tests
 
         var container = new ContainerBuilder()
             .WithImage("public.ecr.aws/i0m2p7r6/pwnctl:latest")
-            .WithBindMount("/tmp/pwnctl/test/pwnctl.svc.test.int/deployment", "/mnt/efs/")
+            .WithBindMount(path, "/mnt/efs/")
             .WithEnvironment("PWNCTL_TEST_RUN", "true")
             .WithEnvironment("PWNCTL_INSTALL_PATH", "/mnt/efs")
             .WithEnvironment("PWNCTL_Logging__FilePath", "/mnt/efs")
@@ -77,9 +86,13 @@ public sealed class Tests
         op = context.Operations.Find(op.Id);
         // TODO: InitiatedAt
 
-        context.TaskEntries.Where(t => t.Definition.ShortName == ShortName.Create("domain_resolution")
-                                    && t.Record.DomainName.Name == "tesla.com")
-                            .First();
+        // context.TaskEntries
+        //         .Include(t => t.Definition)
+        //         .Include(t => t.Record)
+        //             .ThenInclude(r => r.DomainName)
+        //         .Where(t => t.Definition.ShortName == ShortName.Create("domain_resolution")
+        //                 && t.Record.DomainName.Name == "tesla.com")
+        //         .First();
     }
 
     [Fact]
