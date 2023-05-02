@@ -62,7 +62,7 @@ public sealed class Tests
 
         var container = new ContainerBuilder()
             .WithImage("public.ecr.aws/i0m2p7r6/pwnctl:latest")
-            .WithBindMount("/__w/pwnctl/pwnctl/test/pwnctl.svc.test.int/deployment", "/mnt/efs/")
+            .WithBindMount("/tmp/pwnctl/test/pwnctl.svc.test.int/deployment", "/mnt/efs/")
             .WithEnvironment("PWNCTL_TEST_RUN", "true")
             .WithEnvironment("PWNCTL_INSTALL_PATH", "/mnt/efs")
             .WithEnvironment("PWNCTL_Logging__FilePath", "/mnt/efs")
@@ -114,8 +114,8 @@ public sealed class Tests
             {
                 var record = new AssetRecord(assetMap[definition.SubjectClass]);
                 var task = new TaskEntry(op, definition, record);
-                context.Add(task);
-                context.SaveChanges();
+                // context.Add(task);
+                // context.SaveChanges();
                 // TODO: enqueue tasks
             }
         }
