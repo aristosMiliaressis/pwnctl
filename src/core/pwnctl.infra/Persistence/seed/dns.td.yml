@@ -5,7 +5,7 @@ TaskDefinitions:
     CommandTemplate: resolve.sh {{Name}}
     Subject: DomainName
     MonitorRules:
-      Schedule: 0 * * * *
+      Schedule: 0 0 * * *
       PreCondition: Tags["rcode"] == "NXDOMAIN" || Tags["rcode"] == "SERVFAIL" || Tags["rcode"] == "REFUSED"
 
   - Name: httpx
@@ -50,7 +50,7 @@ TaskDefinitions:
     Subject: DomainNameRecord
     Filter: DomainNameRecord.Type == pwnctl.domain.Enums.DnsRecordType.CNAME
     MonitorRules:
-      Schedule: 0 * * * *
+      Schedule: 0 0 * * *
 
   - Name: s3_scan
     CommandTemplate: s3-scan.sh {{Name}}
