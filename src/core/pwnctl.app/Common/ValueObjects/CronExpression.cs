@@ -1,3 +1,4 @@
+using Cronos;
 using pwnctl.kernel.BaseClasses;
 
 namespace pwnctl.app.Common.ValueObjects;
@@ -11,7 +12,7 @@ public sealed class CronExpression : ValueObject
         if (!Validate(value))
             throw new ArgumentException($"Invalid CronExpression {value}, format MUST be unix 5-part", nameof(value));
 
-        Value = Normalize(value);
+        Value = value;
     }
 
     public DateTime? GetNextOccurrence(DateTime fromUtc)
@@ -36,27 +37,12 @@ public sealed class CronExpression : ValueObject
 
         try
         {
-            Cronos.CronExpression.Parse(value);
+            Cronos.CronExpression.Parse(value, CronFormat.Standard);
             return true;
         }
         catch
         {
             return false;
         }
-    }
-
-    private string Normalize(string value)
-    {
-        var parts = value.Split(" ");
-
-        // skip seconds part
-        if (parts.Count() == 7)
-            parts = parts.Skip(1).ToArray();
-
-        // append year part (required by event bridge)
-        if (parts.Count() == 5)
-            parts = parts.Append("*").ToArray();
-
-        return string.Join(" ", parts);
     }
 }

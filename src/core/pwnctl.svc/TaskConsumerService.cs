@@ -15,6 +15,7 @@ namespace pwnctl.svc
 {
     public sealed class TaskConsumerService : BackgroundService
     {
+        private readonly IHostApplicationLifetime _hostApplicationLifetime;
         private readonly AssetProcessor _processor = AssetProcessorFactory.Create();
         private readonly TaskQueueService _queueService = TaskQueueServiceFactory.Create();
         private readonly TaskDbRepository _taskRepo = new();
@@ -25,6 +26,7 @@ namespace pwnctl.svc
 
         public TaskConsumerService(IHostApplicationLifetime hostApplicationLifetime)
         {
+            _hostApplicationLifetime = hostApplicationLifetime;
             hostApplicationLifetime.ApplicationStopping.Register(() =>
             {
                 PwnInfraContext.NotificationSender.Send($"{nameof(TaskConsumerService)} stoped.", NotificationTopic.status);
@@ -38,6 +40,7 @@ namespace pwnctl.svc
             if (int.TryParse(Environment.GetEnvironmentVariable("PWNCTL_Operation"), out int opId))
             {
                 await _initializer.InitializeAsync(opId);
+                _hostApplicationLifetime.StopApplication();
                 return;
             }
 

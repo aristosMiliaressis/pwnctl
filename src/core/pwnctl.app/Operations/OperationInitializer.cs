@@ -38,22 +38,18 @@ public class OperationInitializer
             await GenerateScheduledTasksAsync(op, record);
         }
 
-        //TODO: _opRepo.Save(op);
+        await _opRepo.SaveAsync(op);
     }
 
     public async Task GenerateScheduledTasksAsync(Operation op, AssetRecord record)
     {
         foreach (var def in op.Policy.TaskProfile.TaskDefinitions.Where(def => def.Matches(record)))
         {
-            if (record.Tasks.Any(t => t.Definition.ShortName == def.ShortName))
-                continue;
-
             var task = new TaskEntry(op, def, record);
-
             record.Tasks.Add(task);
 
-            await _taskQueueService.EnqueueAsync<PendingTaskDTO>(new PendingTaskDTO(task));
             await _taskRepo.AddAsync(task);
+            await _taskQueueService.EnqueueAsync<PendingTaskDTO>(new PendingTaskDTO(task));
         }
     }
 }

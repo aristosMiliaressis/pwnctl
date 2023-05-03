@@ -31,7 +31,7 @@ public class EventBridgeScheduler
         // if no schedule provided, schedule immediatly (i.e in 5 minutes)
         var schedule = op.Schedule.Value == null
                      ? DateTime.UtcNow.AddMinutes(5).ToString("m H d M * yyyy")
-                     : op.Schedule.Value;
+                     : $"{op.Schedule.Value} *";
 
         await client.PutRuleAsync(new PutRuleRequest
         {

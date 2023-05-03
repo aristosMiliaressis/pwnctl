@@ -28,10 +28,6 @@ namespace pwnctl.app.Operations.Entities
             Type = type;
             Policy = policy;
             Scope = scope;
-            if (Schedule == null)
-            {
-                InitiatedAt = DateTime.UtcNow;
-            }
         }
     }
 }

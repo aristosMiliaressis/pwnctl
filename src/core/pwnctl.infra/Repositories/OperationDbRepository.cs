@@ -17,4 +17,10 @@ public class OperationDbRepository : OperationRepository
                                 .ThenInclude(p => p.TaskDefinitions)
                             .FirstOrDefaultAsync(o => o.Id == id);
     }
+
+    public async Task SaveAsync(Operation op)
+    {
+        _context.Update(op);
+        await _context.SaveChangesAsync();
+    }
 }
