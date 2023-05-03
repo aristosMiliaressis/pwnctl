@@ -2,16 +2,18 @@ using System.Text;
 using pwnctl.app;
 using pwnctl.app.Queueing.Interfaces;
 using pwnctl.infra.Commands;
+using pwnctl.infra.Configuration;
 
 namespace pwnctl.infra.Queueing
 {
     public sealed class FakeTaskQueueService : TaskQueueService
     {
-        private static readonly string _queuePath = "./queue";
+        private static readonly string _queuePath = Path.Combine(EnvironmentVariables.INSTALL_PATH, "queue");
 
         public FakeTaskQueueService()
         {
             CommandExecutor.ExecuteAsync($"touch {_queuePath}").Wait();
+            CommandExecutor.ExecuteAsync($"chmod 666 {_queuePath}").Wait();
         }
 
         /// <summary>
@@ -31,7 +33,7 @@ namespace pwnctl.infra.Queueing
         {
             (_, StringBuilder stdout, _) = await CommandExecutor.ExecuteAsync($"if read line <{_queuePath}; then echo $line; tmp=\"$(tail -n +2 {_queuePath})\"; echo \"$tmp\" > {_queuePath}; fi");
 
-            if (string.IsNullOrEmpty(stdout.ToString()))
+            if (string.IsNullOrEmpty(stdout.ToString().Trim()))
                 return default(TMessage);
 
             return PwnInfraContext.Serializer.Deserialize<TMessage>(stdout.ToString());
