@@ -78,9 +78,22 @@ public class EventBridgeScheduler
     {
         var client = new AmazonCloudWatchEventsClient();
 
-        await client.DeleteRuleAsync(new DeleteRuleRequest
+        try
         {
-            Name = $"{op.ShortName.Value}_schedule"
-        });
+            await client.RemoveTargetsAsync(new RemoveTargetsRequest
+            {
+                Rule = $"{op.ShortName.Value}_schedule",
+                Ids = new() { $"{op.ShortName.Value}_target" }
+            });
+
+            await client.DeleteRuleAsync(new DeleteRuleRequest
+            {
+                Name = $"{op.ShortName.Value}_schedule"
+            });
+        }
+        catch (Exception ex)
+        {
+            PwnInfraContext.Logger.Exception(ex);
+        }
     }
 }
