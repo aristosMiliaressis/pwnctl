@@ -66,6 +66,8 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
                     .HasConversion(name => name.Value, value => ShortName.Create(value),
                     new ValueComparer<ShortName>((l, r) => l == r, v => v.GetHashCode()));
 
+            builder.HasIndex(u => u.ShortName).IsUnique();
+
             builder.HasMany(p => p.TaskDefinitions)
               .WithOne(d => d.Profile)
               .HasForeignKey(d => d.ProfileId)

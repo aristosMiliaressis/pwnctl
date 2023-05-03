@@ -28,6 +28,8 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
             builder.Property(c => c.ShortName)
                     .HasConversion(name => name.Value, value => ShortName.Create(value),
                     new ValueComparer<ShortName>((l, r) => l == r, v => v.GetHashCode()));
+
+            builder.HasIndex(u => u.ShortName).IsUnique();
         }
     }
 
