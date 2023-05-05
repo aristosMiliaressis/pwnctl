@@ -13,7 +13,7 @@ resource "random_password" "db" {
 }
 
 resource "aws_secretsmanager_secret" "password" {
-  name = "/aws/secret/pwnctl/Db"
+  name = "/aws/secret/pwnctl/Db/Password"
 
   recovery_window_in_days = 0
 }

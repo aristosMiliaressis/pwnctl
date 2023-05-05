@@ -1,9 +1,4 @@
 
-variable "do_token" {
-  description = "The DigitalOcean token."
-  default = ""
-}
-
 variable "profile" {
   description = "The AWS profile to use."
   default = "default"
@@ -39,17 +34,29 @@ variable "ecs_cluster" {
   }
 }
 
-variable "ecs_task" {
-  default = {
-    max_timeout = 7200
-    max_instances = 30
-  }
-}
-
 variable "ecs_service" {
   default = {
     name = "pwnctl_svc"
     min_capacity = 0
+    max_capacity = 30
   }
 }
 
+variable "task_timeout" {
+  description = "The max amount of seconds a task execution may take before timing out."
+  default = 7200
+}
+
+variable "access_timeout_minutes" {
+  description = "The access token expiration in minutes."
+  default = 120
+}
+
+variable "refresh_timeout_hours" {
+  description = "The refresh token expiration in hours."
+  default = 720
+}
+
+variable "admin_password" {
+  description = "A password used to seed the default admin user."
+}

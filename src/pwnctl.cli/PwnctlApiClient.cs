@@ -10,6 +10,8 @@ using pwnctl.dto.Mediator;
 using pwnctl.app;
 using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
+using System.Net.Http.Headers;
+using pwnctl.dto.Auth;
 
 /// <summary>
 /// an api client that utilizes the custom Mediated Api contract and
@@ -55,17 +57,16 @@ public sealed class PwnctlApiClient
             RequestUri = new Uri(route, UriKind.Relative),
             Content = new StringContent(json, Encoding.UTF8, "application/json")
         };
-        
-        var (profile, credentials) = GetAWSProfileCredentials(PwnInfraContext.Config.Aws.Profile);
 
         HttpResponseMessage response = null;
         try
         {
-            response = await _httpClient.SendAsync(httpRequest,
-                                            regionName: profile.Region.SystemName,
-                                            serviceName: "lambda",
-                                            credentials: credentials);
-            
+            var token = await GetAccessToken();
+
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.AccessToken);
+
+            response = await _httpClient.SendAsync(httpRequest);
+
             response.EnsureSuccessStatusCode();
         }
         catch (HttpRequestException)
@@ -77,16 +78,59 @@ public sealed class PwnctlApiClient
         return await response.Content.ReadFromJsonAsync<MediatedResponse>();
     }
 
-    private static (CredentialProfile, AWSCredentials) GetAWSProfileCredentials(string profileName)
+    private async Task<TokenGrantResponse> GetAccessToken()
     {
-        var credentialProfileStoreChain = new CredentialProfileStoreChain();
+        AccessTokenRequestModel request = new();
 
-        if (!credentialProfileStoreChain.TryGetProfile(profileName, out CredentialProfile profile))
-            throw new AmazonClientException($"Unable to find profile {profile} in CredentialProfileStoreChain.");
+        var (profile, credentials) = TryGetAWSProfileCredentials(PwnInfraContext.Config.Aws.Profile);
+        if (profile == null)
+        {
+            Console.WriteLine("Enter Username: ");
+            request.Username = Console.ReadLine();
 
-        if (!credentialProfileStoreChain.TryGetAWSCredentials(profileName, out AWSCredentials credentials))
-            throw new AmazonClientException($"Unable to find credentials {profile} in CredentialProfileStoreChain.");
+            Console.WriteLine("Enter Password: ");
+            request.Password = Console.ReadLine();
+        }
+        else
+        {
+            request.Username = "admin";
 
-        return (profile, credentials);
+            // TODO: get password from secrets manager
+        }
+
+        var json = PwnInfraContext.Serializer.Serialize(request);
+
+        var httpRequest = new HttpRequestMessage
+        {
+            Method = HttpMethod.Post,
+            RequestUri = new Uri("/auth/token", UriKind.Relative),
+            Content = new StringContent(json, Encoding.UTF8, "application/json")
+        };
+
+        var response = await _httpClient.SendAsync(httpRequest);
+
+        response.EnsureSuccessStatusCode();
+
+        return await response.Content.ReadFromJsonAsync<TokenGrantResponse>();
+    }
+
+    private (CredentialProfile, AWSCredentials) TryGetAWSProfileCredentials(string profileName)
+    {
+        try
+        {
+            var credentialProfileStoreChain = new CredentialProfileStoreChain();
+
+            if (!credentialProfileStoreChain.TryGetProfile(profileName, out CredentialProfile profile))
+                throw new AmazonClientException($"Unable to find profile {profile} in CredentialProfileStoreChain.");
+
+            if (!credentialProfileStoreChain.TryGetAWSCredentials(profileName, out AWSCredentials credentials))
+                throw new AmazonClientException($"Unable to find credentials {profile} in CredentialProfileStoreChain.");
+
+            return (profile, credentials);
+        }
+        catch
+        {
+            return (null, null);
+        }
     }
 }

@@ -7,9 +7,12 @@ using pwnctl.app.Notifications.Entities;
 using pwnctl.infra.Configuration.Validation.Exceptions;
 using pwnctl.infra.Configuration.Validation;
 using pwnctl.infra.Configuration;
-using pwnctl.infra.Queueing;
-using pwnctl.infra.Repositories;
 using pwnctl.app.Common.ValueObjects;
+using pwnctl.app.Users.Entities;
+using pwnctl.app.Users.Enums;
+using Amazon.SecretsManager;
+using Amazon.SecretsManager.Model;
+using Microsoft.AspNetCore.Identity;
 
 namespace pwnctl.infra.Persistence
 {
@@ -19,7 +22,7 @@ namespace pwnctl.infra.Persistence
                 .WithNamingConvention(PascalCaseNamingConvention.Instance)
                 .Build();
 
-        public static async Task InitializeAsync()
+        public static async Task InitializeAsync(UserManager<User> userManger)
         {
             PwnctlDbContext context = new();
 
@@ -33,6 +36,11 @@ namespace pwnctl.infra.Persistence
                 await context.Database.MigrateAsync();
             }
 
+            if (!context.Users.Any() && userManger != null)
+            {
+                await SeedAdminUser(userManger);
+            }
+
             if (!context.TaskDefinitions.Any())
             {
                 await SeedTaskDefinitionsAsync(context);
@@ -42,6 +50,23 @@ namespace pwnctl.infra.Persistence
             {
                 await SeedNotificationRulesAsync(context);
             }
+        }
+
+        private static async Task SeedAdminUser(UserManager<User> userManger)
+        {
+            var ssmClient = new AmazonSecretsManagerClient();
+            var password = await ssmClient.GetSecretValueAsync(new GetSecretValueRequest
+            {
+                SecretId = "/aws/secret/pwnctl/admin_password"
+            });
+
+            var admin = new User
+            {
+                UserName = "admin",
+                Role = UserRole.SuperUser
+            };
+
+            await userManger.CreateAsync(admin, password.SecretString);
         }
 
         private static async Task SeedTaskDefinitionsAsync(PwnctlDbContext context)

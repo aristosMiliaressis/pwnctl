@@ -16,7 +16,7 @@ public sealed class Tests
         Environment.SetEnvironmentVariable("PWNCTL_Logging__FilePath", ".");
         Environment.SetEnvironmentVariable("PWNCTL_Logging__MinLevel", "Debug");
 
-        PwnInfraContextInitializer.Setup();
+        PwnInfraContextInitializer.SetupAsync().Wait();
     }
 
     [Fact]

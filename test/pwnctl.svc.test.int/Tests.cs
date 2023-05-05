@@ -46,7 +46,7 @@ public sealed class Tests
         Environment.SetEnvironmentVariable("PWNCTL_TEST_RUN", "true");
         Environment.SetEnvironmentVariable("PWNCTL_INSTALL_PATH", _hostBasePath);
         Environment.SetEnvironmentVariable("PWNCTL_Logging__FilePath", _hostBasePath);
-        PwnInfraContextInitializer.Setup();
+        PwnInfraContextInitializer.SetupAsync().Wait();
     }
 
     [Fact]
@@ -76,7 +76,6 @@ public sealed class Tests
         while (true)
         {
             var taskDTO = await queue.ReceiveAsync<PendingTaskDTO>();
-            Console.WriteLine(PwnInfraContext.Serializer.Serialize(taskDTO));
             if (taskDTO == default(PendingTaskDTO))
                 break;
 

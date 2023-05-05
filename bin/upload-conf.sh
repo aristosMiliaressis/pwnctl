@@ -2,25 +2,28 @@
 
 functionUrl=$(aws ssm get-parameter --name /pwnctl/Api/BaseUrl | jq -r .Parameter.Value)
 
+adminPassword=$(aws secretsmanager get-secret-value --secret-id /aws/secret/pwnctl/admin_password | jq -r .SecretString)
+
+accessToken=$(curl -s -d '{"username":"admin","password":"'$adminPassword'"}' -H 'Content-Type: application/json' "${functionUrl}auth/token" | jq -r .AccessToken)
+
 uploadDirectory() {
      srcDir=$1
      dstDir=""
-     if [ $# -gt 1 ]; 
-     then 
-          dstDir=$2; 
+     if [ $# -gt 1 ];
+     then
+          dstDir=$2;
           echo "Creating $dstDir"
-          python3 -m awscurl -X PUT --service lambda ${functionUrl}fs/create?path=$dstDir 2>/dev/null
+          curl -X PUT -H "Authorization: $accessToken" ${functionUrl}fs/create?path=$dstDir 2>/dev/null
      fi
 
-     for file in $srcDir/*; 
-     do 
+     for file in $srcDir/*;
+     do
           if [ -f $file ];
           then
                echo "Uploading $file"
-               python3 -m awscurl -X PUT ${functionUrl}fs/upload?path=$dstDir${file#"$srcDir"} \
-                    --service lambda -d @$file \
-                    -H 'Content-Type: text/plain'
-          fi          
+               curl -X PUT ${functionUrl}fs/upload?path=$dstDir${file#"$srcDir"} \
+                    -H 'Content-Type: text/plain' -d @$file -H "Authorization: $accessToken"
+          fi
      done
 }
 
@@ -31,5 +34,3 @@ curl -s https://raw.githubusercontent.com/trickest/resolvers/main/resolvers-trus
 
 uploadDirectory ./deployment
 uploadDirectory ./src/core/pwnctl.infra/Persistence/seed /seed
-
-python3 -m awscurl --service lambda -X POST ${functionUrl}db/seed 2>/dev/null

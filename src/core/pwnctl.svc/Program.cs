@@ -5,7 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddHostedService<TaskConsumerService>();
 
-PwnInfraContextInitializer.Setup();
+await PwnInfraContextInitializer.SetupAsync();
 
 var app = builder.Build();
 

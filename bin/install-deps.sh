@@ -6,8 +6,6 @@ rm awscliv2.zip
 ./aws/install --update
 rm -rf ./aws
 
-pip install awscurl
-
 curl -sSL https://dot.net/v1/dotnet-install.sh \
     | bash /dev/stdin -Channel 6.0 -Runtime aspnetcore -InstallDir /usr/share/dotnet --architecture x64
 ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet

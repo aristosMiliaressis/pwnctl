@@ -27,10 +27,10 @@ namespace pwnctl.cli.ModeHandlers
                Matcher matcher = new();
                matcher.AddInclude("*.json");
 
-               //PwnInfraContextInitializer.Setup(mock: true);
-               await DatabaseInitializer.InitializeAsync();
-               var context = new PwnctlDbContext();
-               var processor = AssetProcessorFactory.Create();
+               //PwnInfraContextInitializer.Setup();
+            //    await DatabaseInitializer.InitializeAsync();
+            //    var context = new PwnctlDbContext();
+                var processor = AssetProcessorFactory.Create();
 
                // var existingProgram = await context.Programs.FirstOrDefaultAsync(p => p.Name == command.Name);
                // if (existingProgram != null)

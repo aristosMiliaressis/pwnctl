@@ -8,7 +8,7 @@ namespace pwnctl.infra.Persistence
     {
         public PwnctlDbContext CreateDbContext(string[] args)
         {
-            PwnInfraContextInitializer.Setup();
+            PwnInfraContextInitializer.SetupAsync().Wait();
             Environment.SetEnvironmentVariable("PWNCTL_TEST_RUN", "true");
 
             var optionsBuilder = new DbContextOptionsBuilder<PwnctlDbContext>();

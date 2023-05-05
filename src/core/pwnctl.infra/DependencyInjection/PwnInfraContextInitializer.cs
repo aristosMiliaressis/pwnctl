@@ -10,10 +10,12 @@ using pwnctl.infra.Serialization;
 using pwnctl.infra.Logging;
 using pwnctl.app.Notifications.Interfaces;
 using pwnctl.infra.Persistence;
+using Microsoft.AspNetCore.Identity;
+using pwnctl.app.Users.Entities;
 
 public static class PwnInfraContextInitializer
 {
-    public static void Setup()
+    public static async Task SetupAsync(UserManager<User> userManger = null)
     {
         PublicSuffixRepository.Instance = new FsPublicSuffixRepository();
         CloudServiceRepository.Instance = new FsCloudServiceRepository();
@@ -29,9 +31,9 @@ public static class PwnInfraContextInitializer
 
         PwnInfraContext.Setup(config, logger, serializer, evaluator, sender);
 
-        if (EnvironmentVariables.TEST_RUN)
+        if (EnvironmentVariables.TEST_RUN || EnvironmentVariables.IS_LAMBDA)
         {
-            DatabaseInitializer.InitializeAsync().Wait();
+            await DatabaseInitializer.InitializeAsync(userManger);
         }
     }
 }

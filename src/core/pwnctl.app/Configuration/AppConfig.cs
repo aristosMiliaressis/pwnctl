@@ -18,6 +18,9 @@ public sealed class AppConfig
     public sealed class ApiSettings
     {
         public string BaseUrl { get; set; }
+        public string HMACSecret { get; set; }
+        public int AccessTimeoutMinutes { get; set; }
+        public int RefreshTimeoutHours { get; set; }
     }
 
     public sealed class DbSettings

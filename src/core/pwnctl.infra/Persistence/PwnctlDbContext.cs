@@ -12,11 +12,13 @@ using pwnctl.app.Notifications.Entities;
 using pwnctl.domain.Entities;
 using pwnctl.app.Tagging.Entities;
 using pwnctl.app.Assets.Aggregates;
+using pwnctl.app.Users.Entities;
 using pwnctl.infra.Configuration;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace pwnctl.infra.Persistence
 {
-    public sealed class PwnctlDbContext : DbContext
+    public sealed class PwnctlDbContext : IdentityDbContext<User>
     {
         public static string ConnectionString => $"Host={PwnInfraContext.Config.Db.Host};"
                                               + $"Database={PwnInfraContext.Config.Db.Name};"

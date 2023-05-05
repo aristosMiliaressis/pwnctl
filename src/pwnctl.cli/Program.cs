@@ -8,16 +8,16 @@ using pwnctl.infra.DependencyInjection;
 
 internal sealed class Program
 {
-    static Dictionary<string, ModeHandler> _modeProviders = 
+    static Dictionary<string, ModeHandler> _modeProviders =
             AppDomain.CurrentDomain.GetAssemblies()
                     .SelectMany(s => s.GetTypes())
                     .Where(t => !t.IsInterface && typeof(ModeHandler).IsAssignableFrom(t))
-                    .Select(t => (ModeHandler)Activator.CreateInstance(t)) 
+                    .Select(t => (ModeHandler)Activator.CreateInstance(t))
                     .ToDictionary(p => p.ModeName, p => p);
 
     static async Task Main(string[] args)
     {
-        PwnInfraContextInitializer.Setup();
+        await PwnInfraContextInitializer.SetupAsync();
 
         if (args.Length < 1)
         {
