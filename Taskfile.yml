@@ -73,11 +73,7 @@ tasks:
 
   destroy:
     cmds:
-      - |
-        functionUrl=$(aws ssm get-parameter --name /pwnctl/Api/BaseUrl | jq -r .Parameter.Value)
-        python3 -m awscurl --service lambda -X DELETE "${functionUrl}ops"
-        cd infra && terraform destroy
-        cd -
+      - ./bin/teardown.sh
 
   install-deps:
     cmds:
