@@ -86,10 +86,8 @@ namespace pwnctl.app.Common
             return lambda;
         }
 
-        
-
         private static MethodInfo _lambdaMethod = typeof(Expression).GetMethods().Where(m => m.Name == nameof(Expression.Lambda)
                         && m.IsGenericMethod && m.GetParameters().Count() == 2
                         && m.GetParameters()[1].ParameterType == typeof(ParameterExpression[])).First();
-    }    
+    }
 }

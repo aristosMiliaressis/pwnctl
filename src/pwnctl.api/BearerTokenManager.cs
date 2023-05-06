@@ -23,10 +23,19 @@ public class BearerTokenManager
         _signInManager = signInManager;
     }
 
-    public async Task<TokenGrantResponse> Generate(string username)
+    public async Task<TokenGrantResponse> Grant(string username, string password)
     {
         var user = await _userManager.FindByNameAsync(username);
 
+        var result = await _signInManager.CheckPasswordSignInAsync(user, password, false);
+        if (!result.Succeeded)
+            return null;
+
+        return await Grant(user);
+    }
+
+    public async Task<TokenGrantResponse> Grant(User user)
+    {
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.Name, user.UserName),
@@ -59,14 +68,6 @@ public class BearerTokenManager
         return response;
     }
 
-    public async Task<bool> ValidateCreds(string username, string password)
-    {
-        var user = await _userManager.FindByNameAsync(username);
-        var result = await _signInManager.CheckPasswordSignInAsync(user, password, false);
-
-        return result.Succeeded;
-    }
-
     public async Task<TokenGrantResponse> Refresh(string accessToken, string refreshToken)
     {
         var principal = GetPrincipalFromExpiredToken(accessToken);
@@ -79,7 +80,7 @@ public class BearerTokenManager
         if (user.RefreshToken != refreshToken || expiration <= DateTime.UtcNow.ToEpochTime())
             return null;
 
-        var response = await Generate(username);
+        var response = await Grant(user);
 
         user.RefreshToken = response.RefreshToken;
         await _userManager.UpdateAsync(user);

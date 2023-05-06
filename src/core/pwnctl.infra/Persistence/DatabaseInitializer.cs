@@ -13,6 +13,7 @@ using pwnctl.app.Users.Enums;
 using Amazon.SecretsManager;
 using Amazon.SecretsManager.Model;
 using Microsoft.AspNetCore.Identity;
+using pwnctl.app;
 
 namespace pwnctl.infra.Persistence
 {
@@ -26,29 +27,36 @@ namespace pwnctl.infra.Persistence
         {
             PwnctlDbContext context = new();
 
-            if (EnvironmentVariables.TEST_RUN && EnvironmentVariables.DELETE_DB)
+            try
             {
-                await context.Database.EnsureDeletedAsync();
-            }
+                if (EnvironmentVariables.TEST_RUN && EnvironmentVariables.DELETE_DB)
+                {
+                    await context.Database.EnsureDeletedAsync();
+                }
 
-            if (context.Database.GetPendingMigrations().Any())
-            {
-                await context.Database.MigrateAsync();
-            }
+                if (context.Database.GetPendingMigrations().Any())
+                {
+                    await context.Database.MigrateAsync();
+                }
 
-            if (!context.Users.Any() && userManger != null)
-            {
-                await SeedAdminUser(userManger);
-            }
+                if (!context.Users.Any() && userManger != null)
+                {
+                    await SeedAdminUser(userManger);
+                }
 
-            if (!context.TaskDefinitions.Any())
-            {
-                await SeedTaskDefinitionsAsync(context);
-            }
+                if (!context.TaskDefinitions.Any())
+                {
+                    await SeedTaskDefinitionsAsync(context);
+                }
 
-            if (!context.NotificationRules.Any())
+                if (!context.NotificationRules.Any())
+                {
+                    await SeedNotificationRulesAsync(context);
+                }
+            }
+            catch (Exception ex)
             {
-                await SeedNotificationRulesAsync(context);
+                PwnInfraContext.Logger.Exception(ex);
             }
         }
 
@@ -66,7 +74,11 @@ namespace pwnctl.infra.Persistence
                 Role = UserRole.SuperUser
             };
 
-            await userManger.CreateAsync(admin, password.SecretString);
+            var result = await userManger.CreateAsync(admin, password.SecretString);
+            if (!result.Succeeded)
+            {
+                PwnInfraContext.Logger.Error(string.Join("\n", result.Errors.Select(e => e.Description)));
+            }
         }
 
         private static async Task SeedTaskDefinitionsAsync(PwnctlDbContext context)

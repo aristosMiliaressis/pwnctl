@@ -9,23 +9,19 @@ using pwnctl.dto.Auth;
 [Route("[controller]")]
 public sealed class AuthController : ControllerBase
 {
-    private readonly ILogger<AuthController> _logger;
     private readonly BearerTokenManager _bearerManager;
 
-    public AuthController(ILogger<AuthController> logger,BearerTokenManager bearerManager)
+    public AuthController(BearerTokenManager bearerManager)
     {
-        _logger = logger;
         _bearerManager = bearerManager;
     }
 
-    [HttpPost("token")]
-    public async Task<ActionResult<TokenGrantResponse>> Token(AccessTokenRequestModel request)
+    [HttpPost("grant")]
+    public async Task<ActionResult<TokenGrantResponse>> Grant(AccessTokenRequestModel request)
     {
-        var succeeded = await _bearerManager.ValidateCreds(request.Username, request.Password);
-        if (!succeeded)
+        var response = await _bearerManager.Grant(request.Username, request.Password);
+        if (response == null)
             return Unauthorized();
-
-        var response = _bearerManager.Generate(request.Username);
 
         return Ok(response);
     }

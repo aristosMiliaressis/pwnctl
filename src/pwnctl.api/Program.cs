@@ -54,7 +54,9 @@ builder.Services.AddAuthentication(options =>
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(PwnInfraContext.Config.Api.HMACSecret)),
             ValidateIssuerSigningKey = true,
             ValidateLifetime = true,
-            RequireExpirationTime = true
+            RequireExpirationTime = true,
+            ValidateAudience = false,
+            ValidateIssuer = false
         };
     });
 

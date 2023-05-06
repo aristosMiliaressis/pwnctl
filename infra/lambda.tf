@@ -64,7 +64,7 @@ resource "aws_lambda_function" "this" {
 
   environment {
       variables = {
-          PWNCTL_IN_VPC = "true"
+          PWNCTL_IS_LAMBDA = "true"
           PWNCTL_Worker__MaxTaskTimeout = tostring(var.task_timeout),
           PWNCTL_TaskQueue__Name = aws_sqs_queue.main.name,
           PWNCTL_TaskQueue__VisibilityTimeout = tostring(var.sqs_visibility_timeout),

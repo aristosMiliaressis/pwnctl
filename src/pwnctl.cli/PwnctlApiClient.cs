@@ -12,6 +12,8 @@ using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
 using System.Net.Http.Headers;
 using pwnctl.dto.Auth;
+using Amazon.SecretsManager;
+using Amazon.SecretsManager.Model;
 
 /// <summary>
 /// an api client that utilizes the custom Mediated Api contract and
@@ -58,13 +60,13 @@ public sealed class PwnctlApiClient
             Content = new StringContent(json, Encoding.UTF8, "application/json")
         };
 
+        var token = await GetAccessToken();
+
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.AccessToken);
+
         HttpResponseMessage response = null;
         try
         {
-            var token = await GetAccessToken();
-
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.AccessToken);
-
             response = await _httpClient.SendAsync(httpRequest);
 
             response.EnsureSuccessStatusCode();
@@ -93,9 +95,14 @@ public sealed class PwnctlApiClient
         }
         else
         {
-            request.Username = "admin";
+            var ssmClient = new AmazonSecretsManagerClient();
+            var password = await ssmClient.GetSecretValueAsync(new GetSecretValueRequest
+            {
+                SecretId = "/aws/secret/pwnctl/admin_password"
+            });
 
-            // TODO: get password from secrets manager
+            request.Username = "admin";
+            request.Password = password.SecretString;
         }
 
         var json = PwnInfraContext.Serializer.Serialize(request);
@@ -103,7 +110,7 @@ public sealed class PwnctlApiClient
         var httpRequest = new HttpRequestMessage
         {
             Method = HttpMethod.Post,
-            RequestUri = new Uri("/auth/token", UriKind.Relative),
+            RequestUri = new Uri("/auth/grant", UriKind.Relative),
             Content = new StringContent(json, Encoding.UTF8, "application/json")
         };
 
