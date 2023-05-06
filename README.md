@@ -96,14 +96,21 @@ TaskDefinitions:
   - Name: ping_sweep
     CommandTemplate: ping-sweep.sh {{CIDR}}
     Subject: NetworkRange
+    MonitorRules:
+      Schedule: 0 0 * * *
 
   - Name: reverse_range_lookup
     CommandTemplate: reverse-range-lookup.sh {{CIDR}}
     Subject: NetworkRange
+    MonitorRules:
+      Schedule: 0 0 * * *
 
   - Name: domain_resolution
     CommandTemplate: dig +short {{Name}} | awk '{print "{{Name}} IN A " $1}'
     Subject: DomainName
+    MonitorRules:
+      Schedule: 0 * * * *
+      PreCondition: Tags["rcode"] == "NXDOMAIN" || Tags["rcode"] == "SERVFAIL" || Tags["rcode"] == "REFUSED"
 
   - Name: httpx
     CommandTemplate: echo {{Name}} | httpx -silent
@@ -220,7 +227,6 @@ every operation has an associated `ScopeAggregate` and `TaskProfile`.
 
 **To Do**
 - [ ] Implement schedule based Monitor operations with EventBridge
-- [ ] Implement scan operations
 
 ## How to set it up?
 
