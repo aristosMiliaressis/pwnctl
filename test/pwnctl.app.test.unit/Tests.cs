@@ -33,6 +33,7 @@ public sealed class Tests
         Environment.SetEnvironmentVariable("PWNCTL_Logging__MinLevel", "Debug");
 
         PwnInfraContextInitializer.SetupAsync().Wait();
+        DatabaseInitializer.SeedAsync().Wait();
     }
 
     [Fact]

@@ -47,6 +47,7 @@ public sealed class Tests
         Environment.SetEnvironmentVariable("PWNCTL_INSTALL_PATH", _hostBasePath);
         Environment.SetEnvironmentVariable("PWNCTL_Logging__FilePath", _hostBasePath);
         PwnInfraContextInitializer.SetupAsync().Wait();
+        DatabaseInitializer.SeedAsync().Wait();
     }
 
     [Fact]
