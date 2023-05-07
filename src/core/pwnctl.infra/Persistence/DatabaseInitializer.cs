@@ -27,36 +27,34 @@ namespace pwnctl.infra.Persistence
         {
             PwnctlDbContext context = new();
 
-            try
+            if (EnvironmentVariables.TEST_RUN && EnvironmentVariables.DELETE_DB)
             {
-                if (EnvironmentVariables.TEST_RUN && EnvironmentVariables.DELETE_DB)
-                {
-                    await context.Database.EnsureDeletedAsync();
-                }
-
-                if (context.Database.GetPendingMigrations().Any())
-                {
-                    await context.Database.MigrateAsync();
-                }
-
-                if (!context.Users.Any() && userManger != null)
-                {
-                    await SeedAdminUser(userManger);
-                }
-
-                if (!context.TaskDefinitions.Any())
-                {
-                    await SeedTaskDefinitionsAsync(context);
-                }
-
-                if (!context.NotificationRules.Any())
-                {
-                    await SeedNotificationRulesAsync(context);
-                }
+                await context.Database.EnsureDeletedAsync();
             }
-            catch (Exception ex)
+
+            if (context.Database.GetPendingMigrations().Any())
             {
-                PwnInfraContext.Logger.Exception(ex);
+                await context.Database.MigrateAsync();
+            }
+
+            if (!context.Users.Any() && userManger != null)
+            {
+                await SeedAdminUser(userManger);
+            }
+        }
+
+        public static async Task SeedAsync()
+        {
+            PwnctlDbContext context = new();
+
+            if (!context.TaskDefinitions.Any())
+            {
+                await SeedTaskDefinitionsAsync(context);
+            }
+
+            if (!context.NotificationRules.Any())
+            {
+                await SeedNotificationRulesAsync(context);
             }
         }
 

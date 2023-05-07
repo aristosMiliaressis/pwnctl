@@ -9,7 +9,7 @@ accessToken=$(curl -s -d '{"username":"admin","password":"'$adminPassword'"}' -H
 functionUrl=$(aws ssm get-parameter --name /pwnctl/Api/BaseUrl | jq -r .Parameter.Value)
 
 # deletes all operations & EventBridge schedules
-python3 -m awscurl --service lambda -X DELETE "${functionUrl}ops"
+curl -H "Authorization: Bearer $accessToken" -X DELETE "${functionUrl}ops"
 
 cd infra
 terraform destroy

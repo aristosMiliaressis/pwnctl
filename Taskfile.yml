@@ -71,6 +71,12 @@ tasks:
     cmds:
       - awslogs get -s 1440m -G --timestamp /aws/ecs/worker | tee pwnctl.log
 
+  get-api-logs:
+    cmds:
+      - |
+        functionName=$(aws lambda list-functions | jq -r '.Functions[] | select( .FunctionName | startswith("pwnctl_api_") ) | .FunctionName')
+        awslogs get -s 1440m -G --timestamp /aws/lambda/$functionName
+
   destroy:
     cmds:
       - ./bin/teardown.sh

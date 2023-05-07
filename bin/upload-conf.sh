@@ -4,7 +4,7 @@ functionUrl=$(aws ssm get-parameter --name /pwnctl/Api/BaseUrl | jq -r .Paramete
 
 adminPassword=$(aws secretsmanager get-secret-value --secret-id /aws/secret/pwnctl/admin_password | jq -r .SecretString)
 
-accessToken=$(curl -s -d '{"username":"admin","password":"'$adminPassword'"}' -H 'Content-Type: application/json' "${functionUrl}auth/grant" | jq -r .AccessToken)
+accessToken=$(curl -s -d '{"username":"admin","password":"'$adminPassword'"}' -H 'Content-Type: application/json' "${functionUrl}auth/grant" | jq -r .accessToken)
 
 uploadDirectory() {
      srcDir=$1
@@ -22,7 +22,7 @@ uploadDirectory() {
           then
                echo "Uploading $file"
                curl -X PUT ${functionUrl}fs/upload?path=$dstDir${file#"$srcDir"} \
-                    -H 'Content-Type: text/plain' -d @$file -H "Authorization: Bearer $accessToken"
+                    -H 'Content-Type: text/plain' --data-binary @$file -H "Authorization: Bearer $accessToken"
           fi
      done
 }
@@ -34,3 +34,5 @@ curl -s https://raw.githubusercontent.com/trickest/resolvers/main/resolvers-trus
 
 uploadDirectory ./deployment
 uploadDirectory ./src/core/pwnctl.infra/Persistence/seed /seed
+
+curl -X POST -H "Authorization: Bearer $accessToken" ${functionUrl}db/seed 2>/dev/null

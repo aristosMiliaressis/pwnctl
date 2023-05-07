@@ -6,7 +6,7 @@ TaskDefinitions:
     Subject: DomainName
     MonitorRules:
       Schedule: 0 0 * * *
-      PreCondition: Tags["rcode"] == "NXDOMAIN" || Tags["rcode"] == "SERVFAIL" || Tags["rcode"] == "REFUSED"
+      PreCondition: Tags["rcode"] != "NOERROR"
 
   - Name: httpx
     CommandTemplate: echo {{Name}} | httpx -silent
