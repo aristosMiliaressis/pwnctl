@@ -4,12 +4,13 @@ using System.Reflection;
 using MediatR;
 using pwnctl.dto.Mediator;
 using pwnctl.app;
+using pwnctl.app.Common.Extensions;
 
 public static class WebApplicationExtensions
 {
     /// <summary>
     /// an extension method to map the `MediatedEndpoint` infrastructure.
-    /// a custom implementation to centralize the api contract into a single assembly consumed by both the producer & consumer of the api 
+    /// a custom implementation to centralize the api contract into a single assembly consumed by both the producer & consumer of the api
     /// </summary>
     /// <notice>
     /// currently only supports JSON based REST APIs and no fancy request filters.
@@ -28,10 +29,12 @@ public static class WebApplicationExtensions
                                 .GetTypes()
                                 .Where(type => !type.IsInterface
                                             && type.IsAssignableTo(requestInterfaceType)));
-        
+
         foreach (var requestType in requestTypes)
         {
             var routePattern = MediatedRequestTypeHelper.GetRoute(requestType);
+
+            routePattern.ValidateTemplate(requestType);
 
             var requestVerb = MediatedRequestTypeHelper.GetVerb(requestType);
 
@@ -39,9 +42,6 @@ public static class WebApplicationExtensions
             {
                 throw new Exception($"Mediated Request {requestType.Name} method is required but set to null.");
             }
-
-            // TODO: validate route syntax & args
-            // TODO: add support for Patch verb
 
             var mapMethod = typeof(EndpointRouteBuilderExtensions)
                                 .GetMethods(BindingFlags.Public | BindingFlags.Static)
@@ -64,6 +64,8 @@ public static class WebApplicationExtensions
                 var mediator = context.RequestServices.GetService<IMediator>();
 
                 var request = PwnInfraContext.Serializer.Deserialize(json, requestType);
+
+                request = context.Request.Path.Value.Extrapolate(routePattern, request);
 
                 var result = (MediatedResponse)await mediator.Send(request);
 
