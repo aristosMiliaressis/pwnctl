@@ -5,6 +5,7 @@ using Amazon.ECS;
 using Amazon.IdentityManagement;
 using pwnctl.app;
 using pwnctl.app.Operations.Entities;
+using pwnctl.kernel;
 
 namespace pwnctl.infra.Scheduling;
 
@@ -30,7 +31,7 @@ public class EventBridgeScheduler
 
         // if no schedule provided, schedule immediatly (i.e in 2 minutes)
         var schedule = op.Schedule == null
-                     ? DateTime.UtcNow.AddMinutes(2).ToString("m H d M ? yyyy")
+                     ? SystemTime.UtcNow().AddMinutes(2).ToString("m H d M ? yyyy")
                      : $"{op.Schedule.Value} *";
 
         await client.PutRuleAsync(new PutRuleRequest

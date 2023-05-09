@@ -1,11 +1,13 @@
 using pwnctl.app.Assets.Aggregates;
 using pwnctl.app.Assets.Interfaces;
 using pwnctl.app.Operations.Entities;
+using pwnctl.app.Operations.Enums;
 using pwnctl.app.Operations.Interfaces;
 using pwnctl.app.Queueing.DTO;
 using pwnctl.app.Queueing.Interfaces;
 using pwnctl.app.Tasks.Entities;
 using pwnctl.app.Tasks.Interfaces;
+using pwnctl.kernel;
 
 namespace pwnctl.app.Operations;
 
@@ -29,7 +31,7 @@ public class OperationInitializer
     {
         var op = await _opRepo.FindAsync(opId);
 
-        op.InitiatedAt = DateTime.UtcNow;
+        op.InitiatedAt = SystemTime.UtcNow();
 
         var records = await _assetRepo.ListInScopeAsync(op.ScopeId);
 
@@ -43,7 +45,7 @@ public class OperationInitializer
 
     public async Task GenerateScheduledTasksAsync(Operation op, AssetRecord record)
     {
-        foreach (var def in op.Policy.TaskProfile.TaskDefinitions.Where(def => def.Matches(record)))
+        foreach (var def in op.Policy.TaskProfile.TaskDefinitions.Where(def => def.Matches(record, minitoring: op.Type == OperationType.Monitor)))
         {
             var task = new TaskEntry(op, def, record);
             record.Tasks.Add(task);

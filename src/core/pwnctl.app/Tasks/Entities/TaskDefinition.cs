@@ -1,6 +1,7 @@
 using pwnctl.app.Assets.Aggregates;
 using pwnctl.app.Common.ValueObjects;
 using pwnctl.domain.ValueObjects;
+using pwnctl.kernel;
 using pwnctl.kernel.BaseClasses;
 
 namespace pwnctl.app.Tasks.Entities
@@ -30,28 +31,23 @@ namespace pwnctl.app.Tasks.Entities
             Profile = profile;
         }
 
-        public bool Matches(AssetRecord record)
+        public bool Matches(AssetRecord record, bool minitoring = false)
         {
             if (SubjectClass.Value != record.Asset.GetType().Name)
                 return false;
 
+            if (minitoring)
+            {
+                TaskEntry lastOccurence = record.Tasks.Where(t => t.Definition.ShortName == ShortName)
+                                                        .OrderBy(t => t.QueuedAt)
+                                                        .LastOrDefault();
+
+                if (!MonitorRules.Matches(record, lastOccurence))
+                    return false;
+            }
+
             if (string.IsNullOrEmpty(Filter))
                 return true;
-
-            if (MonitorRules.CronSchedule != null)
-            {
-                if (record.Tasks.Any(t => t.Definition.ShortName == ShortName
-                                       && MonitorRules.CronSchedule.GetNextOccurrence(t.StartedAt) > DateTime.UtcNow))
-                {
-                    return false;
-                }
-
-                if (MonitorRules.PreCondition != null)
-                {
-                    return PwnInfraContext.FilterEvaluator.Evaluate(MonitorRules.PreCondition, record)
-                        && PwnInfraContext.FilterEvaluator.Evaluate(Filter, record);
-                }
-            }
 
             return PwnInfraContext.FilterEvaluator.Evaluate(Filter, record);
         }
@@ -59,11 +55,34 @@ namespace pwnctl.app.Tasks.Entities
 
     public struct MonitorRules
     {
-        public CronExpression CronSchedule { get; set; }
+        public CronExpression CronSchedule { get; private set; }
         public string PreCondition { get; set; }
         public string PostCondition { get; set; }
         public string NotificationTemplate { get; set; }
 
-        public string Schedule { init { CronSchedule = CronExpression.Create(value); } }
+        public string Schedule
+        {
+            get
+            {
+                return CronSchedule?.Value;
+            }
+            init
+            {
+                CronSchedule = string.IsNullOrEmpty(value)
+                            ? null
+                            : CronExpression.Create(value);
+            }
+        }
+
+        public bool Matches(AssetRecord record, TaskEntry lastOccurence)
+        {
+            if (lastOccurence != null && CronSchedule != null &&
+                CronSchedule.GetNextOccurrence(lastOccurence.QueuedAt) > SystemTime.UtcNow())
+            {
+                return false;
+            }
+
+            return PwnInfraContext.FilterEvaluator.Evaluate(PreCondition, record);
+        }
     }
 }

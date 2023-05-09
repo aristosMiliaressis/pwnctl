@@ -10,6 +10,7 @@ using System.Text;
 using Microsoft.AspNetCore.Identity;
 using pwnctl.app.Users.Entities;
 using pwnctl.kernel.Extensions;
+using pwnctl.kernel;
 
 public class BearerTokenManager
 {
@@ -41,13 +42,13 @@ public class BearerTokenManager
             new Claim(ClaimTypes.Name, user.UserName),
             new Claim(ClaimTypes.Role, user.Role.ToString()),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToEpochTime().ToString())
+            new Claim(JwtRegisteredClaimNames.Iat, SystemTime.UtcNow().ToEpochTime().ToString())
         };
 
         var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(PwnInfraContext.Config.Api.HMACSecret));
 
         var token = new JwtSecurityToken(
-                expires: DateTime.UtcNow.AddMinutes(PwnInfraContext.Config.Api.AccessTimeoutMinutes),
+                expires: SystemTime.UtcNow().AddMinutes(PwnInfraContext.Config.Api.AccessTimeoutMinutes),
                 claims: claims,
                 signingCredentials: new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256));
 
@@ -77,7 +78,7 @@ public class BearerTokenManager
 
         var username = principal.Identity.Name;
         var user = await _userManager.FindByNameAsync(username);
-        if (user.RefreshToken != refreshToken || expiration <= DateTime.UtcNow.ToEpochTime())
+        if (user.RefreshToken != refreshToken || expiration <= SystemTime.UtcNow().ToEpochTime())
             return null;
 
         var response = await Grant(user);

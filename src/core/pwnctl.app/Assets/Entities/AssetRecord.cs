@@ -6,13 +6,14 @@ using pwnctl.app.Tagging.Entities;
 using pwnctl.domain.ValueObjects;
 using pwnctl.domain.Entities;
 using pwnctl.app.Notifications.Entities;
+using pwnctl.kernel;
 
 namespace pwnctl.app.Assets.Aggregates;
 
 public sealed class AssetRecord : Entity<Guid>
 {
     public Asset Asset => (Asset)typeof(AssetRecord).GetProperty(SubjectClass.Value).GetValue(this);
-    
+
     public DateTime FoundAt { get; private init; }
     public TaskEntry FoundByTask { get; private init; }
     public int? FoundByTaskId { get; private init; }
@@ -65,7 +66,7 @@ public sealed class AssetRecord : Entity<Guid>
         : this(asset)
     {
         FoundByTaskId = foundBy?.Id;
-        FoundAt = DateTime.UtcNow;
+        FoundAt = SystemTime.UtcNow();
     }
 
     public void SetScope(ScopeDefinition scope)

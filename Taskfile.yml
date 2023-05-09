@@ -54,8 +54,7 @@ tasks:
   deploy-app:
     deps: [build-api, install-cli]
     cmds:
-      - cd infra && terraform apply
-      - cd -
+      - terraform -chdir=infra apply
       - ./bin/upload-conf.sh
 
   debug-svc:

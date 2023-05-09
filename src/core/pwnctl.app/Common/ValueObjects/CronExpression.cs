@@ -17,6 +17,7 @@ public sealed class CronExpression : ValueObject
 
     public DateTime? GetNextOccurrence(DateTime fromUtc)
     {
+        fromUtc = DateTime.SpecifyKind(fromUtc, DateTimeKind.Utc);
         return Cronos.CronExpression.Parse(Value).GetNextOccurrence(fromUtc);
     }
 

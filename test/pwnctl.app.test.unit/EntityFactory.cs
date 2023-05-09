@@ -41,6 +41,31 @@ namespace pwnctl.app.test.unit
             }
         }
 
+        public static Policy Policy
+        {
+            get
+            {
+                PwnctlDbContext context = new();
+
+                if (context.Policies.Any())
+                    return context.Policies
+                                    .Include(p => p.TaskProfile)
+                                    .ThenInclude(p => p.TaskDefinitions)
+                                    .First();
+
+                var policy = new Policy(context.TaskProfiles.Include(p => p.TaskDefinitions).First());
+                policy.Whitelist = "ffuf_common";
+                policy.Blacklist = "subfinder";
+                policy.MaxAggressiveness = 6;
+                context.Entry(policy.TaskProfile).State = EntityState.Unchanged;
+                context.Add(policy);
+                context.SaveChanges();
+
+                return policy;
+            }
+        }
+
+
         public static TaskEntry TaskEntry
         {
             get
@@ -58,22 +83,16 @@ namespace pwnctl.app.test.unit
                                         .ThenInclude(o => o.Definition)
                                     .First();
 
-                var policy = new Policy(context.TaskProfiles.Include(p => p.TaskDefinitions).First());
-                policy.Whitelist = "ffuf_common";
-                policy.Blacklist = "subfinder";
-                policy.MaxAggressiveness = 6;
-                context.Entry(policy.TaskProfile).State = EntityState.Unchanged;
-                context.Add(policy);
-                context.SaveChanges();
-
-                var operation = new Operation("test", OperationType.Crawl, policy, ScopeAggregate);
+                var operation = new Operation("test", OperationType.Crawl, Policy, ScopeAggregate);
                 context.Entry(operation.Scope).State = EntityState.Unchanged;
+                context.Entry(operation.Policy).State = EntityState.Unchanged;
+                context.Entry(operation.Policy.TaskProfile).State = EntityState.Unchanged;
                 context.Add(operation);
                 context.SaveChanges();
 
                 var assetRecord = new AssetRecord(new DomainName("dummy.com"));
 
-                var task = new TaskEntry(operation, operation.Policy.TaskProfile.TaskDefinitions.First(), assetRecord);
+                var task = new TaskEntry(operation, Policy.TaskProfile.TaskDefinitions.First(), assetRecord);
                 context = new();
                 context.Entry(task.Definition).State = EntityState.Unchanged;
                 context.Entry(task.Operation).State = EntityState.Unchanged;

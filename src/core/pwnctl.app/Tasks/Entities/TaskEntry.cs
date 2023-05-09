@@ -5,6 +5,7 @@ using pwnctl.app.Tasks.Exceptions;
 using pwnctl.app.Operations.Entities;
 using System.Text.Json.Serialization;
 using pwnctl.app.Common.Extensions;
+using pwnctl.kernel;
 
 namespace pwnctl.app.Tasks.Entities
 {
@@ -30,7 +31,7 @@ namespace pwnctl.app.Tasks.Entities
         public TaskEntry(Operation operation, TaskDefinition definition, AssetRecord record)
         {
             State = TaskState.QUEUED;
-            QueuedAt = DateTime.UtcNow;
+            QueuedAt = SystemTime.UtcNow();
             Operation = operation;
             OperationId = operation.Id;
             Definition = definition;
@@ -44,7 +45,7 @@ namespace pwnctl.app.Tasks.Entities
                 throw new TaskStateException(State, TaskState.RUNNING);
 
             State = TaskState.RUNNING;
-            StartedAt = DateTime.UtcNow;
+            StartedAt = SystemTime.UtcNow();
         }
 
         public void Finished(int exitCode)
@@ -54,7 +55,7 @@ namespace pwnctl.app.Tasks.Entities
 
             ExitCode = exitCode;
             State = TaskState.FINISHED;
-            FinishedAt = DateTime.UtcNow;
+            FinishedAt = SystemTime.UtcNow();
         }
 
         // Interpolate asset arguments into CommandTemplate

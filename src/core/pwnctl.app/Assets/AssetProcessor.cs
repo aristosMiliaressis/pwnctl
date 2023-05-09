@@ -11,6 +11,7 @@ using pwnctl.app.Tasks.Interfaces;
 using pwnctl.app.Operations.Enums;
 using pwnctl.app.Notifications.Enums;
 using pwnctl.app.Common.Extensions;
+using pwnctl.kernel;
 
 namespace pwnctl.app.Assets
 {
@@ -109,7 +110,7 @@ namespace pwnctl.app.Assets
                 notification = new Notification(record, rule);
 
                 PwnInfraContext.NotificationSender.Send(notification);
-                notification.SentAt = DateTime.UtcNow;
+                notification.SentAt = SystemTime.UtcNow();
                 record.Notifications.Add(notification);
             }
 
@@ -153,8 +154,7 @@ namespace pwnctl.app.Assets
             if (string.IsNullOrEmpty(rules.NotificationTemplate))
                 return;
 
-            if (!string.IsNullOrEmpty(rules.PostCondition) &&
-                !PwnInfraContext.FilterEvaluator.Evaluate(rules.PostCondition, record))
+            if (!PwnInfraContext.FilterEvaluator.Evaluate(rules.PostCondition, record))
                 return;
 
             // is asset new?

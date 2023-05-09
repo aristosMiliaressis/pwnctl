@@ -6,7 +6,7 @@ using pwnctl.kernel.BaseClasses;
 namespace pwnctl.infra.Persistence.Extensions
 {
     public static class DbContextExtensions
-    {        
+    {
         public static TEntity FirstFromLambda<TEntity>(this DbContext context, LambdaExpression lambda)
         {
             var type = lambda.Parameters.First().Type;

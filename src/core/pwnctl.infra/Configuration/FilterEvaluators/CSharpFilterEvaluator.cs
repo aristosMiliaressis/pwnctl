@@ -26,6 +26,9 @@ namespace pwnctl.infra.Configuration
         /// </summary>
         public bool Evaluate(string script, AssetRecord record)
         {
+            if (string.IsNullOrEmpty(script))
+                return true;
+
             try
             {
                 var funcType = typeof(Func<,,>).MakeGenericType(record.Asset.GetType(), typeof(AssetRecord), typeof(bool));

@@ -12,12 +12,18 @@ TaskDefinitions:
     IsActive: false
     Aggressiveness: 1
     Subject: DomainName
+    MonitorRules:
+      Schedule: 0 0 * * *
+      PreCondition: true
 
   - Name: cloud_enum
     CommandTemplate: cloud-enum.sh {{Word}}
     IsActive: true
     Aggressiveness: 5
     Subject: DomainName
+    MonitorRules:
+      Schedule: 0 0 * * *
+      PreCondition: false
 
   - Name: cname_takeover_check
     CommandTemplate: nuclei -t /opt/nuclei-templates/cname_takeovers
@@ -28,3 +34,6 @@ TaskDefinitions:
     CommandTemplate: ../../../../../src/core/pwnctl.svc/scripts/sub-enum.sh {{Name}}
     Filter: DomainName.ZoneDepth <= 2
     Subject: DomainName
+    MonitorRules:
+      Schedule: 0 0 * * *
+      PreCondition: true

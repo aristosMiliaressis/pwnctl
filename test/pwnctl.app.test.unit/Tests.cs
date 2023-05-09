@@ -21,6 +21,11 @@ using System;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Collections.Generic;
+using pwnctl.app.Operations.Entities;
+using pwnctl.app.Operations.Enums;
+using pwnctl.app.Operations;
+using pwnctl.infra.Queueing;
+using pwnctl.kernel;
 
 public sealed class Tests
 {
@@ -567,9 +572,61 @@ public sealed class Tests
                         .First();
         Assert.Empty(xx.Tasks);
 
+
+        // TODO: test that crawl mode is not effected by MonitorRules.PreCondition
+
         // TODO: AllowActive = false test, csv black&whitelist test
         // TODO: test TaskDefinition.MatchOutOfScope
         // TODO: test NotificationRule.CheckOutOfScope
+    }
+
+    [Fact]
+    public async Task OperationInitializer_Tests()
+    {
+        PwnctlDbContext context = new();
+        OperationInitializer initializer = new(new OperationDbRepository(),
+                                                new AssetDbRepository(),
+                                                new TaskDbRepository(),
+                                                TaskQueueServiceFactory.Create());
+
+        var op = new Operation("monitor_op", OperationType.Monitor, EntityFactory.Policy, EntityFactory.ScopeAggregate);
+
+        var domain = new DomainName("deep.sub.tesla.com");
+        var record = new AssetRecord(domain);
+        var parentDomain = new DomainName("tesla.com");
+        var record2 = new AssetRecord(parentDomain);
+        record.Scope = EntityFactory.ScopeAggregate.Definitions.First().Definition;
+        record2.Scope = EntityFactory.ScopeAggregate.Definitions.Last().Definition;
+        context.Entry(op.Scope).State = EntityState.Unchanged;
+        context.Entry(record.Scope).State = EntityState.Unchanged;
+        context.Entry(record2.Scope).State = EntityState.Unchanged;
+        context.Entry(op.Policy).State = EntityState.Unchanged;
+        context.Add(record);
+        context.Add(record2);
+        context.Add(op);
+        await context.SaveChangesAsync();
+
+        // Schedule - no previous occurence - added
+        await initializer.InitializeAsync(op.Id);
+
+        // PreCondition tests
+        Assert.True(context.TaskEntries.Include(t => t.Definition).Any(t => t.Definition.ShortName == ShortName.Create("sub_enum")));
+        Assert.False(context.TaskEntries.Include(t => t.Definition).Any(t => t.Definition.ShortName == ShortName.Create("cloud_enum")));
+        Assert.False(context.TaskEntries.Include(t => t.Definition).Any(t => t.Definition.ShortName == ShortName.Create("sub_enum")
+                                                                          && t.Record.DomainName.Name == "deep.sub.tesla.com"));
+
+        //  Schedule - previous occurance passed schedule - added
+        SystemTime.SetDateTime(DateTime.UtcNow.AddDays(2));
+        await initializer.InitializeAsync(op.Id);
+
+        Assert.Equal(2, context.TaskEntries.Include(t => t.Definition).Count(t => t.Definition.ShortName == ShortName.Create("sub_enum")));
+
+        //  Schedule - previous occurance not passed schedule - not added
+        await initializer.InitializeAsync(op.Id);
+
+        Assert.Equal(2, context.TaskEntries.Include(t => t.Definition).Count(t => t.Definition.ShortName == ShortName.Create("sub_enum")));
+
+        // TODO: PostCondition tests
     }
 
     [Fact]

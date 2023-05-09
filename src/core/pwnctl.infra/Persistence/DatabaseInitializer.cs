@@ -110,7 +110,8 @@ namespace pwnctl.infra.Persistence
                         IsActive = d.IsActive,
                         Aggressiveness = d.Aggressiveness,
                         Filter = d.Filter,
-                        MatchOutOfScope = d.MatchOutOfScope
+                        MatchOutOfScope = d.MatchOutOfScope,
+                        MonitorRules = d.MonitorRules
                     }).ToList();
 
                     var profile = context.TaskProfiles.FirstOrDefault(p => p.ShortName == ShortName.Create(profileName));
