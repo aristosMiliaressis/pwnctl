@@ -7,6 +7,8 @@ TaskDefinitions:
     MonitorRules:
       Schedule: 0 0 * * *
       PreCondition: Tags["rcode"] != "NOERROR"
+      PostCondition: newTags["rcode"] != oldTags["rcode"]
+      NotificationTemplate: domain {{Name}} changed rcode from {{oldTags["rcode"]}} to {{newTags["rcode"]}}
 
   - Name: httpx
     CommandTemplate: echo {{Name}} | httpx -silent

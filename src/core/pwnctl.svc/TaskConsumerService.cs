@@ -29,13 +29,13 @@ namespace pwnctl.svc
             _hostApplicationLifetime = hostApplicationLifetime;
             hostApplicationLifetime.ApplicationStopping.Register(() =>
             {
-                PwnInfraContext.NotificationSender.Send($"{nameof(TaskConsumerService)} stoped.", NotificationTopic.status);
+                PwnInfraContext.NotificationSender.Send($"{nameof(TaskConsumerService)} stoped.", NotificationTopic.Status);
             });
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            PwnInfraContext.NotificationSender.Send($"{nameof(TaskConsumerService)} started.", NotificationTopic.status);
+            PwnInfraContext.NotificationSender.Send($"{nameof(TaskConsumerService)} started.", NotificationTopic.Status);
 
             if (int.TryParse(Environment.GetEnvironmentVariable("PWNCTL_Operation"), out int opId))
             {

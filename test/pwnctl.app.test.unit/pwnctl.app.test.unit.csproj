@@ -7,6 +7,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
+    <NoWarn>8629</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -32,16 +33,16 @@
   <ItemGroup>
     <Content Include="*.dat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content> 
+    </Content>
     <Content Include="*.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content> 
+    </Content>
     <Content Include="seed\*.*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content> 
+    </Content>
     <Content Include="wordlists\*.*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content> 
+    </Content>
   </ItemGroup>
 
 </Project>

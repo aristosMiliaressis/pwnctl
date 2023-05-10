@@ -132,6 +132,7 @@ namespace pwnctl.infra.Repositories
         public async Task SaveAsync(AssetRecord record)
         {
             record.Scope = null;
+            record.Notifications.ForEach(t => t.Task = null);
             record.Tasks.ForEach(t => t.Definition = null);
             record.Tasks.ForEach(t => t.Operation = null);
 

@@ -88,7 +88,7 @@ namespace pwnctl.app.Assets
             }
 
             record = await _assetRepository.UpdateRecordReferences(record, asset);
-            record.UpdateTags(tags);
+            record.MergeTags(tags, updateExisting: operation.Type == OperationType.Monitor);
 
             var scope = operation.Scope.Definitions.FirstOrDefault(scope => scope.Definition.Matches(record.Asset));
             if (scope != null)
@@ -150,19 +150,38 @@ namespace pwnctl.app.Assets
 
         private void NotifyMonitoringFindings(AssetRecord record, TaskEntry foundByTask)
         {
+            Notification notification = null;
+
             var rules = foundByTask.Definition.MonitorRules;
+
+            if (record.Id == default)
+            {
+                notification = new Notification(record, foundByTask);
+
+                PwnInfraContext.NotificationSender.Send(notification.GetText(), NotificationTopic.Monitoring);
+                notification.SentAt = SystemTime.UtcNow();
+                record.Notifications.Add(notification);
+                return;
+            }
+
             if (string.IsNullOrEmpty(rules.NotificationTemplate))
                 return;
 
-            if (!PwnInfraContext.FilterEvaluator.Evaluate(rules.PostCondition, record))
+            var args = new Dictionary<string, object>
+            {
+                { record.Asset.GetType().Name, record.Asset },
+                { "oldTags", foundByTask.Record },
+                { "newTags", record }
+            };
+
+            if (!PwnInfraContext.FilterEvaluator.Evaluate(rules.PostCondition, args))
                 return;
 
-            // is asset new?
-            // PostCondition on tags?
+            notification = new Notification(record, foundByTask);
 
-            var message = rules.NotificationTemplate.Interpolate(record.Asset);
-
-            PwnInfraContext.NotificationSender.Send(message, NotificationTopic.monitoring);
+            PwnInfraContext.NotificationSender.Send(notification.GetText(), NotificationTopic.Monitoring);
+            notification.SentAt = SystemTime.UtcNow();
+            record.Notifications.Add(notification);
         }
 
         private List<Asset> GetReferencedAssets(Asset asset)

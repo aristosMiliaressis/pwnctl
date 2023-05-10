@@ -109,8 +109,10 @@ TaskDefinitions:
     CommandTemplate: dig +short {{Name}} | awk '{print "{{Name}} IN A " $1}'
     Subject: DomainName
     MonitorRules:
-      Schedule: 0 * * * *
-      PreCondition: Tags["rcode"] == "NXDOMAIN" || Tags["rcode"] == "SERVFAIL" || Tags["rcode"] == "REFUSED"
+      Schedule: 0 0 * * *
+      PreCondition: Tags["rcode"] != "NOERROR"
+      PostCondition: newTags["rcode"] != oldTags["rcode"]
+      NotificationTemplate: domain {{Name}} changed rcode from {{oldTags["rcode"]}} to {{newTags["rcode"]}}
 
   - Name: httpx
     CommandTemplate: echo {{Name}} | httpx -silent
@@ -159,12 +161,10 @@ TaskDefinitions:
     CommandTemplate: file-brute.sh {{Url}} /opt/wordlists/config.txt
     Filter: HttpEndpoint.Path == "/"
     Subject: HttpEndpoint
-
-  - Name: webcrawl
-    CommandTemplate: webcrawl.sh '{{Url}}'
-    Filter: HttpEndpoint.Path == "/" || Tags["Content-Type"].Contains("/html") || Tags["Content-Type"].Contains("/xhtml")
-    Subject: HttpEndpoint
 ```
+
+**To Do**
+- [ ] Implement MonitorRules.NotificationTemplate interpolation
 
 **Notification Configuration**
 
@@ -225,9 +225,6 @@ every operation has an associated `ScopeAggregate` and `TaskProfile`.
 
 **Monitor** operations allow you to periodicly monitor assets for change.
 
-**To Do**
-- [ ] Implement schedule based Monitor operations with EventBridge
-
 ## How to set it up?
 
 1. create an aws Administrator user for use with terraform
@@ -238,4 +235,3 @@ every operation has an associated `ScopeAggregate` and `TaskProfile`.
 
 **To Do**
 - [ ] terraform private ecr registry
-- [ ] bearer based api auth

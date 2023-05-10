@@ -6,7 +6,7 @@ namespace pwnctl.app.Tagging.Entities
     public sealed class Tag : Entity<int>
     {
         public string Name { get; private init; }
-        public string Value { get; private init; }
+        public string Value { get; set; }
 
         public AssetRecord Record { get; private init; }
         public Guid RecordId { get; private init; }

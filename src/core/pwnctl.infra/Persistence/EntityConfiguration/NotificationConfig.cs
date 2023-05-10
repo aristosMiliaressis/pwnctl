@@ -40,6 +40,10 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
                 .WithMany()
                 .HasForeignKey(e => e.RuleId);
 
+            builder.HasOne(e => e.Task)
+                .WithMany()
+                .HasForeignKey(e => e.TaskId);
+
             builder.HasOne(e => e.Record)
                 .WithMany(e => e.Notifications)
                 .HasForeignKey(e => e.RecordId);

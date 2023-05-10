@@ -76,36 +76,40 @@ public sealed class AssetRecord : Entity<Guid>
         InScope = Scope != null;
     }
 
-    public void UpdateTags(Dictionary<string, object> tags)
+    public void MergeTags(Dictionary<string, object> tags, bool updateExisting)
     {
         if (tags == null)
             return;
 
-        tags.ToList().ForEach(t => this[t.Key] = t.Value?.ToString());
+        tags.ToList().ForEach(t =>
+        {
+            // if a property with the tag name exists on the asset class, set that property instead of adding a tag.
+            var property = typeof(AssetRecord).GetProperties().FirstOrDefault(p => p.Name.ToLower() == t.Key.ToLower());
+            if (property != null)
+            {
+                if (property.GetValue(this) == default)
+                    property.SetValue(this, t.Value?.ToString());
+                return;
+            }
+
+            if (string.IsNullOrEmpty(t.Value?.ToString()))
+                return;
+
+            var existingTag = Tags.FirstOrDefault(eT => eT.Name == t.Key.ToLower());
+            if (existingTag != null)
+            {
+                if (updateExisting)
+                    existingTag.Value = t.Value?.ToString();
+                return;
+            }
+
+            var tag = new Tag(this, t.Key, t.Value?.ToString());
+            Tags.Add(tag);
+        });
     }
 
     public string this[string key]
     {
         get { return Tags.FirstOrDefault(t => t.Name == key.ToLower())?.Value ?? string.Empty; }
-        set
-        {
-            // if a property with the tag name exists on the asset class, set that property instead of adding a tag.
-            var property = typeof(AssetRecord).GetProperties().FirstOrDefault(p => p.Name.ToLower() == key.ToLower());
-            if (property != null)
-            {
-                if (property.GetValue(this) == default)
-                    property.SetValue(this, value);
-                return;
-            }
-
-            if (string.IsNullOrEmpty(value))
-                return;
-
-            if (Tags.Any(t => t.Name == key.ToLower()))
-                return;
-
-            var tag = new Tag(this, key, value);
-            Tags.Add(tag);
-        }
     }
 }

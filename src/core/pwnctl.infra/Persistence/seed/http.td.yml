@@ -10,6 +10,11 @@ TaskDefinitions:
     CommandTemplate: grab-url-metadata.sh {{Url}}
     Filter: HttpEndpoint.Path == "/"
     Subject: HttpEndpoint
+    MonitorRules:
+      Schedule: 0 0 * * *
+      PreCondition: new List<string>{ "401", "403", "501", "502", "503", "504" }.Contains(Tags["Status"])
+      PostCondition: newTags["Status"] != oldTags["Status"]
+      NotificationTemplate: Endpoint {{Url}} changed status code from {{oldTags["Status"]}} to {{newTags["Status"]}}
 
   - Name: webanalyze
     CommandTemplate: webanalyze.sh {{Url}}
@@ -20,16 +25,6 @@ TaskDefinitions:
     CommandTemplate: webcrawl.sh {{Url}}
     Filter: HttpEndpoint.Path == "/" || Tags["Content-Type"].Contains("/html") || Tags["Content-Type"].Contains("/xhtml")
     Subject: HttpEndpoint
-
-  # - Name: link_finder
-  #   CommandTemplate: link-finder.sh {{Url}}
-  #   Filter: HttpEndpoint.Extension == "js" || HttpEndpoint.Extension == "jsm" || Tags["Content-Type"].Contains("/javascript")
-  #   Subject: HttpEndpoint
-
-  # - Name: screenshot
-  #   CommandTemplate: screenshot.sh {{Url}}
-  #   Filter: HttpEndpoint.Path == "/"
-  #   Subject: HttpEndpoint
 
   - Name: cors_check
     CommandTemplate: check-cors.sh {{Url}}
@@ -46,8 +41,13 @@ TaskDefinitions:
     Subject: NetworkSocket
     Filter: Tags["Version"].Contains("IIS") || Tags["Version"].Contains("Microsoft HTTPAPI")
 
-  # - Name: second_order_takeover
-  #   CommandTemplate: cloud_misconfig_scan.sh {{Url}}
+  # - Name: screenshot
+  #   CommandTemplate: screenshot.sh {{Url}}
+  #   Filter: HttpEndpoint.Path == "/"
   #   Subject: HttpEndpoint
-  #   Filter: CloudServiceRepository.Instance.IsCloudService(HttpEndpoint)
-  #   MatchOutOfScope: true
+
+#   - Name: second_order_takeover
+#     CommandTemplate: cloud_misconfig_scan.sh {{Url}}
+#     Subject: HttpEndpoint
+#     Filter: CloudServiceRepository.Instance.IsCloudService(HttpEndpoint)
+#     MatchOutOfScope: true
