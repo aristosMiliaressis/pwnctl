@@ -89,6 +89,8 @@ assets can be filtered trough the CSharpScript `Filter` field that has access to
 
 task definitions & task profiles can be seeded trough yaml files or created trough the rest api & cli.
 
+task definitions can have monitoring rules that are only evaluated for `Monitor` type operations.
+
 **`task-definitions.yml`**
 ```YAML
 Profiles: [ "all" ]
@@ -163,9 +165,6 @@ TaskDefinitions:
     Subject: HttpEndpoint
 ```
 
-**To Do**
-- [ ] Implement MonitorRules.NotificationTemplate interpolation
-
 **Notification Configuration**
 
 a notify `provider-config.yaml` file with valid discord configuration should be placed in the `deployment/` directory to enable notifications.
@@ -222,7 +221,7 @@ every operation has an associated `ScopeAggregate` and `TaskProfile`.
 
 **Scan** operations can be used to expand on the collected assets or discover misconfigurations in a controlled manner where pre-discovered assets will get assigned tasks but outputs will not be recursivly processed like in crawl mode.
 
-**Monitor** operations allow you to periodicly monitor assets for change.
+**Monitor** operations allow you to periodicly monitor assets for change, `Monitor` operations have cron schedule that controls when the operation starts and task definitions have optional monitoring rules with an extra cron expression that allows certain tasks to be scheduled less frequently than the operation level schedule.
 
 ## How to set it up?
 
