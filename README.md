@@ -106,7 +106,7 @@ TaskDefinitions:
       Schedule: 0 0 * * *
 
   - Name: domain_resolution
-    CommandTemplate: dig +short {{Name}} | awk '{print "{{Name}} IN A " $1}'
+    CommandTemplate: resolve.sh {{Name}}
     Subject: DomainName
     MonitorRules:
       Schedule: 0 0 * * *
@@ -177,7 +177,6 @@ notification rules can be seeded trough yaml files or created trough the rest ap
 
 **To Do**
 - [ ] periodic status notification
-- [ ] terraform discord server
 
 **`notification-rules.yml`**
 ```YAML
@@ -235,3 +234,4 @@ every operation has an associated `ScopeAggregate` and `TaskProfile`.
 
 **To Do**
 - [ ] terraform private ecr registry
+- [ ] terraform discord server

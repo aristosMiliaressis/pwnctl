@@ -1,10 +1,11 @@
+using pwnctl.app.Assets.Aggregates;
 using pwnctl.app.Tasks.Exceptions;
 
 namespace pwnctl.app.Common.Extensions;
 
 public static class StringExtensions
 {
-    public static string Interpolate(this string template, object source)
+    public static string Interpolate(this string template, object source, bool ignoreInvalid = false)
     {
         List<string> arguments = new();
         List<string> parameters = new();
@@ -21,11 +22,24 @@ public static class StringExtensions
 
         foreach (var param in parameters)
         {
-            var prop = sourceType.GetProperty(param);
-            if (prop == null)
-                throw new InvalidTemplateStringException($"Property {param} not found on type {sourceType.Name}");
+            object arg = null;
 
-            var arg = prop.GetValue(source);
+            if (param.StartsWith("[\""))
+            {
+                var index = param.Split("[\"")[1].Split("\"]")[0];
+                var indexer = sourceType.GetProperties().Where(p => p.GetIndexParameters().Length != 0).First();
+                arg = indexer.GetGetMethod().Invoke(source, new object[] { index });
+            }
+            else
+            {
+                var prop = sourceType.GetProperty(param);
+                if (ignoreInvalid && prop == null)
+                    continue;
+                else if (!ignoreInvalid && prop == null)
+                    throw new InvalidTemplateStringException($"Property {param} not found on type {sourceType.Name}");
+
+                arg = prop.GetValue(source);
+            }
 
             arguments.Add(arg.ToString());
         }

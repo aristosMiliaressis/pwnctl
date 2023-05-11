@@ -45,15 +45,10 @@ namespace pwnctl.app.Notifications.Entities
 
             if (!string.IsNullOrEmpty(Task.Definition.MonitorRules.NotificationTemplate))
             {
-                var args = new Dictionary<string, object>
-                {
-                    { Record.Asset.GetType().Name, Record },
-                    { "oldTags", Task.Record },
-                    { "newTags", Record }
-                };
-
-                //return Task.Definition.MonitorRules.NotificationTemplate.Interpolate(args); // TODO: implement
-                return string.Empty;
+                var message = Task.Definition.MonitorRules.NotificationTemplate.Interpolate(Record.Asset, ignoreInvalid: true);
+                message = message.Replace("oldTags", "").Interpolate(Task.Record, ignoreInvalid: true);
+                message = message.Replace("newTags", "").Interpolate(Record, ignoreInvalid: true);
+                return message;
             }
 
             return $"new asset {Record.Asset} found by task {Task.Definition.ShortName.Value} on asset {Task.Record.Asset}";

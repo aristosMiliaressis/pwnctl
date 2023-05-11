@@ -17,6 +17,8 @@ namespace pwnctl.infra.Repositories
                         (context, id) => context.TaskEntries
                                     .Include(r => r.Definition)
                                     .Include(r => r.Record)
+                                        .ThenInclude(r => r.Tags)
+                                    .Include(r => r.Record)
                                         .ThenInclude(r => r.NetworkHost)
                                         .ThenInclude(r => r.AARecords)
                                     .Include(r => r.Record)
@@ -78,7 +80,7 @@ namespace pwnctl.infra.Repositories
         public async Task UpdateAsync(TaskEntry task)
         {
             _context.Entry(task).State = EntityState.Modified;
-            
+
             await _context.SaveChangesAsync();
 
             _context.Entry(task).DetachReferenceGraph();
@@ -92,7 +94,7 @@ namespace pwnctl.infra.Repositories
                 _context.Entry(task.Record).State = EntityState.Added;
                 _context.Entry(task.Record.Asset).State = EntityState.Added;
             }
-            
+
             await _context.SaveChangesAsync();
 
             _context.Entry(task).DetachReferenceGraph();
