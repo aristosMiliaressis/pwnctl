@@ -17,8 +17,8 @@ namespace pwnctl.app.Operations.Entities
 
         public Policy() { }
 
-        public Policy(TaskProfile profile) 
-        { 
+        public Policy(TaskProfile profile)
+        {
             TaskProfile = profile;
         }
 
@@ -42,11 +42,11 @@ namespace pwnctl.app.Operations.Entities
             var whitelist = Whitelist?.Split(",") ?? new string[0];
             var blacklist = Blacklist?.Split(",") ?? new string[0];
 
-            if (blacklist.Contains(definition.ShortName.Value))
+            if (blacklist.Contains(definition.Name.Value))
             {
                 return false;
             }
-            else if (whitelist.Contains(definition.ShortName.Value))
+            else if (whitelist.Contains(definition.Name.Value))
             {
                 return true;
             }

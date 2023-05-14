@@ -44,11 +44,11 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
                         v => PwnInfraContext.Serializer.Serialize(v),
                         v => PwnInfraContext.Serializer.Deserialize<MonitorRules>(v));
 
-            builder.Property(c => c.ShortName)
+            builder.Property(c => c.Name)
                     .HasConversion(name => name.Value, value => ShortName.Create(value),
                     new ValueComparer<ShortName>((l, r) => l == r, v => v.GetHashCode()));
 
-            builder.Property(c => c.SubjectClass)
+            builder.Property(c => c.Subject)
                     .HasConversion(subject => subject.Value, value => AssetClass.Create(value),
                     new ValueComparer<AssetClass>((l, r) => l == r, v => v.GetHashCode()));
         }

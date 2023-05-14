@@ -37,11 +37,13 @@ public static class ConfigValidator
     {
         errorMessage = null;
 
-        TaskDefinitionFile file;
+        TaskConfigFile file;
+        IEnumerable<TaskDefinition> taskDefinitions;
         try
         {
             var taskText = File.ReadAllText(fileName);
-            file = _deserializer.Deserialize<TaskDefinitionFile>(taskText);
+            file = _deserializer.Deserialize<TaskConfigFile>(taskText);
+            taskDefinitions = file.TaskDefinitions.Select(d => d.ToEntity());
         }
         catch (Exception ex)
         {
@@ -56,36 +58,36 @@ public static class ConfigValidator
             return false;
         }
 
-        if (!file.TaskDefinitions.Any())
+        if (!taskDefinitions.Any())
         {
             errorMessage = $"At least one task definition is required";
             return false;
         }
 
-        if (file.TaskDefinitions.Select(d => d.ShortName).Distinct().Count() != file.TaskDefinitions.Count())
+        if (taskDefinitions.Select(d => d.Name.Value).Distinct().Count() != taskDefinitions.Count())
         {
             errorMessage = "Duplicate ShortName";
             return false;
         }
 
-        foreach (var definition in file.TaskDefinitions)
+        foreach (var definition in taskDefinitions)
         {
-            if (string.IsNullOrEmpty(definition.ShortName.Value))
+            if (string.IsNullOrEmpty(definition.Name.Value))
             {
                 errorMessage = "Null or Empty ShortName";
                 return false;
             }
 
-            if (definition.SubjectClass == null || string.IsNullOrEmpty(definition.SubjectClass.Value))
+            if (definition.Subject == null || string.IsNullOrEmpty(definition.Subject.Value))
             {
-                errorMessage = "Null or Empty Subject on " + definition.ShortName.Value;
+                errorMessage = "Null or Empty Subject on " + definition.Name;
                 return false;
             }
 
             AssetRecord record;
             try
             {
-                var asset = _sampleAssets[definition.SubjectClass];
+                var asset = _sampleAssets[definition.Subject];
                 record = new AssetRecord(asset);
                 var op = new Operation();
                 var taskEntry = new TaskEntry(op, definition, record);
@@ -94,7 +96,7 @@ public static class ConfigValidator
             catch (Exception ex)
             {
                 PwnInfraContext.Logger.Error(ex.ToRecursiveExInfo());
-                errorMessage = $"task definition {definition.ShortName.Value} failed to interpolate CommandTemplate arguments";
+                errorMessage = $"task definition {definition.Name} failed to interpolate CommandTemplate arguments";
                 return false;
             }
 
@@ -105,7 +107,7 @@ public static class ConfigValidator
             catch (Exception ex)
             {
                 PwnInfraContext.Logger.Error(ex.ToRecursiveExInfo());
-                errorMessage = $"task definition {definition.ShortName.Value} Filter through exception";
+                errorMessage = $"task definition {definition.Name} Filter through exception";
                 return false;
             }
         }
@@ -117,11 +119,12 @@ public static class ConfigValidator
     {
         errorMessage = null;
 
-        List<NotificationRule> notificationRules;
+        IEnumerable<NotificationRule> notificationRules;
         try
         {
             var ruleText = File.ReadAllText(fileName);
-            notificationRules = _deserializer.Deserialize<List<NotificationRule>>(ruleText);
+            var notificationRuleDTOs = _deserializer.Deserialize<List<NotificationRuleDTO>>(ruleText);
+            notificationRules = notificationRuleDTOs.Select(r => r.ToEntity());
         }
         catch
         {
@@ -129,7 +132,7 @@ public static class ConfigValidator
             return false;
         }
 
-        if (notificationRules.Select(d => d.ShortName).Distinct().Count() != notificationRules.Count())
+        if (notificationRules.Select(d => d.Name).Distinct().Count() != notificationRules.Count())
         {
             errorMessage = "Duplicate ShortName";
             return false;
@@ -137,19 +140,19 @@ public static class ConfigValidator
 
         foreach (var rule in notificationRules)
         {
-            if (string.IsNullOrEmpty(rule.ShortName.Value))
+            if (string.IsNullOrEmpty(rule.Name.Value))
             {
                 errorMessage = "Null or Empty ShortName";
                 return false;
             }
 
-            if (rule.SubjectClass == null || string.IsNullOrEmpty(rule.SubjectClass.Value))
+            if (rule.Subject == null || string.IsNullOrEmpty(rule.Subject.Value))
             {
-                errorMessage = "Null or Empty Subject on " + rule.ShortName.Value;
+                errorMessage = "Null or Empty Subject on " + rule.Name.Value;
                 return false;
             }
 
-            AssetRecord record = new AssetRecord(_sampleAssets[rule.SubjectClass]);
+            AssetRecord record = new AssetRecord(_sampleAssets[rule.Subject]);
 
             try
             {
@@ -158,7 +161,7 @@ public static class ConfigValidator
             catch (Exception ex)
             {
                 PwnInfraContext.Logger.Error(ex.ToRecursiveExInfo());
-                errorMessage = $"notification rule {rule.ShortName.Value} Filter through exception";
+                errorMessage = $"notification rule {rule.Name.Value} Filter through exception";
                 return false;
             }
         }

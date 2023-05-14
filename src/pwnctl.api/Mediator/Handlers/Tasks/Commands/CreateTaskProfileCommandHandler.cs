@@ -22,19 +22,10 @@ namespace pwnctl.api.Mediator.Handlers.Tasks.Commands
 
             foreach (var def in command.TaskDefinitions)
             {
-                var taskDef = _context.TaskDefinitions.FirstOrDefault(d => d.ShortName == ShortName.Create(def.ShortName));
+                var taskDef = _context.TaskDefinitions.FirstOrDefault(d => d.Name == ShortName.Create(def.Name));
                 if (taskDef == null)
                 {
-                    taskDef = new TaskDefinition
-                    {
-                        Name = def.ShortName,
-                        Subject = def.Subject,
-                        CommandTemplate = def.CommandTemplate,
-                        Filter = def.Filter,
-                        Aggressiveness = def.Aggressiveness,
-                        IsActive = def.IsActive,
-                        MatchOutOfScope = def.MatchOutOfScope
-                    };
+                    taskDef = def.ToEntity();
 
                     _context.Add(taskDef);
                 }

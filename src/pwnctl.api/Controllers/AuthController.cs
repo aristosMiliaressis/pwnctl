@@ -27,7 +27,7 @@ public sealed class AuthController : ControllerBase
     }
 
     [HttpPost("refresh")]
-    public async Task<ActionResult<TokenGrantResponse>> Refrech(RefreshTokenRequestModel request)
+    public async Task<ActionResult<TokenGrantResponse>> Refresh(RefreshTokenRequestModel request)
     {
         var response = await _bearerManager.Refresh(request.AccessToken, request.RefreshToken);
         if (response == null)

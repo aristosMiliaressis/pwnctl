@@ -1,6 +1,7 @@
 namespace pwnctl.dto.Tasks.Commands;
 
 using pwnctl.dto.Mediator;
+using pwnctl.infra.Configuration;
 
 public sealed class CreateTaskProfileCommand : TaskProfileRequestModel, MediatedRequest
 {
@@ -11,5 +12,5 @@ public sealed class CreateTaskProfileCommand : TaskProfileRequestModel, Mediated
 public class TaskProfileRequestModel
 {
     public string ShortName { get; private init; }
-    public List<TaskDefinitionRequestModel> TaskDefinitions { get; set; }
+    public List<TaskDefinitionDTO> TaskDefinitions { get; set; }
 }

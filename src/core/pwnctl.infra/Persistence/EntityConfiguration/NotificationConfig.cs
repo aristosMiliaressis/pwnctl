@@ -16,15 +16,15 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
 
             builder.HasKey(r => r.Id);
 
-            builder.Property(c => c.SubjectClass)
+            builder.Property(c => c.Subject)
                     .HasConversion(subject => subject.Value, value => AssetClass.Create(value),
                     new ValueComparer<AssetClass>((l, r) => l == r, v => v.GetHashCode()));
 
-            builder.Property(c => c.ShortName)
+            builder.Property(c => c.Name)
                     .HasConversion(name => name.Value, value => ShortName.Create(value),
                     new ValueComparer<ShortName>((l, r) => l == r, v => v.GetHashCode()));
 
-            builder.HasIndex(u => u.ShortName).IsUnique();
+            builder.HasIndex(u => u.Name).IsUnique();
         }
     }
 

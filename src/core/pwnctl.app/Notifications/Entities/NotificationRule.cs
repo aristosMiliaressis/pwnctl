@@ -8,21 +8,18 @@ namespace pwnctl.app.Notifications.Entities
 {
     public sealed class NotificationRule : Entity<int>
     {
-        public ShortName ShortName { get; private init; }
-        public AssetClass SubjectClass { get; private set; }
-        public NotificationTopic Topic { get; private init; }
-        public string Filter { get; private init; }
-        public string Template { get; private init; }
-        public bool CheckOutOfScope { get; private init; }
-
-        public string Subject { init { SubjectClass = AssetClass.Create(value); } }
-        public string Name { init { ShortName = ShortName.Create(value); } }
+        public ShortName Name { get; init; }
+        public AssetClass Subject { get; init; }
+        public NotificationTopic Topic { get; init; }
+        public string Filter { get; init; }
+        public string Template { get; init; }
+        public bool CheckOutOfScope { get; init; }
 
         public NotificationRule() { }
 
         public bool Check(AssetRecord record)
         {
-            if (SubjectClass.Value != record.Asset.GetType().Name)
+            if (Subject.Value != record.Asset.GetType().Name)
                 return false;
 
             return PwnInfraContext.FilterEvaluator.Evaluate(Filter, record);

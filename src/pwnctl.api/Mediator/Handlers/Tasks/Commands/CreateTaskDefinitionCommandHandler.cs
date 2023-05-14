@@ -13,20 +13,11 @@ namespace pwnctl.api.Mediator.Handlers.Tasks.Commands
 
         public async Task<MediatedResponse> Handle(CreateTaskDefinitionCommand command, CancellationToken cancellationToken)
         {
-            var definition = _context.TaskDefinitions.FirstOrDefault(a => a.ShortName == ShortName.Create(command.ShortName));
+            var definition = _context.TaskDefinitions.FirstOrDefault(a => a.Name == ShortName.Create(command.Name));
             if (definition != null)
-                return MediatedResponse.Error("Task Definition {0} already exists.", command.ShortName);
+                return MediatedResponse.Error("Task Definition {0} already exists.", command.Name);
 
-            definition = new app.Tasks.Entities.TaskDefinition
-            {
-                Name = command.ShortName,
-                Subject = command.Subject,
-                CommandTemplate = command.CommandTemplate,
-                Filter = command.Filter,
-                Aggressiveness = command.Aggressiveness,
-                IsActive = command.IsActive,
-                MatchOutOfScope = command.MatchOutOfScope
-            };
+            definition = command.ToEntity();
 
             _context.Add(definition);
             await _context.SaveChangesAsync(cancellationToken);

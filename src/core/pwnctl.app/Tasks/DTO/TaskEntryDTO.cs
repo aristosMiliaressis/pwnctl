@@ -21,8 +21,8 @@ public sealed class TaskEntryDTO
     public TaskEntryDTO(TaskEntry entry)
     {
         Id = entry.Id;
-        ShortName = entry.Definition.ShortName.Value;
-        Subject = entry.Definition.SubjectClass.Value;
+        ShortName = entry.Definition.Name.Value;
+        Subject = entry.Definition.Subject.Value;
         Asset = entry.Record.Asset.ToString();
         State = entry.State.ToString();
         QueuedAt = entry.QueuedAt;

@@ -171,7 +171,7 @@ namespace pwnctl.infra.Repositories
                             .Include(e => e.NetworkHost)
                                 .ThenInclude(e => e.AARecords)
                                 .ThenInclude(e => e.DomainName)
-                            .Where(r => r.SubjectClass == AssetClass.Create(nameof(NetworkHost)))
+                            .Where(r => r.Subject == AssetClass.Create(nameof(NetworkHost)))
                             .AsNoTracking()
                             .ToListAsync();
         }
@@ -185,7 +185,7 @@ namespace pwnctl.infra.Repositories
                             .Include(e => e.Tasks)
                             .Include(e => e.DomainName)
                                 .ThenInclude(e => e.ParentDomain)
-                            .Where(r => r.SubjectClass == AssetClass.Create(nameof(DomainName)))
+                            .Where(r => r.Subject == AssetClass.Create(nameof(DomainName)))
                             .AsNoTracking()
                             .ToListAsync();
         }
@@ -201,7 +201,7 @@ namespace pwnctl.infra.Repositories
                                 .ThenInclude(e => e.DomainName)
                             .Include(e => e.DomainNameRecord)
                                 .ThenInclude(e => e.NetworkHost)
-                            .Where(r => r.SubjectClass == AssetClass.Create(nameof(DomainNameRecord)))
+                            .Where(r => r.Subject == AssetClass.Create(nameof(DomainNameRecord)))
                             .AsNoTracking()
                             .ToListAsync();
         }
@@ -219,7 +219,7 @@ namespace pwnctl.infra.Repositories
                             .Include(e => e.HttpEndpoint)
                                 .ThenInclude(e => e.Socket)
                                     .ThenInclude(s => s.DomainName)
-                            .Where(r => r.SubjectClass == AssetClass.Create(nameof(HttpEndpoint)))
+                            .Where(r => r.Subject == AssetClass.Create(nameof(HttpEndpoint)))
                             .AsNoTracking()
                             .ToListAsync();
         }
@@ -232,7 +232,7 @@ namespace pwnctl.infra.Repositories
                             .Include(e => e.Tags)
                             .Include(e => e.Tasks)
                             .Include(e => e.NetworkRange)
-                            .Where(r => r.SubjectClass == AssetClass.Create(nameof(NetworkRange)))
+                            .Where(r => r.Subject == AssetClass.Create(nameof(NetworkRange)))
                             .AsNoTracking()
                             .ToListAsync();
         }
@@ -252,7 +252,7 @@ namespace pwnctl.infra.Repositories
                                 .ThenInclude(e => e.Endpoint)
                                 .ThenInclude(e => e.Socket)
                                 .ThenInclude(s => s.DomainName)
-                            .Where(r => r.SubjectClass == AssetClass.Create(nameof(HttpParameter)))
+                            .Where(r => r.Subject == AssetClass.Create(nameof(HttpParameter)))
                             .AsNoTracking()
                             .ToListAsync();
         }
@@ -268,7 +268,7 @@ namespace pwnctl.infra.Repositories
                                 .ThenInclude(s => s.NetworkHost)
                             .Include(e => e.NetworkSocket)
                                 .ThenInclude(s => s.DomainName)
-                            .Where(r => r.SubjectClass == AssetClass.Create(nameof(NetworkSocket)))
+                            .Where(r => r.Subject == AssetClass.Create(nameof(NetworkSocket)))
                             .AsNoTracking()
                             .ToListAsync();
         }
@@ -282,7 +282,7 @@ namespace pwnctl.infra.Repositories
                             .Include(e => e.Tasks)
                             .Include(e => e.Email)
                                 .ThenInclude(e => e.DomainName)
-                            .Where(r => r.SubjectClass == AssetClass.Create(nameof(Email)))
+                            .Where(r => r.Subject == AssetClass.Create(nameof(Email)))
                             .AsNoTracking()
                             .ToListAsync();
         }

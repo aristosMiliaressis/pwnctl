@@ -86,8 +86,8 @@ public sealed class Tests
             await queue.DequeueAsync(taskDTO);
         }
 
-        Assert.Contains("domain_resolution", tasks.Select(t => t.Definition.ShortName.Value));
-        Assert.Contains("httpx", tasks.Select(t => t.Definition.ShortName.Value));
+        Assert.Contains("domain_resolution", tasks.Select(t => t.Definition.Name.Value));
+        Assert.Contains("httpx", tasks.Select(t => t.Definition.Name.Value));
 
         op = context.Operations.Find(op.Id);
 
@@ -120,11 +120,11 @@ public sealed class Tests
         await context.SaveChangesAsync();
 
         var taskDefinitions = await context.TaskDefinitions.ToListAsync();
-        foreach (var definition in taskDefinitions.DistinctBy(d => d.ShortName.Value))
+        foreach (var definition in taskDefinitions.DistinctBy(d => d.Name.Value))
         {
-            if (assetMap.ContainsKey(definition.SubjectClass))
+            if (assetMap.ContainsKey(definition.Subject))
             {
-                var record = new AssetRecord(assetMap[definition.SubjectClass]);
+                var record = new AssetRecord(assetMap[definition.Subject]);
                 var task = new TaskEntry(op, definition, record);
                 // record.Tasks.Add(task);
                 // context.Entry(task.Record).State = EntityState.Added;

@@ -40,7 +40,7 @@ namespace pwnctl.app.Notifications.Entities
                 if (!string.IsNullOrEmpty(Rule.Template))
                     return Rule.Template.Interpolate(Record.Asset);
 
-                return $"{Record.Asset} triggered rule {Rule.ShortName}";
+                return $"{Record.Asset} triggered rule {Rule.Name}";
             }
 
             if (!string.IsNullOrEmpty(Task.Definition.MonitorRules.NotificationTemplate))
@@ -51,7 +51,7 @@ namespace pwnctl.app.Notifications.Entities
                 return message;
             }
 
-            return $"new asset {Record.Asset} found by task {Task.Definition.ShortName.Value} on asset {Task.Record.Asset}";
+            return $"new asset {Record.Asset} found by task {Task.Definition.Name.Value} on asset {Task.Record.Asset}";
         }
     }
 }

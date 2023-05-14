@@ -8,8 +8,8 @@ namespace pwnctl.app.Tasks.Entities
 {
     public sealed class TaskDefinition : Entity<int>
     {
-        public ShortName ShortName { get; private init; }
-        public AssetClass SubjectClass { get; private init; }
+        public ShortName Name { get; init; }
+        public AssetClass Subject { get; init; }
         public string CommandTemplate { get; init; }
         public bool IsActive { get; init; }
         public int Aggressiveness { get; init; }
@@ -18,9 +18,6 @@ namespace pwnctl.app.Tasks.Entities
 
         public TaskProfile Profile { get; private init; }
         public int ProfileId { get; private init; }
-
-        public string Subject { init { SubjectClass = AssetClass.Create(value); } }
-        public string Name { init { ShortName = ShortName.Create(value); } }
 
         public MonitorRules MonitorRules { get; set; }
 
@@ -33,12 +30,12 @@ namespace pwnctl.app.Tasks.Entities
 
         public bool Matches(AssetRecord record, bool minitoring = false)
         {
-            if (SubjectClass.Value != record.Asset.GetType().Name)
+            if (Subject.Value != record.Asset.GetType().Name)
                 return false;
 
             if (minitoring)
             {
-                TaskEntry lastOccurence = record.Tasks.Where(t => t.Definition.ShortName == ShortName)
+                TaskEntry lastOccurence = record.Tasks.Where(t => t.Definition.Name == Name)
                                                         .OrderBy(t => t.QueuedAt)
                                                         .LastOrDefault();
 
@@ -55,29 +52,15 @@ namespace pwnctl.app.Tasks.Entities
 
     public struct MonitorRules
     {
-        public CronExpression CronSchedule { get; private set; }
-        public string PreCondition { get; set; }
-        public string PostCondition { get; set; }
-        public string NotificationTemplate { get; set; }
-
-        public string Schedule
-        {
-            get
-            {
-                return CronSchedule?.Value;
-            }
-            init
-            {
-                CronSchedule = string.IsNullOrEmpty(value)
-                            ? null
-                            : CronExpression.Create(value);
-            }
-        }
+        public CronExpression Schedule { get; init; }
+        public string PreCondition { get; init; }
+        public string PostCondition { get; init; }
+        public string NotificationTemplate { get; init; }
 
         public bool Matches(AssetRecord record, TaskEntry lastOccurence)
         {
-            if (lastOccurence != null && CronSchedule != null &&
-                CronSchedule.GetNextOccurrence(lastOccurence.QueuedAt) > SystemTime.UtcNow())
+            if (lastOccurence != null && Schedule != null &&
+                Schedule.GetNextOccurrence(lastOccurence.QueuedAt) > SystemTime.UtcNow())
             {
                 return false;
             }

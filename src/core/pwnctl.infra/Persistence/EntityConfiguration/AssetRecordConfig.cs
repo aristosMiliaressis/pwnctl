@@ -15,11 +15,11 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
             builder.ToTable(builder.GetType().GenericTypeArguments[0].Name.Underscore().Pluralize());
 
             builder.Property(r => r.Id).HasValueGenerator<UUIDv5ValueGenerator>();
-            
+
             builder.HasKey(r => r.Id);
 
-            builder.Property(c => c.SubjectClass)
-                    .HasConversion(subject => subject.Value, value => AssetClass.Create(value), 
+            builder.Property(c => c.Subject)
+                    .HasConversion(subject => subject.Value, value => AssetClass.Create(value),
                     new ValueComparer<AssetClass>((l, r) => l == r, v => v.GetHashCode()));
 
             builder.HasMany(r => r.Tasks);

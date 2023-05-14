@@ -12,7 +12,7 @@ namespace pwnctl.app.Assets.Aggregates;
 
 public sealed class AssetRecord : Entity<Guid>
 {
-    public Asset Asset => (Asset)typeof(AssetRecord).GetProperty(SubjectClass.Value).GetValue(this);
+    public Asset Asset => (Asset)typeof(AssetRecord).GetProperty(Subject.Value).GetValue(this);
 
     public DateTime FoundAt { get; private init; }
     public TaskEntry FoundByTask { get; private init; }
@@ -25,7 +25,7 @@ public sealed class AssetRecord : Entity<Guid>
     public List<Tag> Tags { get; private init; } = new List<Tag>();
     public List<TaskEntry> Tasks { get; private init; } = new List<TaskEntry>();
     public List<Notification> Notifications { get; private init; } = new List<Notification>();
-    public AssetClass SubjectClass { get; set; }
+    public AssetClass Subject { get; set; }
 
     public NetworkHost NetworkHost { get; private init; }
     public Guid? NetworkHostId { get; private init; }
@@ -58,8 +58,8 @@ public sealed class AssetRecord : Entity<Guid>
 
     public AssetRecord(Asset asset)
     {
-        SubjectClass = AssetClass.Create(asset.GetType().Name);
-        typeof(AssetRecord).GetProperty(SubjectClass.Value).SetValue(this, asset);
+        Subject = AssetClass.Create(asset.GetType().Name);
+        typeof(AssetRecord).GetProperty(Subject.Value).SetValue(this, asset);
     }
 
     public AssetRecord(Asset asset, TaskEntry foundBy)

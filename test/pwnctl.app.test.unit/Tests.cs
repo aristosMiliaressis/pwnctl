@@ -26,7 +26,6 @@ using pwnctl.app.Operations.Enums;
 using pwnctl.app.Operations;
 using pwnctl.infra.Queueing;
 using pwnctl.kernel;
-using pwnctl.app.Common.Extensions;
 
 public sealed class Tests
 {
@@ -331,7 +330,7 @@ public sealed class Tests
         Assert.DoesNotContain(tasks.GroupBy(t => t.DefinitionId), g => g.Count() > 1);
         srvTag = endpointRecord.Tags.First(t => t.Name == "protocol");
         Assert.Equal("IIS", srvTag.Value);
-        Assert.Contains(tasks, t => t.Definition.ShortName.Value == "shortname_scanner");
+        Assert.Contains(tasks, t => t.Definition.Name.Value == "shortname_scanner");
 
         var apacheTeslaUrl = new
         {
@@ -348,7 +347,7 @@ public sealed class Tests
         endpointRecord = repository.ListEndpointsAsync().Result.First(r => r.HttpEndpoint.Url == "https://apache.tesla.com/");
 
         tasks = context.TaskEntries.Include(t => t.Definition).Where(t => t.Record.Id == endpointRecord.Id).ToList();
-        Assert.DoesNotContain(tasks, t => t.Definition.ShortName.Value == "shortname_scanner");
+        Assert.DoesNotContain(tasks, t => t.Definition.Name.Value == "shortname_scanner");
 
         var sshService = new
         {
@@ -379,7 +378,7 @@ public sealed class Tests
                                     .Include(t => t.Definition)
                                     .Include(t => t.Record)
                                     .ThenInclude(t => t.DomainName)
-                                    .First(t => t.Definition.ShortName == ShortName.Create("cloud_enum"));
+                                    .First(t => t.Definition.Name == ShortName.Create("cloud_enum"));
         Assert.Equal("cloud-enum.sh tesla", cloudEnumTask.Command);
 
         await processor.ProcessAsync("tesla.com IN A 31.3.3.7", EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry);
@@ -476,13 +475,13 @@ public sealed class Tests
         var processor = AssetProcessorFactory.Create();
 
         await processor.ProcessAsync("172.16.17.0/24", EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry);
-        Assert.True(context.TaskEntries.Include(t => t.Definition).Any(t => t.Definition.ShortName == ShortName.Create("nmap_basic")));
+        Assert.True(context.TaskEntries.Include(t => t.Definition).Any(t => t.Definition.Name == ShortName.Create("nmap_basic")));
         Assert.False(context.TaskEntries
                             .Include(t => t.Definition)
                             .Include(t => t.Record)
                                 .ThenInclude(r => r.NetworkRange)
                             .Any(t => t.Record.NetworkRange.FirstAddress == "172.16.17.0"
-                                   && t.Definition.ShortName == ShortName.Create("ffuf_common")));
+                                   && t.Definition.Name == ShortName.Create("ffuf_common")));
 
         var exampleUrl = new
         {
@@ -496,20 +495,20 @@ public sealed class Tests
         await processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(exampleUrl), EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry);
 
         // aggresivness test
-        Assert.True(context.TaskEntries.Include(t => t.Definition).Any(t => t.Definition.ShortName == ShortName.Create("hakrawler")));
-        Assert.False(context.TaskEntries.Include(t => t.Definition).Any(t => t.Definition.ShortName == ShortName.Create("sqlmap")));
+        Assert.True(context.TaskEntries.Include(t => t.Definition).Any(t => t.Definition.Name == ShortName.Create("hakrawler")));
+        Assert.False(context.TaskEntries.Include(t => t.Definition).Any(t => t.Definition.Name == ShortName.Create("sqlmap")));
 
         // Task.Command interpolation test
         var hakrawlerTask = context.TaskEntries
                                     .Include(t => t.Definition)
                                     .Include(t => t.Record)
                                         .ThenInclude(r => r.HttpEndpoint)
-                                    .First(t => t.Definition.ShortName == ShortName.Create("hakrawler"));
+                                    .First(t => t.Definition.Name == ShortName.Create("hakrawler"));
         Assert.Equal("hakrawler -plain -h 'User-Agent: Mozilla/5.0' https://172.16.17.15/api/token", hakrawlerTask.Command);
 
         // TaskDefinition.Filter pass test
         await processor.ProcessAsync("https://172.16.17.15/", EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry);
-        Assert.True(context.TaskEntries.Include(t => t.Definition).Any(t => t.Definition.ShortName == ShortName.Create("ffuf_common")));
+        Assert.True(context.TaskEntries.Include(t => t.Definition).Any(t => t.Definition.Name == ShortName.Create("ffuf_common")));
 
         // Task added on existing asset
         exampleUrl = new
@@ -520,7 +519,7 @@ public sealed class Tests
             }
         };
         await processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(exampleUrl), EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry);
-        Assert.True(context.TaskEntries.Include(t => t.Definition).Any(t => t.Definition.ShortName == ShortName.Create("shortname_scanner")));
+        Assert.True(context.TaskEntries.Include(t => t.Definition).Any(t => t.Definition.Name == ShortName.Create("shortname_scanner")));
 
         // multiple interpolation test
         await processor.ProcessAsync("sub.tesla.com", EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry);
@@ -529,7 +528,7 @@ public sealed class Tests
                                     .Include(t => t.Record)
                                         .ThenInclude(r => r.DomainName)
                                     .First(t => t.Record.DomainName.Name == "sub.tesla.com"
-                                             && t.Definition.ShortName == ShortName.Create("domain_resolution"));
+                                             && t.Definition.Name == ShortName.Create("domain_resolution"));
         Assert.Equal("dig +short sub.tesla.com | awk '{print \"sub.tesla.com IN A \" $1}'", resolutionTask.Command);
 
         // blacklist test
@@ -538,14 +537,14 @@ public sealed class Tests
                                     .Include(t => t.Record)
                                         .ThenInclude(r => r.DomainName)
                                     .Any(t => t.Record.DomainName.Name == "sub.tesla.com"
-                                           && t.Definition.ShortName == ShortName.Create("subfinder")));
+                                           && t.Definition.Name == ShortName.Create("subfinder")));
 
         // Keyword test
         var cloudEnumTask = context.TaskEntries
                                     .Include(t => t.Definition)
                                     .Include(t => t.Record)
                                         .ThenInclude(r => r.DomainName)
-                                    .First(t => t.Definition.ShortName == ShortName.Create("cloud_enum"));
+                                    .First(t => t.Definition.Name == ShortName.Create("cloud_enum"));
         Assert.Equal("cloud-enum.sh tesla", cloudEnumTask.Command);
 
         await processor.ProcessAsync("https://tesla.s3.amazonaws.com", EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry);
@@ -553,7 +552,7 @@ public sealed class Tests
 
         var task = context.TaskEntries
                             .Include(t => t.Definition)
-                            .First(t => t.Definition.ShortName == ShortName.Create("second_order_takeover"));
+                            .First(t => t.Definition.Name == ShortName.Create("second_order_takeover"));
         Assert.NotNull(task);
 
         var outOfScope = new
@@ -613,21 +612,21 @@ public sealed class Tests
         await initializer.InitializeAsync(op.Id);
 
         // PreCondition tests
-        Assert.True(context.TaskEntries.Include(t => t.Definition).Any(t => t.Definition.ShortName == ShortName.Create("sub_enum")));
-        Assert.False(context.TaskEntries.Include(t => t.Definition).Any(t => t.Definition.ShortName == ShortName.Create("cloud_enum")));
-        Assert.False(context.TaskEntries.Include(t => t.Definition).Any(t => t.Definition.ShortName == ShortName.Create("sub_enum")
+        Assert.True(context.TaskEntries.Include(t => t.Definition).Any(t => t.Definition.Name == ShortName.Create("sub_enum")));
+        Assert.False(context.TaskEntries.Include(t => t.Definition).Any(t => t.Definition.Name == ShortName.Create("cloud_enum")));
+        Assert.False(context.TaskEntries.Include(t => t.Definition).Any(t => t.Definition.Name == ShortName.Create("sub_enum")
                                                                           && t.Record.DomainName.Name == "deep.sub.tesla.com"));
 
         //  Schedule - previous occurance passed schedule - added
         SystemTime.SetDateTime(DateTime.UtcNow.AddDays(2));
         await initializer.InitializeAsync(op.Id);
 
-        Assert.Equal(2, context.TaskEntries.Include(t => t.Definition).Count(t => t.Definition.ShortName == ShortName.Create("sub_enum")));
+        Assert.Equal(2, context.TaskEntries.Include(t => t.Definition).Count(t => t.Definition.Name == ShortName.Create("sub_enum")));
 
         //  Schedule - previous occurance not passed schedule - not added
         await initializer.InitializeAsync(op.Id);
 
-        Assert.Equal(2, context.TaskEntries.Include(t => t.Definition).Count(t => t.Definition.ShortName == ShortName.Create("sub_enum")));
+        Assert.Equal(2, context.TaskEntries.Include(t => t.Definition).Count(t => t.Definition.Name == ShortName.Create("sub_enum")));
 
         // PostCondition & NotificationTemplate tests
         record2.MergeTags(new Dictionary<string, object> { { "rcode", "NXDOMAIN"} }, true);
@@ -637,7 +636,7 @@ public sealed class Tests
                             .Include(t => t.Definition)
                             .Include(t => t.Record)
                                 .ThenInclude(r => r.DomainName)
-                            .First(t => t.Definition.ShortName == ShortName.Create("domain_resolution")
+                            .First(t => t.Definition.Name == ShortName.Create("domain_resolution")
                                    && t.Record.DomainName.Name == parentDomain.Name);
 
         await processor.TryProcessAsync($$$"""{"Asset":"{{{parentDomain.Name}}}","tags":{"rcode":"SERVFAIL"}}""", op, task);
@@ -697,7 +696,7 @@ public sealed class Tests
                         .Include(r => r.DomainName)
                         .FirstOrDefault(r => r.DomainName.Name == "example.com");
 
-        Assert.Equal(task.Definition.ShortName, record?.FoundByTask.Definition.ShortName);
+        Assert.Equal(task.Definition.Name, record?.FoundByTask.Definition.Name);
         Assert.DoesNotContain("foundby", record?.Tags.Select(t => t.Name));
 
         (_, stdout, _) = await CommandExecutor.ExecuteAsync($$"""echo '{"Asset":"example2.com"}'""");
@@ -714,7 +713,7 @@ public sealed class Tests
                         .Include(r => r.DomainName)
                         .First(r => r.DomainName.Name == "example2.com");
 
-        Assert.Equal(EntityFactory.TaskEntry.Definition.ShortName, record?.FoundByTask.Definition.ShortName);
+        Assert.Equal(EntityFactory.TaskEntry.Definition.Name, record?.FoundByTask.Definition.Name);
         Assert.DoesNotContain("foundby", record?.Tags.Select(t => t.Name));
 
         (_, stdout, _) = await CommandExecutor.ExecuteAsync($$$"""echo '{"Asset":"sub.example3.com","tags":{"test":"tag"}}'""");
@@ -731,7 +730,7 @@ public sealed class Tests
                         .Include(r => r.DomainName)
                         .FirstOrDefault(r => r.DomainName.Name == "sub.example3.com");
 
-        Assert.Equal(EntityFactory.TaskEntry.Definition.ShortName, record?.FoundByTask.Definition.ShortName);
+        Assert.Equal(EntityFactory.TaskEntry.Definition.Name, record?.FoundByTask.Definition.Name);
         Assert.Contains("test", record?.Tags.Select(t => t.Name));
         Assert.DoesNotContain("foundby", record?.Tags.Select(t => t.Name));
 
@@ -742,7 +741,7 @@ public sealed class Tests
                         .Include(r => r.DomainName)
                         .FirstOrDefault(r => r.DomainName.Name == "example3.com");
 
-        Assert.Equal(EntityFactory.TaskEntry.Definition.ShortName, record?.FoundByTask.Definition.ShortName);
+        Assert.Equal(EntityFactory.TaskEntry.Definition.Name, record?.FoundByTask.Definition.Name);
         Assert.DoesNotContain("test", record?.Tags.Select(t => t.Name));
         Assert.DoesNotContain("foundby", record?.Tags.Select(t => t.Name));
     }

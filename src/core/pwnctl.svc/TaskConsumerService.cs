@@ -57,7 +57,6 @@ namespace pwnctl.svc
             }
         }
 
-
         private async Task ExecutePendingTaskAsync(PendingTaskDTO taskDTO, CancellationToken stoppingToken)
         {
             // create a linked token that cancels the task when the max task timeout

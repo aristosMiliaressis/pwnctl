@@ -98,21 +98,11 @@ namespace pwnctl.infra.Persistence
                 }
 
                 var taskText = File.ReadAllText(taskFile);
-                var file = _deserializer.Deserialize<TaskDefinitionFile>(taskText);
+                var file = _deserializer.Deserialize<TaskConfigFile>(taskText);
 
                 foreach (var profileName in file.Profiles)
                 {
-                    var definitions = file.TaskDefinitions.Select(d => new TaskDefinition
-                    {
-                        Name = d.ShortName.Value,
-                        Subject = d.SubjectClass.Value,
-                        CommandTemplate = d.CommandTemplate,
-                        IsActive = d.IsActive,
-                        Aggressiveness = d.Aggressiveness,
-                        Filter = d.Filter,
-                        MatchOutOfScope = d.MatchOutOfScope,
-                        MonitorRules = d.MonitorRules
-                    }).ToList();
+                    var definitions = file.TaskDefinitions.Select(d => d.ToEntity()).ToList();
 
                     var profile = context.TaskProfiles.FirstOrDefault(p => p.ShortName == ShortName.Create(profileName));
                     if (profile == null)
@@ -149,9 +139,9 @@ namespace pwnctl.infra.Persistence
                 }
 
                 var taskText = File.ReadAllText(notificationFile);
-                var notificationRules = _deserializer.Deserialize<List<NotificationRule>>(taskText);
+                var notificationRules = _deserializer.Deserialize<List<NotificationRuleDTO>>(taskText);
 
-                context.NotificationRules.AddRange(notificationRules);
+                context.NotificationRules.AddRange(notificationRules.Select(r => r.ToEntity()));
                 await context.SaveChangesAsync();
             }
         }
