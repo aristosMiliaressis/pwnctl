@@ -57,7 +57,7 @@ generate_ai_learned_alts() {
 	cd - >/dev/null
 }
 
-if [ $zoneDepth -eq 1 ]
+if [ "$zoneDepth" == "1" ]
 then
     passive_subdomain_enum | tee $osint_domains
 
