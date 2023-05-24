@@ -132,7 +132,7 @@ RUN curl -L https://github.com/OWASP/Amass/releases/download/v3.22.2/amass_linux
     && rm /tmp/amass_linux_amd64.zip \
     && ln -s /opt/tools/amass/amass_linux_amd64/amass /usr/local/bin
 RUN git clone https://github.com/darkoperator/dnsrecon.git \
-    && cd dnsrecon && pip install -r requirements.txt && python3 setup.py install
+    && cd dnsrecon && git checkout 1.1.4 && pip install -r requirements.txt && python3 setup.py install
 RUN git clone https://github.com/initstring/cloud_enum.git \
     && cd cloud_enum \
     && pip install -r requirements.txt
