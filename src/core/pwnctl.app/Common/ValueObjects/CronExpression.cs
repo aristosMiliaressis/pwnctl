@@ -7,7 +7,7 @@ public sealed class CronExpression : ValueObject
 {
     public string Value { get; }
 
-    private CronExpression(string value)
+    public CronExpression(string value)
     {
         if (!Validate(value))
             throw new ArgumentException($"Invalid CronExpression {value}, format MUST be unix 5-part", nameof(value));
