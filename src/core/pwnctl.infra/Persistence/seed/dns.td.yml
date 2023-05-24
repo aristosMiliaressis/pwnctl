@@ -33,6 +33,11 @@ TaskDefinitions:
     Subject: DomainName
     Filter: DomainName.ZoneDepth == 1
 
+  - Name: email_finder
+    CommandTemplate: email-finder.sh {{Name}}
+    Subject: DomainName
+    Filter: DomainName.ZoneDepth == 1
+
   - Name: reverse_whois
     CommandTemplate: reverse-whois.sh {{Address}}
     Subject: Email
