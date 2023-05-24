@@ -1,9 +1,10 @@
 ﻿using pwnctl.domain.BaseClasses;
+using pwnctl.kernel.BaseClasses;
 using pwnctl.kernel.Attributes;
 
 namespace pwnctl.domain.Entities
 {
-    public sealed class HttpHost : Asset
+    public sealed class HttpHost : Entity<Guid>//: Asset
     {
         [EqualityComponent]
         public string Name { get; private init; }
