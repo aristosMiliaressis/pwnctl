@@ -80,8 +80,6 @@ jobs:
         with:
           tags: public.ecr.aws/i0m2p7r6/pwnctl:latest
           context: src/core/
-          #cache-from: type=gha
-          #cache-to: type=gha,mode=max
           outputs: type=docker,dest=/tmp/pwnctl_untested.tar
 
       - name: Upload artifact
@@ -110,6 +108,8 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
+        with:
+          install: true
 
       - name: Download artifact
         uses: actions/download-artifact@v2
