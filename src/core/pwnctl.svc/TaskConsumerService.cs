@@ -105,12 +105,6 @@ namespace pwnctl.svc
 
                     if (outputBatch.Lines.Count == max || (string.Join(",", outputBatch.Lines).Length + line.Length) >= 8000)
                     {
-                        using (MD5 md5 = MD5.Create())
-                        {
-                            var md5Bytes = md5.ComputeHash(Encoding.ASCII.GetBytes(string.Join(",", outputBatch)));
-                            outputBatch.Metadata["MessageGroupId"] = Convert.ToHexString(md5Bytes);
-                        }
-
                         await _queueService.EnqueueAsync(outputBatch);
                         outputBatch = new(task.Id);
                         outputBatch.Lines.Add(line);

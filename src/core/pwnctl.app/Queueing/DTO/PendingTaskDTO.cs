@@ -12,7 +12,6 @@ public sealed class PendingTaskDTO : QueueMessage
     [JsonIgnore]
     public Dictionary<string, string> Metadata { get; set; } = new();
 
-
     public PendingTaskDTO() { }
 
     public PendingTaskDTO(TaskEntry entry)

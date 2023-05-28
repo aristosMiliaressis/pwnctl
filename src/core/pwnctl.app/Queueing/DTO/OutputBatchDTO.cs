@@ -16,5 +16,6 @@ public sealed class OutputBatchDTO : QueueMessage
     public OutputBatchDTO(int taskId)
     {
         TaskId = taskId;
+        Metadata["MessageGroupId"] = Guid.NewGuid().ToString();
     }
 }
