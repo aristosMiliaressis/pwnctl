@@ -42,6 +42,7 @@ RUN apt-get update \
     python3-setuptools
 
 RUN python3 -m pip install --upgrade pip
+RUN cp /usr/bin/python3 /usr/bin/python
 
 # Setting up Ruby
 RUN apt-get install -y ruby ruby-dev \
