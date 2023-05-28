@@ -9,7 +9,7 @@ using pwnctl.infra.Queueing;
 using pwnctl.infra.Repositories;
 using System.Text;
 using pwnctl.app.Operations;
-using System.Security.Cryptography;
+using pwnctl.infra.Configuration;
 
 namespace pwnctl.svc
 {
@@ -35,7 +35,7 @@ namespace pwnctl.svc
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            PwnInfraContext.NotificationSender.Send($"{nameof(TaskConsumerService)} started.", NotificationTopic.Status);
+            PwnInfraContext.NotificationSender.Send($"{nameof(TaskConsumerService)}:{EnvironmentVariables.IMAGE_HASH} started.", NotificationTopic.Status);
 
             if (int.TryParse(Environment.GetEnvironmentVariable("PWNCTL_Operation"), out int opId))
             {

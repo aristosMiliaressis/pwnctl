@@ -1,7 +1,22 @@
+#data "aws_caller_identity" "current" {}
+
 #resource "aws_ecr_repository" "main" {
-#  name                 = "${var.name}-${var.environment}"
-#  image_tag_mutability = "MUTABLE"
+#  name         = "${var.stack_name}"
 #}
+
+data "docker_registry_image" "pwnctl" {
+  name = "public.ecr.aws/i0m2p7r6/pwnctl:latest"
+  #name = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.region}.amazonaws.com/${aws_ecr_repository.main}"
+  #keep_remotely = true
+}
+
+resource "docker_image" "pwnctl" {
+  name          = data.docker_registry_image.pwnctl.name
+  pull_triggers = [data.docker_registry_image.pwnctl.sha256_digest]
+  keep_locally = true
+
+  # https://registry.terraform.io/providers/kreuzwerker/docker/latest/docs/resources/image#build
+}
 
 resource "aws_cloudwatch_log_group" "worker" {
   name              = "/aws/ecs/worker"
@@ -23,10 +38,14 @@ resource "aws_ecs_task_definition" "this" {
   [
     {
       "name": "pwnctl",
-      "image": "public.ecr.aws/i0m2p7r6/pwnctl:latest",
+      "image": "${data.docker_registry_image.pwnctl.name}",
       "essential": true,
       "stopTimeout": 120,
       "environment": [
+        {
+          "name": "PWNCTL_IMAGE_HASH",
+          "value": "${data.docker_registry_image.pwnctl.sha256_digest}"
+        },
         {
           "name": "PWNCTL_IS_ECS",
           "value": "true"
