@@ -28,11 +28,6 @@ TaskDefinitions:
     Subject: DomainName
     Filter: DomainName.ZoneDepth == 1
 
-  - Name: waybackurls
-    CommandTemplate: waybackurls.sh {{Name}}
-    Subject: DomainName
-    Filter: DomainName.ZoneDepth == 1
-
   - Name: email_finder
     CommandTemplate: email-finder.sh {{Name}}
     Subject: DomainName

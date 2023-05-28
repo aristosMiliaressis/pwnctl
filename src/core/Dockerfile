@@ -147,6 +147,9 @@ RUN go install github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
 RUN go install github.com/gwen001/github-subdomains@latest
 RUN pip3 install s3scanner
 RUN pip3 install emailfinder
+RUN git clone https://github.com/xnl-h4ck3r/urless.git \
+    && cd urless && python3 setup.py install \
+    && chmod +x urless.py && ln -s /opt/tools/urless/urless.py /usr/local/bin/urless
 
 RUN curl https://github.com/mgdm/htmlq/releases/download/v0.4.0/htmlq-x86_64-linux.tar.gz -L -o htmlq-x86_64-linux.tar.gz \
     && tar xzf htmlq-x86_64-linux.tar.gz \
