@@ -78,15 +78,11 @@ jobs:
       - name: Build worker image
         uses: docker/build-push-action@v3
         with:
-          tags: public.ecr.aws/i0m2p7r6/pwnctl:latest
+          tags: public.ecr.aws/i0m2p7r6/pwnctl:untested
+          push: true
           context: src/core/
-          outputs: type=docker,dest=/tmp/pwnctl_untested.tar
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: pwnctl_untested
-          path: /tmp/pwnctl_untested.tar
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   test-worker-img:
     needs: build-worker-img
@@ -105,20 +101,6 @@ jobs:
           path: ~/.nuget/packages
           key: nuget-${{ hashFiles('**/packages.lock.json') }}
           restore-keys: nuget
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-        with:
-          install: true
-
-      - name: Download artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: pwnctl_untested
-          path: /tmp
-
-      - name: Load Docker image
-        run: docker load --input /tmp/pwnctl_untested.tar
 
       - name: Test worker image
         run: dotnet test --filter "FullyQualifiedName~pwnctl.svc"

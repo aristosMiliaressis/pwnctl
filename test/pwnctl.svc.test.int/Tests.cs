@@ -56,7 +56,7 @@ public sealed class Tests
         var op = EntityFactory.CreateOperation();
 
         var container = new ContainerBuilder()
-            .WithImage("public.ecr.aws/i0m2p7r6/pwnctl:latest")
+            .WithImage("public.ecr.aws/i0m2p7r6/pwnctl:untested")
             .WithBindMount(_containerBasePath, "/mnt/efs/")
             .WithEnvironment("PWNCTL_TEST_RUN", "true")
             .WithEnvironment("PWNCTL_INSTALL_PATH", "/mnt/efs")
@@ -135,7 +135,7 @@ public sealed class Tests
         }
 
         var container = new ContainerBuilder()
-            .WithImage("public.ecr.aws/i0m2p7r6/pwnctl:latest")
+            .WithImage("public.ecr.aws/i0m2p7r6/pwnctl:untested")
             .WithBindMount("/tmp/", "/mnt/efs/")
             .WithEnvironment("PWNCTL_TEST_RUN", "true")
             .WithEnvironment("PWNCTL_INSTALL_PATH", "/mnt/efs")
