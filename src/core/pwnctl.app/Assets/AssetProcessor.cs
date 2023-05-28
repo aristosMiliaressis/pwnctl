@@ -1,4 +1,4 @@
-using pwnctl.domain.BaseClasses;
+﻿using pwnctl.domain.BaseClasses;
 using pwnctl.app.Assets.Interfaces;
 using pwnctl.app.Queueing.Interfaces;
 using pwnctl.app.Tasks.Entities;
@@ -10,7 +10,6 @@ using pwnctl.app.Operations.Entities;
 using pwnctl.app.Tasks.Interfaces;
 using pwnctl.app.Operations.Enums;
 using pwnctl.app.Notifications.Enums;
-using pwnctl.app.Common.Extensions;
 using pwnctl.kernel;
 
 namespace pwnctl.app.Assets
@@ -88,33 +87,18 @@ namespace pwnctl.app.Assets
             if (scope != null)
                 record.SetScope(scope.Definition);
 
-            if (operation == null)
+            if (record.Id == default || record.Tags.Any(t => t.Id == default) || operation.Type == OperationType.Monitor)
             {
-                await _assetRepository.SaveAsync(record);
-                return;
-            }
+                await CheckMisconfigRulesAsync(record);
 
-            foreach (var rule in _notificationRules.Where(rule => (record.InScope || rule.CheckOutOfScope) && rule.Check(record)))
-            {
-                // only send notifications once
-                var notification = await _assetRepository.FindNotificationAsync(record.Asset, rule);
-                if (notification != null)
-                    continue;
-
-                notification = new Notification(record, rule);
-
-                PwnInfraContext.NotificationSender.Send(notification);
-                notification.SentAt = SystemTime.UtcNow();
-                record.Notifications.Add(notification);
-            }
-
-            if (operation.Type == OperationType.Crawl)
-            {
-                record = await GenerateCrawlingTasksAsync(operation, record);
-            }
-            else if (operation.Type == OperationType.Monitor)
-            {
-                NotifyMonitoringFindings(record, foundByTask);
+                if (operation.Type == OperationType.Crawl)
+                {
+                    record = await GenerateCrawlingTasksAsync(operation, record);
+                }
+                else if (operation.Type == OperationType.Monitor)
+                {
+                    CheckMonitoringRules(record, foundByTask);
+                }
             }
 
             await _assetRepository.SaveAsync(record);
@@ -142,7 +126,24 @@ namespace pwnctl.app.Assets
             return record;
         }
 
-        private void NotifyMonitoringFindings(AssetRecord record, TaskEntry foundByTask)
+        private async Task CheckMisconfigRulesAsync(AssetRecord record)
+        {
+            foreach (var rule in _notificationRules.Where(rule => (record.InScope || rule.CheckOutOfScope) && rule.Check(record)))
+            {
+                // only send notifications once
+                var notification = await _assetRepository.FindNotificationAsync(record.Asset, rule);
+                if (notification != null)
+                    continue;
+
+                notification = new Notification(record, rule);
+
+                PwnInfraContext.NotificationSender.Send(notification);
+                notification.SentAt = SystemTime.UtcNow();
+                record.Notifications.Add(notification);
+            }
+        }
+
+        private void CheckMonitoringRules(AssetRecord record, TaskEntry foundByTask)
         {
             Notification notification = null;
 
