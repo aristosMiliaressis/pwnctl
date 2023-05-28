@@ -17,29 +17,16 @@ namespace pwnctl.domain.Entities
 
         public string Scheme { get; init; }
         public string Path { get; init; }
-        public string Filename 
-        {
-            get
-            {
-                if (Path == null)
-                    return null;
-                    
-                var lastPart = Path.Split("/").Where(p => !string.IsNullOrEmpty(p)).LastOrDefault(); 
-                return lastPart != null && lastPart.Contains(".") ? lastPart : null;
-            }
-        }
-
-        public string Extension => Filename == null ? null : Filename.Split(".").Last();
 
         public HttpEndpoint() {}
-        
+
         public HttpEndpoint(string scheme, NetworkSocket address, string path)
         {
             Scheme = scheme;
             Socket = address;
             Path = path.EndsWith("/") ? path.Substring(0, path.Length - 1) : path;
             Path = string.IsNullOrEmpty(Path) ? "/" : Path;
-            
+
             string hostSegment = Socket.NetworkHost != null ? Socket.NetworkHost.IP : Socket.DomainName.Name;
             string portSegment = (scheme == "http" && Socket.Port == 80) || (scheme == "https" && Socket.Port == 443) ? "" : (":" + Socket.Port);
             Url = Scheme+"://"+hostSegment+portSegment+Path;

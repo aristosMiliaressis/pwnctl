@@ -17,7 +17,7 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
             builder.HasKey(p => p.Id);
 
             builder.HasOne(p => p.Endpoint)
-                .WithMany(e => e.HttpParameters)
+                .WithMany()
                 .HasForeignKey(p => p.EndpointId);
 
             builder.HasIndex(nameof(HttpParameter.Url), nameof(HttpParameter.Name), nameof(HttpParameter.Type)).IsUnique();
