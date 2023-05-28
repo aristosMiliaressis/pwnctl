@@ -130,5 +130,8 @@ jobs:
         env:
           AWS_REGION: us-east-1
 
+      - name: Pull untested image
+        run: docker pull public.ecr.aws/i0m2p7r6/pwnctl:untested
+
       - name: Retag image from untested to latest
         run: docker tag public.ecr.aws/i0m2p7r6/pwnctl:untested public.ecr.aws/i0m2p7r6/pwnctl:latest
