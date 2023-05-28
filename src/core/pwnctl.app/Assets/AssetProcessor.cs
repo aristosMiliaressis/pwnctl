@@ -1,4 +1,4 @@
-﻿using pwnctl.domain.BaseClasses;
+using pwnctl.domain.BaseClasses;
 using pwnctl.app.Assets.Interfaces;
 using pwnctl.app.Queueing.Interfaces;
 using pwnctl.app.Tasks.Entities;
@@ -53,13 +53,6 @@ namespace pwnctl.app.Assets
 
             Asset asset = AssetParser.Parse(dto.Asset);
 
-            // The desired traversal of the following reference sub-tree is (B-C-A-B-C)
-            // the current solution results in the traversal (B-C-A-B-C-A) which is suboptimal
-            //    A
-            //   / \
-            //  B   C
-            // TODO: optimize & decuple the reference graph traversal, from the asset processing
-            await ProcessAssetAsync(asset, dto.Tags, operation, foundByTask);
             await ProcessAssetAsync(asset, dto.Tags, operation, foundByTask);
         }
 
@@ -90,7 +83,8 @@ namespace pwnctl.app.Assets
             record = await _assetRepository.UpdateRecordReferences(record, asset);
             record.MergeTags(tags, updateExisting: operation.Type == OperationType.Monitor);
 
-            var scope = operation.Scope.Definitions.FirstOrDefault(scope => scope.Definition.Matches(record.Asset));
+            var scope = operation.Scope.Definitions.FirstOrDefault(scope => scope.Definition.Matches(record.Asset)
+                                                                         || scope.Definition.Matches(asset));
             if (scope != null)
                 record.SetScope(scope.Definition);
 
