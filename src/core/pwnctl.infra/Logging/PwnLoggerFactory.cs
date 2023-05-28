@@ -1,8 +1,6 @@
 using Serilog;
 using Serilog.Core;
 using Serilog.Events;
-using AWS.Logger.SeriLog;
-using AWS.Logger;
 using pwnctl.infra.Configuration;
 using pwnctl.app.Configuration;
 using pwnctl.app.Logging.Interfaces;
@@ -14,26 +12,15 @@ namespace pwnctl.infra.Logging
         public static AppLogger Create(AppConfig config)
         {
             Logger logger = null;
-            
+
             if (EnvironmentVariables.IS_LAMBDA)
                 logger = CreateConsoleLogger(config);
             else if (EnvironmentVariables.IS_ECS)
-                logger = CreateCloudWatchLogger(config);
+                logger = CreateConsoleLogger(config);
             else
                 logger = CreateFileLogger(config);
 
             return new PwnLogger(logger);
-        }
-
-        private static Logger CreateCloudWatchLogger(AppConfig config)
-        {
-            var configuration = new AWSLoggerConfig(config.Logging.LogGroup);
-            configuration.LogStreamNamePrefix = EnvironmentVariables.HOSTNAME;
-
-            return new LoggerConfiguration()
-                    .MinimumLevel.Is(Enum.Parse<LogEventLevel>(config.Logging.MinLevel))
-                    .WriteTo.AWSSeriLog(configuration)
-                    .CreateLogger();
         }
 
         private static Logger CreateFileLogger(AppConfig config)
@@ -42,7 +29,7 @@ namespace pwnctl.infra.Logging
                     .MinimumLevel.Is(Enum.Parse<LogEventLevel>(config.Logging.MinLevel))
                     .WriteTo.Console(LogEventLevel.Warning, _consoleOutputTemplate)
                     .WriteTo.File(path: Path.Combine(config.Logging.FilePath, "pwnctl.log"),
-                                  outputTemplate: _outputTemplate)
+                                  outputTemplate: _fileOutputTemplate)
                     .CreateLogger();
         }
 
@@ -54,7 +41,7 @@ namespace pwnctl.infra.Logging
                     .CreateLogger();
         }
 
-        private static string _outputTemplate = $"[{{Timestamp:yyyy-MM-dd HH:mm:ss.fff}} {EnvironmentVariables.HOSTNAME} {{Level:u3}}] {{Message:lj}}\n";
+        private static string _fileOutputTemplate = $"[{{Timestamp:yyyy-MM-dd HH:mm:ss.fff}} {EnvironmentVariables.HOSTNAME} {{Level:u3}}] {{Message:lj}}\n";
         private static string _consoleOutputTemplate = "[{Level:u3}] {Message:lj}\n";
     }
 }
