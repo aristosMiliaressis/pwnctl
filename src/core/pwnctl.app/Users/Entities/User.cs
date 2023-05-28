@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Identity;
-using pwnctl.app.Common.ValueObjects;
 using pwnctl.app.Users.Enums;
 
 namespace pwnctl.app.Users.Entities;

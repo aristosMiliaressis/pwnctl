@@ -7,7 +7,7 @@ namespace pwnctl.app
 {
     public static class PwnInfraContext
     {
-        public static void Setup(AppConfig config, AppLogger logger, Serializer serializer, 
+        public static void Setup(AppConfig config, AppLogger logger, Serializer serializer,
                                 FilterEvaluator evaluator, NotificationSender sender)
         {
             Config = config;

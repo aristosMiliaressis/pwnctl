@@ -1,4 +1,3 @@
-using pwnctl.app.Assets.Aggregates;
 using pwnctl.app.Tasks.Exceptions;
 
 namespace pwnctl.app.Common.Extensions;

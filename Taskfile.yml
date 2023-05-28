@@ -68,7 +68,7 @@ tasks:
 
   get-logs:
     cmds:
-      - awslogs get -s 1440m -G --timestamp /aws/ecs/worker | tee pwnctl.log
+      - awslogs get -s 1440m -G --timestamp /aws/ecs/worker
 
   get-api-logs:
     cmds:
