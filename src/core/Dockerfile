@@ -52,7 +52,7 @@ RUN apt-get install -y ruby ruby-dev \
 RUN apt-get install -y openjdk-8-jdk
 
 # Setting up Go lang
-COPY --from=golang:1.19-buster /usr/local/go/ /usr/local/go/
+COPY --from=golang:1.20 /usr/local/go/ /usr/local/go/
 ENV GOROOT "/usr/local/go"
 ENV GOPATH "/root/go"
 ENV PATH "$PATH:$GOPATH/bin:$GOROOT/bin"
