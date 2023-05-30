@@ -100,7 +100,7 @@ namespace pwnctl.infra.Queueing
 
         public async Task DequeueAsync(QueueMessage message)
         {
-            PwnInfraContext.Logger.Debug("Dequeue[" + message.GetType().Name + "]: " + message.Metadata["MessageGroupId"]);
+            PwnInfraContext.Logger.Debug("Dequeue[" + message.GetType().Name + "]: " + message.TaskId);
 
             try
             {
@@ -119,7 +119,7 @@ namespace pwnctl.infra.Queueing
 
         public async Task ChangeMessageVisibilityAsync(QueueMessage message, int visibilityTimeout, CancellationToken token = default)
         {
-            PwnInfraContext.Logger.Debug("ChangeMessageVisibilityAsync[" + message.GetType().Name + "]: " + message.Metadata["MessageGroupId"] +" "+visibilityTimeout);
+            PwnInfraContext.Logger.Debug("ChangeMessageVisibilityAsync[" + message.GetType().Name + "]: " + message.TaskId +" "+visibilityTimeout);
 
             try
             {

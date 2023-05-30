@@ -16,13 +16,13 @@ namespace pwnctl.svc
     public sealed class TaskConsumerService : BackgroundService
     {
         private readonly IHostApplicationLifetime _hostApplicationLifetime;
-        private readonly AssetProcessor _processor = AssetProcessorFactory.Create();
-        private readonly TaskQueueService _queueService = TaskQueueServiceFactory.Create();
-        private readonly TaskDbRepository _taskRepo = new();
-        private readonly OperationInitializer _initializer = new(new OperationDbRepository(),
+        private static readonly AssetProcessor _processor = AssetProcessorFactory.Create();
+        private static readonly TaskQueueService _queueService = TaskQueueServiceFactory.Create();
+        private static readonly TaskDbRepository _taskRepo = new();
+        private static readonly OperationInitializer _initializer = new(new OperationDbRepository(),
                                                                 new AssetDbRepository(),
-                                                                new TaskDbRepository(),
-                                                                TaskQueueServiceFactory.Create());
+                                                                _taskRepo,
+                                                                _queueService);
 
         public TaskConsumerService(IHostApplicationLifetime hostApplicationLifetime)
         {
@@ -96,20 +96,13 @@ namespace pwnctl.svc
                                 .Split("\n")
                                 .Where(l => !string.IsNullOrEmpty(l));
 
-                OutputBatchDTO outputBatch = new(task.Id);
-                for (int max = 10, i = 0; i < lines.Count(); i++)
-                {
-                    var line = lines.ElementAt(i);
-                    if ((string.Join(",", outputBatch.Lines).Length + line.Length) < 8000)
-                        outputBatch.Lines.Add(line);
+                PwnInfraContext.Logger.Debug($"Task: {taskDTO.TaskId} produced {lines.Count()}");
 
-                    if (outputBatch.Lines.Count == max || (string.Join(",", outputBatch.Lines).Length + line.Length) >= 8000)
-                    {
-                        await _queueService.EnqueueAsync(outputBatch);
-                        outputBatch = new(task.Id);
-                        outputBatch.Lines.Add(line);
-                    }
-                }
+
+                //lines.ToBatches(of: 10).Select(b => new OutputBatchDTO(task.Id, b));
+                var batches = OutputBatchDTO.FromLines(lines, task.Id);
+                foreach (var batch in batches)
+                    await _queueService.EnqueueAsync(batch);
             }
             catch (Exception ex)
             {
@@ -123,6 +116,8 @@ namespace pwnctl.svc
 
         private async Task ProcessOutputBatchAsync(CancellationToken stoppingToken)
         {
+            while (!stoppingToken.IsCancellationRequested)
+            {
                 var batchDTO = await _queueService.ReceiveAsync<OutputBatchDTO>(stoppingToken);
                 if (batchDTO == null)
                 {
@@ -130,35 +125,36 @@ namespace pwnctl.svc
                     return;
                 }
 
-            // Change the message visibility if the visibility window is exheeded
-            // this allows us to keep a smaller visibility window without effecting
-            // the max task timeout.
-            var timer = new System.Timers.Timer((PwnInfraContext.Config.TaskQueue.VisibilityTimeout - 90) * 1000);
-            timer.Elapsed += async (_, _) =>
-                await _queueService.ChangeMessageVisibilityAsync(batchDTO, PwnInfraContext.Config.TaskQueue.VisibilityTimeout);
-            timer.Start();
+                // Change the message visibility if the visibility window is exheeded
+                // this allows us to keep a smaller visibility window without effecting
+                // the max task timeout.
+                var timer = new System.Timers.Timer((PwnInfraContext.Config.TaskQueue.VisibilityTimeout - 90) * 1000);
+                timer.Elapsed += async (_, _) =>
+                    await _queueService.ChangeMessageVisibilityAsync(batchDTO, PwnInfraContext.Config.TaskQueue.VisibilityTimeout);
+                timer.Start();
 
-            try
-            {
-                var task = await _taskRepo.FindAsync(batchDTO.TaskId);
-
-                foreach (var line in batchDTO.Lines)
+                try
                 {
-                    PwnInfraContext.Logger.Debug("Processing: "+line);
+                    var task = await _taskRepo.FindAsync(batchDTO.TaskId);
 
-                    await _processor.TryProcessAsync(line, task.Operation, task);
+                    foreach (var line in batchDTO.Lines)
+                    {
+                        PwnInfraContext.Logger.Debug("Processing: " + line);
+
+                        await _processor.TryProcessAsync(line, task.Operation, task);
+                    }
+
+                    timer.Dispose();
+                    await _queueService.DequeueAsync(batchDTO);
                 }
+                catch (Exception ex)
+                {
+                    PwnInfraContext.Logger.Exception(ex);
 
-                timer.Dispose();
-                await _queueService.DequeueAsync(batchDTO);
-            }
-            catch (Exception ex)
-            {
-                PwnInfraContext.Logger.Exception(ex);
-
-                // return the task to the queue, if this occures to many times,
-                // the task will be put in the dead letter queue
-                await _queueService.ChangeMessageVisibilityAsync(batchDTO, 0);
+                    // return the task to the queue, if this occures to many times,
+                    // the task will be put in the dead letter queue
+                    await _queueService.ChangeMessageVisibilityAsync(batchDTO, 0);
+                }
             }
         }
     }

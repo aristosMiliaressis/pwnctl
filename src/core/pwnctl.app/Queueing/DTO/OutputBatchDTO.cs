@@ -18,4 +18,27 @@ public sealed class OutputBatchDTO : QueueMessage
         TaskId = taskId;
         Metadata["MessageGroupId"] = Guid.NewGuid().ToString();
     }
+
+    public static List<OutputBatchDTO> FromLines(IEnumerable<string> lines, int taskId)
+    {
+        List<OutputBatchDTO> batches = new();
+
+        OutputBatchDTO outputBatch = new(taskId);
+        for (int max = 10, i = 0; i < lines.Count(); i++)
+        {
+            var line = lines.ElementAt(i);
+            if ((string.Join(",", outputBatch.Lines).Length + line.Length) < 8000)
+                outputBatch.Lines.Add(line);
+
+            if (outputBatch.Lines.Count == max || (string.Join(",", outputBatch.Lines).Length + line.Length) >= 8000)
+            {
+                batches.Add(outputBatch);
+                outputBatch = new(taskId);
+                outputBatch.Lines.Add(line);
+            }
+        }
+        batches.Add(outputBatch);
+
+        return batches;
+    }
 }
