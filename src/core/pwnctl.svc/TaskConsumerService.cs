@@ -123,13 +123,12 @@ namespace pwnctl.svc
 
         private async Task ProcessOutputBatchAsync(CancellationToken stoppingToken)
         {
-            var batchDTO = await _queueService.ReceiveAsync<OutputBatchDTO>(stoppingToken);
-            if (batchDTO == null)
-            {
-                PwnInfraContext.Logger.Information("no work found");
-                Thread.Sleep(1000 * 60);
-                return;
-            }
+                var batchDTO = await _queueService.ReceiveAsync<OutputBatchDTO>(stoppingToken);
+                if (batchDTO == null)
+                {
+                    PwnInfraContext.Logger.Information("no work found");
+                    return;
+                }
 
             // Change the message visibility if the visibility window is exheeded
             // this allows us to keep a smaller visibility window without effecting
