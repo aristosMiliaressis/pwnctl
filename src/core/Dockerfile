@@ -91,7 +91,6 @@ RUN apt-get install -y nmap whois ldnsutils
 
 RUN go install github.com/tomnomnom/unfurl@latest
 RUN go install github.com/tomnomnom/anew@latest
-RUN go install github.com/tomnomnom/waybackurls@latest
 RUN go install github.com/projectdiscovery/tlsx/cmd/tlsx@latest
 RUN go install github.com/projectdiscovery/dnsx/cmd/dnsx@latest
 RUN go install github.com/projectdiscovery/httpx/cmd/httpx@latest
@@ -151,6 +150,9 @@ RUN pip3 install emailfinder
 RUN git clone https://github.com/xnl-h4ck3r/urless.git \
     && cd urless && python3 setup.py install \
     && chmod +x urless.py && ln -s /opt/tools/urless/urless.py /usr/local/bin/urless
+RUN git clone https://github.com/xnl-h4ck3r/waymore.git \
+    && cd waymore && python3 setup.py install \
+    && chmod +x waymore.py && ln -s /opt/tools/waymore/waymore.py /usr/local/bin/waymore
 
 RUN curl https://github.com/mgdm/htmlq/releases/download/v0.4.0/htmlq-x86_64-linux.tar.gz -L -o htmlq-x86_64-linux.tar.gz \
     && tar xzf htmlq-x86_64-linux.tar.gz \
@@ -164,9 +166,6 @@ RUN curl https://api.github.com/repos/michenriksen/aquatone/releases/latest 2>/d
     | wget -qi - \
     && unzip aquatone_linux_amd64* \
     && mv aquatone /usr/local/bin
-RUN git clone https://github.com/xnl-h4ck3r/waymore.git \
-    && cd waymore \
-    && python3 setup.py install
 RUN go install github.com/detectify/page-fetch@latest
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build

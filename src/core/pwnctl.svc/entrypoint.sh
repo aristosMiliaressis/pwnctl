@@ -1,34 +1,39 @@
 #!/bin/bash
 
-if test -f "/mnt/efs/amass.ini"; 
+if test -f "/mnt/efs/amass.ini";
 then
     cp "/mnt/efs/amass.ini" /etc/amass/config.ini
 fi
 
-if test -f "/mnt/efs/.gau.toml"; 
+if test -f "/mnt/efs/waymore.yml";
+then
+    cp "/mnt/efs/waymore.yml" /opt/tools/waymore/config.yml
+fi
+
+if test -f "/mnt/efs/.gau.toml";
 then
     cp "/mnt/efs/.gau.toml" $HOME/.gau.toml
 fi
 
-if test -f "/mnt/efs/whoisxml.conf"; 
+if test -f "/mnt/efs/whoisxml.conf";
 then
     mkdir $HOME/.config/ 2>/dev/null
     cp "/mnt/efs/whoisxml.conf" $HOME/.config/whoisxml.conf
 fi
 
-if test -f "/mnt/efs/provider-config.yaml"; 
+if test -f "/mnt/efs/provider-config.yaml";
 then
     mkdir -p $HOME/.config/notify/
     cp "/mnt/efs/provider-config.yaml" $HOME/.config/notify/provider-config.yaml
 fi
 
-if ! test -f "/mnt/efs/public_suffix_list.dat"; 
+if ! test -f "/mnt/efs/public_suffix_list.dat";
 then
     get-psl.sh /mnt/efs
 fi
 
 # if no resolvers list generate new one
-if [ ! -f "/mnt/efs/resolvers.txt" ] 
+if [ ! -f "/mnt/efs/resolvers.txt" ]
 then
     get-valid-resolvers.sh
     cp /opt/wordlists/dns/resolvers.txt /mnt/efs/resolvers.txt
