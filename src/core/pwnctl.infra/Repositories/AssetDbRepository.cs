@@ -136,27 +136,36 @@ namespace pwnctl.infra.Repositories
             record.Tasks.ForEach(t => t.Definition = null);
             record.Tasks.ForEach(t => t.Operation = null);
 
-            var existingAsset = FindMatching(record.Asset);
-            if (existingAsset == null)
+            using (var trx = _context.Database.BeginTransaction(System.Data.IsolationLevel.ReadCommitted))
             {
-                _context.Entry(record.Asset).State = EntityState.Added;
+                var existingAsset = FindMatching(record.Asset);
+                if (existingAsset == null)
+                {
+                    _context.Entry(record.Asset).State = EntityState.Added;
 
-                _context.Add(record);
+                    _context.Add(record);
+                }
+                else
+                {
+                    _context.Entry(record.Asset).DetachReferenceGraph();
+
+                    _context.Entry(record).State = EntityState.Modified;
+
+                    _context.AddRange(record.Tags.Where(t => t.Id == default));
+
+                    _context.AddRange(record.Tasks.Where(t => t.Id == default));
+
+                    _context.AddRange(record.Notifications.Where(t => t.Id == default));
+                }
+
+                try
+                {
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException) { }
+
+                trx.Commit();
             }
-            else
-            {
-                _context.Entry(record.Asset).DetachReferenceGraph();
-
-                _context.Entry(record).State = EntityState.Modified;
-
-                _context.AddRange(record.Tags.Where(t => t.Id == default));
-
-                _context.AddRange(record.Tasks.Where(t => t.Id == default));
-
-                _context.AddRange(record.Notifications.Where(t => t.Id == default));
-            }
-
-            await _context.SaveChangesAsync();
 
             _context.Entry(record).DetachReferenceGraph();
         }

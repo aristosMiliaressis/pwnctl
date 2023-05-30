@@ -251,6 +251,26 @@ public sealed class Tests
         Assert.Null(repository.FindMatching(service));
         await repository.SaveAsync(new AssetRecord(service));
         Assert.NotNull(repository.FindMatching(service));
+
+        // concurrency test
+        List<Task> tasks = new();
+
+        var processor = AssetProcessorFactory.Create();
+
+        tasks.Add(AssetProcessorFactory.Create().ProcessAsync("https://tesla.com/1/2/3/1", EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
+        tasks.Add(AssetProcessorFactory.Create().ProcessAsync("https://tesla.com/1/2/3/2", EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
+        tasks.Add(AssetProcessorFactory.Create().ProcessAsync("https://tesla.com/1/2/3/3", EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
+        tasks.Add(AssetProcessorFactory.Create().ProcessAsync("https://tesla.com/1/2/3/4", EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
+        tasks.Add(processor.ProcessAsync("https://tesla.com/1/2/3/5", EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
+        tasks.Add(processor.ProcessAsync("https://tesla.com/1/2/3/6", EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
+        tasks.Add(processor.ProcessAsync("https://tesla.com/1/2/3/7", EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
+        tasks.Add(processor.ProcessAsync("https://tesla.com/1/2/3/8", EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
+        tasks.Add(repository.SaveAsync(new AssetRecord(service)));
+        tasks.Add(repository.SaveAsync(new AssetRecord(service)));
+        tasks.Add(repository.SaveAsync(new AssetRecord(service)));
+        tasks.Add(repository.SaveAsync(new AssetRecord(service)));
+
+        Task.WaitAll(tasks.ToArray());
     }
 
     [Fact]
