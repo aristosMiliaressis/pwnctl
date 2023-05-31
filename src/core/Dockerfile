@@ -49,7 +49,7 @@ RUN apt-get install -y ruby ruby-dev \
     && gem install bundler
 
 # Setting up java
-RUN apt-get install -y openjdk-8-jdk
+RUN apt-get update && apt-get install -y openjdk-8-jdk
 
 # Setting up Go lang
 COPY --from=golang:1.20 /usr/local/go/ /usr/local/go/
@@ -96,6 +96,7 @@ RUN go install github.com/projectdiscovery/dnsx/cmd/dnsx@latest
 RUN go install github.com/projectdiscovery/httpx/cmd/httpx@latest
 RUN go install github.com/projectdiscovery/notify/cmd/notify@latest
 RUN go install github.com/projectdiscovery/katana/cmd/katana@latest
+RUN go install github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
 #RUN go install github.com/projectdiscovery/naabu/v2/cmd/naabu@latest
 RUN go install github.com/lc/gau/v2/cmd/gau@latest
 RUN go install github.com/hakluke/hakrawler@latest
@@ -143,7 +144,6 @@ RUN git clone https://github.com/EnableSecurity/wafw00f.git \
     && cd wafw00f && python3 setup.py install
 RUN go install github.com/rverton/webanalyze/cmd/webanalyze@latest
 RUN go install github.com/sw33tLie/sns@latest
-RUN go install github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
 RUN go install github.com/gwen001/github-subdomains@latest
 RUN pip3 install s3scanner
 RUN pip3 install emailfinder
