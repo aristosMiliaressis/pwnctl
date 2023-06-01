@@ -24,7 +24,6 @@ using System.Threading.Tasks;
 using Xunit;
 using pwnctl.infra.Queueing;
 using pwnctl.app.Queueing.DTO;
-using pwnctl.app;
 
 public sealed class Tests
 {
@@ -55,6 +54,12 @@ public sealed class Tests
     {
         var op = EntityFactory.CreateOperation();
 
+        // var db = new ContainerBuilder()
+        //     .WithImage("postgres:15")
+        //     .WithName("postgres")
+        //     .WithEnvironment("POSTGRES_PASSWORD", "password")
+        //     .Build();
+
         var container = new ContainerBuilder()
             .WithImage("public.ecr.aws/i0m2p7r6/pwnctl:untested")
             .WithBindMount(_containerBasePath, "/mnt/efs/")
@@ -62,11 +67,17 @@ public sealed class Tests
             .WithEnvironment("PWNCTL_INSTALL_PATH", "/mnt/efs")
             .WithEnvironment("PWNCTL_Logging__FilePath", "/mnt/efs")
             .WithEnvironment("PWNCTL_Logging__MinLevel", "Debug")
+            .WithEnvironment("PWNCTL_USE_SQLITE", "true")
+            // .WithEnvironment("PWNCTL_Db__Host", "postgres")
+            // .WithEnvironment("PWNCTL_Db__Name", "postgres")
+            // .WithEnvironment("PWNCTL_Db__Username", "postgres")
+            // .WithEnvironment("PWNCTL_Db__Password", "password")
             .WithEnvironment("PWNCTL_Operation", op.Id.ToString())
             .Build();
 
         CancellationTokenSource _cts = new(TimeSpan.FromMinutes(10));
 
+        //await db.StartAsync(_cts.Token).ConfigureAwait(false);
         await container.StartAsync(_cts.Token).ConfigureAwait(false);
 
         Thread.Sleep(10000);

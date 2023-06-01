@@ -32,7 +32,7 @@ public sealed class Tests
     public Tests()
     {
         Environment.SetEnvironmentVariable("PWNCTL_TEST_RUN", "true");
-        Environment.SetEnvironmentVariable("PWNCTL_DELETE_DB", "true");
+        Environment.SetEnvironmentVariable("PWNCTL_USE_SQLITE", "true");
         Environment.SetEnvironmentVariable("PWNCTL_INSTALL_PATH", ".");
         Environment.SetEnvironmentVariable("PWNCTL_Logging__FilePath", ".");
         Environment.SetEnvironmentVariable("PWNCTL_Logging__MinLevel", "Debug");
@@ -257,14 +257,14 @@ public sealed class Tests
 
         var processor = AssetProcessorFactory.Create();
 
-        tasks.Add(AssetProcessorFactory.Create().ProcessAsync("https://tesla.com/1/2/3/1", EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
-        tasks.Add(AssetProcessorFactory.Create().ProcessAsync("https://tesla.com/1/2/3/2", EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
-        tasks.Add(AssetProcessorFactory.Create().ProcessAsync("https://tesla.com/1/2/3/3", EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
-        tasks.Add(AssetProcessorFactory.Create().ProcessAsync("https://tesla.com/1/2/3/4", EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
-        tasks.Add(processor.ProcessAsync("https://tesla.com/1/2/3/5", EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
-        tasks.Add(processor.ProcessAsync("https://tesla.com/1/2/3/6", EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
-        tasks.Add(processor.ProcessAsync("https://tesla.com/1/2/3/7", EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
-        tasks.Add(processor.ProcessAsync("https://tesla.com/1/2/3/8", EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
+        tasks.Add(AssetProcessorFactory.Create().ProcessAsync("https://sub.tesla.com/1/2/3/1", EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
+        tasks.Add(AssetProcessorFactory.Create().ProcessAsync("https://sub.tesla.com/1/2/3/2", EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
+        tasks.Add(AssetProcessorFactory.Create().ProcessAsync("https://sub.tesla.com/1/2/3/3", EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
+        tasks.Add(AssetProcessorFactory.Create().ProcessAsync("https://sub.tesla.com/1/2/3/4", EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
+        tasks.Add(processor.ProcessAsync("https://sub.tesla.com/1/2/3/5", EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
+        tasks.Add(processor.ProcessAsync("https://sub.tesla.com/1/2/3/6", EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
+        tasks.Add(processor.ProcessAsync("https://sub.tesla.com/1/2/3/7", EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
+        tasks.Add(processor.ProcessAsync("https://sub.tesla.com/1/2/3/8", EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
         tasks.Add(repository.SaveAsync(new AssetRecord(service)));
         tasks.Add(repository.SaveAsync(new AssetRecord(service)));
         tasks.Add(repository.SaveAsync(new AssetRecord(service)));

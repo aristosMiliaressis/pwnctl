@@ -27,7 +27,7 @@ namespace pwnctl.infra.Persistence
         {
             PwnctlDbContext context = new();
 
-            if (EnvironmentVariables.TEST_RUN && EnvironmentVariables.DELETE_DB)
+            if (EnvironmentVariables.USE_SQLITE)
             {
                 await context.Database.EnsureDeletedAsync();
             }
