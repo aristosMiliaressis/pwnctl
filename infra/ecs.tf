@@ -34,6 +34,11 @@ resource "aws_ecs_task_definition" "this" {
   memory                   = 3072
   execution_role_arn = aws_iam_role.ecs.arn
   task_role_arn = aws_iam_role.ecs.arn
+
+  depends_on = [
+    aws_db_instance.this
+  ]
+
   container_definitions = <<DEFINITION
   [
     {

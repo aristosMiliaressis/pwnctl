@@ -53,7 +53,7 @@ TaskDefinitions:
 
   - Name: sub_enum
     CommandTemplate: sub-enum.sh {{Name}} {{ZoneDepth}}
-    Filter: DomainName.ZoneDepth <= 2
+    Filter: DomainName.ZoneDepth == 1
     Subject: DomainName
     MonitorRules:
       Schedule: 0 0 * * *
