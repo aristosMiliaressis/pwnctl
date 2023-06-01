@@ -88,12 +88,10 @@ namespace pwnctl.infra.Repositories
 
         public async Task AddAsync(TaskEntry task)
         {
+            if (task.RecordId == default)
+                throw new ArgumentException($"AssetRecord must be saved first!");
+
             _context.Entry(task).State = EntityState.Added;
-            if (task.Record.Id == default)
-            {
-                _context.Entry(task.Record).State = EntityState.Added;
-                _context.Entry(task.Record.Asset).State = EntityState.Added;
-            }
 
             await _context.SaveChangesAsync();
 

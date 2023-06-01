@@ -87,13 +87,14 @@ namespace pwnctl.app.Assets
             if (scope != null)
                 record.SetScope(scope.Definition);
 
+            List<PendingTaskDTO> tasks = new();
             if (record.Id == default || record.Tags.Any(t => t.Id == default) || operation.Type == OperationType.Monitor)
             {
                 await CheckMisconfigRulesAsync(record);
 
                 if (operation.Type == OperationType.Crawl)
                 {
-                    record = await GenerateCrawlingTasksAsync(operation, record);
+                    tasks = GenerateCrawlingTasks(operation, record);
                 }
                 else if (operation.Type == OperationType.Monitor)
                 {
@@ -102,9 +103,14 @@ namespace pwnctl.app.Assets
             }
 
             await _assetRepository.SaveAsync(record);
+
+            foreach (var task in tasks)
+            {
+                await _taskQueueService.EnqueueAsync(task);
+            }
         }
 
-        private async Task<AssetRecord> GenerateCrawlingTasksAsync(Operation operation, AssetRecord record)
+        private List<PendingTaskDTO> GenerateCrawlingTasks(Operation operation, AssetRecord record)
         {
             var allowedTasks = operation.Policy.GetAllowedTasks();
             allowedTasks.AddRange(_outOfScopeTasks);
@@ -118,12 +124,9 @@ namespace pwnctl.app.Assets
 
                 task = new TaskEntry(operation, definition, record);
                 record.Tasks.Add(task);
-
-                await _taskRepository.AddAsync(task);
-                await _taskQueueService.EnqueueAsync(new PendingTaskDTO(task));
             }
 
-            return record;
+            return record.Tasks.Select(t => new PendingTaskDTO(t)).ToList(); ;
         }
 
         private async Task CheckMisconfigRulesAsync(AssetRecord record)

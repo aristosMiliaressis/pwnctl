@@ -10,7 +10,7 @@ namespace pwnctl.app.Assets.Interfaces
         Task<AssetRecord> FindRecordAsync(Asset asset);
         Task<Notification> FindNotificationAsync(Asset asset, NotificationRule rule);
         Task<AssetRecord> UpdateRecordReferences(AssetRecord record, Asset asset);
-        Task SaveAsync(AssetRecord asset);
+        Task SaveAsync(AssetRecord record);
 
         Task<List<AssetRecord>> ListInScopeAsync(int scopeId, CancellationToken token = default);
 

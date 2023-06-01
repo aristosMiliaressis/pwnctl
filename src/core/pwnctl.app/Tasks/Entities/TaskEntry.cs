@@ -37,6 +37,7 @@ namespace pwnctl.app.Tasks.Entities
             Definition = definition;
             DefinitionId = definition.Id;
             Record = record;
+            RecordId = record.Id;
         }
 
         public void Started()

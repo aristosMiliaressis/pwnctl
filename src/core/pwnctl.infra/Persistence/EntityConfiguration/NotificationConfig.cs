@@ -47,6 +47,9 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
             builder.HasOne(e => e.Record)
                 .WithMany(e => e.Notifications)
                 .HasForeignKey(e => e.RecordId);
+
+            builder.HasIndex(nameof(Notification.RecordId), nameof(Notification.RuleId)).IsUnique();
+
         }
     }
 }

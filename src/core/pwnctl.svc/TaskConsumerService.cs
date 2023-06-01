@@ -98,8 +98,6 @@ namespace pwnctl.svc
 
                 PwnInfraContext.Logger.Debug($"Task: {taskDTO.TaskId} produced {lines.Count()}");
 
-
-                //lines.ToBatches(of: 10).Select(b => new OutputBatchDTO(task.Id, b));
                 var batches = OutputBatchDTO.FromLines(lines, task.Id);
                 foreach (var batch in batches)
                     await _queueService.EnqueueAsync(batch);

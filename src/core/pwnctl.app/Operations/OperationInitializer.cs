@@ -48,9 +48,9 @@ public class OperationInitializer
         foreach (var def in op.Policy.TaskProfile.TaskDefinitions.Where(def => def.Matches(record, minitoring: op.Type == OperationType.Monitor)))
         {
             var task = new TaskEntry(op, def, record);
-            record.Tasks.Add(task);
 
             await _taskRepo.AddAsync(task);
+
             await _taskQueueService.EnqueueAsync<PendingTaskDTO>(new PendingTaskDTO(task));
         }
     }

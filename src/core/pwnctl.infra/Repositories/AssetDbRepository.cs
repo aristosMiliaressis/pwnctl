@@ -10,6 +10,7 @@ using pwnctl.infra.Persistence.IdGenerators;
 using Microsoft.EntityFrameworkCore;
 using pwnctl.app.Notifications.Entities;
 using pwnctl.domain.ValueObjects;
+using System.Data;
 
 namespace pwnctl.infra.Repositories
 {
@@ -136,7 +137,7 @@ namespace pwnctl.infra.Repositories
             record.Tasks.ForEach(t => t.Definition = null);
             record.Tasks.ForEach(t => t.Operation = null);
 
-            using (var trx = _context.Database.BeginTransaction(System.Data.IsolationLevel.ReadCommitted))
+            using (var trx = _context.Database.BeginTransaction(IsolationLevel.ReadCommitted))
             {
                 var existingAsset = FindMatching(record.Asset);
                 if (existingAsset == null)
