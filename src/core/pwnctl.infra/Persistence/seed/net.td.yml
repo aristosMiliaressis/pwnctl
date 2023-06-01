@@ -1,4 +1,4 @@
-Profiles: [ "basic", "all" ]
+Profiles: [ "net" ]
 
 TaskDefinitions:
   - Name: ping_sweep
@@ -33,3 +33,11 @@ TaskDefinitions:
     CommandTemplate: http-probe.sh {{Address}}
     Subject: NetworkSocket
     Filter: Tags["protocol"].Contains("http")
+
+  - Name: os_fingerprint
+    CommandTemplate: os-fingerprint.sh {{IP}}
+    Subject: NetworkHost
+
+  - Name: udp_scan
+    CommandTemplate: udp-scan.sh {{IP}}
+    Subject: NetworkHost

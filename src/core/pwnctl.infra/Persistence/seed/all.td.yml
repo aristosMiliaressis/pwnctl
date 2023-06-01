@@ -1,0 +1,177 @@
+Profiles: [ "all" ]
+
+TaskDefinitions:
+  - Name: ping_sweep
+    CommandTemplate: ping-sweep.sh {{CIDR}}
+    Subject: NetworkRange
+    MonitorRules:
+      Schedule: 0 0 * * *
+
+  - Name: reverse_range_lookup
+    CommandTemplate: reverse-range-lookup.sh {{CIDR}}
+    Subject: NetworkRange
+    MonitorRules:
+      Schedule: 0 0 * * *
+
+  - Name: asn_lookup
+    CommandTemplate: asn-lookup.sh {{IP}}
+    Subject: NetworkHost
+
+  - Name: reverse_dns_lookup
+    CommandTemplate: dig +short -x {{IP}}
+    Subject: NetworkHost
+
+  - Name: tcp_scan
+    CommandTemplate: tcp-scan.sh {{IP}}
+    Subject: NetworkHost
+
+  - Name: tls_probe
+    CommandTemplate: tls-probe.sh {{Address}}
+    Subject: NetworkSocket
+
+  - Name: http_probe
+    CommandTemplate: http-probe.sh {{Address}}
+    Subject: NetworkSocket
+    Filter: Tags["protocol"].Contains("http")
+
+  - Name: os_fingerprint
+    CommandTemplate: os-fingerprint.sh {{IP}}
+    Subject: NetworkHost
+
+  - Name: udp_scan
+    CommandTemplate: udp-scan.sh {{IP}}
+    Subject: NetworkHost
+
+  - Name: domain_resolution
+    CommandTemplate: resolve.sh {{Name}}
+    Subject: DomainName
+    MonitorRules:
+      Schedule: 0 0 * * *
+      PreCondition: Tags["rcode"] != "NOERROR"
+      PostCondition: newTags["rcode"] != oldTags["rcode"]
+      NotificationTemplate: domain {{Name}} changed rcode from {{oldTags["rcode"]}} to {{newTags["rcode"]}}
+
+  - Name: httpx
+    CommandTemplate: echo {{Name}} | httpx -silent
+    Subject: DomainName
+
+  - Name: sub_enum
+    CommandTemplate: sub-enum.sh {{Name}} {{ZoneDepth}}
+    Filter: DomainName.ZoneDepth <= 2
+    Subject: DomainName
+    MonitorRules:
+      Schedule: 0 0 * * *
+      PreCondition: DomainName.ZoneDepth == 1
+
+  - Name: dns_record_enum
+    CommandTemplate: dns-record-enum.sh {{Name}}
+    Subject: DomainName
+
+  - Name: get_all_urls
+    CommandTemplate: get-all-urls.sh {{Name}}
+    Subject: DomainName
+    Filter: DomainName.ZoneDepth == 1
+
+  - Name: email_finder
+    CommandTemplate: email-finder.sh {{Name}}
+    Subject: DomainName
+    Filter: DomainName.ZoneDepth == 1
+
+  - Name: reverse_whois
+    CommandTemplate: reverse-whois.sh {{Address}}
+    Subject: Email
+    MatchOutOfScope: true
+
+  - Name: zone_trasfer
+    CommandTemplate: zone-transfer.sh {{Name}}
+    Subject: DomainName
+
+  - Name: zone_walking
+    CommandTemplate: ldns-walk {{Key}} | tail -n +2 | cut -d ' ' -f 1
+    Filter: DomainNameRecord.Type == pwnctl.domain.Enums.DnsRecordType.NSEC
+    Subject: DomainNameRecord
+
+  - Name: cname_takeover_check
+    CommandTemplate: cloud_misconfig_scan.sh {{Value}}
+    Subject: DomainNameRecord
+    Filter: DomainNameRecord.Type == pwnctl.domain.Enums.DnsRecordType.CNAME
+    MonitorRules:
+      Schedule: 0 0 * * *
+
+  - Name: s3_scan
+    CommandTemplate: s3-scan.sh {{Name}}
+    Subject: DomainName
+    Filter: DomainName.Name.Contains("amazonaws.com") && DomainName.Name.Contains("s3")
+    MatchOutOfScope: true
+
+  # TODO: tld_brute
+  # - Name: tld_brute
+  #   CommandTemplate: tld-brute.sh {{Name}}
+  #   Subject: DomainName
+  #   Filter: DomainName.ZoneDepth == 1
+
+  - Name: cloud_enum
+    CommandTemplate: cloud-enum.sh {{Word}}
+    Subject: DomainName
+    Filter: DomainName.ZoneDepth == 1
+
+  - Name: wafw00f
+    CommandTemplate: wafw00f.sh {{Url}}
+    Filter: HttpEndpoint.Path == "/"
+    Subject: HttpEndpoint
+
+  - Name: grab_url_metadata
+    CommandTemplate: grab-url-metadata.sh {{Url}}
+    Filter: HttpEndpoint.Path == "/"
+    Subject: HttpEndpoint
+    MonitorRules:
+      Schedule: 0 0 * * *
+      PreCondition: new List<string>{ "401", "403", "501", "502", "503", "504" }.Contains(Tags["Status"])
+      PostCondition: newTags["Status"] != oldTags["Status"]
+      NotificationTemplate: Endpoint {{Url}} changed status code from {{oldTags["Status"]}} to {{newTags["Status"]}}
+
+  - Name: webanalyze
+    CommandTemplate: webanalyze.sh {{Url}}
+    Filter: HttpEndpoint.Path == "/"
+    Subject: HttpEndpoint
+
+  - Name: webcrawl
+    CommandTemplate: webcrawl.sh {{Url}}
+    Filter: HttpEndpoint.Path == "/" || Tags["Content-Type"].Contains("/html") || Tags["Content-Type"].Contains("/xhtml")
+    Subject: HttpEndpoint
+
+  - Name: cors_check
+    CommandTemplate: check-cors.sh {{Url}}
+    Subject: HttpEndpoint
+    Filter: HttpEndpoint.Path == "/" || Tags["Content-Type"].Contains("/json") || Tags["Content-Type"].Contains("/xml")
+
+  - Name: short_name_scanning
+    CommandTemplate: shortname-check.sh {{Url}}
+    Subject: HttpEndpoint
+    Filter: Tags["Title"].Contains("Internet Information Services")|| Tags["Title"].Contains("IIS")||Tags["Server"].Contains("IIS")||Tags["Server"].Contains("Microsoft-HTTPAPI")
+
+  - Name: short_name_scanning_srv
+    CommandTemplate: shortname-check.sh {{Address}}
+    Subject: NetworkSocket
+    Filter: Tags["Version"].Contains("IIS") || Tags["Version"].Contains("Microsoft HTTPAPI")
+
+  # - Name: screenshot
+  #   CommandTemplate: screenshot.sh {{Url}}
+  #   Filter: HttpEndpoint.Path == "/"
+  #   Subject: HttpEndpoint
+
+#   - Name: second_order_takeover
+#     CommandTemplate: cloud_misconfig_scan.sh {{Url}}
+#     Subject: HttpEndpoint
+#     Filter: CloudServiceRepository.Instance.IsCloudService(HttpEndpoint)
+#     MatchOutOfScope: true
+
+  - Name: dir_brute_all
+    CommandTemplate: dir-brute.sh {{Url}} /opt/wordlists/all.txt
+    Filter: HttpEndpoint.Path == "/"
+    Subject: HttpEndpoint
+
+  - Name: file_brute_config
+    CommandTemplate: file-brute.sh {{Url}} /opt/wordlists/config.txt
+    Filter: HttpEndpoint.Path == "/"
+    Subject: HttpEndpoint
