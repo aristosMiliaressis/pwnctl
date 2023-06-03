@@ -7,20 +7,26 @@ public static class ZipArchiveExtensions
 {
     public static void AddFolderEntry(this ZipArchive archive, string path)
     {
-        foreach (var file in Directory.GetFiles(path))
-        {
-            var fileBytes = File.ReadAllBytes(file);
+        var archivePath = path.Replace(EnvironmentVariables.INSTALL_PATH + "/", "");
+        
+        archive.CreateEntry(archivePath.EndsWith("/") ? archivePath : archivePath + "/");
 
-            var fileInArchive = archive.CreateEntry(file.Replace(EnvironmentVariables.INSTALL_PATH, "").Replace("/", "_"), CompressionLevel.Fastest);
-            using (var entryStream = fileInArchive.Open())
+        foreach (var filePath in Directory.GetFiles(path))
+        {
+            var fileBytes = File.ReadAllBytes(filePath);
+
+            var fileEntryName = Path.Combine(archivePath, Path.GetFileName(filePath));
+
+            var fileEntry = archive.CreateEntry(fileEntryName, CompressionLevel.Optimal);
+            using (var fileEntryStream = fileEntry.Open())
             {
-                entryStream.Write(fileBytes, 0, fileBytes.Length);
+                fileEntryStream.Write(fileBytes, 0, fileBytes.Length);
             }
         }
 
-        foreach (var directory in Directory.GetDirectories(path))
+        foreach (var directoryPath in Directory.GetDirectories(path))
         {
-            archive.AddFolderEntry(Path.Combine(path, directory));
+            archive.AddFolderEntry(directoryPath);
         }
     }
 }

@@ -46,7 +46,7 @@ public sealed class FsController : ControllerBase
             {
                 archive.AddFolderEntry(filePath);
 
-                return File(memoryStream.ToArray(), "application/octet-stream", zipFilename);
+                return File(memoryStream.ToArray(), "application/zip", zipFilename);
             }
         }
 
