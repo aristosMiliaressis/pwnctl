@@ -2,6 +2,6 @@
 
 url=$1
 
-mkdir -p /mnt/efs/screenshots 2>/dev/null
+mkdir -p /mnt/efs/screenshots/ 2>/dev/null
 
-echo $url | httpx -silent -ss -srd /mnt/efs/screenshots
+gowitness single --disable-logging --disable-db -F --user-agent "$(uagen)" -P /mnt/efs/screenshots/ $url
