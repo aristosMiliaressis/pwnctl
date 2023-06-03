@@ -90,7 +90,8 @@ namespace pwnctl.infra.Persistence
                     return;
                 }
 
-                optionsBuilder.UseNpgsql(ConnectionString, x => x.MigrationsHistoryTable("__EFMigrationHistory"));
+                optionsBuilder.UseNpgsql(ConnectionString, x => x.MigrationsHistoryTable("__EFMigrationHistory")
+                                                                 .CommandTimeout(300));
             }
         }
 

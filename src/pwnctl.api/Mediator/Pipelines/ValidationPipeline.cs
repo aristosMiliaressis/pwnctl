@@ -47,11 +47,6 @@ namespace pwnctl.api.Mediator.Pipelines
             {
                 response = (TResponse)MediatedResponse.Error(ex.Message);
             }
-            catch (Exception ex)
-            {
-                PwnInfraContext.Logger.Exception(ex);
-                response = (TResponse)MediatedResponse.Create(HttpStatusCode.InternalServerError);
-            }
 
             return response;
         }

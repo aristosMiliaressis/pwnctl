@@ -29,6 +29,7 @@ public sealed class PwnctlApiClient
     {
         _httpClient = new HttpClient();
         _httpClient.BaseAddress = new Uri(PwnInfraContext.Config.Api.BaseUrl);
+        _httpClient.Timeout = TimeSpan.FromMinutes(5);
     }
 
     public async Task<TResult> Send<TResult>(MediatedRequest<TResult> request)

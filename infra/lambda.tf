@@ -49,8 +49,8 @@ resource "aws_lambda_function" "this" {
   handler = "pwnctl.api"
   source_code_hash = data.archive_file.this.output_base64sha256
   runtime = "dotnet6"
-  timeout = 120
-  memory_size = 3072
+  timeout = 300
+  memory_size = 6144
 
   vpc_config {
     subnet_ids         = [for k, v in aws_subnet.private : aws_subnet.private[k].id]
