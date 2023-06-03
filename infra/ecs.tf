@@ -160,6 +160,10 @@ resource "aws_ecs_service" "this" {
     capacity_provider = "FARGATE"
     weight = 1
   }
+
+    lifecycle {
+        ignore_changes = [ desired_count ]
+    }
 }
 
 resource "aws_appautoscaling_target" "this" {
