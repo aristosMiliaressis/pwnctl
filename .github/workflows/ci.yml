@@ -134,4 +134,4 @@ jobs:
         run: docker pull public.ecr.aws/i0m2p7r6/pwnctl:untested
 
       - name: Retag image from untested to latest
-        run: docker buildx imagetools create public.ecr.aws/i0m2p7r6/pwnctl:untested public.ecr.aws/i0m2p7r6/pwnctl:latest
+        run: docker buildx imagetools create -t public.ecr.aws/i0m2p7r6/pwnctl:latest public.ecr.aws/i0m2p7r6/pwnctl:untested
