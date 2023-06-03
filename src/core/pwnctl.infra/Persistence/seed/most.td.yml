@@ -105,6 +105,11 @@ TaskDefinitions:
     Subject: DomainName
     Filter: DomainName.ZoneDepth == 1
 
+  - Name: screenshot
+    CommandTemplate: screenshot.sh {{Url}}
+    Filter: HttpEndpoint.Path == "/"
+    Subject: HttpEndpoint
+
   - Name: wafw00f
     CommandTemplate: wafw00f.sh {{Url}}
     Filter: HttpEndpoint.Path == "/"
