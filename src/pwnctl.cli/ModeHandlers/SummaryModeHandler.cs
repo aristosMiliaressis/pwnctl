@@ -10,7 +10,7 @@ namespace pwnctl.cli.ModeHandlers
     public sealed class SummaryModeHandler : ModeHandler
     {
         public string ModeName => "summary";
-        
+
         public async Task Handle(string[] args)
         {
             var model = await PwnctlApiClient.Default.Send(new SummaryQuery());
@@ -39,8 +39,8 @@ namespace pwnctl.cli.ModeHandlers
                 Console.WriteLine("Last Queued Task: " + model.LastTask);
                 Console.WriteLine("Last Finished Task: " + model.LastFinishedTask);
 
-                var productiveTime = TimeSpan.FromSeconds(model.TaskDetails.Sum(t => t.Duration.TotalSeconds));
-                Console.WriteLine("Total Productive time: " + productiveTime.ToString("dd\\.hh\\:mm\\:ss"));
+                // var productiveTime = TimeSpan.FromSeconds(model.TaskDetails.Sum(t => t.Duration.TotalSeconds));
+                // Console.WriteLine("Total Productive time: " + productiveTime.ToString("dd\\.hh\\:mm\\:ss"));
             }
         }
 

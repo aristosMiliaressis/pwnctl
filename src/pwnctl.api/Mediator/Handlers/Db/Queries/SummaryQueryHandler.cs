@@ -46,14 +46,25 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Commands
             viewModel.TaskDetails = new List<SummaryViewModel.TaskDefinitionDetails>();
             foreach (var def in context.TaskDefinitions.AsEnumerable().GroupBy(d => d.Name.Value).ToList())
             {
-                var entries = context.TaskEntries.Where(e => def.Select(d => d.Id).Contains(e.DefinitionId)).ToList();
-                viewModel.TaskDetails.Add(new SummaryViewModel.TaskDefinitionDetails
+                var details = new SummaryViewModel.TaskDefinitionDetails
                 {
                     ShortName = def.First().Name.Value,
-                    Count = entries.Count,
-                    Duration = TimeSpan.FromSeconds(entries.Where(e => e.State == TaskState.FINISHED).Select(e => e.FinishedAt - e.StartedAt).Sum(e => e.TotalSeconds)),
+                    Count = await context.TaskEntries.Where(e => def.Select(d => d.Id).Contains(e.DefinitionId)).CountAsync(),
                     Findings = context.AssetRecords.Include(r => r.FoundByTask).Where(r => def.Select(d => d.Id).Contains(r.FoundByTask.DefinitionId)).Count()
-                });
+                };
+
+                var count = await  context.TaskEntries.Where(e => e.State == TaskState.FINISHED && def.Select(d => d.Id).Contains(e.DefinitionId)).CountAsync();
+                for (var i = 0; i <= count / 1024; i++)
+                {
+                    details.Duration += TimeSpan.FromSeconds(context.TaskEntries
+                            .Where(e => e.State == TaskState.FINISHED && def.Select(d => d.Id).Contains(e.DefinitionId))
+                            .OrderBy(t => t.QueuedAt)
+                            .Skip(i*1024)
+                            .Take(1024)
+                            .Select(e => e.FinishedAt - e.StartedAt).Sum(e => e.TotalSeconds));
+                }
+
+                viewModel.TaskDetails.Add(details);
             }
 
             return MediatedResponse<SummaryViewModel>.Success(viewModel);
