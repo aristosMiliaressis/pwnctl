@@ -39,14 +39,14 @@ public sealed class FsController : ControllerBase
 
         if (Directory.Exists(filePath))
         {
-            var zipFilename = filePath.Replace("/", "_")+".zip";
+            var zipFilename = filePath.Replace(EnvironmentVariables.INSTALL_PATH+"/", "").Replace("/", "_")+".zip";
 
             using (var memoryStream = new MemoryStream())
-            using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create))
+            using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
             {
                 archive.AddFolderEntry(filePath);
 
-                return File(memoryStream.ToArray(), "application/zip", zipFilename);
+                return File(memoryStream.ToArray(), "application/octet-stream", zipFilename);
             }
         }
 
