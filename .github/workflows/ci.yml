@@ -134,12 +134,4 @@ jobs:
         run: docker pull public.ecr.aws/i0m2p7r6/pwnctl:untested
 
       - name: Retag image from untested to latest
-        run: docker tag public.ecr.aws/i0m2p7r6/pwnctl:untested public.ecr.aws/i0m2p7r6/pwnctl:latest
-
-      - name: Push worker image
-        uses: docker/build-push-action@v3
-        with:
-          tags: public.ecr.aws/i0m2p7r6/pwnctl:latest
-          push: true
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+        run: docker buildx imagetools create public.ecr.aws/i0m2p7r6/pwnctl:untested public.ecr.aws/i0m2p7r6/pwnctl:latest
