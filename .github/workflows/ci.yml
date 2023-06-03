@@ -141,6 +141,5 @@ jobs:
         with:
           tags: public.ecr.aws/i0m2p7r6/pwnctl:latest
           push: true
-          context: src/core/
           cache-from: type=gha
           cache-to: type=gha,mode=max
