@@ -20,9 +20,9 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
 
         public async Task<MediatedResponse> Handle(CreateOperationCommand command, CancellationToken cancellationToken)
         {
-            var existingProgram = await _context.Operations.FirstOrDefaultAsync(p => p.ShortName == ShortName.Create(command.ShortName));
-            if (existingProgram != null)
-                return MediatedResponse.Error("Target {0} already exists.", command.ShortName);
+            var existingOperation = await _context.Operations.FirstOrDefaultAsync(p => p.ShortName == ShortName.Create(command.ShortName));
+            if (existingOperation != null)
+                return MediatedResponse.Error("Operation {0} already exists.", command.ShortName);
 
             var scopeAggregate = _context.ScopeAggregates
                                         .Include(a => a.Definitions)
@@ -53,6 +53,9 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
                 op.Schedule = CronExpression.Create(command.CronSchedule);
 
             _context.Operations.Add(op);
+            if (command.Type == OperationType.Crawl)
+                op.State = OperationState.Ongoing;
+
             await _context.SaveChangesAsync();
 
             if (command.Type == OperationType.Crawl)

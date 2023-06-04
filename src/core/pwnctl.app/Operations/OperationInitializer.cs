@@ -32,6 +32,7 @@ public class OperationInitializer
         var op = await _opRepo.FindAsync(opId);
 
         op.InitiatedAt = SystemTime.UtcNow();
+        op.State = OperationState.Ongoing;
 
         var records = await _assetRepo.ListInScopeAsync(op.ScopeId);
 

@@ -10,6 +10,7 @@ namespace pwnctl.app.Operations.Entities
     {
         public ShortName ShortName { get; private init; }
         public OperationType Type { get; private init; }
+        public OperationState State { get; set; }
         public CronExpression Schedule { get; set; }
         public DateTime InitiatedAt { get; set; }
 

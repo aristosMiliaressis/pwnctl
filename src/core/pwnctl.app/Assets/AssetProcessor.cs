@@ -91,7 +91,7 @@ namespace pwnctl.app.Assets
             {
                 await CheckMisconfigRulesAsync(record);
 
-                if (operation.Type == OperationType.Crawl)
+                if (operation.Type == OperationType.Crawl && operation.State != OperationState.Stopped)
                 {
                     GenerateCrawlingTasks(operation, record);
                 }

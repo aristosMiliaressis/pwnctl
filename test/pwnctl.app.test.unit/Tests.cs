@@ -316,7 +316,7 @@ public sealed class Tests
 
         await processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(exampleUrl), EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry);
 
-        endpointRecord = repository.ListEndpointsAsync().Result.First(t => t.HttpEndpoint.Url == "https://example.com/");
+        endpointRecord = repository.ListEndpointsAsync(1).Result.First(t => t.HttpEndpoint.Url == "https://example.com/");
 
         srvTag = endpointRecord.Tags.First(t => t.Name == "server");
         Assert.Equal("IIS", srvTag.Value);
@@ -345,7 +345,7 @@ public sealed class Tests
 
         // process same asset twice and make sure tasks are only assigned once
         await processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry);
-        endpointRecord = repository.ListEndpointsAsync().Result.First(ep => ep.HttpEndpoint.Url == "https://iis.tesla.com/");
+        endpointRecord = repository.ListEndpointsAsync(1).Result.First(ep => ep.HttpEndpoint.Url == "https://iis.tesla.com/");
         var tasks = context.TaskEntries.Include(t => t.Definition).Where(t => t.Record.Id == endpointRecord.Asset.Id).ToList();
         Assert.DoesNotContain(tasks.GroupBy(t => t.DefinitionId), g => g.Count() > 1);
         srvTag = endpointRecord.Tags.First(t => t.Name == "protocol");
@@ -364,7 +364,7 @@ public sealed class Tests
 
         // test Tag filter
         await processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(apacheTeslaUrl), EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry);
-        endpointRecord = repository.ListEndpointsAsync().Result.First(r => r.HttpEndpoint.Url == "https://apache.tesla.com/");
+        endpointRecord = repository.ListEndpointsAsync(1).Result.First(r => r.HttpEndpoint.Url == "https://apache.tesla.com/");
 
         tasks = context.TaskEntries.Include(t => t.Definition).Where(t => t.Record.Id == endpointRecord.Id).ToList();
         Assert.DoesNotContain(tasks, t => t.Definition.Name.Value == "shortname_scanner");
