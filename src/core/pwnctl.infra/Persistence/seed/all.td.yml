@@ -152,10 +152,12 @@ TaskDefinitions:
 
   - Name: swagger_discovery
     CommandTemplate: swagger-discovery.sh {{Url}}
+    Subject: HttpEndpoint
     Filter: HttpEndpoint.Path == "/"
 
   - Name: panel_discovery
     CommandTemplate: panel-discovery.sh {{Url}}
+    Subject: HttpEndpoint
     Filter: HttpEndpoint.Path == "/"
 
   - Name: short_name_scanning
