@@ -9,6 +9,11 @@
   Filter: Tags["cors-misconfig"] == "true"
   Topic: misconfigs
 
+- Name: swagger_discovery
+  Subject: HttpEndpoint
+  Filter: Tags["swagger-ui"] == "true"
+  Topic: misconfigs
+
 - Name: shortname_misconfig
   Subject: HttpEndpoint
   Filter: Tags["shortname-misconfig"] == "true"

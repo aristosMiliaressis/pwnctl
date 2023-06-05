@@ -142,13 +142,18 @@ TaskDefinitions:
 
   - Name: webcrawl
     CommandTemplate: webcrawl.sh {{Url}}
-    Filter: HttpEndpoint.Path == "/" || Tags["Content-Type"].Contains("/html") || Tags["Content-Type"].Contains("/xhtml")
+    Filter: HttpEndpoint.Path == "/"
     Subject: HttpEndpoint
 
   - Name: cors_check
     CommandTemplate: check-cors.sh {{Url}}
     Subject: HttpEndpoint
-    Filter: HttpEndpoint.Path == "/" || Tags["Content-Type"].Contains("/json") || Tags["Content-Type"].Contains("/xml")
+    Filter: HttpEndpoint.Path == "/"
+
+  - Name: swagger_discovery
+    CommandTemplate: swagger-discovery.sh {{Url}}
+    Filter: HttpEndpoint.Path == "/"
+
 
   - Name: short_name_scanning
     CommandTemplate: shortname-check.sh {{Url}}
@@ -159,11 +164,6 @@ TaskDefinitions:
     CommandTemplate: shortname-check.sh {{Address}}
     Subject: NetworkSocket
     Filter: Tags["Version"].Contains("IIS") || Tags["Version"].Contains("Microsoft HTTPAPI")
-
-  # - Name: screenshot
-  #   CommandTemplate: screenshot.sh {{Url}}
-  #   Filter: HttpEndpoint.Path == "/"
-  #   Subject: HttpEndpoint
 
 #   - Name: second_order_takeover
 #     CommandTemplate: cloud_misconfig_scan.sh {{Url}}
