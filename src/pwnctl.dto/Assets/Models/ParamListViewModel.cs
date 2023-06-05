@@ -2,15 +2,14 @@ namespace pwnctl.dto.Assets.Models;
 
 using pwnctl.app.Assets.Aggregates;
 using pwnctl.app.Assets.DTO;
+using pwnctl.dto.Mediator;
 
-public sealed class ParamListViewModel
+public sealed class ParamListViewModel : PaginatedViewModel<AssetDTO>
 {
-    public IEnumerable<AssetDTO> Parameters { get; init; }
-
     public ParamListViewModel() { }
 
     public ParamListViewModel(List<AssetRecord> parameters)
     {
-        Parameters = parameters.Select(e => new AssetDTO(e));
+        Rows = parameters.Select(e => new AssetDTO(e)).ToList();
     }
 }

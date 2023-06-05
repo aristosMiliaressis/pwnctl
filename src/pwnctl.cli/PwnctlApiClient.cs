@@ -14,6 +14,8 @@ using System.Net.Http.Headers;
 using pwnctl.dto.Auth;
 using Amazon.SecretsManager;
 using Amazon.SecretsManager.Model;
+using System.Linq;
+using System.Collections.Generic;
 
 /// <summary>
 /// an api client that utilizes the custom Mediated Api contract and
@@ -33,8 +35,16 @@ public sealed class PwnctlApiClient
     }
 
     public async Task<TResult> Send<TResult>(MediatedRequest<TResult> request)
+         where TResult : class
     {
-        var apiResponse = await _send(request);
+        (Type concreteRequestType, string route, string json) = await PrepareRequest(request);
+
+        if (concreteRequestType.IsAssignableTo(typeof(PaginatedRequest)))
+        {
+            return await HandlePaginatedRequest<TResult>(concreteRequestType, route, json);
+        }
+
+        var apiResponse = await _send(concreteRequestType, route, json);
         if (apiResponse.Result == null)
             return default;
 
@@ -43,31 +53,39 @@ public sealed class PwnctlApiClient
 
     public async Task Send(MediatedRequest request)
     {
-        var apiResponse = await _send(request);
+        (Type concreteRequestType, string route, string json) = await PrepareRequest(request);
+        
+        var apiResponse = await _send(concreteRequestType, route, json);
 
         return;
     }
 
-    private async Task<MediatedResponse> _send(Request request)
+    private async Task<(Type concreteRequestType, string route, string json)> PrepareRequest(Request request)
     {
+        var token = await GetAccessToken();
+
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.AccessToken);
+
         var concreteRequestType = request.GetType();
 
         var json = PwnInfraContext.Serializer.Serialize(request, concreteRequestType);
         var route = request.GetInterpolatedRoute();
 
-        var httpRequest = new HttpRequestMessage {
-            Method = MediatedRequestTypeHelper.GetVerb(concreteRequestType),
-            RequestUri = new Uri(route, UriKind.Relative),
-            Content = new StringContent(json, Encoding.UTF8, "application/json")
-        };
+        return (concreteRequestType, route, json);
+    }
 
-        var token = await GetAccessToken();
-
-        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.AccessToken);
-
+    private async Task<MediatedResponse> _send(Type concreteRequestType, string route, string json)
+    {
         HttpResponseMessage response = null;
         try
         {
+            var httpRequest = new HttpRequestMessage
+            {
+                Method = MediatedRequestTypeHelper.GetVerb(concreteRequestType),
+                RequestUri = new Uri(route, UriKind.Relative),
+                Content = new StringContent(json, Encoding.UTF8, "application/json")
+            };
+
             response = await _httpClient.SendAsync(httpRequest);
 
             response.EnsureSuccessStatusCode();
@@ -79,6 +97,43 @@ public sealed class PwnctlApiClient
         }
 
         return await response.Content.ReadFromJsonAsync<MediatedResponse>();
+    }
+
+    private async Task<TResult> HandlePaginatedRequest<TResult>(Type concreteRequestType, string route, string json)
+     where TResult : class
+    {
+        MediatedResponse response = null;
+        PaginatedViewModel view = null;
+
+        do
+        {
+            var httpRequest = new HttpRequestMessage
+            {
+                Method = MediatedRequestTypeHelper.GetVerb(concreteRequestType),
+                RequestUri = new Uri($"{route}?Page={(view == null ? 0 : view.Page)}", UriKind.Relative),
+                Content = new StringContent(json, Encoding.UTF8, "application/json")
+            };
+
+            var httpResponse = await _httpClient.SendAsync(httpRequest);
+
+            var jsonResponse = await httpResponse.Content.ReadAsStringAsync();
+
+            var responseType = typeof(MediatedResponse<TResult>);
+
+            response = (MediatedResponse) PwnInfraContext.Serializer.Deserialize(jsonResponse, responseType);
+
+            var viewModel = responseType.GetProperties().First(p => p.Name == "Result").GetValue(response) as PaginatedViewModel;
+
+            if (view == null)
+                view = viewModel;
+            else
+                view.Rows.AddRange((List<object>) typeof(PaginatedViewModel).GetProperty("Rows").GetValue(viewModel));
+    
+            view.Page++;
+        }
+        while (view.Page != view.TotalPages+1);
+
+        return view as TResult;
     }
 
     private async Task<TokenGrantResponse> GetAccessToken()

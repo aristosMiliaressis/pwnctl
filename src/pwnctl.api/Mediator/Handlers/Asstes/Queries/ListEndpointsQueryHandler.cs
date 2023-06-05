@@ -10,13 +10,18 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Queries
 {
     public sealed class ListEndpointsQueryHandler : IRequestHandler<ListEndpointsQuery, MediatedResponse<EndpointListViewModel>>
     {
-        public async Task<MediatedResponse<EndpointListViewModel>> Handle(ListEndpointsQuery command, CancellationToken cancellationToken)
+        public async Task<MediatedResponse<EndpointListViewModel>> Handle(ListEndpointsQuery query, CancellationToken cancellationToken)
         {
             AssetDbRepository repository = new();
             
-            var endpoints = await repository.ListEndpointsAsync();
+            var endpoints = await repository.ListEndpointsAsync(query.Page);
 
-            return MediatedResponse<EndpointListViewModel>.Success(new EndpointListViewModel(endpoints));
+            var viewModel = new EndpointListViewModel(endpoints);
+
+            viewModel.Page = query.Page;
+            viewModel.TotalPages = new PwnctlDbContext().HttpEndpoints.Count() / 4096;
+
+            return MediatedResponse<EndpointListViewModel>.Success(viewModel);
         }
     }
 }

@@ -2,15 +2,14 @@ namespace pwnctl.dto.Assets.Models;
 
 using pwnctl.app.Assets.Aggregates;
 using pwnctl.app.Assets.DTO;
+using pwnctl.dto.Mediator;
 
-public sealed class DomainListViewModel
+public sealed class DomainListViewModel : PaginatedViewModel<AssetDTO>
 {
-    public IEnumerable<AssetDTO> Domains { get; init; }
-
     public DomainListViewModel() {}
 
     public DomainListViewModel(List<AssetRecord> domains)
     {
-        Domains = domains.Select(e => new AssetDTO(e));
+        Rows = domains.Select(e => new AssetDTO(e)).ToList();
     }
 }

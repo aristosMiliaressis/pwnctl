@@ -65,6 +65,35 @@ namespace pwnctl.infra.Repositories
                                     .AsNoTracking()
                                     .FirstOrDefault(r => r.Id == id));
 
+        public async Task<List<TaskEntry>> ListEntriesAsync(int pageIdx, int pageSize = 4096)
+        {
+            return await _context.TaskEntries
+                                .Include(p => p.Definition)
+                                .Include(p => p.Record)
+                                    .ThenInclude(r => r.NetworkRange)
+                                .Include(p => p.Record)
+                                    .ThenInclude(r => r.NetworkHost)
+                                .Include(p => p.Record)
+                                    .ThenInclude(r => r.NetworkSocket)
+                                .Include(p => p.Record)
+                                    .ThenInclude(r => r.DomainName)
+                                .Include(p => p.Record)
+                                    .ThenInclude(r => r.DomainNameRecord)
+                                .Include(p => p.Record)
+                                    .ThenInclude(r => r.HttpHost)
+                                .Include(p => p.Record)
+                                    .ThenInclude(r => r.HttpEndpoint)
+                                .Include(p => p.Record)
+                                    .ThenInclude(r => r.HttpParameter)
+                                .Include(p => p.Record)
+                                    .ThenInclude(r => r.Email)
+                                .OrderBy(r => r.QueuedAt)
+                                .Skip(pageIdx * pageSize)
+                                .Take(pageSize)
+                                .AsNoTracking()
+                                .ToListAsync();
+        }
+
         public async Task<TaskEntry> FindAsync(int taskId)
         {
             return await FindEntryQuery(_context, taskId);

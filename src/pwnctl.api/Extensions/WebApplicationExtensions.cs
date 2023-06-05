@@ -5,6 +5,7 @@ using MediatR;
 using pwnctl.dto.Mediator;
 using pwnctl.app;
 using pwnctl.app.Common.Extensions;
+using System.ComponentModel;
 
 public static class WebApplicationExtensions
 {
@@ -66,6 +67,12 @@ public static class WebApplicationExtensions
                 var request = PwnInfraContext.Serializer.Deserialize(json, requestType);
 
                 request = context.Request.Path.Value.Extrapolate(routePattern, request);
+                foreach (var param in context.Request.Query)
+                {
+                    var prop = requestType.GetProperty(param.Key);
+                    if (prop != null)
+                        prop.SetValue(request, Convert.ChangeType(param.Value.ToString(), prop.PropertyType));
+                }
 
                 var result = (MediatedResponse)await mediator.Send(request);
 

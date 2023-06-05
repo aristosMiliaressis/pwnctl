@@ -2,15 +2,14 @@ namespace pwnctl.dto.Tasks.Models;
 
 using pwnctl.app.Tasks.DTO;
 using pwnctl.app.Tasks.Entities;
+using pwnctl.dto.Mediator;
 
-public sealed class TaskEntryListViewModel
+public sealed class TaskEntryListViewModel : PaginatedViewModel<TaskEntryDTO>
 {
-    public IEnumerable<TaskEntryDTO> Tasks { get; init; }
-
     public TaskEntryListViewModel() { }
 
     public TaskEntryListViewModel(List<TaskEntry> tasks)
     {
-        Tasks = tasks.Select(t => new TaskEntryDTO(t));
+        Rows = tasks.Select(t => new TaskEntryDTO(t)).ToList();
     }
 }

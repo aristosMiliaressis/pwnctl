@@ -2,15 +2,14 @@ namespace pwnctl.dto.Assets.Models;
 
 using pwnctl.app.Assets.Aggregates;
 using pwnctl.app.Assets.DTO;
+using pwnctl.dto.Mediator;
 
-public sealed class NetRangeListViewModel
+public sealed class NetRangeListViewModel : PaginatedViewModel<AssetDTO>
 {
-    public IEnumerable<AssetDTO> NetRanges { get; init; }
-
     public NetRangeListViewModel() {}
 
     public NetRangeListViewModel(List<AssetRecord> netRanges)
     {
-        NetRanges = netRanges.Select(e => new AssetDTO(e));
+        Rows = netRanges.Select(e => new AssetDTO(e)).ToList();
     }
 }

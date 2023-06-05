@@ -14,12 +14,12 @@ namespace pwnctl.app.Assets.Interfaces
 
         Task<List<AssetRecord>> ListInScopeAsync(int scopeId, CancellationToken token = default);
 
-        Task<List<AssetRecord>> ListHostsAsync();
-        Task<List<AssetRecord>> ListEndpointsAsync();
-        Task<List<AssetRecord>> ListServicesAsync();
-        Task<List<AssetRecord>> ListNetRangesAsync();
-        Task<List<AssetRecord>> ListDomainsAsync();
-        Task<List<AssetRecord>> ListDNSRecordsAsync();
-        Task<List<AssetRecord>> ListEmailsAsync();
+        Task<List<AssetRecord>> ListHostsAsync(int pageIdx, int pageSize = 4096);
+        Task<List<AssetRecord>> ListEndpointsAsync(int pageIdx, int pageSize = 4096);
+        Task<List<AssetRecord>> ListServicesAsync(int pageIdx, int pageSize = 4096);
+        Task<List<AssetRecord>> ListNetRangesAsync(int pageIdx, int pageSize = 4096);
+        Task<List<AssetRecord>> ListDomainsAsync(int pageIdx, int pageSize = 4096);
+        Task<List<AssetRecord>> ListDNSRecordsAsync(int pageIdx, int pageSize = 4096);
+        Task<List<AssetRecord>> ListEmailsAsync(int pageIdx, int pageSize = 4096);
     }
 }

@@ -227,9 +227,9 @@ public sealed class Tests
         Assert.Null(repository.FindMatching(inScopeDomain));
         await repository.SaveAsync(new AssetRecord(inScopeDomain));
         Assert.NotNull(repository.FindMatching(inScopeDomain));
-        inScopeDomain = context.Domains.First(d => d.Name == "tesla.com");
+        inScopeDomain = context.DomainNames.First(d => d.Name == "tesla.com");
         await repository.SaveAsync(new AssetRecord(outOfScope));
-        outOfScope = context.Domains.First(d => d.Name == "www.outofscope.com");
+        outOfScope = context.DomainNames.First(d => d.Name == "www.outofscope.com");
 
         var record1 = new DomainNameRecord(DnsRecordType.A, "hackerone.com", "1.3.3.7");
         var record2 = new DomainNameRecord(DnsRecordType.AAAA, "hackerone.com", "dead:beef::::");
@@ -378,7 +378,7 @@ public sealed class Tests
         };
 
         await processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(sshService), EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry);
-        var service = context.Sockets.First(ep => ep.Address == "tcp://1.3.3.7:22");
+        var service = context.NetworkSockets.First(ep => ep.Address == "tcp://1.3.3.7:22");
     }
 
     [Fact]
@@ -415,13 +415,13 @@ public sealed class Tests
         Assert.True(record.InScope);
 
         await processor.ProcessAsync("6.6.6.6:65530", EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry);
-        var host = context.Hosts.First(h => h.IP == "6.6.6.6");
-        var service = context.Sockets.First(srv => srv.Address == "tcp://6.6.6.6:65530");
+        var host = context.NetworkHosts.First(h => h.IP == "6.6.6.6");
+        var service = context.NetworkSockets.First(srv => srv.Address == "tcp://6.6.6.6:65530");
 
         await processor.TryProcessAsync("sub.tesla.com", EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry);
-        var domain = context.Domains.First(a => a.Name == "sub.tesla.com");
+        var domain = context.DomainNames.First(a => a.Name == "sub.tesla.com");
         context.AssetRecords.First(a => a.Id == domain.Id);
-        domain = context.Domains.First(a => a.Name == "tesla.com");
+        domain = context.DomainNames.First(a => a.Name == "tesla.com");
         context.AssetRecords.First(a => a.Id == domain.Id);
 
         await processor.ProcessAsync("https://1.3.3.7:443", EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry);
@@ -471,7 +471,7 @@ public sealed class Tests
         await processor.ProcessAsync("https://abc.tesla.com", EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry);
         record = context.AssetRecords.Include(r => r.HttpEndpoint).First(r => r.HttpEndpoint.Url == "https://abc.tesla.com/");
         Assert.True(record.InScope);
-        var serv = context.Sockets.First(s => s.Address == "tcp://abc.tesla.com:443");
+        var serv = context.NetworkSockets.First(s => s.Address == "tcp://abc.tesla.com:443");
         Assert.NotNull(serv);
 
         record = context.AssetRecords.Include(r => r.NetworkSocket).First(r => r.Id == serv.Id);
@@ -479,7 +479,7 @@ public sealed class Tests
         Assert.Equal("tcp://abc.tesla.com:443", record.NetworkSocket.Address);
 
         await processor.ProcessAsync($$"""{"Asset":"https://qwe.tesla.com","FoundBy":"httpx"}""", EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry);
-        serv = context.Sockets.First(s => s.Address == "tcp://qwe.tesla.com:443");
+        serv = context.NetworkSockets.First(s => s.Address == "tcp://qwe.tesla.com:443");
         Assert.NotNull(serv);
 
         record = context.AssetRecords.Include(r => r.NetworkSocket).First(r => r.Id == serv.Id);

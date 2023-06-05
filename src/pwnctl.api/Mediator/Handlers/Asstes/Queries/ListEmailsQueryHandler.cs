@@ -10,13 +10,18 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Queries
 {
     public sealed class ListEmailsQueryHandler : IRequestHandler<ListEmailsQuery, MediatedResponse<EmailListViewModel>>
     {
-        public async Task<MediatedResponse<EmailListViewModel>> Handle(ListEmailsQuery command, CancellationToken cancellationToken)
+        public async Task<MediatedResponse<EmailListViewModel>> Handle(ListEmailsQuery query, CancellationToken cancellationToken)
         {
             AssetDbRepository repository = new();
 
-            var emails = await repository.ListEmailsAsync();
+            var emails = await repository.ListEmailsAsync(query.Page);
 
-            return MediatedResponse<EmailListViewModel>.Success(new EmailListViewModel(emails));
+            var viewModel = new EmailListViewModel(emails);
+
+            viewModel.Page = query.Page;
+            viewModel.TotalPages = new PwnctlDbContext().Emails.Count() / 4096;
+
+            return MediatedResponse<EmailListViewModel>.Success(viewModel);
         }
     }
 }

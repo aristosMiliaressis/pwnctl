@@ -171,7 +171,7 @@ namespace pwnctl.infra.Repositories
             _context.Entry(record).DetachReferenceGraph();
         }
 
-        public async Task<List<AssetRecord>> ListHostsAsync()
+        public async Task<List<AssetRecord>> ListHostsAsync(int pageIdx, int pageSize = 4096)
         {
             return await _context.AssetRecords
                             .Include(e => e.FoundByTask)
@@ -182,11 +182,14 @@ namespace pwnctl.infra.Repositories
                                 .ThenInclude(e => e.AARecords)
                                 .ThenInclude(e => e.DomainName)
                             .Where(r => r.Subject == AssetClass.Create(nameof(NetworkHost)))
+                            .OrderBy(r => r.FoundAt)
+                            .Skip(pageIdx*pageSize)
+                            .Take(pageSize)
                             .AsNoTracking()
                             .ToListAsync();
         }
 
-        public async Task<List<AssetRecord>> ListDomainsAsync()
+        public async Task<List<AssetRecord>> ListDomainsAsync(int pageIdx, int pageSize = 4096)
         {
             return await _context.AssetRecords
                             .Include(e => e.FoundByTask)
@@ -196,11 +199,14 @@ namespace pwnctl.infra.Repositories
                             .Include(e => e.DomainName)
                                 .ThenInclude(e => e.ParentDomain)
                             .Where(r => r.Subject == AssetClass.Create(nameof(DomainName)))
+                            .OrderBy(r => r.FoundAt)
+                            .Skip(pageIdx * pageSize)
+                            .Take(pageSize)
                             .AsNoTracking()
                             .ToListAsync();
         }
 
-        public async Task<List<AssetRecord>> ListDNSRecordsAsync()
+        public async Task<List<AssetRecord>> ListDNSRecordsAsync(int pageIdx, int pageSize = 4096)
         {
             return await _context.AssetRecords
                             .Include(e => e.FoundByTask)
@@ -212,11 +218,14 @@ namespace pwnctl.infra.Repositories
                             .Include(e => e.DomainNameRecord)
                                 .ThenInclude(e => e.NetworkHost)
                             .Where(r => r.Subject == AssetClass.Create(nameof(DomainNameRecord)))
+                            .OrderBy(r => r.FoundAt)
+                            .Skip(pageIdx * pageSize)
+                            .Take(pageSize)
                             .AsNoTracking()
                             .ToListAsync();
         }
 
-        public async Task<List<AssetRecord>> ListEndpointsAsync()
+        public async Task<List<AssetRecord>> ListEndpointsAsync(int pageIdx, int pageSize = 4096)
         {
             return await _context.AssetRecords
                             .Include(e => e.FoundByTask)
@@ -230,11 +239,14 @@ namespace pwnctl.infra.Repositories
                                 .ThenInclude(e => e.Socket)
                                     .ThenInclude(s => s.DomainName)
                             .Where(r => r.Subject == AssetClass.Create(nameof(HttpEndpoint)))
+                            .OrderBy(r => r.FoundAt)
+                            .Skip(pageIdx * pageSize)
+                            .Take(pageSize)
                             .AsNoTracking()
                             .ToListAsync();
         }
 
-        public async Task<List<AssetRecord>> ListNetRangesAsync()
+        public async Task<List<AssetRecord>> ListNetRangesAsync(int pageIdx, int pageSize = 4096)
         {
             return await _context.AssetRecords
                             .Include(e => e.FoundByTask)
@@ -243,11 +255,14 @@ namespace pwnctl.infra.Repositories
                             .Include(e => e.Tasks)
                             .Include(e => e.NetworkRange)
                             .Where(r => r.Subject == AssetClass.Create(nameof(NetworkRange)))
+                            .OrderBy(r => r.FoundAt)
+                            .Skip(pageIdx * pageSize)
+                            .Take(pageSize)
                             .AsNoTracking()
                             .ToListAsync();
         }
 
-        public async Task<List<AssetRecord>> ListParametersAsync()
+        public async Task<List<AssetRecord>> ListParametersAsync(int pageIdx, int pageSize = 4096)
         {
             return await _context.AssetRecords
                             .Include(e => e.FoundByTask)
@@ -263,11 +278,14 @@ namespace pwnctl.infra.Repositories
                                 .ThenInclude(e => e.Socket)
                                 .ThenInclude(s => s.DomainName)
                             .Where(r => r.Subject == AssetClass.Create(nameof(HttpParameter)))
+                            .OrderBy(r => r.FoundAt)
+                            .Skip(pageIdx * pageSize)
+                            .Take(pageSize)
                             .AsNoTracking()
                             .ToListAsync();
         }
 
-        public async Task<List<AssetRecord>> ListServicesAsync()
+        public async Task<List<AssetRecord>> ListServicesAsync(int pageIdx, int pageSize = 4096)
         {
             return await _context.AssetRecords
                             .Include(e => e.FoundByTask)
@@ -279,11 +297,14 @@ namespace pwnctl.infra.Repositories
                             .Include(e => e.NetworkSocket)
                                 .ThenInclude(s => s.DomainName)
                             .Where(r => r.Subject == AssetClass.Create(nameof(NetworkSocket)))
+                            .OrderBy(r => r.FoundAt)
+                            .Skip(pageIdx * pageSize)
+                            .Take(pageSize)
                             .AsNoTracking()
                             .ToListAsync();
         }
 
-        public async Task<List<AssetRecord>> ListEmailsAsync()
+        public async Task<List<AssetRecord>> ListEmailsAsync(int pageIdx, int pageSize = 4096)
         {
             return await _context.AssetRecords
                             .Include(e => e.FoundByTask)
@@ -293,6 +314,9 @@ namespace pwnctl.infra.Repositories
                             .Include(e => e.Email)
                                 .ThenInclude(e => e.DomainName)
                             .Where(r => r.Subject == AssetClass.Create(nameof(Email)))
+                            .OrderBy(r => r.FoundAt)
+                            .Skip(pageIdx * pageSize)
+                            .Take(pageSize)
                             .AsNoTracking()
                             .ToListAsync();
         }

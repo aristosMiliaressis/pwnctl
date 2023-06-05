@@ -10,13 +10,18 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Queries
 {
     public sealed class ListServicesQueryHandler : IRequestHandler<ListServicesQuery, MediatedResponse<ServiceListViewModel>>
     {
-        public async Task<MediatedResponse<ServiceListViewModel>> Handle(ListServicesQuery command, CancellationToken cancellationToken)
+        public async Task<MediatedResponse<ServiceListViewModel>> Handle(ListServicesQuery query, CancellationToken cancellationToken)
         {
             AssetDbRepository repository = new();
 
-            var services = await repository.ListServicesAsync();
+            var services = await repository.ListServicesAsync(query.Page);
 
-            return MediatedResponse<ServiceListViewModel>.Success(new ServiceListViewModel(services));
+            var viewModel = new ServiceListViewModel(services);
+
+            viewModel.Page = query.Page;
+            viewModel.TotalPages = new PwnctlDbContext().NetworkSockets.Count() / 4096;
+
+            return MediatedResponse<ServiceListViewModel>.Success(viewModel);
         }
     }
 }

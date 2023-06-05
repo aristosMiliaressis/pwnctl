@@ -49,8 +49,8 @@ public class MediatedResponse
 
 public sealed class MediatedResponse<TResult> : MediatedResponse
 {
-    public new TResult Result 
-    { 
+    public new TResult Result
+    {
         get
         {
             return (TResult) base.Result;
@@ -60,6 +60,8 @@ public sealed class MediatedResponse<TResult> : MediatedResponse
             base.Result = value;
         }
     }
+
+    public MediatedResponse() {}
 
     private MediatedResponse(TResult result)
     {

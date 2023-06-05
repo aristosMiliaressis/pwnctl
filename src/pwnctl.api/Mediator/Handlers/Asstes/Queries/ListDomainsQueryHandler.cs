@@ -10,13 +10,18 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Queries
 {
     public sealed class ListDomainsQueryHandler : IRequestHandler<ListDomainsQuery, MediatedResponse<DomainListViewModel>>
     {
-        public async Task<MediatedResponse<DomainListViewModel>> Handle(ListDomainsQuery command, CancellationToken cancellationToken)
+        public async Task<MediatedResponse<DomainListViewModel>> Handle(ListDomainsQuery query, CancellationToken cancellationToken)
         {
             AssetDbRepository repository = new();
 
-            var domains = await repository.ListDomainsAsync();
+            var domains = await repository.ListDomainsAsync(query.Page);
 
-            return MediatedResponse<DomainListViewModel>.Success(new DomainListViewModel(domains));
+            var viewModel = new DomainListViewModel(domains);
+
+            viewModel.Page = query.Page;
+            viewModel.TotalPages = new PwnctlDbContext().DomainNames.Count() / 4096;
+
+            return MediatedResponse<DomainListViewModel>.Success(viewModel);
         }
     }
 }

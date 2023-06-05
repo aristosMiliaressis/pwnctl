@@ -20,10 +20,10 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Commands
             PwnctlDbContext context = new();
 
             viewModel.NetworkRangeCount = await context.NetworkRanges.CountAsync();
-            viewModel.HostCount = await context.Hosts.CountAsync();
-            viewModel.DomainCount = await context.Domains.CountAsync();
-            viewModel.RecordCount = await context.DNSRecords.CountAsync();
-            viewModel.SocketCount = await context.Sockets.CountAsync();
+            viewModel.HostCount = await context.NetworkHosts.CountAsync();
+            viewModel.DomainCount = await context.DomainNames.CountAsync();
+            viewModel.RecordCount = await context.DomainNameRecords.CountAsync();
+            viewModel.SocketCount = await context.NetworkSockets.CountAsync();
             viewModel.HttpEndpointCount = await context.HttpEndpoints.CountAsync();
             viewModel.HttpParamCount = await context.HttpParameters.CountAsync();
             viewModel.EmailCount = await context.Emails.CountAsync();
