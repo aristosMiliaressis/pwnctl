@@ -14,6 +14,11 @@
   Filter: Tags["swagger-ui"] == "true"
   Topic: misconfigs
 
+- Name: exposed_panel
+  Subject: HttpEndpoint
+  Filter: '!string.IsNullOrEmpty(Tags["exposed-panel"])'
+  Topic: misconfigs
+
 - Name: shortname_misconfig
   Subject: HttpEndpoint
   Filter: Tags["shortname-misconfig"] == "true"

@@ -160,6 +160,7 @@ RUN curl https://github.com/mgdm/htmlq/releases/download/v0.4.0/htmlq-x86_64-lin
 
 RUN go install github.com/sensepost/gowitness@latest
 RUN go install github.com/detectify/page-fetch@latest
+RUN nuclei -ud /opt/nuclei_templates/
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 

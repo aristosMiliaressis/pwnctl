@@ -144,6 +144,9 @@ TaskDefinitions:
     CommandTemplate: swagger-discovery.sh {{Url}}
     Filter: HttpEndpoint.Path == "/"
 
+  - Name: panel_discovery
+    CommandTemplate: panel-discovery.sh {{Url}}
+    Filter: HttpEndpoint.Path == "/"
 
   - Name: short_name_scanning
     CommandTemplate: shortname-check.sh {{Url}}
