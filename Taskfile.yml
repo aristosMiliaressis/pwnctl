@@ -62,13 +62,13 @@ tasks:
       - |
         mkdir -p deployment/seed/
         cp ./src/core/pwnctl.infra/Persistence/seed/*.yml deployment/seed/
-        docker run -e PWNCTL_TEST_RUN=true -e PWNCTL_INSTALL_PATH=/mnt/efs \
+        docker run -e PWNCTL_USE_SQLITE=true -e PWNCTL_TEST_RUN=true -e PWNCTL_INSTALL_PATH=/mnt/efs \
                    -e PWNCTL_Logging__FilePath=/mnt/efs -e PWNCTL_Logging__MinLevel=Debug \
                    -v "$(pwd)"/deployment:/mnt/efs -t public.ecr.aws/i0m2p7r6/pwnctl:latest
 
   get-logs:
     cmds:
-      - awslogs get -s 1440m -G --timestamp /aws/ecs/worker
+      - awslogs get -s 600m -G --timestamp /aws/ecs/worker
 
   get-api-logs:
     cmds:
