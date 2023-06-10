@@ -141,6 +141,7 @@ namespace pwnctl.infra.Repositories
             record.Tasks.ForEach(t => t.Definition = null);
 
             // this prevents race conditions when checking if the record already exists
+            using (var trx = _context.Database.BeginTransaction(IsolationLevel.Serializable))
             {
                 var existingRecord = await FindRecordAsync(record.Asset);
                 if (existingRecord == null)
