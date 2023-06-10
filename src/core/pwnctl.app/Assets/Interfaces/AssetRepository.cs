@@ -2,6 +2,7 @@ using pwnctl.app.Assets.Aggregates;
 using pwnctl.app.Notifications.Entities;
 using pwnctl.app.Tasks.Entities;
 using pwnctl.domain.BaseClasses;
+using pwnctl.domain.ValueObjects;
 
 namespace pwnctl.app.Assets.Interfaces
 {
@@ -12,7 +13,7 @@ namespace pwnctl.app.Assets.Interfaces
         Task<AssetRecord> UpdateRecordReferences(AssetRecord record, Asset asset);
         Task SaveAsync(AssetRecord record);
 
-        Task<List<AssetRecord>> ListInScopeAsync(int scopeId, CancellationToken token = default);
+        Task<List<AssetRecord>> ListInScopeAsync(int scopeId, AssetClass[] assetClasses, int pageIdx, int pageSize = 4096, CancellationToken token = default);
 
         Task<List<AssetRecord>> ListHostsAsync(int pageIdx, int pageSize = 4096);
         Task<List<AssetRecord>> ListEndpointsAsync(int pageIdx, int pageSize = 4096);

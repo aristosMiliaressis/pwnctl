@@ -34,19 +34,30 @@ public class OperationInitializer
         op.InitiatedAt = SystemTime.UtcNow();
         op.State = OperationState.Ongoing;
 
-        var records = await _assetRepo.ListInScopeAsync(op.ScopeId);
+        var monitoringTasks = op.Policy.TaskProfile.TaskDefinitions.Where(def => def.MonitorRules.Schedule != null);
 
-        foreach (var record in records)
+        int page = 0;
+        while (true)
         {
-            await GenerateScheduledTasksAsync(op, record);
+            var records = await _assetRepo.ListInScopeAsync(op.ScopeId, monitoringTasks.Select(t => t.Subject).ToArray(), page);
+
+            foreach (var record in records)
+            {
+                await GenerateScheduledTasksAsync(op, record, monitoringTasks);
+            }
+
+            if (records.Count != 4096)
+                break;
+
+            page++;
         }
 
         await _opRepo.SaveAsync(op);
     }
 
-    public async Task GenerateScheduledTasksAsync(Operation op, AssetRecord record)
+    public async Task GenerateScheduledTasksAsync(Operation op, AssetRecord record, IEnumerable<TaskDefinition> monitoringTasks)
     {
-        foreach (var def in op.Policy.TaskProfile.TaskDefinitions.Where(def => def.Matches(record, minitoring: op.Type == OperationType.Monitor)))
+        foreach (var def in monitoringTasks.Where(def => def.Matches(record, minitoring: op.Type == OperationType.Monitor)))
         {
             var task = new TaskEntry(op, def, record);
 

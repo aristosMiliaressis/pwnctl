@@ -50,7 +50,7 @@ namespace pwnctl.infra.Repositories
             return await FindRecordQuery(_context, UUIDv5ValueGenerator.GenerateByString(asset.ToString()));
         }
 
-        public async Task<List<AssetRecord>> ListInScopeAsync(int scopeId, CancellationToken token = default)
+        public async Task<List<AssetRecord>> ListInScopeAsync(int scopeId, AssetClass[] assetClasses, int pageIdx, int pageSize = 4096, CancellationToken token = default)
         {
             var aggregate = await _context.ScopeAggregates
                                     .Include(a => a.Definitions)
@@ -71,7 +71,10 @@ namespace pwnctl.infra.Repositories
                                 .Include(r => r.HttpEndpoint)
                                 .Include(r => r.HttpParameter)
                                 .Include(r => r.Email)
-                                .Where(a => a.ScopeId.HasValue && scopeDefinitionIds.Contains(a.ScopeId.Value))
+                                .Where(a => assetClasses.Contains(a.Subject) && a.ScopeId.HasValue && scopeDefinitionIds.Contains(a.ScopeId.Value))
+                                .OrderBy(a => a.FoundAt)
+                                .Skip(pageIdx * pageSize)
+                                .Take(pageSize)
                                 .ToListAsync(token);
         }
 
