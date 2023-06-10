@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
@@ -23,7 +23,8 @@ namespace pwnctl.infra.Persistence
         public static string ConnectionString => $"Host={PwnInfraContext.Config.Db.Host};"
                                               + $"Database={PwnInfraContext.Config.Db.Name};"
                                               + $"Username={PwnInfraContext.Config.Db.Username};"
-                                              + $"Password={PwnInfraContext.Config.Db.Password};Timeout=30";
+                                              + $"Password={PwnInfraContext.Config.Db.Password};"
+                                              + "Include Error Detail";
 
         public static readonly ILoggerFactory _loggerFactory = LoggerFactory.Create(builder =>
         {

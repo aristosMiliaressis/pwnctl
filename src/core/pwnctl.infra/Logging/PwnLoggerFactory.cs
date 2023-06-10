@@ -15,7 +15,7 @@ namespace pwnctl.infra.Logging
 
             if (EnvironmentVariables.IS_LAMBDA)
                 logger = CreateConsoleLogger(config);
-            else if (EnvironmentVariables.IS_ECS)
+            else if (EnvironmentVariables.IS_ECS || EnvironmentVariables.TEST_RUN)
                 logger = CreateConsoleLogger(config);
             else
                 logger = CreateFileLogger(config);

@@ -35,7 +35,7 @@ public sealed class Tests
         Environment.SetEnvironmentVariable("PWNCTL_USE_SQLITE", "true");
         Environment.SetEnvironmentVariable("PWNCTL_INSTALL_PATH", ".");
         Environment.SetEnvironmentVariable("PWNCTL_Logging__FilePath", ".");
-        Environment.SetEnvironmentVariable("PWNCTL_Logging__MinLevel", "Debug");
+        Environment.SetEnvironmentVariable("PWNCTL_Logging__MinLevel", "Warning");
 
         PwnInfraContextInitializer.SetupAsync().Wait();
         DatabaseInitializer.SeedAsync().Wait();
