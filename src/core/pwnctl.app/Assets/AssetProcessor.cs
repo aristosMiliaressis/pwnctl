@@ -1,4 +1,4 @@
-using pwnctl.domain.BaseClasses;
+﻿using pwnctl.domain.BaseClasses;
 using pwnctl.app.Assets.Interfaces;
 using pwnctl.app.Queueing.Interfaces;
 using pwnctl.app.Tasks.Entities;
@@ -79,13 +79,17 @@ namespace pwnctl.app.Assets
                 record = new AssetRecord(asset, foundByTask);
             }
 
-            record = await _assetRepository.UpdateRecordReferences(record, asset);
             record.MergeTags(tags, updateExisting: operation.Type == OperationType.Monitor);
 
-            var scope = operation.Scope.Definitions.FirstOrDefault(scope => scope.Definition.Matches(record.Asset)
-                                                                         || scope.Definition.Matches(asset));
-            if (scope != null)
-                record.SetScopeId(scope.Definition.Id);
+            if (!record.InScope)
+            {
+                record = await _assetRepository.UpdateRecordReferences(record, asset);
+
+                var scope = operation.Scope.Definitions.FirstOrDefault(scope => scope.Definition.Matches(record.Asset)
+                                                                            || scope.Definition.Matches(asset));
+                if (scope != null)
+                    record.SetScopeId(scope.Definition.Id);
+            }
 
             if (record.Id == default || record.Tags.Any(t => t.Id == default) || operation.Type == OperationType.Monitor)
             {
