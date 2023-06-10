@@ -140,7 +140,7 @@ namespace pwnctl.infra.Repositories
             record.Notifications.ForEach(t => t.Task = null);
             record.Tasks.ForEach(t => t.Definition = null);
 
-            using (var trx = _context.Database.BeginTransaction(IsolationLevel.Serializable))
+            // this prevents race conditions when checking if the record already exists
             {
                 var existingRecord = await FindRecordAsync(record.Asset);
                 if (existingRecord == null)
@@ -186,8 +186,6 @@ namespace pwnctl.infra.Repositories
                 }
                 
                 trx.Commit();
-            }
-                await _context.SaveChangesAsync();
             }
 
             _context.Entry(record).DetachReferenceGraph();
