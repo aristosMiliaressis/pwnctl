@@ -140,46 +140,53 @@ namespace pwnctl.infra.Repositories
             record.Notifications.ForEach(t => t.Task = null);
             record.Tasks.ForEach(t => t.Definition = null);
 
-            var existingRecord = await FindRecordAsync(record.Asset);
-            if (existingRecord == null)
+            using (var trx = _context.Database.BeginTransaction(IsolationLevel.Serializable))
             {
-                // explicitly track asset to prevent change tracker from 
-                // navigating related assets and attempting to add them.
-                _context.Entry(record.Asset).State = EntityState.Added;
+                var existingRecord = await FindRecordAsync(record.Asset);
+                if (existingRecord == null)
+                {
+                    // explicitly track asset to prevent change tracker from 
+                    // navigating related assets and attempting to add them.
+                    _context.Entry(record.Asset).State = EntityState.Added;
 
-                _context.Add(record);
+                    _context.Add(record);
 
-                await _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    if (record.InScope)
+                        existingRecord.SetScopeId(record.ScopeId.Value);
+
+                    // explicitly track record to prevent change tracker from 
+                    // navigating related assets and attempting to add them.
+                    _context.Entry(existingRecord).State = EntityState.Modified;
+
+                    _context.AddRange(record.Tags.Where(t => t.Id == default).Select(t => 
+                    {
+                        t.RecordId = existingRecord.Id;
+                        return t;
+                    }));
+
+                    _context.AddRange(record.Tasks.Where(t => t.Id == default).Select(t => 
+                    {
+                        t.Record = existingRecord;
+                        t.RecordId = existingRecord.Id;
+                        return t;
+                    }));
+
+                    _context.AddRange(record.Notifications.Where(t => t.Id == default).Select(t => 
+                    {
+                        t.Record = existingRecord;
+                        t.RecordId = existingRecord.Id;
+                        return t;
+                    }));
+
+                    await _context.SaveChangesAsync();
+                }
+                
+                trx.Commit();
             }
-            else
-            {
-                if (record.InScope)
-                    existingRecord.SetScopeId(record.ScopeId.Value);
-
-                // explicitly track record to prevent change tracker from 
-                // navigating related assets and attempting to add them.
-                _context.Entry(existingRecord).State = EntityState.Modified;
-
-                _context.AddRange(record.Tags.Where(t => t.Id == default).Select(t => 
-                {
-                    t.RecordId = existingRecord.Id;
-                    return t;
-                }));
-
-                _context.AddRange(record.Tasks.Where(t => t.Id == default).Select(t => 
-                {
-                    t.Record = existingRecord;
-                    t.RecordId = existingRecord.Id;
-                    return t;
-                }));
-
-                _context.AddRange(record.Notifications.Where(t => t.Id == default).Select(t => 
-                {
-                    t.Record = existingRecord;
-                    t.RecordId = existingRecord.Id;
-                    return t;
-                }));
-
                 await _context.SaveChangesAsync();
             }
 
