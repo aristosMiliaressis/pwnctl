@@ -95,9 +95,10 @@ namespace pwnctl.app.test.unit
                 var task = new TaskEntry(operation, Policy.TaskProfile.TaskDefinitions.First(), assetRecord);
                 context = new();
                 context.Entry(task.Definition).State = EntityState.Unchanged;
-                context.Entry(task.Operation).State = EntityState.Unchanged;
                 context.Add(task);
                 context.SaveChanges();
+
+                task.Operation = operation;
 
                 return task;
             }

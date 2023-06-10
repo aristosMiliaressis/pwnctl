@@ -23,8 +23,8 @@ namespace pwnctl.app.Tasks.Entities
         public int DefinitionId { get; private init; }
         public TaskDefinition Definition { get; set; }
 
-        public AssetRecord Record { get; private init; }
-        public Guid RecordId { get; private init; }
+        public AssetRecord Record { get; set; }
+        public Guid RecordId { get; set; }
 
         private TaskEntry() {}
 
@@ -32,7 +32,6 @@ namespace pwnctl.app.Tasks.Entities
         {
             State = TaskState.QUEUED;
             QueuedAt = SystemTime.UtcNow();
-            Operation = operation;
             OperationId = operation.Id;
             Definition = definition;
             DefinitionId = definition.Id;

@@ -9,13 +9,13 @@ namespace pwnctl.app.Tagging.Entities
         public string Value { get; set; }
 
         public AssetRecord Record { get; private init; }
-        public Guid RecordId { get; private init; }
+        public Guid RecordId { get; set; }
 
         private Tag() {}
 
         public Tag(AssetRecord record, string name, string value)
         {
-            Record = record;
+            RecordId = record.Id;
             Name = name.ToLower();
             Value = value;
         }

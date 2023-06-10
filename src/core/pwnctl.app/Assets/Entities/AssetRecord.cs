@@ -69,11 +69,10 @@ public sealed class AssetRecord : Entity<Guid>
         FoundAt = SystemTime.UtcNow();
     }
 
-    public void SetScope(ScopeDefinition scope)
+    public void SetScopeId(int scopeId)
     {
-        Scope = scope;
-        ScopeId = scope?.Id;
-        InScope = Scope != null;
+        ScopeId = scopeId;
+        InScope = true;
     }
 
     public void MergeTags(Dictionary<string, object> tags, bool updateExisting)

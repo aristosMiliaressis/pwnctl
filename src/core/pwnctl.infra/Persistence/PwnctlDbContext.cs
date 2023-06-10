@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
@@ -61,20 +61,6 @@ namespace pwnctl.infra.Persistence
         public DbSet<Tag> Tags { get; set; }
         public DbSet<TaskEntry> TaskEntries { get; set; }
         public DbSet<Notification> Notifications { get; set; }
-
-        public override int SaveChanges()
-        {
-            this.ConvertDateTimesToUtc();
-
-            return base.SaveChanges();
-        }
-
-        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-        {
-            this.ConvertDateTimesToUtc();
-
-            return base.SaveChangesAsync();
-        }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

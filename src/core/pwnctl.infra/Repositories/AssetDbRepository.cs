@@ -132,40 +132,52 @@ namespace pwnctl.infra.Repositories
 
         public async Task SaveAsync(AssetRecord record)
         {
-            record.Scope = null;
+            // TaskDefinitions are not tracked as a slight performance improvement
+            // so we have to null them to prevent the change tracker from attempting to add them
             record.Notifications.ForEach(t => t.Task = null);
             record.Tasks.ForEach(t => t.Definition = null);
-            record.Tasks.ForEach(t => t.Operation = null);
 
-            using (var trx = _context.Database.BeginTransaction(IsolationLevel.ReadCommitted))
+            var existingRecord = await FindRecordAsync(record.Asset);
+            if (existingRecord == null)
             {
-                var existingAsset = FindMatching(record.Asset);
-                if (existingAsset == null)
+                // explicitly track asset to prevent change tracker from 
+                // navigating related assets and attempting to add them.
+                _context.Entry(record.Asset).State = EntityState.Added;
+
+                _context.Add(record);
+
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                if (record.InScope)
+                    existingRecord.SetScopeId(record.ScopeId.Value);
+
+                // explicitly track record to prevent change tracker from 
+                // navigating related assets and attempting to add them.
+                _context.Entry(existingRecord).State = EntityState.Modified;
+
+                _context.AddRange(record.Tags.Where(t => t.Id == default).Select(t => 
                 {
-                    _context.Entry(record.Asset).State = EntityState.Added;
+                    t.RecordId = existingRecord.Id;
+                    return t;
+                }));
 
-                    _context.Add(record);
-                }
-                else
+                _context.AddRange(record.Tasks.Where(t => t.Id == default).Select(t => 
                 {
-                    _context.Entry(record.Asset).DetachReferenceGraph();
+                    t.Record = existingRecord;
+                    t.RecordId = existingRecord.Id;
+                    return t;
+                }));
 
-                    _context.Entry(record).State = EntityState.Modified;
-
-                    _context.AddRange(record.Tags.Where(t => t.Id == default));
-
-                    _context.AddRange(record.Tasks.Where(t => t.Id == default));
-
-                    _context.AddRange(record.Notifications.Where(t => t.Id == default));
-                }
-
-                try
+                _context.AddRange(record.Notifications.Where(t => t.Id == default).Select(t => 
                 {
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException) { }
+                    t.Record = existingRecord;
+                    t.RecordId = existingRecord.Id;
+                    return t;
+                }));
 
-                trx.Commit();
+                await _context.SaveChangesAsync();
             }
 
             _context.Entry(record).DetachReferenceGraph();

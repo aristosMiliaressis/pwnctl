@@ -39,43 +39,7 @@ namespace pwnctl.infra.Persistence.Extensions
             var firstOrDefaultMethod = _firstOrDefaultAsyncMethod.MakeGenericMethod(type);
             return (Task<TEntity>)firstOrDefaultMethod.Invoke(null, new object[] { filteredQueryable, token });
         }
-
-        public static void ConvertDateTimesToUtc(this DbContext context)
-        {
-            var dateProperties = context.Model.GetEntityTypes()
-                .SelectMany(t => t.GetProperties())
-                .Where(p => p.ClrType == typeof(DateTime))
-                .Select(z => new
-                {
-                    ParentName = z.DeclaringEntityType.Name,
-                    PropertyName = z.Name
-                });
-
-            var editedEntitiesInTheDbContextGraph = context.ChangeTracker.Entries()
-                .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified)
-                .Select(x => x.Entity);
-
-            foreach (var entity in editedEntitiesInTheDbContextGraph)
-            {
-                var entityFields = dateProperties.Where(d => d.ParentName == entity.GetType().FullName);
-
-                foreach (var property in entityFields)
-                {
-                    var prop = entity.GetType().GetProperty(property.PropertyName);
-
-                    if (prop == null)
-                        continue;
-
-                    var originalValue = prop.GetValue(entity) as DateTime?;
-                    if (originalValue == null)
-                        continue;
-
-                    if (originalValue.Value.Kind == DateTimeKind.Local)
-                        prop.SetValue(entity, TimeZoneInfo.ConvertTimeToUtc(originalValue.Value, TimeZoneInfo.Local));
-                }
-            }
-        }
-
+        
         private static MethodInfo _dbSetMethod = typeof(PwnctlDbContext).GetMethod(nameof(PwnctlDbContext.Set), BindingFlags.Public | BindingFlags.Instance, null, Array.Empty<Type>(), null);
         private static MethodInfo _whereMethod = typeof(Queryable).GetMethods().Where(m => m.Name == nameof(Queryable.Where)).First();
         private static MethodInfo _firstOrDefaultMethod = typeof(Queryable).GetMethods().Where(m => m.Name == nameof(Queryable.FirstOrDefault)).First();

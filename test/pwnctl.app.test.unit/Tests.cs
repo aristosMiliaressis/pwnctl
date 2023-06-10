@@ -617,11 +617,9 @@ public sealed class Tests
         var record = new AssetRecord(domain);
         var parentDomain = new DomainName("tesla.com");
         var record2 = new AssetRecord(parentDomain);
-        record.Scope = EntityFactory.ScopeAggregate.Definitions.First().Definition;
-        record2.Scope = EntityFactory.ScopeAggregate.Definitions.Last().Definition;
+        record.SetScopeId(EntityFactory.ScopeAggregate.Definitions.First().DefinitionId);
+        record2.SetScopeId(EntityFactory.ScopeAggregate.Definitions.Last().DefinitionId);
         context.Entry(op.Scope).State = EntityState.Unchanged;
-        context.Entry(record.Scope).State = EntityState.Unchanged;
-        context.Entry(record2.Scope).State = EntityState.Unchanged;
         context.Entry(op.Policy).State = EntityState.Unchanged;
         context.Add(record);
         context.Add(record2);

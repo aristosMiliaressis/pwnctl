@@ -1,4 +1,4 @@
-﻿using pwnctl.domain.BaseClasses;
+using pwnctl.domain.BaseClasses;
 using pwnctl.app.Assets.Interfaces;
 using pwnctl.app.Queueing.Interfaces;
 using pwnctl.app.Tasks.Entities;
@@ -85,7 +85,7 @@ namespace pwnctl.app.Assets
             var scope = operation.Scope.Definitions.FirstOrDefault(scope => scope.Definition.Matches(record.Asset)
                                                                          || scope.Definition.Matches(asset));
             if (scope != null)
-                record.SetScope(scope.Definition);
+                record.SetScopeId(scope.Definition.Id);
 
             if (record.Id == default || record.Tags.Any(t => t.Id == default) || operation.Type == OperationType.Monitor)
             {

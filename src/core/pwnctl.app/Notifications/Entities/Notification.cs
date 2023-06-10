@@ -7,8 +7,8 @@ namespace pwnctl.app.Notifications.Entities
 {
     public sealed class Notification : Entity<int>
     {
-        public AssetRecord Record { get; private init; }
-        public Guid RecordId { get; private init; }
+        public AssetRecord Record { get; set; }
+        public Guid RecordId { get; set; }
 
         public NotificationRule Rule { get; private init; }
         public int? RuleId { get; private init; }
