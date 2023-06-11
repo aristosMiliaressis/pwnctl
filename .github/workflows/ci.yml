@@ -92,7 +92,7 @@ jobs:
       - name: Build worker image
         uses: docker/build-push-action@v3
         with:
-          tags: ${{ steps.login-ecr.outputs.registry }}:untested
+          tags: ${{ steps.login-ecr.outputs.registry }}/pwnctl:untested
           push: true
           context: src/core/
           cache-from: type=gha
@@ -137,7 +137,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Pull untested image
-        run: docker pull ${{ steps.login-ecr.outputs.registry }}:untested
+        run: docker pull ${{ steps.login-ecr.outputs.registry }}/pwnctl:untested
 
       - name: Retag image from untested to latest
-        run: docker buildx imagetools create -t ${{ steps.login-ecr.outputs.registry }}:latest${{ steps.login-ecr.outputs.registry }}:untested
+        run: docker buildx imagetools create -t ${{ steps.login-ecr.outputs.registry }}/pwnctl:latest${{ steps.login-ecr.outputs.registry }}/pwnctl:untested
