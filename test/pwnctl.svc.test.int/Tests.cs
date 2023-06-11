@@ -52,8 +52,6 @@ public sealed class Tests
         Environment.SetEnvironmentVariable("PWNCTL_Logging__FilePath", _hostBasePath);
         PwnInfraContextInitializer.SetupAsync().Wait();
         DatabaseInitializer.SeedAsync().Wait();
-
-        (int _, _ecrUri, StringBuilder _) = CommandExecutor.ExecuteAsync($"""aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl") | .repositoryUri""").Result;
     }
 
     [Fact]
