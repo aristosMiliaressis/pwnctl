@@ -92,6 +92,7 @@ jobs:
       - name: Build worker image
         uses: docker/build-push-action@v3
         with:
+          registry: ${{ steps.login-ecr.outputs.registry }}
           repository: ${{ steps.login-ecr.outputs.registry }}/pwnctl
           tags: ${{ steps.login-ecr.outputs.registry }}/pwnctl:untested
           push: true
