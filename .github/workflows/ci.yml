@@ -85,6 +85,8 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
+        with:
+          registry: ${{ steps.ecr-login.outputs.registry }}
 
       - name: Checkout subject branch
         uses: actions/checkout@v3
