@@ -94,7 +94,7 @@ jobs:
       - name: Build worker image
         uses: docker/build-push-action@v3
         with:
-          tags: ${{ steps.login-ecr.outputs.registry }}/pwnctl:untested
+          tags: ${{ vars.AWS_CALLER_IDENTITY }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/pwnctl:untested
           push: true
           context: src/core/
           cache-from: type=gha
