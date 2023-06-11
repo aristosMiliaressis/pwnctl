@@ -59,8 +59,8 @@ tasks:
 
   deploy-base:
     cmds:
-      - aws configure get region | gh secret set AWS_REGION
-      - aws sts get-caller-identity | jq -r .Account | gh secret set AWS_CALLER_IDENTITY
+      - gh variable set AWS_REGION --body "$(aws configure get region)"
+      - gh variable set AWS_REGION --body "$(aws sts get-caller-identity)"
       - terraform -chdir=infra apply -target=module.base
 
   deploy-app:
