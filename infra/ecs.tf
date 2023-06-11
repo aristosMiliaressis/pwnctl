@@ -1,23 +1,3 @@
-#data "aws_caller_identity" "current" {}
-
-#resource "aws_ecr_repository" "main" {
-#  name         = "${var.stack_name}"
-#}
-
-data "docker_registry_image" "pwnctl" {
-  name = "public.ecr.aws/i0m2p7r6/pwnctl:latest"
-  #name = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.region}.amazonaws.com/${aws_ecr_repository.main}"
-  #keep_remotely = true
-}
-
-resource "docker_image" "pwnctl" {
-  name          = data.docker_registry_image.pwnctl.name
-  pull_triggers = [data.docker_registry_image.pwnctl.sha256_digest]
-  keep_locally = true
-
-  # https://registry.terraform.io/providers/kreuzwerker/docker/latest/docs/resources/image#build
-}
-
 resource "aws_cloudwatch_log_group" "worker" {
   name              = "/aws/ecs/worker"
   retention_in_days = 7
@@ -43,13 +23,13 @@ resource "aws_ecs_task_definition" "this" {
   [
     {
       "name": "pwnctl",
-      "image": "${data.docker_registry_image.pwnctl.name}",
+      "image": "${docker_registry_image.pwnctl.name}",
       "essential": true,
       "stopTimeout": 120,
       "environment": [
         {
           "name": "PWNCTL_IMAGE_HASH",
-          "value": "${data.docker_registry_image.pwnctl.sha256_digest}"
+          "value": "${docker_registry_image.pwnctl.sha256_digest}"
         },
         {
           "name": "PWNCTL_IS_ECS",
@@ -108,7 +88,7 @@ resource "aws_ecs_task_definition" "this" {
         "logDriver": "awslogs",
         "options": {
           "awslogs-group": "${aws_cloudwatch_log_group.worker.name}",
-          "awslogs-region": "${var.region}",
+          "awslogs-region": "${data.external.aws_region.result.region}",
           "awslogs-stream-prefix": "ecs"
         }
       },
@@ -175,7 +155,7 @@ resource "aws_appautoscaling_target" "this" {
 }
 
 resource "aws_appautoscaling_policy" "this" {
-  name               = "PwnctlStackPwnctlSvcTaskCountTargetScaleOutPolicyLowerPolicy9ECA2AC3"
+  name               = "pwnctl_svc_sqs_depth_target_autoscale_policy"
   policy_type        = "StepScaling"
   resource_id  = aws_appautoscaling_target.this.id
   scalable_dimension = aws_appautoscaling_target.this.scalable_dimension

@@ -229,7 +229,7 @@ resource "aws_iam_role_policy_attachment" "grant_ecs_sm_readwrite_access" {
 }
 
 # EventBridge Role
-data "aws_iam_policy_document" "assume_role" {
+data "aws_iam_policy_document" "event_publisher" {
   statement {
     effect = "Allow"
 
@@ -244,7 +244,7 @@ data "aws_iam_policy_document" "assume_role" {
 
 resource "aws_iam_role" "ecs_events" {
   name               = "ecs_events"
-  assume_role_policy = data.aws_iam_policy_document.assume_role.json
+  assume_role_policy = data.aws_iam_policy_document.event_publisher.json
 }
 
 data "aws_iam_policy_document" "ecs_events_run_task_with_any_role" {

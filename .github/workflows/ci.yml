@@ -72,14 +72,15 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Login to Public ECR
-        uses: docker/login-action@v2
+      - name: Configure AWS credentials from Test account
+        uses: aws-actions/configure-aws-credentials@v2
         with:
-          registry: public.ecr.aws
-          username: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        env:
-          AWS_REGION: us-east-1
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_CALLER_IDENTITY }}:role/gha_service_role
+          aws-region:  ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
 
       - name: Checkout subject branch
         uses: actions/checkout@v3
@@ -87,7 +88,7 @@ jobs:
       - name: Build worker image
         uses: docker/build-push-action@v3
         with:
-          tags: public.ecr.aws/i0m2p7r6/pwnctl:untested
+          tags: ${{ steps.login-ecr.outputs.registry }}:untested
           push: true
           context: src/core/
           cache-from: type=gha
@@ -121,17 +122,18 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Login to Public ECR
-        uses: docker/login-action@v2
+      - name: Configure AWS credentials from Test account
+        uses: aws-actions/configure-aws-credentials@v2
         with:
-          registry: public.ecr.aws
-          username: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        env:
-          AWS_REGION: us-east-1
+          role-to-assume: arn:aws:iam::${{ env.AWS_CALLER_IDENTITY }}:role/github
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
 
       - name: Pull untested image
-        run: docker pull public.ecr.aws/i0m2p7r6/pwnctl:untested
+        run: docker pull ${{ steps.login-ecr.outputs.registry }}:untested
 
       - name: Retag image from untested to latest
-        run: docker buildx imagetools create -t public.ecr.aws/i0m2p7r6/pwnctl:latest public.ecr.aws/i0m2p7r6/pwnctl:untested
+        run: docker buildx imagetools create -t ${{ steps.login-ecr.outputs.registry }}:latest${{ steps.login-ecr.outputs.registry }}:untested

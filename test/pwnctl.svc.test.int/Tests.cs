@@ -24,6 +24,8 @@ using System.Threading.Tasks;
 using Xunit;
 using pwnctl.infra.Queueing;
 using pwnctl.app.Queueing.DTO;
+using System.Text;
+using pwnctl.infra.Commands;
 
 public sealed class Tests
 {
@@ -35,8 +37,10 @@ public sealed class Tests
                 ? "/tmp/pwnctl/test/pwnctl.svc.test.int/deployment"
                 : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "deployment");
 
+    private static string _ecrUri = Environment.GetEnvironmentVariable("ECR_REGISTRY_URI");
+
     public Tests()
-    {
+    {       
         Directory.CreateDirectory($"{_hostBasePath}/seed");
 
         foreach (var file in Directory.GetFiles("../../../../../src/core/pwnctl.infra/Persistence/seed"))
@@ -48,6 +52,8 @@ public sealed class Tests
         Environment.SetEnvironmentVariable("PWNCTL_Logging__FilePath", _hostBasePath);
         PwnInfraContextInitializer.SetupAsync().Wait();
         DatabaseInitializer.SeedAsync().Wait();
+
+        (int _, _ecrUri, StringBuilder _) = CommandExecutor.ExecuteAsync($"""aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl") | .repositoryUri""").Result;
     }
 
     [Fact]
@@ -62,7 +68,7 @@ public sealed class Tests
         //     .Build();
 
         var container = new ContainerBuilder()
-            .WithImage("public.ecr.aws/i0m2p7r6/pwnctl:untested")
+            .WithImage($"{_ecrUri}:untested")
             .WithBindMount(_containerBasePath, "/mnt/efs/")
             .WithEnvironment("PWNCTL_TEST_RUN", "true")
             .WithEnvironment("PWNCTL_INSTALL_PATH", "/mnt/efs")
@@ -147,7 +153,7 @@ public sealed class Tests
         }
 
         var container = new ContainerBuilder()
-            .WithImage("public.ecr.aws/i0m2p7r6/pwnctl:untested")
+            .WithImage($"{_ecrUri}:untested")
             .WithBindMount("/tmp/", "/mnt/efs/")
             .WithEnvironment("PWNCTL_TEST_RUN", "true")
             .WithEnvironment("PWNCTL_INSTALL_PATH", "/mnt/efs")

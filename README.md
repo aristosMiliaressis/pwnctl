@@ -225,12 +225,9 @@ every operation has an associated `ScopeAggregate` and `TaskProfile`.
 
 ## How to set it up?
 
-1. create an aws Administrator user for use with terraform
-2. put all configuration/seed/script files in the `deployment/` folder
+1. create an aws Administrator user & set up aws cli
+2. put all tool configuration files in the `deployment/` folder
 3. install `task`
 > sudo sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin
 4. run `task simple-setup`
 
-**To Do**
-- [ ] terraform private ecr registry
-- [ ] terraform discord server

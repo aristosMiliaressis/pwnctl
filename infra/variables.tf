@@ -4,18 +4,13 @@ variable "profile" {
   default = "default"
 }
 
-variable "region" {
-  description = "The AWS region to deploy resources to."
-  default = "us-east-1"
-}
-
 resource "random_id" "id" {
   byte_length = 8
 }
 
 variable "stack_name" {
   description = "Name of the stack."
-  default = "PwnCtl"
+  default = "pwnctl"
 }
 
 variable "sqs_visibility_timeout" {

@@ -28,10 +28,10 @@ resource "aws_subnet" "public" {
   vpc_id = aws_vpc.main.id
 
   tags = {
-    Name = "PwnCtl ${random_id.id.hex} Public Subnet at ${var.region}${each.key}"
+    Name = "PwnCtl ${random_id.id.hex} Public Subnet at ${data.external.aws_region.result.region}${each.key}"
   }
 
-  availability_zone = "${var.region}${each.key}"
+  availability_zone = "${data.external.aws_region.result.region}${each.key}"
   cidr_block = each.value
 }
 
@@ -44,10 +44,10 @@ resource "aws_subnet" "private" {
   vpc_id = aws_vpc.main.id
 
   tags = {
-    Name = "PwnCtl ${random_id.id.hex} Private Subnet at ${var.region}${each.key}"
+    Name = "PwnCtl ${random_id.id.hex} Private Subnet at ${data.external.aws_region.result.region}${each.key}"
   }
 
-  availability_zone = "${var.region}${each.key}"
+  availability_zone = "${data.external.aws_region.result.region}${each.key}"
   cidr_block = each.value
 }
 
@@ -85,8 +85,6 @@ resource "aws_route_table_association" "private" {
   subnet_id = each.value.id
   route_table_id = aws_route_table.private.id
 }
-
-
 
 module "nat" {
   source = "int128/nat-instance/aws"
