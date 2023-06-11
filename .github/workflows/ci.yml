@@ -75,8 +75,8 @@ jobs:
       - name: Configure AWS credentials from Test account
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: arn:aws:iam::${{ env.AWS_CALLER_IDENTITY }}:role/github
-          aws-region:  ${{ env.AWS_REGION }}
+          role-to-assume: arn:aws:iam::${{ vars.AWS_CALLER_IDENTITY }}:role/github
+          aws-region:  ${{ vars.AWS_REGION }}
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -125,8 +125,8 @@ jobs:
       - name: Configure AWS credentials from Test account
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: arn:aws:iam::${{ env.AWS_CALLER_IDENTITY }}:role/github
-          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: arn:aws:iam::${{ vars.AWS_CALLER_IDENTITY }}:role/github
+          aws-region: ${{ vars.AWS_REGION }}
 
       - name: Login to Amazon ECR
         id: login-ecr
