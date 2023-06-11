@@ -73,8 +73,13 @@ jobs:
     needs: unit-test
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout subject branch
+        uses: actions/checkout@v3
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
+        with:
+          buildkitd-flags: --debug
 
       - name: Configure AWS credentials from Test account
         uses: aws-actions/configure-aws-credentials@v2
@@ -85,15 +90,12 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
-
-      - name: Checkout subject branch
-        uses: actions/checkout@v3
+        with:
+          registry: ${{ vars.AWS_CALLER_IDENTITY }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com
 
       - name: Build worker image
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
-          registry: ${{ steps.login-ecr.outputs.registry }}
-          repository: ${{ steps.login-ecr.outputs.registry }}/pwnctl
           tags: ${{ steps.login-ecr.outputs.registry }}/pwnctl:untested
           push: true
           context: src/core/
