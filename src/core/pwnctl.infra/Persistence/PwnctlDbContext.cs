@@ -24,7 +24,7 @@ namespace pwnctl.infra.Persistence
                                               + $"Database={PwnInfraContext.Config.Db.Name};"
                                               + $"Username={PwnInfraContext.Config.Db.Username};"
                                               + $"Password={PwnInfraContext.Config.Db.Password};"
-                                              + "Include Error Detail";
+                                              + "Include Error Detail=true";
 
         public static readonly ILoggerFactory _loggerFactory = LoggerFactory.Create(builder =>
         {
@@ -70,6 +70,8 @@ namespace pwnctl.infra.Persistence
                                     .UseLoggerFactory(_loggerFactory)
                                     .EnableSensitiveDataLogging(true)
                                     .ReplaceService<GuidValueGenerator, UUIDv5ValueGenerator>();
+
+                PwnInfraContext.Logger.Warning(ConnectionString);
 
                 if (EnvironmentVariables.USE_SQLITE)
                 {
