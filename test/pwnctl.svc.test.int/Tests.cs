@@ -65,14 +65,10 @@ public sealed class Tests
         // setup ambiant configuration context
         Environment.SetEnvironmentVariable("PWNCTL_TEST_RUN", "true");
         Environment.SetEnvironmentVariable("PWNCTL_INSTALL_PATH", _hostBasePath);
-        Environment.SetEnvironmentVariable("PWNCTL_Db__Host", "127.0.0.1:55432");
+        Environment.SetEnvironmentVariable("PWNCTL_Db__Host", $"{_pwnctlDb.IpAddress}:5432");
         Environment.SetEnvironmentVariable("PWNCTL_Db__Name", "postgres");
         Environment.SetEnvironmentVariable("PWNCTL_Db__Username", "postgres");
         Environment.SetEnvironmentVariable("PWNCTL_Db__Password", "password");
-        (int _, StringBuilder stdout, StringBuilder _) = CommandExecutor.ExecuteAsync("docker ps").Result;
-        Console.WriteLine(stdout.ToString());
-        (int _, stdout, StringBuilder _) = CommandExecutor.ExecuteAsync("netstat -nlp").Result;
-        Console.WriteLine(stdout.ToString());
         PwnInfraContextInitializer.SetupAsync().Wait();
 
         // migrate & seed database
