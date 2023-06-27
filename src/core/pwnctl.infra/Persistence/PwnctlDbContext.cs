@@ -71,8 +71,6 @@ namespace pwnctl.infra.Persistence
                                     .EnableSensitiveDataLogging(true)
                                     .ReplaceService<GuidValueGenerator, UUIDv5ValueGenerator>();
 
-                PwnInfraContext.Logger.Warning(ConnectionString);
-
                 if (EnvironmentVariables.USE_SQLITE)
                 {
                     optionsBuilder.UseSqlite("Data Source="+Path.Combine(EnvironmentVariables.INSTALL_PATH, "pwnctl.sqlite3"), x => x.MigrationsHistoryTable("__EFMigrationHistory"));

@@ -113,7 +113,7 @@ public sealed class Tests
         Assert.NotNull(((DomainNameRecord)asset).NetworkHost);
 
         // spf record parsing
-        var spfRecord = "tesla.com IN TXT \"v = spf1 ip4:2.2.2.2 ipv4: 3.3.3.3 ipv6:FD00:DEAD:BEEF:64:34::2 include: spf.protection.outlook.com include:servers.mcsv.net - all\"";
+        var spfRecord = "tesla.com IN TXT \"v=spf1 ip4:2.2.2.2 ipv4: 3.3.3.3 ipv6:FD00:DEAD:BEEF:64:34::2 include: spf.protection.outlook.com include:servers.mcsv.net -all\"";
         asset = AssetParser.Parse(spfRecord);
         Assert.IsType<DomainNameRecord>(asset);
         Assert.Equal(3, ((DomainNameRecord)asset).SPFHosts.Count());

@@ -47,10 +47,18 @@ public sealed class Tests
     [Fact]
     public void DomainEntity_Tests()
     {
-        // TODO: Implement
-        //Domain.GetRegistrationDomain/Word
-        //DomainNameRecord.ParseSPFString(spfv1&spfv2)
-        //HttpEndpoint.Path/Filename/Extension
-        //NetworkRagne.RouteTo(ipv4|ipv6)
+        Assert.Equal("example", new DomainName("example.com.").Word);
+        Assert.Equal("example2", new DomainName("example2.azurewebsites.net").Word);
+
+        Assert.Equal("example2.azurewebsites.net", new DomainName("sub.example2.azurewebsites.net").GetRegistrationDomain());
+
+        Assert.True(NetworkRange.RoutesTo("1.3.3.7", "1.3.3.0/24"));
+        Assert.False(NetworkRange.RoutesTo("1.3.3.7", "1.3.4.0/24"));
+
+        var hosts = DomainNameRecord.ParseSPFString("tesla.com IN TXT \"v=spf1 ip4:2.2.2.2 ipv4: 3.3.3.3 ipv6:FD00:DEAD:BEEF:64:34::2 include: spf.protection.outlook.com include:servers.mcsv.net -all\"");
+
+        Assert.Contains(hosts, h => h.IP == "2.2.2.2");
+        Assert.Contains(hosts, h => h.IP == "3.3.3.3");
+        Assert.Contains(hosts, h => h.IP == "fd00:dead:beef:64:34::2");
     }
 }
