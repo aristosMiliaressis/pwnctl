@@ -8,7 +8,7 @@ public static class CommandExecutor
 {
     public static async Task<(int, StringBuilder, StringBuilder)> ExecuteAsync(string command, CancellationToken token = default)
     {
-        PwnInfraContext.Logger.Debug("Running: " + command);
+        //PwnInfraContext.Logger.Debug("Running: " + command);
         
         StringBuilder stdout = new();
         StringBuilder stderr = new();
