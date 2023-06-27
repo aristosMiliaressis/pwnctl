@@ -29,6 +29,11 @@
   Filter: Tags["shortname-misconfig"] == "true"
   Topic: misconfigs
 
+- Name: ns_takeover
+  Subject: DomainName
+  Filter: Tags["ns-takeover"] == "true"
+  Topic: misconfigs
+
 - Name: s3_misconfig
   Subject: DomainName
   Filter: Tags["s3-takeover"] == "true" || !string.IsNullOrEmpty(Tags["s3-public-perms"])

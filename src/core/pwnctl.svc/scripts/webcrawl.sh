@@ -4,7 +4,7 @@ url=$1
 tmp=`mktemp`
 tmp2=`mktemp`
 
-timeout -k 10 2400 katana -silent --no-sandbox -jc -hl -kf all -u $url -o $tmp >/dev/null
+timeout -k 10 2400 katana -d 10 -silent --no-sandbox -jc -hl -kf all -u $url -o $tmp >/dev/null
 
 echo $url | timeout -k 10 2400 hakrawler -insecure -u -h "User-Agent: $(uagen)" >> $tmp
 

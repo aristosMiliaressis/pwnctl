@@ -90,6 +90,13 @@ TaskDefinitions:
     CommandTemplate: ldns-walk {{Key}} | tail -n +2 | cut -d ' ' -f 1
     Filter: DomainNameRecord.Type == pwnctl.domain.Enums.DnsRecordType.NSEC
     Subject: DomainNameRecord
+  
+  - Name: ns_takeover_check
+    CommandTemplate: ns_takeover_check.sh {{Name}}
+    Subject: DomainName
+    Filter: Tags["rcode"] == "SERVFAIL"
+    MonitorRules:
+      Schedule: 0 0 * * *
 
   - Name: cname_takeover_check
     CommandTemplate: cloud_misconfig_scan.sh {{Value}}
@@ -98,13 +105,18 @@ TaskDefinitions:
     MonitorRules:
       Schedule: 0 0 * * *
 
+#   - Name: second_order_takeover
+#     CommandTemplate: cloud_misconfig_scan.sh {{Url}}
+#     Subject: HttpEndpoint
+#     Filter: CloudServiceRepository.Instance.IsCloudService(HttpEndpoint)
+#     MatchOutOfScope: true
+
   - Name: s3_scan
     CommandTemplate: s3-scan.sh {{Name}}
     Subject: DomainName
     Filter: DomainName.Name.Contains("amazonaws.com") && DomainName.Name.Contains("s3")
     MatchOutOfScope: true
 
-  # TODO: tld_brute
   # - Name: tld_brute
   #   CommandTemplate: tld-brute.sh {{Name}}
   #   Subject: DomainName
@@ -169,12 +181,6 @@ TaskDefinitions:
     CommandTemplate: shortname-check.sh {{Address}}
     Subject: NetworkSocket
     Filter: Tags["Version"].Contains("IIS") || Tags["Version"].Contains("Microsoft HTTPAPI")
-
-#   - Name: second_order_takeover
-#     CommandTemplate: cloud_misconfig_scan.sh {{Url}}
-#     Subject: HttpEndpoint
-#     Filter: CloudServiceRepository.Instance.IsCloudService(HttpEndpoint)
-#     MatchOutOfScope: true
 
   - Name: dir_brute_all
     CommandTemplate: dir-brute.sh {{Url}} /opt/wordlists/all.txt
