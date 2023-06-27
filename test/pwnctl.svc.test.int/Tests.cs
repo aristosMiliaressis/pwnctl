@@ -61,12 +61,13 @@ public sealed class Tests
         _pwnctlDb.StartAsync().Wait();
 
         // setup ambiant configuration context
+        Environment.SetEnvironmentVariable("PWNCTL_TEST_RUN", "true");
         Environment.SetEnvironmentVariable("PWNCTL_INSTALL_PATH", _hostBasePath);
+        Environment.SetEnvironmentVariable("PWNCTL_Db__Host", "127.0.0.1:55432");
+        Environment.SetEnvironmentVariable("PWNCTL_Db__Name", "postgres");
+        Environment.SetEnvironmentVariable("PWNCTL_Db__Username", "postgres");
+        Environment.SetEnvironmentVariable("PWNCTL_Db__Password", "password");
         PwnInfraContextInitializer.SetupAsync().Wait();
-        PwnInfraContext.Config.Db.Host = "127.0.0.1:55432";
-        PwnInfraContext.Config.Db.Name = "postgres";
-        PwnInfraContext.Config.Db.Username = "postgres";
-        PwnInfraContext.Config.Db.Password = "password";
 
         // migrate & seed database
         DatabaseInitializer.InitializeAsync(null).Wait();
