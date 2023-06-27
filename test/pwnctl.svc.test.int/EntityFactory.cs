@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using pwnctl.app.Assets.Aggregates;
+using pwnctl.app.Common.ValueObjects;
 using pwnctl.app.Operations.Entities;
 using pwnctl.app.Operations.Enums;
 using pwnctl.app.Scope.Entities;
@@ -22,7 +23,7 @@ namespace pwnctl.svc.test.integration
                     new ScopeDefinitionAggregate(scope, new ScopeDefinition(ScopeType.UrlRegex, "(.*:\\/\\/tsl\\.com\\/app\\/.*$)")),
                     new ScopeDefinitionAggregate(scope, new ScopeDefinition(ScopeType.CIDR, "172.16.17.0/24"))
                 };
-            var taskProfile = context.TaskProfiles.Include(p => p.TaskDefinitions).First();
+            var taskProfile = context.TaskProfiles.Include(p => p.TaskDefinitions).First(t => t.ShortName == ShortName.Create("all"));
             var policy = new Policy(taskProfile);
             var op = new Operation("test2", OperationType.Monitor, policy, scope);
             context.Add(op);

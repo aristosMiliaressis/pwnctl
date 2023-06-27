@@ -33,13 +33,14 @@ public class OperationInitializer
 
         op.InitiatedAt = SystemTime.UtcNow();
         op.State = OperationState.Ongoing;
+        await _opRepo.SaveAsync(op);
 
         var monitoringTasks = op.Policy.TaskProfile.TaskDefinitions.Where(def => def.MonitorRules.Schedule != null);
 
         int page = 0;
         while (true)
         {
-            var records = await _assetRepo.ListInScopeAsync(op.ScopeId, monitoringTasks.Select(t => t.Subject).ToArray(), page);
+            var records = await _assetRepo.ListInScopeAsync(op.ScopeId, monitoringTasks.Select(t => t.Subject).Distinct().ToArray(), page);
 
             foreach (var record in records)
             {
