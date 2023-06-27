@@ -83,7 +83,8 @@ namespace pwnctl.svc
                 StringBuilder stdout,
                 StringBuilder stderr) = await CommandExecutor.ExecuteAsync(task.Command, token: cts.Token);
 
-                timer.Dispose();
+                timer.Stop();
+
                 await _queueService.DequeueAsync(taskDTO);
 
                 task.Finished(exitCode);
@@ -104,6 +105,8 @@ namespace pwnctl.svc
             }
             catch (Exception ex)
             {
+                timer.Stop();
+
                 PwnInfraContext.Logger.Exception(ex);
 
                 // return the task to the queue, if this occures to many times,
@@ -142,11 +145,14 @@ namespace pwnctl.svc
                         await _processor.TryProcessAsync(line, task.Operation, task);
                     }
 
-                    timer.Dispose();
+                    timer.Stop();
+
                     await _queueService.DequeueAsync(batchDTO);
                 }
                 catch (Exception ex)
                 {
+                    timer.Stop();
+
                     PwnInfraContext.Logger.Exception(ex);
 
                     // return the task to the queue, if this occures to many times,

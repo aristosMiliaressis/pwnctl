@@ -15,7 +15,7 @@ variable "stack_name" {
 
 variable "sqs_visibility_timeout" {
   description = "SQS Visibility Timeout"
-  default = 600
+  default = 1200
 }
 
 variable "efs_mount_point" {

@@ -15,12 +15,12 @@ namespace pwnctl.infra.Queueing
         {
             get
             {
-                var queueName = messageType == nameof(PendingTaskDTO)
-                            ? PwnInfraContext.Config.TaskQueue.Name
-                            : PwnInfraContext.Config.OutputQueue.Name;
-
-                if (!_queueUrls.ContainsKey(queueName))
+                if (!_queueUrls.ContainsKey(messageType))
                 {
+                    var queueName = messageType == nameof(PendingTaskDTO)
+                                ? PwnInfraContext.Config.TaskQueue.Name
+                                : PwnInfraContext.Config.OutputQueue.Name;
+
                     _queueUrls[messageType] = _sqsClient.GetQueueUrlAsync(queueName).Result.QueueUrl;
                 }
 
