@@ -61,6 +61,7 @@ public sealed class Tests
         _pwnctlDb.StartAsync().Wait();
 
         // setup ambiant configuration context
+        Environment.SetEnvironmentVariable("PWNCTL_INSTALL_PATH", _hostBasePath);
         PwnInfraContextInitializer.SetupAsync().Wait();
         PwnInfraContext.Config.Db.Host = "127.0.0.1:55432";
         PwnInfraContext.Config.Db.Name = "postgres";
