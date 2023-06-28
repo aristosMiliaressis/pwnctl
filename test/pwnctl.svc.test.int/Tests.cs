@@ -13,12 +13,9 @@ using Xunit;
 using DotNet.Testcontainers.Configurations;
 using Testcontainers.PostgreSql;
 using DotNet.Testcontainers.Networks;
-using pwnctl.app;
 using pwnctl.app.Common.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using pwnctl.app.Tasks.Enums;
-using pwnctl.infra.Commands;
-using System.Text;
 
 public sealed class Tests
 {
@@ -65,17 +62,10 @@ public sealed class Tests
         // setup ambiant configuration context
         Environment.SetEnvironmentVariable("PWNCTL_TEST_RUN", "true");
         Environment.SetEnvironmentVariable("PWNCTL_INSTALL_PATH", _hostBasePath);
-        Environment.SetEnvironmentVariable("PWNCTL_Db__Host", $"{_pwnctlDb.IpAddress}:5432");
+        Environment.SetEnvironmentVariable("PWNCTL_Db__Host", $"{_pwnctlDb.Hostname}:55432");
         Environment.SetEnvironmentVariable("PWNCTL_Db__Name", "postgres");
         Environment.SetEnvironmentVariable("PWNCTL_Db__Username", "postgres");
         Environment.SetEnvironmentVariable("PWNCTL_Db__Password", "password");
-        (int _, StringBuilder stdout, StringBuilder _) = CommandExecutor.ExecuteAsync("docker ps").Result;
-        Console.WriteLine(stdout.ToString());
-        (int _, stdout, StringBuilder _) = CommandExecutor.ExecuteAsync("netstat -nlp").Result;
-        Console.WriteLine(stdout.ToString());
-        Console.WriteLine(_pwnctlDb.IpAddress);
-        Console.WriteLine(_pwnctlDb.Hostname);
-        Console.WriteLine(_pwnctlDb.GetConnectionString());
         PwnInfraContextInitializer.SetupAsync().Wait();
 
         // migrate & seed database
