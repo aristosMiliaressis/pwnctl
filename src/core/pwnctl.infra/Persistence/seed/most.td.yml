@@ -159,3 +159,8 @@ TaskDefinitions:
     CommandTemplate: shortname-check.sh {{Address}}
     Subject: NetworkSocket
     Filter: Tags["Version"].Contains("IIS") || Tags["Version"].Contains("Microsoft HTTPAPI")
+  
+  - Name: dir_brute_config
+    CommandTemplate: dir-brute.sh {{Url}} /opt/wordlists/config.txt
+    Filter: HttpEndpoint.Path == "/"
+    Subject: HttpEndpoint

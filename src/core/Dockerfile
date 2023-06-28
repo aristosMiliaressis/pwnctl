@@ -102,7 +102,7 @@ RUN go install github.com/lc/gau/v2/cmd/gau@latest
 RUN go install github.com/hakluke/hakrawler@latest
 RUN go install github.com/d3mondev/puredns/v2@latest
 RUN go install github.com/aristosMiliaressis/urgo@latest
-RUN go install github.com/ffuf/ffuf@latest
+#RUN go install github.com/ffuf/ffuf@latest
 
 RUN pip install useragent-picker-cli && uagen
 RUN mkdir -p /etc/amass/scripts \
@@ -158,6 +158,7 @@ RUN curl https://github.com/mgdm/htmlq/releases/download/v0.4.0/htmlq-x86_64-lin
     && tar xzf htmlq-x86_64-linux.tar.gz \
     && rm htmlq-x86_64-linux.tar.gz && mv htmlq /usr/local/bin
 
+RUN git clone https://github.com/aristosMiliaressis/ffuf.git && go build -C ffuf && mv ffuf/ffuf /usr/local/bin
 RUN go install github.com/sensepost/gowitness@latest
 RUN go install github.com/detectify/page-fetch@latest
 RUN go install github.com/pwnesia/dnstake/cmd/dnstake@latest

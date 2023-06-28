@@ -187,7 +187,7 @@ TaskDefinitions:
     Filter: HttpEndpoint.Path == "/"
     Subject: HttpEndpoint
 
-  - Name: file_brute_config
-    CommandTemplate: file-brute.sh {{Url}} /opt/wordlists/config.txt
+  - Name: dir_brute_config
+    CommandTemplate: dir-brute.sh {{Url}} /opt/wordlists/config.txt
     Filter: HttpEndpoint.Path == "/"
     Subject: HttpEndpoint
