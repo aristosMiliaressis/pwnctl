@@ -69,6 +69,13 @@ public sealed class Tests
         Environment.SetEnvironmentVariable("PWNCTL_Db__Name", "postgres");
         Environment.SetEnvironmentVariable("PWNCTL_Db__Username", "postgres");
         Environment.SetEnvironmentVariable("PWNCTL_Db__Password", "password");
+        (int _, StringBuilder stdout, StringBuilder _) = CommandExecutor.ExecuteAsync("docker ps").Result;
+        Console.WriteLine(stdout.ToString());
+        (int _, stdout, StringBuilder _) = CommandExecutor.ExecuteAsync("netstat -nlp").Result;
+        Console.WriteLine(stdout.ToString());
+        Console.WriteLine(_pwnctlDb.IpAddress);
+        Console.WriteLine(_pwnctlDb.Hostname);
+        Console.WriteLine(_pwnctlDb.GetConnectionString());
         PwnInfraContextInitializer.SetupAsync().Wait();
 
         // migrate & seed database
