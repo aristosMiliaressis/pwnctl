@@ -78,8 +78,6 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-        with:
-          buildkitd-flags: --debug
 
       - name: Configure AWS credentials from Test account
         uses: aws-actions/configure-aws-credentials@v2
@@ -90,8 +88,6 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
-        with:
-          registry: ${{ vars.AWS_CALLER_IDENTITY }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com
 
       - name: Build worker image
         uses: docker/build-push-action@v4
@@ -119,6 +115,9 @@ jobs:
           path: ~/.nuget/packages
           key: nuget-${{ hashFiles('**/packages.lock.json') }}
           restore-keys: nuget
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
       - name: Test worker image
         run: |
