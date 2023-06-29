@@ -116,6 +116,12 @@ jobs:
           key: nuget-${{ hashFiles('**/packages.lock.json') }}
           restore-keys: nuget
 
+      - name: Configure AWS credentials from Test account
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::${{ vars.AWS_CALLER_IDENTITY }}:role/GitHubAction-AssumeRoleWithAction
+          aws-region:  ${{ vars.AWS_REGION }}
+
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
