@@ -20,7 +20,7 @@ using pwnctl.app.Tasks.Enums;
 public sealed class Tests
 {
     private static readonly string _hostBasePath = EnvironmentVariables.GITHUB_ACTIONS
-                ? " /home/runner/work/pwnctl/pwnctl/test/pwnctl.svc.test.int/deployment"
+                ? "/home/runner/work/pwnctl/pwnctl/test/pwnctl.svc.test.int/deployment"
                 : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "deployment");
 
     private static INetwork _pwnctlNetwork = new NetworkBuilder().Build();
