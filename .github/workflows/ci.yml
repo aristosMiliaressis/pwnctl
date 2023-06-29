@@ -129,7 +129,6 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - run: tree -L 2
       - name: Test worker image
         run: |
           export ECR_REGISTRY_URI=${{ vars.AWS_CALLER_IDENTITY }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/pwnctl
