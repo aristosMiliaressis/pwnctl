@@ -135,10 +135,10 @@ namespace pwnctl.infra.Repositories
 
         public async Task SaveAsync(AssetRecord record)
         {
-            // TaskDefinitions are not tracked as a slight performance improvement
-            // so we have to null them to prevent the change tracker from attempting to add them
-            record.Notifications.ForEach(t => t.Task = null);
-            record.Tasks.ForEach(t => t.Definition = null);
+                // TaskDefinitions are not tracked as a slight performance improvement
+                // so we have to null them to prevent the change tracker from attempting to add them
+                record.Notifications.ForEach(t => { t.Task = null; t.Rule = null; });
+                record.Tasks.ForEach(t => t.Definition = null);
 
             // this prevents race conditions when checking if the record already exists
             using (var trx = _context.Database.BeginTransaction(IsolationLevel.Serializable))

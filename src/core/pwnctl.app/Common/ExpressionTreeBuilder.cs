@@ -71,6 +71,7 @@ namespace pwnctl.app.Common
             var _param = Expression.Parameter(type, "n");
 
             var lref = Expression.PropertyOrField(_param, nameof(Notification.RuleId));
+            lref = Expression.PropertyOrField(lref, "Value");
             var rval = Expression.Constant(ruleId);
             var expression = Expression.Equal(lref, rval);
 

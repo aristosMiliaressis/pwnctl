@@ -358,7 +358,8 @@ public sealed class Tests
             tags = new Dictionary<string, string>{
                {"Content-Type", "text/html"},
                {"Status", "200"},
-               {"Server", "apache"}
+               {"Server", "apache"},
+               { "cors-misconfig", "true" }
             }
         };
 
