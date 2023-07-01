@@ -10,6 +10,7 @@ using pwnctl.infra.Repositories;
 using System.Text;
 using pwnctl.app.Operations;
 using pwnctl.infra.Configuration;
+using pwnctl.app.Tasks.Exceptions;
 
 namespace pwnctl.svc
 {
@@ -103,15 +104,22 @@ namespace pwnctl.svc
                 foreach (var batch in batches)
                     await _queueService.EnqueueAsync(batch);
             }
+            catch (TaskStateException)
+            {
+                // probably a deduplication issue, remove from queue and move on
+                await _queueService.EnqueueAsync(taskDTO);
+            }
             catch (Exception ex)
             {
-                timer.Stop();
-
                 PwnInfraContext.Logger.Exception(ex);
 
                 // return the task to the queue, if this occures to many times,
                 // the task will be put in the dead letter queue
                 await _queueService.ChangeMessageVisibilityAsync(taskDTO, 0);
+            }
+            finally
+            {
+                timer.Stop();
             }
         }
 
