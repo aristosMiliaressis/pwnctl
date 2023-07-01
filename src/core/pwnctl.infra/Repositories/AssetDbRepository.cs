@@ -167,11 +167,7 @@ namespace pwnctl.infra.Repositories
                                                             record.ScopeId, Guid.NewGuid(), record.ScopeId, existingRecord.ConcurrencyToken);
                         }
 
-                        var existingTags = await _context.Tags
-                                                    .Where(t => t.RecordId == existingRecord.Id && record.Tags.Select(t => t.Name).Contains(t.Name))
-                                                    .ToListAsync();
-
-                        _context.AddRange(record.Tags.Where(t => !existingTags.Select(t => t.Name).Contains(t.Name)).Select(t =>
+                        _context.AddRange(record.Tags.Where(t => !existingRecord.Tags.Select(t => t.Name).Contains(t.Name)).Select(t =>
                         {
                             t.Record = existingRecord;
                             t.RecordId = existingRecord.Id;

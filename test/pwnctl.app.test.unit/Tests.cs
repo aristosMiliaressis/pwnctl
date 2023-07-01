@@ -257,14 +257,31 @@ public sealed class Tests
 
         var processor = AssetProcessorFactory.Create();
 
-        tasks.Add(AssetProcessorFactory.Create().ProcessAsync("https://sub.tesla.com/1/2/3/1", EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
-        tasks.Add(AssetProcessorFactory.Create().ProcessAsync("https://sub.tesla.com/1/2/3/2", EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
-        tasks.Add(AssetProcessorFactory.Create().ProcessAsync("https://sub.tesla.com/1/2/3/3", EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
-        tasks.Add(AssetProcessorFactory.Create().ProcessAsync("https://sub.tesla.com/1/2/3/4", EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
-        tasks.Add(processor.ProcessAsync("https://sub.tesla.com/1/2/3/5", EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
-        tasks.Add(processor.ProcessAsync("https://sub.tesla.com/1/2/3/6", EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
-        tasks.Add(processor.ProcessAsync("https://sub.tesla.com/1/2/3/7", EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
-        tasks.Add(processor.ProcessAsync("https://sub.tesla.com/1/2/3/8", EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
+        var teslaUrl = new
+        {
+            asset = "https://sub.tesla.com/1/2/3/1",
+            tags = new Dictionary<string, string>{
+               {"Content-Type", "text/html"},
+               {"Status", "200"},
+               {"Protocol", "IIS"},
+               { "cors-misconfig", "true" } 
+            }
+        };
+
+        tasks.Add(AssetProcessorFactory.Create().ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
+        tasks.Add(AssetProcessorFactory.Create().ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
+        tasks.Add(AssetProcessorFactory.Create().ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
+        tasks.Add(AssetProcessorFactory.Create().ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
+        tasks.Add(AssetProcessorFactory.Create().ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
+        tasks.Add(AssetProcessorFactory.Create().ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
+        tasks.Add(AssetProcessorFactory.Create().ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
+        tasks.Add(processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
+        tasks.Add(processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
+        tasks.Add(processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
+        tasks.Add(processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
+        tasks.Add(processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
+        tasks.Add(processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
+        tasks.Add(processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskEntry.Operation, EntityFactory.TaskEntry));
         tasks.Add(repository.SaveAsync(new AssetRecord(service)));
         tasks.Add(repository.SaveAsync(new AssetRecord(service)));
         tasks.Add(repository.SaveAsync(new AssetRecord(service)));
