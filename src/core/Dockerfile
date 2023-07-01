@@ -97,6 +97,7 @@ RUN go install github.com/projectdiscovery/httpx/cmd/httpx@latest
 RUN go install github.com/projectdiscovery/notify/cmd/notify@latest
 RUN go install github.com/projectdiscovery/katana/cmd/katana@latest
 RUN go install github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
+RUN go install github.com/projectdiscovery/cdncheck/cmd/cdncheck@latest
 #RUN go install github.com/projectdiscovery/naabu/v2/cmd/naabu@latest
 RUN go install github.com/lc/gau/v2/cmd/gau@latest
 RUN go install github.com/hakluke/hakrawler@latest
@@ -142,7 +143,7 @@ RUN git clone https://github.com/xnl-h4ck3r/xnLinkFinder.git \
     && python3 setup.py install
 RUN git clone https://github.com/EnableSecurity/wafw00f.git \
     && cd wafw00f && python3 setup.py install
-RUN go install github.com/rverton/webanalyze/cmd/webanalyze@latest
+#RUN go install github.com/rverton/webanalyze/cmd/webanalyze@latest
 RUN go install github.com/sw33tLie/sns@latest
 RUN go install github.com/gwen001/github-subdomains@latest
 RUN pip3 install s3scanner
@@ -153,6 +154,7 @@ RUN git clone https://github.com/xnl-h4ck3r/urless.git \
 RUN git clone https://github.com/xnl-h4ck3r/waymore.git \
     && cd waymore && python3 setup.py install \
     && chmod +x waymore.py && ln -s /opt/tools/waymore/waymore.py /usr/local/bin/waymore
+RUN git clone https://github.com/gokulapap/wappalyzer-cli && cd wappalyzer-cli && pip3 install .
 
 RUN curl https://github.com/mgdm/htmlq/releases/download/v0.4.0/htmlq-x86_64-linux.tar.gz -L -o htmlq-x86_64-linux.tar.gz \
     && tar xzf htmlq-x86_64-linux.tar.gz \

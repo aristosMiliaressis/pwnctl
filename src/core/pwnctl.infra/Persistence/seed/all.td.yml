@@ -47,7 +47,6 @@ TaskDefinitions:
     Subject: DomainName
     MonitorRules:
       Schedule: 0 0 * * *
-      PreCondition: Tags["rcode"] != "NOERROR"
       PostCondition: newTags["rcode"] != oldTags["rcode"]
       NotificationTemplate: domain {{Name}} changed rcode from {{oldTags["rcode"]}} to {{newTags["rcode"]}}
 
@@ -147,8 +146,8 @@ TaskDefinitions:
       PostCondition: newTags["Status"] != oldTags["Status"]
       NotificationTemplate: Endpoint {{Url}} changed status code from {{oldTags["Status"]}} to {{newTags["Status"]}}
 
-  - Name: webanalyze
-    CommandTemplate: webanalyze.sh {{Url}}
+  - Name: wappalyzer
+    CommandTemplate: wappalyzer.sh {{Url}}
     Filter: HttpEndpoint.Path == "/"
     Subject: HttpEndpoint
 
@@ -175,12 +174,7 @@ TaskDefinitions:
   - Name: short_name_scanning
     CommandTemplate: shortname-check.sh {{Url}}
     Subject: HttpEndpoint
-    Filter: Tags["Title"].Contains("Internet Information Services")|| Tags["Title"].Contains("IIS")||Tags["Server"].Contains("IIS")||Tags["Server"].Contains("Microsoft-HTTPAPI")
-
-  - Name: short_name_scanning_srv
-    CommandTemplate: shortname-check.sh {{Address}}
-    Subject: NetworkSocket
-    Filter: Tags["Version"].Contains("IIS") || Tags["Version"].Contains("Microsoft HTTPAPI")
+    Filter: Tags["Web servers"].Contains("IIS")||Tags["Web frameworks"]=="Microsoft ASP.NET"||Tags["Server"].Contains("IIS")||Tags["Server"].Contains("Microsoft-HTTPAPI")
 
   - Name: dir_brute_all
     CommandTemplate: dir-brute.sh {{Url}} /opt/wordlists/all.txt
