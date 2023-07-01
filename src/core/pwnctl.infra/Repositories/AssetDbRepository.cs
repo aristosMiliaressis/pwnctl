@@ -11,6 +11,8 @@ using Microsoft.EntityFrameworkCore;
 using pwnctl.app.Notifications.Entities;
 using pwnctl.domain.ValueObjects;
 using System.Data;
+using pwnctl.infra.Configuration;
+using pwnctl.app;
 
 namespace pwnctl.infra.Repositories
 {
@@ -135,61 +137,73 @@ namespace pwnctl.infra.Repositories
 
         public async Task SaveAsync(AssetRecord record)
         {
+            try
+            {
                 // TaskDefinitions are not tracked as a slight performance improvement
                 // so we have to null them to prevent the change tracker from attempting to add them
                 record.Notifications.ForEach(t => { t.Task = null; t.Rule = null; });
                 record.Tasks.ForEach(t => t.Definition = null);
 
-            // this prevents race conditions when checking if the record already exists
-            using (var trx = _context.Database.BeginTransaction(IsolationLevel.Serializable))
-            {
-                var existingRecord = await FindRecordAsync(record.Asset);
-                if (existingRecord == null)
+                // this prevents race conditions when checking if the record already exists
+                using (var trx = _context.Database.BeginTransaction(IsolationLevel.Serializable))
                 {
-                    // explicitly track asset to prevent change tracker from 
-                    // navigating related assets and attempting to add them.
-                    _context.Entry(record.Asset).State = EntityState.Added;
+                    var existingRecord = await FindRecordAsync(record.Asset);
+                    if (existingRecord == null)
+                    {
+                        // explicitly track asset to prevent change tracker from
+                        // navigating related assets and attempting to add them.
+                        _context.Entry(record.Asset).State = EntityState.Added;
 
-                    _context.Add(record);
+                        _context.Add(record);
 
-                    await _context.SaveChangesAsync();
+                        await _context.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        if (record.InScope)
+                        {
+                            _context.AssetRecords.FromSqlRaw("UPDATE asset_records SET \"InScope\" = true, \"ScopeId\" = %s, \"ConcurrencyToken\" = %s WHERE \"ScopeId\" != %s AND \"ConcurrencyToken\" = "
+                                                            + "(SELECT \"ConcurrencyToken\" FROM asset_records WHERE \"ConcurrencyToken\" = %s FOR UPDATE SKIP LOCKED);",
+                                                            record.ScopeId, Guid.NewGuid(), record.ScopeId, existingRecord.ConcurrencyToken);
+                        }
+
+                        var existingTags = await _context.Tags
+                                                    .Where(t => t.RecordId == existingRecord.Id && record.Tags.Select(t => t.Name).Contains(t.Name))
+                                                    .ToListAsync();
+
+                        _context.AddRange(record.Tags.Where(t => !existingTags.Select(t => t.Name).Contains(t.Name)).Select(t =>
+                        {
+                            t.Record = existingRecord;
+                            t.RecordId = existingRecord.Id;
+                            return t;
+                        }));
+
+                        _context.AddRange(record.Tasks.Where(t => t.Id == default).Select(t =>
+                        {
+                            t.Record = null;
+                            t.RecordId = existingRecord.Id;
+                            return t;
+                        }));
+
+                        _context.AddRange(record.Notifications.Where(t => t.Id == default).Select(t =>
+                        {
+                            t.Record = null;
+                            t.RecordId = existingRecord.Id;
+                            return t;
+                        }));
+
+                        await _context.SaveChangesAsync();
+                    }
+
+                    trx.Commit();
                 }
-                else
-                {
-                    if (record.InScope)
-                        existingRecord.SetScopeId(record.ScopeId.Value);
 
-                    // explicitly track record to prevent change tracker from 
-                    // navigating related assets and attempting to add them.
-                    _context.Entry(existingRecord).State = EntityState.Modified;
-
-                    _context.AddRange(record.Tags.Where(t => t.Id == default).Select(t => 
-                    {
-                        t.RecordId = existingRecord.Id;
-                        return t;
-                    }));
-
-                    _context.AddRange(record.Tasks.Where(t => t.Id == default).Select(t => 
-                    {
-                        t.Record = existingRecord;
-                        t.RecordId = existingRecord.Id;
-                        return t;
-                    }));
-
-                    _context.AddRange(record.Notifications.Where(t => t.Id == default).Select(t => 
-                    {
-                        t.Record = existingRecord;
-                        t.RecordId = existingRecord.Id;
-                        return t;
-                    }));
-
-                    await _context.SaveChangesAsync();
-                }
-                
-                trx.Commit();
+                _context.Entry(record).DetachReferenceGraph();
             }
-
-            _context.Entry(record).DetachReferenceGraph();
+            catch (Exception)
+            {
+                // optimistic concurrency yolo!
+            }
         }
 
         public async Task<List<AssetRecord>> ListHostsAsync(int pageIdx, int pageSize = 4096)

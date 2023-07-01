@@ -17,6 +17,7 @@ public sealed class AssetRecord : Entity<Guid>
     public DateTime FoundAt { get; private init; }
     public TaskEntry FoundByTask { get; private init; }
     public int? FoundByTaskId { get; private init; }
+    public Guid ConcurrencyToken { get; set; }
 
     public bool InScope { get; private set; }
     public ScopeDefinition Scope { get; set; }

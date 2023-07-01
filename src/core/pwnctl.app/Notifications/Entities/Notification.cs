@@ -10,7 +10,7 @@ namespace pwnctl.app.Notifications.Entities
         public AssetRecord Record { get; set; }
         public Guid RecordId { get; set; }
 
-        public NotificationRule Rule { get; private init; }
+        public NotificationRule Rule { get; set; }
         public int? RuleId { get; private init; }
 
         public TaskEntry Task { get; set; }
