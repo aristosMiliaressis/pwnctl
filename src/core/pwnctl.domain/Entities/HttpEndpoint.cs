@@ -53,9 +53,9 @@ namespace pwnctl.domain.Entities
 
             var _params = uri.GetComponents(UriComponents.Query, UriFormat.SafeUnescaped)
                             .Split("&")
-                            .Select(p => p.Split("=")[0])
-                            .Distinct()
-                            .Select(p => new HttpParameter(endpoint, p, ParamType.Query, null))
+                            .Select(p => new KeyValuePair<string, string>(p.Split("=")[0], p.Contains("=") ? p.Split("=")[1] : null))
+                            .DistinctBy(p => p.Key)
+                            .Select(p => new HttpParameter(endpoint, p.Key, ParamType.Query, p.Value))
                             .Where(p => !string.IsNullOrEmpty(p.Name))
                             .ToList();
 

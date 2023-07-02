@@ -16,17 +16,17 @@ namespace pwnctl.domain.Entities
         [EqualityComponent]
         public ParamType Type { get; init; }
 
-        public string UrlEncodedCsValues { get; private init; }
+        public string Value { get; private init; }
 
         public HttpParameter() {}
         
-        public HttpParameter(HttpEndpoint endpoint, string name, ParamType type, string urlEncodedCsValues)
+        public HttpParameter(HttpEndpoint endpoint, string name, ParamType type, string value)
         {
             Endpoint = endpoint;
             Url = endpoint.Url;
             Name = name;
             Type = type;
-            UrlEncodedCsValues = urlEncodedCsValues;
+            Value = value;
         }
 
         public static HttpParameter TryParse(string assetText)

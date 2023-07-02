@@ -135,7 +135,7 @@ public sealed class Tests
         // Assert.IsType<HttpEndpoint>(asset);
 
         // parameter
-        asset = AssetParser.Parse("https://xyz.example.com:8443/api/token?_u=xxx&second=test");
+        asset = AssetParser.Parse("https://xyz.example.com:8443/api/token?_u=xxx&second=");
         Assert.IsType<HttpEndpoint>(asset);
         Assert.Equal(2, ((HttpEndpoint)asset).HttpParameters.Count);
 
