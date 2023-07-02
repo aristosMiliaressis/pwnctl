@@ -13,7 +13,7 @@ namespace pwnctl.app.Notifications.Entities
         public NotificationRule Rule { get; set; }
         public int? RuleId { get; private init; }
 
-        public TaskEntry Task { get; set; }
+        public TaskRecord Task { get; set; }
         public int? TaskId { get; private init; }
 
         public DateTime SentAt { get; set; }
@@ -26,7 +26,7 @@ namespace pwnctl.app.Notifications.Entities
             Rule = rule;
         }
 
-        public Notification(AssetRecord record, TaskEntry task)
+        public Notification(AssetRecord record, TaskRecord task)
         {
             Record = record;
             Task = task;

@@ -9,13 +9,15 @@ using pwnctl.kernel;
 
 namespace pwnctl.app.Tasks.Entities
 {
-    public sealed class TaskEntry : Entity<int>
+    public sealed class TaskRecord : Entity<int>
     {
-        public int? ExitCode { get; private set; }
         public DateTime QueuedAt { get; private set; }
         public DateTime StartedAt { get; private set; }
         public DateTime FinishedAt { get; private set; }
         public TaskState State { get; private set; }
+        public int RunCount { get; private set; } = 0;
+        public int? ExitCode { get; private set; }
+        public string Stderr { get; set; }
 
         public int OperationId { get; private init; }
         public Operation Operation { get; set; }
@@ -26,9 +28,9 @@ namespace pwnctl.app.Tasks.Entities
         public AssetRecord Record { get; set; }
         public Guid RecordId { get; set; }
 
-        private TaskEntry() {}
+        private TaskRecord() {}
 
-        public TaskEntry(Operation operation, TaskDefinition definition, AssetRecord record)
+        public TaskRecord(Operation operation, TaskDefinition definition, AssetRecord record)
         {
             State = TaskState.QUEUED;
             QueuedAt = SystemTime.UtcNow();
@@ -46,15 +48,26 @@ namespace pwnctl.app.Tasks.Entities
 
             State = TaskState.RUNNING;
             StartedAt = SystemTime.UtcNow();
+            RunCount++;
         }
 
-        public void Finished(int exitCode)
+        public void Finished(int exitCode, string stderr)
         {
             if (State != TaskState.RUNNING)
                 throw new TaskStateException(State, TaskState.FINISHED);
 
             ExitCode = exitCode;
             State = TaskState.FINISHED;
+            FinishedAt = SystemTime.UtcNow();
+            Stderr = stderr;
+        }
+
+        public void Failed()
+        {
+            if (State != TaskState.RUNNING)
+                throw new TaskStateException(State, TaskState.FAILED);
+
+            State = TaskState.FAILED;
             FinishedAt = SystemTime.UtcNow();
         }
 

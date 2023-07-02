@@ -44,11 +44,11 @@ namespace pwnctl.app.Common
         /// </summary>
         public static LambdaExpression BuildTaskMatchingLambda(Guid assetId, int definitionId)
         {
-            var type = typeof(TaskEntry);
+            var type = typeof(TaskRecord);
 
             var _param = Expression.Parameter(type, "t");
 
-            var lref = Expression.PropertyOrField(_param, nameof(TaskEntry.DefinitionId));
+            var lref = Expression.PropertyOrField(_param, nameof(TaskRecord.DefinitionId));
             var rval = Expression.Constant(definitionId);
             var expression = Expression.Equal(lref, rval);
 

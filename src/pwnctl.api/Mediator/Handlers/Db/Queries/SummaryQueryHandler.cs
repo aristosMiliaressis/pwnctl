@@ -37,26 +37,26 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Commands
             viewModel.InScopeParamCount = await context.AssetRecords.Where(r => r.Subject == AssetClass.Create(nameof(HttpParameter)) && r.InScope).CountAsync();
             viewModel.InScopeEmailCount = await context.AssetRecords.Where(r => r.Subject == AssetClass.Create(nameof(Email)) && r.InScope).CountAsync();
 
-            viewModel.QueuedTaskCount = await context.TaskEntries.Where(t => t.State == TaskState.QUEUED).CountAsync();
-            viewModel.RunningTaskCount = await context.TaskEntries.Where(t => t.State == TaskState.RUNNING).CountAsync();
-            viewModel.FinishedTaskCount = await context.TaskEntries.Where(t => t.State == TaskState.FINISHED).CountAsync();
-            viewModel.FirstTask = (await context.TaskEntries.OrderBy(t => t.QueuedAt).FirstOrDefaultAsync())?.QueuedAt;
-            viewModel.LastTask = (await context.TaskEntries.OrderByDescending(t => t.QueuedAt).FirstOrDefaultAsync())?.QueuedAt;
-            viewModel.LastFinishedTask = (await context.TaskEntries.OrderByDescending(t => t.FinishedAt).FirstOrDefaultAsync())?.FinishedAt;
+            viewModel.QueuedTaskCount = await context.TaskRecords.Where(t => t.State == TaskState.QUEUED).CountAsync();
+            viewModel.RunningTaskCount = await context.TaskRecords.Where(t => t.State == TaskState.RUNNING).CountAsync();
+            viewModel.FinishedTaskCount = await context.TaskRecords.Where(t => t.State == TaskState.FINISHED).CountAsync();
+            viewModel.FirstTask = (await context.TaskRecords.OrderBy(t => t.QueuedAt).FirstOrDefaultAsync())?.QueuedAt;
+            viewModel.LastTask = (await context.TaskRecords.OrderByDescending(t => t.QueuedAt).FirstOrDefaultAsync())?.QueuedAt;
+            viewModel.LastFinishedTask = (await context.TaskRecords.OrderByDescending(t => t.FinishedAt).FirstOrDefaultAsync())?.FinishedAt;
             viewModel.TaskDetails = new List<SummaryViewModel.TaskDefinitionDetails>();
             foreach (var def in context.TaskDefinitions.AsEnumerable().GroupBy(d => d.Name.Value).ToList())
             {
                 var details = new SummaryViewModel.TaskDefinitionDetails
                 {
                     ShortName = def.First().Name.Value,
-                    Count = await context.TaskEntries.Where(e => def.Select(d => d.Id).Contains(e.DefinitionId)).CountAsync(),
+                    Count = await context.TaskRecords.Where(e => def.Select(d => d.Id).Contains(e.DefinitionId)).CountAsync(),
                     Findings = context.AssetRecords.Include(r => r.FoundByTask).Where(r => def.Select(d => d.Id).Contains(r.FoundByTask.DefinitionId)).Count()
                 };
 
-                var count = await  context.TaskEntries.Where(e => e.State == TaskState.FINISHED && def.Select(d => d.Id).Contains(e.DefinitionId)).CountAsync();
+                var count = await  context.TaskRecords.Where(e => e.State == TaskState.FINISHED && def.Select(d => d.Id).Contains(e.DefinitionId)).CountAsync();
                 for (var i = 0; i <= count / 1024; i++)
                 {
-                    details.Duration += TimeSpan.FromSeconds(context.TaskEntries
+                    details.Duration += TimeSpan.FromSeconds(context.TaskRecords
                             .Where(e => e.State == TaskState.FINISHED && def.Select(d => d.Id).Contains(e.DefinitionId))
                             .OrderBy(t => t.QueuedAt)
                             .Skip(i*1024)

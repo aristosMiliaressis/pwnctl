@@ -12,9 +12,9 @@ namespace pwnctl.infra.Repositories
     public sealed class TaskDbRepository : TaskRepository
     {
         private PwnctlDbContext _context = new PwnctlDbContext();
-        private static Func<PwnctlDbContext, int, Task<TaskEntry>> FindEntryQuery
-                                = EF.CompileAsyncQuery<PwnctlDbContext, int, TaskEntry>(
-                        (context, id) => context.TaskEntries
+        private static Func<PwnctlDbContext, int, Task<TaskRecord>> FindRecordQuery
+                                = EF.CompileAsyncQuery<PwnctlDbContext, int, TaskRecord>(
+                        (context, id) => context.TaskRecords
                                     .Include(r => r.Definition)
                                     .Include(r => r.Record)
                                         .ThenInclude(r => r.Tags)
@@ -65,9 +65,9 @@ namespace pwnctl.infra.Repositories
                                     .AsNoTracking()
                                     .FirstOrDefault(r => r.Id == id));
 
-        public async Task<List<TaskEntry>> ListEntriesAsync(int pageIdx, int pageSize = 4096)
+        public async Task<List<TaskRecord>> ListAsync(int pageIdx, int pageSize = 4096)
         {
-            return await _context.TaskEntries
+            return await _context.TaskRecords
                                 .Include(p => p.Definition)
                                 .Include(p => p.Record)
                                     .ThenInclude(r => r.NetworkRange)
@@ -94,19 +94,19 @@ namespace pwnctl.infra.Repositories
                                 .ToListAsync();
         }
 
-        public async Task<TaskEntry> FindAsync(int taskId)
+        public async Task<TaskRecord> FindAsync(int taskId)
         {
-            return await FindEntryQuery(_context, taskId);
+            return await FindRecordQuery(_context, taskId);
         }
 
-        public TaskEntry Find(AssetRecord asset, TaskDefinition definition)
+        public TaskRecord Find(AssetRecord asset, TaskDefinition definition)
         {
             var lambda = ExpressionTreeBuilder.BuildTaskMatchingLambda(asset.Id, definition.Id);
 
-            return _context.FirstFromLambda<TaskEntry>(lambda);
+            return _context.FirstFromLambda<TaskRecord>(lambda);
         }
 
-        public async Task UpdateAsync(TaskEntry task)
+        public async Task UpdateAsync(TaskRecord task)
         {
             _context.Entry(task).State = EntityState.Modified;
 
@@ -115,7 +115,7 @@ namespace pwnctl.infra.Repositories
             _context.Entry(task).DetachReferenceGraph();
         }
 
-        public async Task AddAsync(TaskEntry task)
+        public async Task AddAsync(TaskRecord task)
         {
             if (task.RecordId == default)
                 throw new ArgumentException($"AssetRecord must be saved first!");

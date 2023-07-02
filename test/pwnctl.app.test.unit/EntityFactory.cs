@@ -66,13 +66,13 @@ namespace pwnctl.app.test.unit
         }
 
 
-        public static TaskEntry TaskEntry
+        public static TaskRecord TaskRecord
         {
             get
             {
                 PwnctlDbContext context = new();
-                if (context.TaskEntries.Any())
-                    return context.TaskEntries
+                if (context.TaskRecords.Any())
+                    return context.TaskRecords
                                     .Include(t => t.Operation)
                                         .ThenInclude(o => o.Policy)
                                         .ThenInclude(o => o.TaskProfile)
@@ -92,7 +92,7 @@ namespace pwnctl.app.test.unit
 
                 var assetRecord = new AssetRecord(new DomainName("dummy.com"));
 
-                var task = new TaskEntry(operation, Policy.TaskProfile.TaskDefinitions.First(), assetRecord);
+                var task = new TaskRecord(operation, Policy.TaskProfile.TaskDefinitions.First(), assetRecord);
                 context = new();
                 context.Entry(task.Definition).State = EntityState.Unchanged;
                 context.Add(task);

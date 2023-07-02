@@ -333,7 +333,7 @@ namespace pwnctl.infra.Migrations
                     b.ToTable("task_definitions", (string)null);
                 });
 
-            modelBuilder.Entity("pwnctl.app.Tasks.Entities.TaskEntry", b =>
+            modelBuilder.Entity("pwnctl.app.Tasks.Entities.TaskRecord", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -648,7 +648,7 @@ namespace pwnctl.infra.Migrations
                         .WithMany()
                         .HasForeignKey("EmailId");
 
-                    b.HasOne("pwnctl.app.Tasks.Entities.TaskEntry", "FoundByTask")
+                    b.HasOne("pwnctl.app.Tasks.Entities.TaskRecord", "FoundByTask")
                         .WithMany()
                         .HasForeignKey("FoundByTaskId");
 
@@ -791,7 +791,7 @@ namespace pwnctl.infra.Migrations
                     b.Navigation("Profile");
                 });
 
-            modelBuilder.Entity("pwnctl.app.Tasks.Entities.TaskEntry", b =>
+            modelBuilder.Entity("pwnctl.app.Tasks.Entities.TaskRecord", b =>
                 {
                     b.HasOne("pwnctl.app.Tasks.Entities.TaskDefinition", "Definition")
                         .WithMany()

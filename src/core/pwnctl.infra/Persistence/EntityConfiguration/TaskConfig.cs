@@ -9,9 +9,9 @@ using pwnctl.app;
 
 namespace pwnctl.infra.Persistence.EntityConfiguration
 {
-    public sealed class TaskEntryConfig : IEntityTypeConfiguration<TaskEntry>
+    public sealed class TaskRecordConfig : IEntityTypeConfiguration<TaskRecord>
     {
-        public void Configure(EntityTypeBuilder<TaskEntry> builder)
+        public void Configure(EntityTypeBuilder<TaskRecord> builder)
         {
             builder.ToTable(builder.GetType().GenericTypeArguments[0].Name.Underscore().Pluralize());
 

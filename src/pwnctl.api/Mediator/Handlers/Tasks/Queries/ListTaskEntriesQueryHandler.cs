@@ -9,20 +9,20 @@ using pwnctl.infra.Repositories;
 
 namespace pwnctl.api.Mediator.Handlers.Targets.Queries
 {
-    public sealed class ListTaskEntriesQueryHandler : IRequestHandler<ListTaskEntriesQuery, MediatedResponse<TaskEntryListViewModel>>
+    public sealed class ListTaskRecordsQueryHandler : IRequestHandler<ListTaskRecordsQuery, MediatedResponse<TaskRecordListViewModel>>
     {
         private readonly TaskDbRepository _repo = new();
 
-        public async Task<MediatedResponse<TaskEntryListViewModel>> Handle(ListTaskEntriesQuery query, CancellationToken cancellationToken)
+        public async Task<MediatedResponse<TaskRecordListViewModel>> Handle(ListTaskRecordsQuery query, CancellationToken cancellationToken)
         {
-            var tasks = await _repo.ListEntriesAsync(query.Page);
+            var tasks = await _repo.ListAsync(query.Page);
 
-            var viewModel = new TaskEntryListViewModel(tasks);
+            var viewModel = new TaskRecordListViewModel(tasks);
 
             viewModel.Page = query.Page;
-            viewModel.TotalPages = new PwnctlDbContext().TaskEntries.Count() / 4096;
+            viewModel.TotalPages = new PwnctlDbContext().TaskRecords.Count() / 4096;
 
-            return MediatedResponse<TaskEntryListViewModel>.Success(viewModel);
+            return MediatedResponse<TaskRecordListViewModel>.Success(viewModel);
         }
     }
 }

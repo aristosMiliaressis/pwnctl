@@ -22,6 +22,7 @@ public sealed class SummaryViewModel
     public int QueuedTaskCount { get; set; }
     public int RunningTaskCount { get; set; }
     public int FinishedTaskCount { get; set; }
+    public int FailedTaskCount { get; set; }
     public DateTime? FirstTask { get; set; }
     public DateTime? LastTask { get; set; }
     public DateTime? LastFinishedTask { get; set; }

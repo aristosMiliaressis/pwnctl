@@ -59,7 +59,7 @@ namespace pwnctl.infra.Persistence
         public DbSet<NotificationRule> NotificationRules { get; set; }
         public DbSet<AssetRecord> AssetRecords { get; set; }
         public DbSet<Tag> Tags { get; set; }
-        public DbSet<TaskEntry> TaskEntries { get; set; }
+        public DbSet<TaskRecord> TaskRecords { get; set; }
         public DbSet<Notification> Notifications { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

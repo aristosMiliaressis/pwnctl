@@ -14,10 +14,10 @@ public sealed class PendingTaskDTO : QueueMessage
 
     public PendingTaskDTO() { }
 
-    public PendingTaskDTO(TaskEntry entry)
+    public PendingTaskDTO(TaskRecord record)
     {
-        TaskId = entry.Id;
-        Command = entry.Command;
-        Metadata["MessageGroupId"] = entry.Id.ToString();
+        TaskId = record.Id;
+        Command = record.Command;
+        Metadata["MessageGroupId"] = record.Id.ToString();
     }
 }

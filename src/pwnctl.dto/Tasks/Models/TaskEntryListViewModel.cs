@@ -4,12 +4,12 @@ using pwnctl.app.Tasks.DTO;
 using pwnctl.app.Tasks.Entities;
 using pwnctl.dto.Mediator;
 
-public sealed class TaskEntryListViewModel : PaginatedViewModel<TaskEntryDTO>
+public sealed class TaskRecordListViewModel : PaginatedViewModel<TaskRecordDTO>
 {
-    public TaskEntryListViewModel() { }
+    public TaskRecordListViewModel() { }
 
-    public TaskEntryListViewModel(List<TaskEntry> tasks)
+    public TaskRecordListViewModel(List<TaskRecord> tasks)
     {
-        Rows = tasks.Select(t => new TaskEntryDTO(t)).ToList();
+        Rows = tasks.Select(t => new TaskRecordDTO(t)).ToList();
     }
 }

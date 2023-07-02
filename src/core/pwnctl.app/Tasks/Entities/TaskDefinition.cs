@@ -35,7 +35,7 @@ namespace pwnctl.app.Tasks.Entities
 
             if (minitoring)
             {
-                TaskEntry lastOccurence = record.Tasks.Where(t => t.Definition.Name == Name)
+                TaskRecord lastOccurence = record.Tasks.Where(t => t.Definition.Name == Name)
                                                         .OrderBy(t => t.QueuedAt)
                                                         .LastOrDefault();
 
@@ -57,7 +57,7 @@ namespace pwnctl.app.Tasks.Entities
         public string PostCondition { get; init; }
         public string NotificationTemplate { get; init; }
 
-        public bool Matches(AssetRecord record, TaskEntry lastOccurence)
+        public bool Matches(AssetRecord record, TaskRecord lastOccurence)
         {
             if (lastOccurence != null && Schedule != null &&
                 Schedule.GetNextOccurrence(lastOccurence.QueuedAt) > SystemTime.UtcNow())

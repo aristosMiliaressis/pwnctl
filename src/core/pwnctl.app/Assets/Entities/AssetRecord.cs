@@ -15,7 +15,7 @@ public sealed class AssetRecord : Entity<Guid>
     public Asset Asset => (Asset)typeof(AssetRecord).GetProperty(Subject.Value).GetValue(this);
 
     public DateTime FoundAt { get; private init; }
-    public TaskEntry FoundByTask { get; private init; }
+    public TaskRecord FoundByTask { get; private init; }
     public int? FoundByTaskId { get; private init; }
     public Guid ConcurrencyToken { get; set; }
 
@@ -24,7 +24,7 @@ public sealed class AssetRecord : Entity<Guid>
     public int? ScopeId { get; private set; }
 
     public List<Tag> Tags { get; private init; } = new List<Tag>();
-    public List<TaskEntry> Tasks { get; private init; } = new List<TaskEntry>();
+    public List<TaskRecord> Tasks { get; private init; } = new List<TaskRecord>();
     public List<Notification> Notifications { get; private init; } = new List<Notification>();
     public AssetClass Subject { get; set; }
 
@@ -63,7 +63,7 @@ public sealed class AssetRecord : Entity<Guid>
         typeof(AssetRecord).GetProperty(Subject.Value).SetValue(this, asset);
     }
 
-    public AssetRecord(Asset asset, TaskEntry foundBy)
+    public AssetRecord(Asset asset, TaskRecord foundBy)
         : this(asset)
     {
         FoundByTaskId = foundBy?.Id;

@@ -494,7 +494,26 @@ namespace pwnctl.infra.Migrations
                     b.ToTable("task_definitions", (string)null);
                 });
 
-            modelBuilder.Entity("pwnctl.app.Tasks.Entities.TaskEntry", b =>
+            modelBuilder.Entity("pwnctl.app.Tasks.Entities.TaskProfile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ShortName")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ShortName")
+                        .IsUnique();
+
+                    b.ToTable("task_profiles", (string)null);
+                });
+
+            modelBuilder.Entity("pwnctl.app.Tasks.Entities.TaskRecord", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -520,11 +539,17 @@ namespace pwnctl.infra.Migrations
                     b.Property<Guid>("RecordId")
                         .HasColumnType("uuid");
 
+                    b.Property<int>("RunCount")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("StartedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("State")
                         .HasColumnType("integer");
+
+                    b.Property<string>("Stderr")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -534,26 +559,7 @@ namespace pwnctl.infra.Migrations
 
                     b.HasIndex("RecordId");
 
-                    b.ToTable("task_entries", (string)null);
-                });
-
-            modelBuilder.Entity("pwnctl.app.Tasks.Entities.TaskProfile", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ShortName")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ShortName")
-                        .IsUnique();
-
-                    b.ToTable("task_profiles", (string)null);
+                    b.ToTable("task_records", (string)null);
                 });
 
             modelBuilder.Entity("pwnctl.app.Users.Entities.User", b =>
@@ -941,7 +947,7 @@ namespace pwnctl.infra.Migrations
                         .WithMany()
                         .HasForeignKey("EmailId");
 
-                    b.HasOne("pwnctl.app.Tasks.Entities.TaskEntry", "FoundByTask")
+                    b.HasOne("pwnctl.app.Tasks.Entities.TaskRecord", "FoundByTask")
                         .WithMany()
                         .HasForeignKey("FoundByTaskId");
 
@@ -1008,7 +1014,7 @@ namespace pwnctl.infra.Migrations
                         .WithMany()
                         .HasForeignKey("RuleId");
 
-                    b.HasOne("pwnctl.app.Tasks.Entities.TaskEntry", "Task")
+                    b.HasOne("pwnctl.app.Tasks.Entities.TaskRecord", "Task")
                         .WithMany()
                         .HasForeignKey("TaskId");
 
@@ -1088,7 +1094,7 @@ namespace pwnctl.infra.Migrations
                     b.Navigation("Profile");
                 });
 
-            modelBuilder.Entity("pwnctl.app.Tasks.Entities.TaskEntry", b =>
+            modelBuilder.Entity("pwnctl.app.Tasks.Entities.TaskRecord", b =>
                 {
                     b.HasOne("pwnctl.app.Tasks.Entities.TaskDefinition", "Definition")
                         .WithMany()

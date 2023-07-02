@@ -92,7 +92,7 @@ public sealed class Tests
 
         // TODO: test integration with sqs instead of a faked queue
 
-        var task = context.TaskEntries.Include(t => t.Definition).First(t => t.Definition.Name == ShortName.Create("domain_resolution"));
+        var task = context.TaskRecords.Include(t => t.Definition).First(t => t.Definition.Name == ShortName.Create("domain_resolution"));
         Assert.NotEqual(DateTime.MinValue, task?.QueuedAt);
         Assert.Equal(TaskState.QUEUED, task?.State);
 
@@ -132,7 +132,7 @@ public sealed class Tests
     //         if (assetMap.ContainsKey(definition.Subject))
     //         {
     //             var record = new AssetRecord(assetMap[definition.Subject]);
-    //             var task = new TaskEntry(op, definition, record);
+    //             var task = new TaskRecord(op, definition, record);
     //             // record.Tasks.Add(task);
     //             // context.Entry(task.Record).State = EntityState.Added;
     //             // context.Entry(task).State = EntityState.Added;

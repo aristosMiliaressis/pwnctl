@@ -60,7 +60,7 @@ public class OperationInitializer
     {
         foreach (var def in monitoringTasks.Where(def => def.Matches(record, minitoring: op.Type == OperationType.Monitor)))
         {
-            var task = new TaskEntry(op, def, record);
+            var task = new TaskRecord(op, def, record);
 
             await _taskRepo.AddAsync(task);
 

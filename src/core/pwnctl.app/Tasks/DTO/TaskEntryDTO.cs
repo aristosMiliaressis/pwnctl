@@ -2,7 +2,7 @@ using pwnctl.app.Tasks.Entities;
 
 namespace pwnctl.app.Tasks.DTO;
 
-public sealed class TaskEntryDTO
+public sealed class TaskRecordDTO
 {
     public int Id { get; set; }
     public string ShortName { get; set; }
@@ -15,19 +15,19 @@ public sealed class TaskEntryDTO
     public double Duration { get; set; }
     public int? ExitCode { get; set; }
 
-    public TaskEntryDTO() { }
+    public TaskRecordDTO() { }
 
-    public TaskEntryDTO(TaskEntry entry)
+    public TaskRecordDTO(TaskRecord record)
     {
-        Id = entry.Id;
-        ShortName = entry.Definition.Name.Value;
-        Subject = entry.Definition.Subject.Value;
-        Asset = entry.Record.Asset.ToString();
-        State = entry.State.ToString();
-        QueuedAt = entry.QueuedAt;
-        StartedAt = entry.StartedAt;
-        FinishedAt = entry.FinishedAt;
-        ExitCode = entry.ExitCode;
-        Duration = (entry.FinishedAt - entry.StartedAt).TotalSeconds;
+        Id = record.Id;
+        ShortName = record.Definition.Name.Value;
+        Subject = record.Definition.Subject.Value;
+        Asset = record.Record.Asset.ToString();
+        State = record.State.ToString();
+        QueuedAt = record.QueuedAt;
+        StartedAt = record.StartedAt;
+        FinishedAt = record.FinishedAt;
+        ExitCode = record.ExitCode;
+        Duration = (record.FinishedAt - record.StartedAt).TotalSeconds;
     }
 }

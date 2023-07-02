@@ -90,8 +90,8 @@ public static class ConfigValidator
                 var asset = _sampleAssets[definition.Subject];
                 record = new AssetRecord(asset);
                 var op = new Operation();
-                var taskEntry = new TaskEntry(op, definition, record);
-                var test = taskEntry.Command;
+                var taskRecord = new TaskRecord(op, definition, record);
+                var test = taskRecord.Command;
             }
             catch (Exception ex)
             {

@@ -12,8 +12,8 @@ using pwnctl.infra.Persistence;
 namespace pwnctl.infra.Migrations
 {
     [DbContext(typeof(PwnctlDbContext))]
-    [Migration("20230424073437_task_aggresivness")]
-    partial class task_aggresivness
+    [Migration("20230702084241_task_record_run_count_and_stderr")]
+    partial class task_record_run_count_and_stderr
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -24,10 +24,145 @@ namespace pwnctl.infra.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex");
+
+                    b.ToTable("AspNetRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("text");
+
+                    b.Property<string>("RoleId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetRoleClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ProviderKey")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ProviderDisplayName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("LoginProvider", "ProviderKey");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserLogins", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("RoleId")
+                        .HasColumnType("text");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetUserRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("text");
+
+                    b.HasKey("UserId", "LoginProvider", "Name");
+
+                    b.ToTable("AspNetUserTokens", (string)null);
+                });
+
             modelBuilder.Entity("pwnctl.app.Assets.Aggregates.AssetRecord", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ConcurrencyToken")
                         .HasColumnType("uuid");
 
                     b.Property<Guid?>("DomainNameId")
@@ -69,7 +204,7 @@ namespace pwnctl.infra.Migrations
                     b.Property<int?>("ScopeId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("SubjectClass")
+                    b.Property<string>("Subject")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -110,17 +245,23 @@ namespace pwnctl.infra.Migrations
                     b.Property<Guid>("RecordId")
                         .HasColumnType("uuid");
 
-                    b.Property<int>("RuleId")
+                    b.Property<int?>("RuleId")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("SentAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int?>("TaskId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("RecordId");
-
                     b.HasIndex("RuleId");
+
+                    b.HasIndex("TaskId");
+
+                    b.HasIndex("RecordId", "RuleId")
+                        .IsUnique();
 
                     b.ToTable("notifications", (string)null);
                 });
@@ -139,10 +280,10 @@ namespace pwnctl.infra.Migrations
                     b.Property<string>("Filter")
                         .HasColumnType("text");
 
-                    b.Property<string>("ShortName")
+                    b.Property<string>("Name")
                         .HasColumnType("text");
 
-                    b.Property<string>("SubjectClass")
+                    b.Property<string>("Subject")
                         .HasColumnType("text");
 
                     b.Property<string>("Template")
@@ -152,6 +293,9 @@ namespace pwnctl.infra.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("notification_rules", (string)null);
                 });
@@ -164,14 +308,23 @@ namespace pwnctl.infra.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("InitiatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<int?>("PolicyId")
                         .HasColumnType("integer");
+
+                    b.Property<string>("Schedule")
+                        .HasColumnType("text");
 
                     b.Property<int>("ScopeId")
                         .HasColumnType("integer");
 
                     b.Property<string>("ShortName")
                         .HasColumnType("text");
+
+                    b.Property<int>("State")
+                        .HasColumnType("integer");
 
                     b.Property<int>("Type")
                         .HasColumnType("integer");
@@ -182,6 +335,9 @@ namespace pwnctl.infra.Migrations
                         .IsUnique();
 
                     b.HasIndex("ScopeId");
+
+                    b.HasIndex("ShortName")
+                        .IsUnique();
 
                     b.ToTable("operations", (string)null);
                 });
@@ -231,6 +387,9 @@ namespace pwnctl.infra.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ShortName")
+                        .IsUnique();
 
                     b.ToTable("scope_aggregates", (string)null);
                 });
@@ -317,13 +476,17 @@ namespace pwnctl.infra.Migrations
                     b.Property<bool>("MatchOutOfScope")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("MonitorRules")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
                     b.Property<int>("ProfileId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("ShortName")
-                        .HasColumnType("text");
-
-                    b.Property<string>("SubjectClass")
+                    b.Property<string>("Subject")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -331,6 +494,25 @@ namespace pwnctl.infra.Migrations
                     b.HasIndex("ProfileId");
 
                     b.ToTable("task_definitions", (string)null);
+                });
+
+            modelBuilder.Entity("pwnctl.app.Tasks.Entities.TaskProfile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ShortName")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ShortName")
+                        .IsUnique();
+
+                    b.ToTable("task_profiles", (string)null);
                 });
 
             modelBuilder.Entity("pwnctl.app.Tasks.Entities.TaskRecord", b =>
@@ -359,11 +541,17 @@ namespace pwnctl.infra.Migrations
                     b.Property<Guid>("RecordId")
                         .HasColumnType("uuid");
 
+                    b.Property<int>("RunCount")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("StartedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("State")
                         .HasColumnType("integer");
+
+                    b.Property<string>("Stderr")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -373,23 +561,80 @@ namespace pwnctl.infra.Migrations
 
                     b.HasIndex("RecordId");
 
-                    b.ToTable("task_entries", (string)null);
+                    b.ToTable("task_records", (string)null);
                 });
 
-            modelBuilder.Entity("pwnctl.app.Tasks.Entities.TaskProfile", b =>
+            modelBuilder.Entity("pwnctl.app.Users.Entities.User", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<int>("AccessFailedCount")
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ShortName")
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
                         .HasColumnType("text");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("task_profiles", (string)null);
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex");
+
+                    b.HasIndex("UserName")
+                        .IsUnique();
+
+                    b.ToTable("users", (string)null);
                 });
 
             modelBuilder.Entity("pwnctl.domain.Entities.DomainName", b =>
@@ -539,6 +784,9 @@ namespace pwnctl.infra.Migrations
                     b.Property<Guid?>("EndpointId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("HttpEndpointId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
@@ -554,6 +802,8 @@ namespace pwnctl.infra.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("EndpointId");
+
+                    b.HasIndex("HttpEndpointId");
 
                     b.HasIndex("Url", "Name", "Type")
                         .IsUnique();
@@ -632,6 +882,57 @@ namespace pwnctl.infra.Migrations
                     b.HasIndex("NetworkHostId");
 
                     b.ToTable("network_sockets", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.HasOne("pwnctl.app.Users.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.HasOne("pwnctl.app.Users.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("pwnctl.app.Users.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.HasOne("pwnctl.app.Users.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("pwnctl.app.Assets.Aggregates.AssetRecord", b =>
@@ -713,13 +1014,17 @@ namespace pwnctl.infra.Migrations
 
                     b.HasOne("pwnctl.app.Notifications.Entities.NotificationRule", "Rule")
                         .WithMany()
-                        .HasForeignKey("RuleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("RuleId");
+
+                    b.HasOne("pwnctl.app.Tasks.Entities.TaskRecord", "Task")
+                        .WithMany()
+                        .HasForeignKey("TaskId");
 
                     b.Navigation("Record");
 
                     b.Navigation("Rule");
+
+                    b.Navigation("Task");
                 });
 
             modelBuilder.Entity("pwnctl.app.Operations.Entities.Operation", b =>
@@ -884,8 +1189,12 @@ namespace pwnctl.infra.Migrations
             modelBuilder.Entity("pwnctl.domain.Entities.HttpParameter", b =>
                 {
                     b.HasOne("pwnctl.domain.Entities.HttpEndpoint", "Endpoint")
-                        .WithMany("HttpParameters")
+                        .WithMany()
                         .HasForeignKey("EndpointId");
+
+                    b.HasOne("pwnctl.domain.Entities.HttpEndpoint", null)
+                        .WithMany("HttpParameters")
+                        .HasForeignKey("HttpEndpointId");
 
                     b.Navigation("Endpoint");
                 });

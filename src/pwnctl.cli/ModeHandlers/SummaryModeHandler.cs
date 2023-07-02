@@ -25,7 +25,7 @@ namespace pwnctl.cli.ModeHandlers
             Console.WriteLine($"Emais: {model.EmailCount}, InScope: {model.InScopeEmailCount}");
             Console.WriteLine($"Tags: {model.TagCount}");
             Console.WriteLine();
-            Console.WriteLine($"QUEUED: {model.QueuedTaskCount}, RUNNING: {model.RunningTaskCount}, FINISHED: {model.FinishedTaskCount}");
+            Console.WriteLine($"QUEUED: {model.QueuedTaskCount}, RUNNING: {model.RunningTaskCount}, FINISHED: {model.FinishedTaskCount}, FAILED: {model.FailedTaskCount}");
             Console.WriteLine();
             foreach(var def in model.TaskDetails.OrderBy(t => t.Count))
             {

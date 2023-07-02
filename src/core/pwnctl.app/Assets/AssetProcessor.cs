@@ -32,7 +32,7 @@ namespace pwnctl.app.Assets
             _notificationRules = rules;
         }
 
-        public async Task<bool> TryProcessAsync(string assetText, Operation operation, TaskEntry foundByTask = null)
+        public async Task<bool> TryProcessAsync(string assetText, Operation operation, TaskRecord foundByTask = null)
         {
             try
             {
@@ -46,7 +46,7 @@ namespace pwnctl.app.Assets
             }
         }
 
-        public async Task ProcessAsync(string assetText, Operation operation, TaskEntry foundByTask)
+        public async Task ProcessAsync(string assetText, Operation operation, TaskRecord foundByTask)
         {
             AssetDTO dto = TagParser.Parse(assetText);
 
@@ -55,7 +55,7 @@ namespace pwnctl.app.Assets
             await ProcessAssetAsync(asset, dto.Tags, operation, foundByTask);
         }
 
-        internal async Task ProcessAssetAsync(Asset asset, Dictionary<string, object> tags, Operation operation, TaskEntry foundByTask, List<Asset> refChain = null)
+        internal async Task ProcessAssetAsync(Asset asset, Dictionary<string, object> tags, Operation operation, TaskRecord foundByTask, List<Asset> refChain = null)
         {
             refChain = refChain == null
                     ? new List<Asset>()
@@ -129,7 +129,7 @@ namespace pwnctl.app.Assets
                 if (task != null)
                     continue;
 
-                task = new TaskEntry(operation, definition, record);
+                task = new TaskRecord(operation, definition, record);
                 record.Tasks.Add(task);
             }
         }
@@ -151,7 +151,7 @@ namespace pwnctl.app.Assets
             }
         }
 
-        private void CheckMonitoringRules(AssetRecord record, TaskEntry foundByTask)
+        private void CheckMonitoringRules(AssetRecord record, TaskRecord foundByTask)
         {
             Notification notification = null;
 

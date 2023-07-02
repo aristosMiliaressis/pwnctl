@@ -55,7 +55,7 @@ namespace pwnctl.cli.ModeHandlers
                 var parameters = await PwnctlApiClient.Default.Send(new ListParametersQuery());
                 WriteToFile(Path.Combine(opt.ExportPath, "parameters.json"), parameters.Rows);
 
-                var tasks = await PwnctlApiClient.Default.Send(new ListTaskEntriesQuery());
+                var tasks = await PwnctlApiClient.Default.Send(new ListTaskRecordsQuery());
                 foreach (var task in tasks.Rows)
                 {
                     File.AppendAllText(Path.Combine(opt.ExportPath, "tasks.json"), PwnInfraContext.Serializer.Serialize(task) + "\n");
