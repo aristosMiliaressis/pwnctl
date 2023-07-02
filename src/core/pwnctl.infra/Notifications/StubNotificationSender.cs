@@ -9,6 +9,7 @@ namespace pwnctl.infra.Notifications
     {
         public void Send(Notification notification)
         {
+            Send(notification.GetText(), notification.Rule.Topic);
         }
 
         public void Send(string message, NotificationTopic topic)

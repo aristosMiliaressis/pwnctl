@@ -24,11 +24,6 @@
   Filter: Tags["shortname-misconfig"] == "true"
   Topic: misconfigs
 
-- Name: shortname_misconfig_srv
-  Subject: NetworkSocket
-  Filter: Tags["shortname-misconfig"] == "true"
-  Topic: misconfigs
-
 - Name: ns_takeover
   Subject: DomainName
   Filter: Tags["ns-takeover"] == "true"

@@ -35,7 +35,7 @@ namespace pwnctl.app.Notifications.Entities
 
         public string GetText()
         {
-            if (RuleId.HasValue)
+            if (RuleId.HasValue || Rule != null)
             {
                 if (!string.IsNullOrEmpty(Rule.Template))
                     return Rule.Template.Interpolate(Record.Asset);
