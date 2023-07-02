@@ -98,6 +98,7 @@ RUN go install github.com/projectdiscovery/notify/cmd/notify@latest
 RUN go install github.com/projectdiscovery/katana/cmd/katana@latest
 RUN go install github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
 RUN go install github.com/projectdiscovery/cdncheck/cmd/cdncheck@latest
+RUN go install github.com/projectdiscovery/asnmap/cmd/asnmap@latest
 #RUN go install github.com/projectdiscovery/naabu/v2/cmd/naabu@latest
 RUN go install github.com/lc/gau/v2/cmd/gau@latest
 RUN go install github.com/hakluke/hakrawler@latest

@@ -40,7 +40,7 @@ namespace pwnctl.app.Notifications.Entities
                 if (!string.IsNullOrEmpty(Rule.Template))
                     return Rule.Template.Interpolate(Record.Asset);
 
-                return $"{Record.Asset} triggered rule {Rule.Name}";
+                return $"{Record.Asset} triggered rule {Rule.Name.Value}";
             }
 
             if (!string.IsNullOrEmpty(Task.Definition.MonitorRules.NotificationTemplate))

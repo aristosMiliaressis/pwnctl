@@ -47,14 +47,21 @@ namespace pwnctl.svc
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                var taskDTO = await _queueService.ReceiveAsync<PendingTaskDTO>(stoppingToken);
-                if (taskDTO == null)
+                try
                 {
-                    await ProcessOutputBatchAsync(stoppingToken);
-                    continue;
-                }
+                    var taskDTO = await _queueService.ReceiveAsync<PendingTaskDTO>(stoppingToken);
+                    if (taskDTO == null)
+                    {
+                        await ProcessOutputBatchAsync(stoppingToken);
+                        continue;
+                    }
 
-                await ExecutePendingTaskAsync(taskDTO, stoppingToken);
+                    await ExecutePendingTaskAsync(taskDTO, stoppingToken);
+                } 
+                catch (Exception ex)
+                {
+                    PwnInfraContext.Logger.Exception(ex);
+                }
             }
         }
 
@@ -73,26 +80,43 @@ namespace pwnctl.svc
                 await _queueService.ChangeMessageVisibilityAsync(taskDTO, PwnInfraContext.Config.TaskQueue.VisibilityTimeout);
             timer.Start();
 
+            var task = await _taskRepo.FindAsync(taskDTO.TaskId);
+            if (task == null)
+            {
+                PwnInfraContext.Logger.Warning($"Task {taskDTO.TaskId} \"{taskDTO.Command}\" fot found in database.");
+                await _queueService.DequeueAsync(taskDTO);
+            }
+
             try
             {
-                var task = await _taskRepo.FindAsync(taskDTO.TaskId);
-
                 task.Started();
+            }
+            catch (TaskStateException ex)
+            {
+                PwnInfraContext.Logger.Warning(ex.Message);
+
+                timer.Stop();
+
+                // probably a deduplication issue, remove from queue and move on
+                await _queueService.DequeueAsync(taskDTO);
+
+                return;
+            }
+
+            try
+            {
                 await _taskRepo.UpdateAsync(task);
 
                 (int exitCode,
                 StringBuilder stdout,
                 StringBuilder stderr) = await CommandExecutor.ExecuteAsync(task.Command, token: cts.Token);
 
+                task.Finished(exitCode, stderr.ToString());
+                await _taskRepo.UpdateAsync(task);
+
                 timer.Stop();
 
                 await _queueService.DequeueAsync(taskDTO);
-
-                task.Finished(exitCode);
-                await _taskRepo.UpdateAsync(task);
-
-                if (!string.IsNullOrWhiteSpace(stderr.ToString()))
-                    PwnInfraContext.Logger.Error(stderr.ToString());
 
                 var lines = stdout.ToString()
                                 .Split("\n")
@@ -104,22 +128,18 @@ namespace pwnctl.svc
                 foreach (var batch in batches)
                     await _queueService.EnqueueAsync(batch);
             }
-            catch (TaskStateException)
-            {
-                // probably a deduplication issue, remove from queue and move on
-                await _queueService.EnqueueAsync(taskDTO);
-            }
             catch (Exception ex)
             {
                 PwnInfraContext.Logger.Exception(ex);
 
+                task.Failed();
+                await _taskRepo.UpdateAsync(task);
+
+                timer.Dispose();
+
                 // return the task to the queue, if this occures to many times,
                 // the task will be put in the dead letter queue
                 await _queueService.ChangeMessageVisibilityAsync(taskDTO, 0);
-            }
-            finally
-            {
-                timer.Stop();
             }
         }
 

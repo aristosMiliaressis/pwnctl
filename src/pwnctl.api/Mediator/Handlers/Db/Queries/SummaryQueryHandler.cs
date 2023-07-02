@@ -40,6 +40,7 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Commands
             viewModel.QueuedTaskCount = await context.TaskRecords.Where(t => t.State == TaskState.QUEUED).CountAsync();
             viewModel.RunningTaskCount = await context.TaskRecords.Where(t => t.State == TaskState.RUNNING).CountAsync();
             viewModel.FinishedTaskCount = await context.TaskRecords.Where(t => t.State == TaskState.FINISHED).CountAsync();
+            viewModel.FailedTaskCount = await context.TaskRecords.Where(t => t.State == TaskState.FAILED).CountAsync();
             viewModel.FirstTask = (await context.TaskRecords.OrderBy(t => t.QueuedAt).FirstOrDefaultAsync())?.QueuedAt;
             viewModel.LastTask = (await context.TaskRecords.OrderByDescending(t => t.QueuedAt).FirstOrDefaultAsync())?.QueuedAt;
             viewModel.LastFinishedTask = (await context.TaskRecords.OrderByDescending(t => t.FinishedAt).FirstOrDefaultAsync())?.FinishedAt;

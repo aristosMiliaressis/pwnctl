@@ -1089,7 +1089,6 @@ App_Data/Templates/BlankSite/Data/Files/cms_formusercontrol/CMSFormControls/Time
 CMSFormControls/Sites/SiteOrGlobalSelector.ascx
 incoming
 App_Data/Install/SQL/View_CMS_Tree_Joined.sql
-# directory-list-1.0.txt
 bandwidth
 launchpage
 App_Data/Install/SQL/CMS_SiteCulture.sql
@@ -2259,7 +2258,6 @@ signer
 dbase
 admin.pl
 App_Data/Templates/BlankSite/Data/Files/cms_inlinecontrol/CMSInlineControls/AttachmentLightBoxGallery.ascx.export
-# directory-list-lowercase-2.3-medium.txt
 App_Data/Templates/BlankSite/Data/Files/cms_formusercontrol/CMSModules/Reporting/FormControls/ReportGraphSelector.ascx.cs.export
 App_Data/Install/SQL/Proc_COM_OptionCategory_RemoveDependencies.sql
 CMSModules/PortalEngine/FormControls/PageTemplates/PageTemplateLevels.ascx.cs
@@ -4137,7 +4135,6 @@ common.xml
 browser
 App_Data/Templates/BlankSiteAspx/Data/Files/cms_formusercontrol/CMSModules/Newsletters/FormControls/NewsletterIssueSelector.ascx.export
 leader
-# directory-list-lowercase-2.3-big.txt
 App_Data/Install/SQL/Proc_COM_ProductOption_MoveOptionUp.sql
 22
 inlinemod
@@ -4967,7 +4964,6 @@ spaw
 orders.sql.gz
 articles
 CMSModules/ContactManagement/Controls/UI/ContactGroup/Accounts.ascx
-# directory-list-lowercase-2.3-small.txt
 CMSModules/Settings/FormControls/SelectTrailingSlash.ascx.cs
 to
 bluadmin
@@ -5519,7 +5515,6 @@ CMSModules/Membership/Controls/Roles/RoleList.ascx.cs
 App_Data/Templates/BlankSite/Data/Files/cms_inlinecontrol/CMSInlineControls/RatingControl.ascx.export
 .well-known/est
 sound
-# directory-list-2.3-medium.txt
 7z
 CMSAdminControls/UI/Trees/ObjectTree.ascx.cs
 more
@@ -7256,7 +7251,6 @@ printarticle
 xsl
 CMSAdminControls/Debug/AllLog.ascx
 ///system///sling/loginstatus.json;%0aa.css
-# directory-list-2.3-big.txt
 .txt.txt
 delete
 _borders
@@ -8955,7 +8949,6 @@ global.asax.bak
 eng
 addfav
 4
-# directory-list-2.3-small.txt
 CMSModules/FormControls/Pages/Development/List.xml
 conf.php.old
 copyright-policy
