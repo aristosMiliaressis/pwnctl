@@ -24,6 +24,7 @@ TaskDefinitions:
   - Name: tcp_scan
     CommandTemplate: tcp-scan.sh {{IP}}
     Subject: NetworkHost
+    CheckNotificationRules: true
 
   - Name: tls_probe
     CommandTemplate: tls-probe.sh {{Address}}
@@ -37,6 +38,7 @@ TaskDefinitions:
   - Name: udp_scan
     CommandTemplate: udp-scan.sh {{IP}}
     Subject: NetworkHost
+    CheckNotificationRules: true
 
   - Name: domain_resolution
     CommandTemplate: resolve.sh {{Name}}
@@ -74,6 +76,7 @@ TaskDefinitions:
   - Name: zone_trasfer
     CommandTemplate: zone-transfer.sh {{Name}}
     Subject: DomainName
+    CheckNotificationRules: true
 
   - Name: zone_walking
     CommandTemplate: ldns-walk {{Key}} | tail -n +2 | cut -d ' ' -f 1
@@ -104,6 +107,7 @@ TaskDefinitions:
     CommandTemplate: get-all-urls.sh {{Name}}
     Subject: DomainName
     Filter: DomainName.ZoneDepth == 1
+
   - Name: webcrawl
     CommandTemplate: webcrawl.sh {{Url}}
     Filter: HttpEndpoint.Path == "/"
@@ -120,6 +124,7 @@ TaskDefinitions:
     Filter: Tags["rcode"] == "SERVFAIL"
     MonitorRules:
       Schedule: 0 0 * * *
+    CheckNotificationRules: true
 
   - Name: cname_takeover_check
     CommandTemplate: cloud_misconfig_scan.sh {{Value}}
@@ -127,12 +132,14 @@ TaskDefinitions:
     Filter: DomainNameRecord.Type == pwnctl.domain.Enums.DnsRecordType.CNAME
     MonitorRules:
       Schedule: 0 0 * * *
+    CheckNotificationRules: true
 
   - Name: s3_scan
     CommandTemplate: s3-scan.sh {{Name}}
     Subject: DomainName
     Filter: DomainName.Name.Contains("amazonaws.com") && DomainName.Name.Contains("s3")
     MatchOutOfScope: true
+    CheckNotificationRules: true
 
   - Name: screenshot
     CommandTemplate: screenshot.sh {{Url}}
@@ -148,26 +155,31 @@ TaskDefinitions:
     CommandTemplate: check-cors.sh {{Url}}
     Subject: HttpEndpoint
     Filter: HttpEndpoint.Path == "/"
+    CheckNotificationRules: true
 
   - Name: swagger_discovery
     CommandTemplate: swagger-discovery.sh {{Url}}
     Subject: HttpEndpoint
     Filter: HttpEndpoint.Path == "/"
+    CheckNotificationRules: true
 
   - Name: panel_discovery
     CommandTemplate: panel-discovery.sh {{Url}}
     Subject: HttpEndpoint
     Filter: HttpEndpoint.Path == "/"
+    CheckNotificationRules: true
 
   - Name: short_name_scanning
     CommandTemplate: shortname-check.sh {{Url}}
     Subject: HttpEndpoint
-    Filter: Tags["Web servers"].Contains("IIS")||Tags["Web frameworks"]=="Microsoft ASP.NET"||Tags["Server"].Contains("IIS")||Tags["Server"].Contains("Microsoft-HTTPAPI")
+    Filter: Tags["Web servers"].Contains("IIS")||Tags["Web frameworks"]=="Microsoft ASP.NET"||Tags["Operating systems"]=="Windows Server"
+    CheckNotificationRules: true
 
   - Name: dir_fuzz_main
     CommandTemplate: dir-fuzz.sh {{Url}} /opt/wordlists/directories.txt /opt/wordlists/high_impact.txt
     Filter: HttpEndpoint.Path == "/"
     Subject: HttpEndpoint
+    CheckNotificationRules: true
 
   - Name: dir_fuzz_iis_asp
     CommandTemplate: dir-fuzz.sh {{Url}} /opt/wordlists/tech/iis_asp.txt

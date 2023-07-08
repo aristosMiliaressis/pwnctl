@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using pwnctl.app.Assets.Aggregates;
+using pwnctl.app.Common.ValueObjects;
 using pwnctl.app.Operations.Entities;
 using pwnctl.app.Operations.Enums;
 using pwnctl.app.Scope.Entities;
@@ -92,7 +93,7 @@ namespace pwnctl.app.test.unit
 
                 var assetRecord = new AssetRecord(new DomainName("dummy.com"));
 
-                var task = new TaskRecord(operation, Policy.TaskProfile.TaskDefinitions.First(), assetRecord);
+                var task = new TaskRecord(operation, Policy.TaskProfile.TaskDefinitions.First(t => t.Name == ShortName.Create("shortname_scanner")), assetRecord);
                 context = new();
                 context.Entry(task.Definition).State = EntityState.Unchanged;
                 context.Add(task);

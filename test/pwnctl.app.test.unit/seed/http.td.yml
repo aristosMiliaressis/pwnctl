@@ -14,6 +14,7 @@ TaskDefinitions:
     Aggressiveness: 5
     Subject: HttpEndpoint
     Filter: HttpEndpoint.Path == "/" && Tags["Protocol"] == "IIS"
+    CheckNotificationRules: true
 
   - Name: hakrawler
     CommandTemplate: "hakrawler -plain -h 'User-Agent: Mozilla/5.0' {{Url}}"

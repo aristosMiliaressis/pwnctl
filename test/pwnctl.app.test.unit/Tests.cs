@@ -496,9 +496,16 @@ public sealed class Tests
         Assert.True(record.InScope);
         Assert.Equal("tcp://abc.tesla.com:443", record.NetworkSocket.Address);
 
-        await processor.ProcessAsync($$"""{"Asset":"https://qwe.tesla.com","FoundBy":"httpx"}""", EntityFactory.TaskRecord.Id);
+        await processor.ProcessAsync($$"""{"Asset":"https://qwe.tesla.com","Tags":{"shortname-misconfig":"true"},"FoundBy":"httpx"}""", EntityFactory.TaskRecord.Id);
         serv = context.NetworkSockets.First(s => s.Address == "tcp://qwe.tesla.com:443");
         Assert.NotNull(serv);
+
+        var endpoint = context.HttpEndpoints.First(s => s.Url == "https://qwe.tesla.com/");
+        var notification = context.Notifications.Include(n => n.Rule).First(n => n.Rule.Name == ShortName.Create("shortname_misconfig") && n.RecordId == endpoint.Id);
+
+        await processor.ProcessAsync($$"""{"Asset":"https://qwe.tesla.com","Tags":{"second-order-takeover":"true"},"FoundBy":"httpx"}""", EntityFactory.TaskRecord.Id);
+        notification = context.Notifications.Include(n => n.Rule).FirstOrDefault(n => n.Rule.Name == ShortName.Create("second_order_takeover") && n.RecordId == endpoint.Id);
+        Assert.Null(notification);
 
         record = context.AssetRecords.Include(r => r.NetworkSocket).First(r => r.Id == serv.Id);
         Assert.True(record.InScope);
@@ -701,6 +708,14 @@ public sealed class Tests
         // check #3 NotificationTemplate
         notification.Task = task;
         Assert.Equal("domain tesla.com changed rcode from NXDOMAIN to SERVFAIL", notification.GetText());
+
+        // check #4 new asset notification
+        await processor.TryProcessAsync($$$"""{"Asset":"new.{{{parentDomain.Name}}}","tags":{"rcode":"SERVFAIL"}}""", task.Id);
+
+        var newDomain = context.DomainNames.First(d => d.Name == "new."+parentDomain.Name);
+
+        notification = context.Notifications.FirstOrDefault(n => n.TaskId == task.Id && n.RecordId == newDomain.Id);
+        Assert.NotNull(notification);
     }
 
     [Fact]

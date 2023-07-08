@@ -24,6 +24,7 @@ TaskDefinitions:
   - Name: tcp_scan
     CommandTemplate: tcp-scan.sh {{IP}}
     Subject: NetworkHost
+    CheckNotificationRules: true
 
   - Name: tls_probe
     CommandTemplate: tls-probe.sh {{Address}}
@@ -41,3 +42,4 @@ TaskDefinitions:
   - Name: udp_scan
     CommandTemplate: udp-scan.sh {{IP}}
     Subject: NetworkHost
+    CheckNotificationRules: true

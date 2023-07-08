@@ -19,7 +19,8 @@ public class TaskDefinitionDTO
     public int Aggressiveness { get; init; }
     public string Filter { get; init; }
     public bool MatchOutOfScope { get; init; }
-
+    public bool CheckNotificationRules { get; set; }
+    
     public MonitorRulesDTO MonitorRules { get; set; }
 
     public TaskDefinition ToEntity()
@@ -32,7 +33,8 @@ public class TaskDefinitionDTO
             IsActive = IsActive,
             Aggressiveness = Aggressiveness,
             Filter = Filter,
-            MatchOutOfScope = MatchOutOfScope
+            MatchOutOfScope = MatchOutOfScope,
+            CheckNotificationRules = CheckNotificationRules,
         };
 
         if (MonitorRules != null)

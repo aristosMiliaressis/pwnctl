@@ -41,6 +41,11 @@
   Topic: misconfigs
   CheckOutOfScope: true
 
+- Name: high_impact_wordlist_hit
+  Subject: HttpEndpoint
+  Filter: Tags["source"]=="high_impact.txt"
+  Topic: misconfigs
+
 # - Name: cname_takeover_check
 #   Subject: DomainName
 #   Filter: '!string.IsNullOrEmpty(Tags["cloud_misconfig"])'

@@ -1,4 +1,4 @@
-using pwnctl.domain.BaseClasses;
+﻿using pwnctl.domain.BaseClasses;
 using pwnctl.app.Assets.Interfaces;
 using pwnctl.app.Queueing.Interfaces;
 using pwnctl.app.Tasks.Entities;
@@ -98,9 +98,13 @@ namespace pwnctl.app.Assets
 
             if (record.Id == default || record.Tags.Any(t => t.Id == default) || foundByTask.Operation.Type == OperationType.Monitor)
             {
-                await CheckMisconfigRulesAsync(record);
+                if (foundByTask.Definition.CheckNotificationRules)
+                {
+                    await CheckFindingRulesAsync(record);
+                }
 
-                if (foundByTask.Operation.Type == OperationType.Crawl && foundByTask.Operation.State != OperationState.Stopped)
+                if (foundByTask.Operation.Type == OperationType.Crawl
+                 && foundByTask.Operation.State != OperationState.Stopped)
                 {
                     GenerateCrawlingTasks(foundByTask.Operation, record);
                 }
@@ -139,7 +143,7 @@ namespace pwnctl.app.Assets
             }
         }
 
-        private async Task CheckMisconfigRulesAsync(AssetRecord record)
+        private async Task CheckFindingRulesAsync(AssetRecord record)
         {
             foreach (var rule in _notificationRules.Where(rule => (record.InScope || rule.CheckOutOfScope) && rule.Check(record)))
             {
