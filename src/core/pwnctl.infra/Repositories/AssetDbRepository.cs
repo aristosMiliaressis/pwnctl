@@ -11,8 +11,9 @@ using Microsoft.EntityFrameworkCore;
 using pwnctl.app.Notifications.Entities;
 using pwnctl.domain.ValueObjects;
 using System.Data;
-using pwnctl.infra.Configuration;
+using Npgsql;
 using pwnctl.app;
+using pwnctl.kernel.Extensions;
 
 namespace pwnctl.infra.Repositories
 {
@@ -139,13 +140,8 @@ namespace pwnctl.infra.Repositories
         {
             try
             {
-                // TaskDefinitions are not tracked as a slight performance improvement
-                // so we have to null them to prevent the change tracker from attempting to add them
-                record.Notifications.ForEach(t => { t.Task = null; t.Rule = null; });
-                record.Tasks.ForEach(t => t.Definition = null);
-
                 // this prevents race conditions when checking if the record already exists
-                using (var trx = _context.Database.BeginTransaction(IsolationLevel.Serializable))
+                using (var trx = _context.Database.BeginTransaction(IsolationLevel.Serializable)) // TODO: try RepeatbleRead
                 {
                     var existingRecord = await FindRecordAsync(record.Asset);
                     if (existingRecord == null)
@@ -157,48 +153,57 @@ namespace pwnctl.infra.Repositories
                         _context.Add(record);
 
                         await _context.SaveChangesAsync();
+
+                        trx.Commit();
+                        return;
                     }
-                    else
+
+                    if (record.InScope)
                     {
-                        if (record.InScope)
-                        {
-                            _context.AssetRecords.FromSqlRaw("UPDATE asset_records SET \"InScope\" = true, \"ScopeId\" = %s, \"ConcurrencyToken\" = %s WHERE \"ScopeId\" != %s AND \"ConcurrencyToken\" = "
-                                                            + "(SELECT \"ConcurrencyToken\" FROM asset_records WHERE \"ConcurrencyToken\" = %s FOR UPDATE SKIP LOCKED);",
-                                                            record.ScopeId, Guid.NewGuid(), record.ScopeId, existingRecord.ConcurrencyToken);
-                        }
-
-                        _context.AddRange(record.Tags.Where(t => !existingRecord.Tags.Select(t => t.Name).Contains(t.Name)).Select(t =>
-                        {
-                            t.Record = existingRecord;
-                            t.RecordId = existingRecord.Id;
-                            return t;
-                        }));
-
-                        _context.AddRange(record.Tasks.Where(t => t.Id == default).Select(t =>
-                        {
-                            t.Record = null;
-                            t.RecordId = existingRecord.Id;
-                            return t;
-                        }));
-
-                        _context.AddRange(record.Notifications.Where(t => t.Id == default).Select(t =>
-                        {
-                            t.Record = null;
-                            t.RecordId = existingRecord.Id;
-                            return t;
-                        }));
-
-                        await _context.SaveChangesAsync();
+                        _context.AssetRecords
+                                .FromSqlRaw("UPDATE asset_records SET \"InScope\" = true, \"ScopeId\" = %s, \"ConcurrencyToken\" = %s WHERE \"ScopeId\" != %s AND \"ConcurrencyToken\" = "
+                                        + "(SELECT \"ConcurrencyToken\" FROM asset_records WHERE \"ConcurrencyToken\" = %s FOR UPDATE SKIP LOCKED);",
+                                        record.ScopeId, Guid.NewGuid(), record.ScopeId, existingRecord.ConcurrencyToken);
                     }
+
+                    _context.AddRange(record.Tags.Where(t => !existingRecord.Tags.Select(t => t.Name).Contains(t.Name)).Select(t =>
+                    {
+                        t.Record = existingRecord;
+                        t.RecordId = existingRecord.Id;
+                        return t;
+                    }));
+
+                    _context.AddRange(record.Tasks.Where(t => t.Id == default).Select(t =>
+                    {
+                        t.Record = null;
+                        t.RecordId = existingRecord.Id;
+                        return t;
+                    }));
+
+                    _context.AddRange(record.Notifications.Where(t => t.Id == default).Select(t =>
+                    {
+                        t.Record = null;
+                        t.RecordId = existingRecord.Id;
+                        return t;
+                    }));
+
+                    await _context.SaveChangesAsync();
 
                     trx.Commit();
                 }
-
-                _context.Entry(record).DetachReferenceGraph();
             }
-            catch (Exception)
+            catch (Exception ex) when (ex is DbUpdateException || ex is PostgresException || ex is DBConcurrencyException)
             {
+                PwnInfraContext.Logger.Warning(ex.ToRecursiveExInfo());
+                
                 // optimistic concurrency yolo!
+            }
+            finally
+            {
+                // detaching record references to avoid an ever growing
+                // change tracking graph and reduce momory consumption.
+                _context.Entry(record.Asset).DetachReferenceGraph();
+                _context.Entry(record).State = EntityState.Detached;
             }
         }
 

@@ -10,6 +10,15 @@ using pwnctl.infra;
 using pwnctl.infra.Scheduling;
 using pwnctl.api.Mediator.Handlers.Scope.Commands;
 using pwnctl.app.Common.ValueObjects;
+using pwnctl.app.Assets.DTO;
+using pwnctl.app.Assets;
+using pwnctl.domain.BaseClasses;
+using pwnctl.app.Assets.Aggregates;
+using pwnctl.app.Queueing.DTO;
+using pwnctl.app.Tasks.Entities;
+using pwnctl.app.Queueing.Interfaces;
+using pwnctl.app.Assets.Interfaces;
+using pwnctl.app.Tasks.Interfaces;
 
 namespace pwnctl.api.Mediator.Handlers.Operations.Commands
 {
@@ -17,6 +26,16 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
     {
         private readonly PwnctlDbContext _context = new();
         private readonly EventBridgeScheduler _scheduler = new();
+        private readonly AssetRepository _assetRepository;
+        private readonly TaskRepository _taskRepository;
+        private readonly TaskQueueService _taskQueueService;
+
+        public CreateOperationCommandHandler(AssetRepository assetRepo, TaskRepository taskRepo, TaskQueueService taskQueueSrv)
+        {
+            _assetRepository = assetRepo;
+            _taskRepository = taskRepo;
+            _taskQueueService = taskQueueSrv;
+        }
 
         public async Task<MediatedResponse> Handle(CreateOperationCommand command, CancellationToken cancellationToken)
         {
@@ -74,9 +93,41 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
         {
             var processor = AssetProcessorFactory.Create();
 
-            foreach (var asset in input.Where(a => !string.IsNullOrEmpty(a)))
+            foreach (var assetText in input.Where(a => !string.IsNullOrEmpty(a)))
             {
-                await processor.TryProcessAsync(asset, op);
+                AssetDTO dto = TagParser.Parse(assetText);
+
+                Asset asset = AssetParser.Parse(dto.Asset);
+
+                AssetRecord record = new(asset);
+
+
+                var scope = op.Scope.Definitions.FirstOrDefault(scope => scope.Definition.Matches(record.Asset));
+                if (scope != null)
+                    record.SetScopeId(scope.Definition.Id);
+
+                var outOfScopeTasks = _taskRepository.ListOutOfScope();
+                var allowedTasks = op.Policy.GetAllowedTasks();
+                allowedTasks.AddRange(outOfScopeTasks);
+
+                foreach (var definition in allowedTasks.Where(def => (record.InScope || def.MatchOutOfScope) && def.Matches(record)))
+                {
+                    // only queue tasks once per definition/asset pair
+                    var task = _taskRepository.Find(record, definition);
+                    if (task != null)
+                        continue;
+
+                    task = new TaskRecord(op, definition, record);
+                    record.Tasks.Add(task);
+                }
+
+                await _assetRepository.SaveAsync(record);
+
+                foreach (var task in record.Tasks)
+                {
+                    task.Definition = allowedTasks.First(t => t.Id == task.DefinitionId);
+                    await _taskQueueService.EnqueueAsync(new PendingTaskDTO(task));
+                }
             }
         }
     }

@@ -62,12 +62,22 @@ namespace pwnctl.infra.Repositories
                                         .ThenInclude(o => o.Scope)
                                         .ThenInclude(o => o.Definitions)
                                         .ThenInclude(o => o.Definition)
-                                    .AsNoTracking()
                                     .FirstOrDefault(r => r.Id == id));
+
+        public TaskDbRepository() { }
+
+        public TaskDbRepository(PwnctlDbContext context)
+        {
+            _context = context;
+        }
 
         public async Task<List<TaskRecord>> ListAsync(int pageIdx, int pageSize = 4096)
         {
             return await _context.TaskRecords
+                                .Include(p => p.Operation)
+                                    .ThenInclude(r => r.Policy)
+                                    .ThenInclude(r => r.TaskProfile)
+                                    .ThenInclude(r => r.TaskDefinitions)
                                 .Include(p => p.Definition)
                                 .Include(p => p.Record)
                                     .ThenInclude(r => r.NetworkRange)
@@ -104,6 +114,13 @@ namespace pwnctl.infra.Repositories
             var lambda = ExpressionTreeBuilder.BuildTaskMatchingLambda(asset.Id, definition.Id);
 
             return _context.FirstFromLambda<TaskRecord>(lambda);
+        }
+
+        public List<TaskDefinition> ListOutOfScope()
+        {
+            return _context.TaskDefinitions
+                            .Where(d => d.MatchOutOfScope)
+                            .ToList();
         }
 
         public async Task UpdateAsync(TaskRecord task)

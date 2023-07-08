@@ -83,8 +83,11 @@ namespace pwnctl.svc
             var task = await _taskRepo.FindAsync(taskDTO.TaskId);
             if (task == null)
             {
-                PwnInfraContext.Logger.Warning($"Task {taskDTO.TaskId} \"{taskDTO.Command}\" fot found in database.");
+                PwnInfraContext.Logger.Warning($"Task {taskDTO.TaskId} \"{taskDTO.Command}\" not found in database.");
+                timer.Stop();
+
                 await _queueService.DequeueAsync(taskDTO);
+                return;
             }
 
             try
@@ -94,12 +97,10 @@ namespace pwnctl.svc
             catch (TaskStateException ex)
             {
                 PwnInfraContext.Logger.Warning(ex.Message);
-
                 timer.Stop();
 
                 // probably a deduplication issue, remove from queue and move on
                 await _queueService.DequeueAsync(taskDTO);
-
                 return;
             }
 
@@ -164,13 +165,11 @@ namespace pwnctl.svc
 
                 try
                 {
-                    var task = await _taskRepo.FindAsync(batchDTO.TaskId);
-
                     foreach (var line in batchDTO.Lines)
                     {
                         PwnInfraContext.Logger.Debug("Processing: " + line);
 
-                        await _processor.TryProcessAsync(line, task.Operation, task);
+                        await _processor.TryProcessAsync(line, batchDTO.TaskId);
                     }
 
                     timer.Stop();

@@ -1,4 +1,4 @@
-﻿using pwnctl.domain.BaseClasses;
+using pwnctl.domain.BaseClasses;
 using pwnctl.app.Assets.Interfaces;
 using pwnctl.app.Queueing.Interfaces;
 using pwnctl.app.Tasks.Entities;
@@ -11,6 +11,7 @@ using pwnctl.app.Tasks.Interfaces;
 using pwnctl.app.Operations.Enums;
 using pwnctl.app.Notifications.Enums;
 using pwnctl.kernel;
+using pwnctl.app.Notifications.Interfaces;
 
 namespace pwnctl.app.Assets
 {
@@ -18,25 +19,26 @@ namespace pwnctl.app.Assets
     {
         private readonly AssetRepository _assetRepository;
         private readonly TaskRepository _taskRepository;
+        private readonly NotificationRepository _notificationRepository;
         private readonly TaskQueueService _taskQueueService;
         private readonly List<NotificationRule> _notificationRules;
         private readonly List<TaskDefinition> _outOfScopeTasks;
 
-        public AssetProcessor(AssetRepository assetRepo, TaskRepository taskRepo, TaskQueueService taskQueueService,
-                            List<NotificationRule> rules, List<TaskDefinition> outOfScopeTasks)
+        public AssetProcessor(AssetRepository assetRepo, TaskQueueService taskQueueService, TaskRepository taskRepo, NotificationRepository notificRepo)
         {
             _assetRepository = assetRepo;
             _taskRepository = taskRepo;
+            _notificationRepository = notificRepo;
             _taskQueueService = taskQueueService;
-            _outOfScopeTasks = outOfScopeTasks;
-            _notificationRules = rules;
+            _outOfScopeTasks = taskRepo.ListOutOfScope();
+            _notificationRules = notificRepo.ListRules();
         }
 
-        public async Task<bool> TryProcessAsync(string assetText, Operation operation, TaskRecord foundByTask = null)
+        public async Task<bool> TryProcessAsync(string assetText, int taskId)
         {
             try
             {
-                await ProcessAsync(assetText, operation, foundByTask);
+                await ProcessAsync(assetText, taskId);
                 return true;
             }
             catch (Exception ex)
@@ -46,16 +48,16 @@ namespace pwnctl.app.Assets
             }
         }
 
-        public async Task ProcessAsync(string assetText, Operation operation, TaskRecord foundByTask)
+        public async Task ProcessAsync(string assetText, int taskId)
         {
             AssetDTO dto = TagParser.Parse(assetText);
 
             Asset asset = AssetParser.Parse(dto.Asset);
 
-            await ProcessAssetAsync(asset, dto.Tags, operation, foundByTask);
+            await ProcessAssetAsync(asset, dto.Tags, taskId);
         }
 
-        internal async Task ProcessAssetAsync(Asset asset, Dictionary<string, object> tags, Operation operation, TaskRecord foundByTask, List<Asset> refChain = null)
+        internal async Task ProcessAssetAsync(Asset asset, Dictionary<string, object> tags, int taskId, List<Asset> refChain = null)
         {
             refChain = refChain == null
                     ? new List<Asset>()
@@ -70,8 +72,10 @@ namespace pwnctl.app.Assets
             // starting from the botton of the ref tree.
             foreach (var refAsset in GetReferencedAssets(asset))
             {
-                await ProcessAssetAsync(refAsset, null, operation, foundByTask, refChain);
+                await ProcessAssetAsync(refAsset, null, taskId, refChain);
             }
+
+            var foundByTask = await _taskRepository.FindAsync(taskId);
 
             var record = await _assetRepository.FindRecordAsync(asset);
             if (record == null)
@@ -79,35 +83,36 @@ namespace pwnctl.app.Assets
                 record = new AssetRecord(asset, foundByTask);
             }
 
-            record.MergeTags(tags, updateExisting: operation.Type == OperationType.Monitor);
+            var oldTags = record.Tags.ToDictionary(t => t.Name, t => t.Value);
+            record.MergeTags(tags, updateExisting: foundByTask.Operation.Type == OperationType.Monitor);
 
             if (!record.InScope)
             {
                 record = await _assetRepository.UpdateRecordReferences(record, asset);
 
-                var scope = operation.Scope.Definitions.FirstOrDefault(scope => scope.Definition.Matches(record.Asset)
+                var scope = foundByTask.Operation.Scope.Definitions.FirstOrDefault(scope => scope.Definition.Matches(record.Asset)
                                                                             || scope.Definition.Matches(asset));
                 if (scope != null)
                     record.SetScopeId(scope.Definition.Id);
             }
 
-            if (record.Id == default || record.Tags.Any(t => t.Id == default) || operation.Type == OperationType.Monitor)
+            if (record.Id == default || record.Tags.Any(t => t.Id == default) || foundByTask.Operation.Type == OperationType.Monitor)
             {
                 await CheckMisconfigRulesAsync(record);
 
-                if (operation.Type == OperationType.Crawl && operation.State != OperationState.Stopped)
+                if (foundByTask.Operation.Type == OperationType.Crawl && foundByTask.Operation.State != OperationState.Stopped)
                 {
-                    GenerateCrawlingTasks(operation, record);
+                    GenerateCrawlingTasks(foundByTask.Operation, record);
                 }
-                else if (operation.Type == OperationType.Monitor)
+                else if (foundByTask.Operation.Type == OperationType.Monitor)
                 {
-                    CheckMonitoringRules(record, foundByTask);
+                    CheckMonitoringRules(record, oldTags, foundByTask);
                 }
             }
 
             await _assetRepository.SaveAsync(record);
 
-            var allowedTasks = operation.Policy.GetAllowedTasks();
+            var allowedTasks = foundByTask.Operation.Policy.GetAllowedTasks();
             allowedTasks.AddRange(_outOfScopeTasks);
 
             foreach (var task in record.Tasks)
@@ -151,7 +156,7 @@ namespace pwnctl.app.Assets
             }
         }
 
-        private void CheckMonitoringRules(AssetRecord record, TaskRecord foundByTask)
+        private void CheckMonitoringRules(AssetRecord record, Dictionary<string, string> oldTags, TaskRecord foundByTask)
         {
             Notification notification = null;
 
@@ -173,7 +178,7 @@ namespace pwnctl.app.Assets
             var args = new Dictionary<string, object>
             {
                 { record.Asset.GetType().Name, record.Asset },
-                { "oldTags", foundByTask.Record },
+                { "oldTags", oldTags },
                 { "newTags", record }
             };
 

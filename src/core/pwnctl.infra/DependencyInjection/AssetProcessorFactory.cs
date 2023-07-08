@@ -14,17 +14,11 @@ public static class AssetProcessorFactory
         var context = new PwnctlDbContext();
 
         var assetRepo = new AssetDbRepository(context);
-        var taskRepo = new TaskDbRepository();
+        var taskRepo = new TaskDbRepository(context);
+        var notificationRepo = new NotificationDbRepository(context);
 
         var taskQueueService = TaskQueueServiceFactory.Create();
 
-        // TODO: maybe cache in-memory?
-        var rules = context.NotificationRules.AsNoTracking().ToList();
-        var outOfScopeTasks = context.TaskDefinitions
-                                    .Where(d => d.MatchOutOfScope)
-                                    .AsNoTracking()
-                                    .ToList();
-
-        return new AssetProcessor(assetRepo, taskRepo, taskQueueService, rules, outOfScopeTasks);
+        return new AssetProcessor(assetRepo, taskQueueService, taskRepo, notificationRepo);
     }
 }

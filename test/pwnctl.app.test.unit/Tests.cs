@@ -268,20 +268,20 @@ public sealed class Tests
             }
         };
 
-        tasks.Add(AssetProcessorFactory.Create().ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Operation, EntityFactory.TaskRecord));
-        tasks.Add(AssetProcessorFactory.Create().ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Operation, EntityFactory.TaskRecord));
-        tasks.Add(AssetProcessorFactory.Create().ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Operation, EntityFactory.TaskRecord));
-        tasks.Add(AssetProcessorFactory.Create().ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Operation, EntityFactory.TaskRecord));
-        tasks.Add(AssetProcessorFactory.Create().ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Operation, EntityFactory.TaskRecord));
-        tasks.Add(AssetProcessorFactory.Create().ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Operation, EntityFactory.TaskRecord));
-        tasks.Add(AssetProcessorFactory.Create().ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Operation, EntityFactory.TaskRecord));
-        tasks.Add(processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Operation, EntityFactory.TaskRecord));
-        tasks.Add(processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Operation, EntityFactory.TaskRecord));
-        tasks.Add(processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Operation, EntityFactory.TaskRecord));
-        tasks.Add(processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Operation, EntityFactory.TaskRecord));
-        tasks.Add(processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Operation, EntityFactory.TaskRecord));
-        tasks.Add(processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Operation, EntityFactory.TaskRecord));
-        tasks.Add(processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Operation, EntityFactory.TaskRecord));
+        tasks.Add(AssetProcessorFactory.Create().ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
+        tasks.Add(AssetProcessorFactory.Create().ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
+        tasks.Add(AssetProcessorFactory.Create().ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
+        tasks.Add(AssetProcessorFactory.Create().ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
+        tasks.Add(AssetProcessorFactory.Create().ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
+        tasks.Add(AssetProcessorFactory.Create().ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
+        tasks.Add(AssetProcessorFactory.Create().ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
+        tasks.Add(processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
+        tasks.Add(processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
+        tasks.Add(processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
+        tasks.Add(processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
+        tasks.Add(processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
+        tasks.Add(processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
+        tasks.Add(processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
         tasks.Add(repository.SaveAsync(new AssetRecord(service)));
         tasks.Add(repository.SaveAsync(new AssetRecord(service)));
         tasks.Add(repository.SaveAsync(new AssetRecord(service)));
@@ -308,7 +308,7 @@ public sealed class Tests
             }
         };
 
-        await processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(exampleUrl), EntityFactory.TaskRecord.Operation, EntityFactory.TaskRecord);
+        await processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(exampleUrl), EntityFactory.TaskRecord.Id);
 
         var endpointRecord = context.AssetRecords
                                 .Include(r => r.Tags)
@@ -331,7 +331,7 @@ public sealed class Tests
             {"nullTag", ""}
         };
 
-        await processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(exampleUrl), EntityFactory.TaskRecord.Operation, EntityFactory.TaskRecord);
+        await processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(exampleUrl), EntityFactory.TaskRecord.Id);
 
         endpointRecord = repository.ListEndpointsAsync(0).Result.First(t => t.HttpEndpoint.Url == "https://example.com/");
 
@@ -361,7 +361,7 @@ public sealed class Tests
         };
 
         // process same asset twice and make sure tasks are only assigned once
-        await processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Operation, EntityFactory.TaskRecord);
+        await processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id);
         endpointRecord = repository.ListEndpointsAsync(0).Result.First(ep => ep.HttpEndpoint.Url == "https://iis.tesla.com/");
         var tasks = context.TaskRecords.Include(t => t.Definition).Where(t => t.Record.Id == endpointRecord.Asset.Id).ToList();
         Assert.DoesNotContain(tasks.GroupBy(t => t.DefinitionId), g => g.Count() > 1);
@@ -381,7 +381,7 @@ public sealed class Tests
         };
 
         // test Tag filter
-        await processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(apacheTeslaUrl), EntityFactory.TaskRecord.Operation, EntityFactory.TaskRecord);
+        await processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(apacheTeslaUrl), EntityFactory.TaskRecord.Id);
         endpointRecord = repository.ListEndpointsAsync(0).Result.First(r => r.HttpEndpoint.Url == "https://apache.tesla.com/");
 
         tasks = context.TaskRecords.Include(t => t.Definition).Where(t => t.Record.Id == endpointRecord.Id).ToList();
@@ -395,7 +395,7 @@ public sealed class Tests
             }
         };
 
-        await processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(sshService), EntityFactory.TaskRecord.Operation, EntityFactory.TaskRecord);
+        await processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(sshService), EntityFactory.TaskRecord.Id);
         var service = context.NetworkSockets.First(ep => ep.Address == "tcp://1.3.3.7:22");
     }
 
@@ -406,7 +406,7 @@ public sealed class Tests
         PwnctlDbContext context = new();
         TaskDbRepository repository = new();
 
-        await processor.ProcessAsync("tesla.com", EntityFactory.TaskRecord.Operation, EntityFactory.TaskRecord);
+        await processor.ProcessAsync("tesla.com", EntityFactory.TaskRecord.Id);
 
         var record = context.AssetRecords.Include(r => r.DomainName).First(r => r.DomainName.Name == "tesla.com");
         Assert.True(record.InScope);
@@ -419,7 +419,7 @@ public sealed class Tests
                                     .First(t => t.Definition.Name == ShortName.Create("cloud_enum"));
         Assert.Equal("cloud-enum.sh tesla", cloudEnumTask.Command);
 
-        await processor.ProcessAsync("tesla.com IN A 31.3.3.7", EntityFactory.TaskRecord.Operation, EntityFactory.TaskRecord);
+        await processor.ProcessAsync("tesla.com IN A 31.3.3.7", EntityFactory.TaskRecord.Id);
 
         record = context.AssetRecords.Include(r => r.DomainNameRecord).First(r => r.DomainNameRecord.Key == "tesla.com" && r.DomainNameRecord.Value == "31.3.3.7");
         Assert.True(record.InScope);
@@ -432,21 +432,21 @@ public sealed class Tests
         record = context.AssetRecords.Include(r => r.DomainNameRecord).First(r => r.DomainNameRecord.Key == "tesla.com" && r.DomainNameRecord.Value == "31.3.3.7");
         Assert.True(record.InScope);
 
-        await processor.ProcessAsync("6.6.6.6:65530", EntityFactory.TaskRecord.Operation, EntityFactory.TaskRecord);
+        await processor.ProcessAsync("6.6.6.6:65530", EntityFactory.TaskRecord.Id);
         var host = context.NetworkHosts.First(h => h.IP == "6.6.6.6");
         var service = context.NetworkSockets.First(srv => srv.Address == "tcp://6.6.6.6:65530");
 
-        await processor.TryProcessAsync("sub.tesla.com", EntityFactory.TaskRecord.Operation, EntityFactory.TaskRecord);
+        await processor.TryProcessAsync("sub.tesla.com", EntityFactory.TaskRecord.Id);
         var domain = context.DomainNames.First(a => a.Name == "sub.tesla.com");
         context.AssetRecords.First(a => a.Id == domain.Id);
         domain = context.DomainNames.First(a => a.Name == "tesla.com");
         context.AssetRecords.First(a => a.Id == domain.Id);
 
-        await processor.ProcessAsync("https://1.3.3.7:443", EntityFactory.TaskRecord.Operation, EntityFactory.TaskRecord);
-        await processor.ProcessAsync("https://xyz.tesla.com:443", EntityFactory.TaskRecord.Operation, EntityFactory.TaskRecord);
-        await processor.ProcessAsync("https://xyz.tesla.com:443/api?key=xxx", EntityFactory.TaskRecord.Operation, EntityFactory.TaskRecord);
-        await processor.ProcessAsync("https://xyz.tesla.com:443/api?duplicate=xxx&duplicate=yyy", EntityFactory.TaskRecord.Operation, EntityFactory.TaskRecord);
-        await processor.ProcessAsync("xyz.tesla.com. IN A 1.3.3.7", EntityFactory.TaskRecord.Operation, EntityFactory.TaskRecord);
+        await processor.ProcessAsync("https://1.3.3.7:443", EntityFactory.TaskRecord.Id);
+        await processor.ProcessAsync("https://xyz.tesla.com:443", EntityFactory.TaskRecord.Id);
+        await processor.ProcessAsync("https://xyz.tesla.com:443/api?key=xxx", EntityFactory.TaskRecord.Id);
+        await processor.ProcessAsync("https://xyz.tesla.com:443/api?duplicate=xxx&duplicate=yyy", EntityFactory.TaskRecord.Id);
+        await processor.ProcessAsync("xyz.tesla.com. IN A 1.3.3.7", EntityFactory.TaskRecord.Id);
         record = context.AssetRecords.Include(r => r.DomainNameRecord).First(r => r.DomainNameRecord.Key == "xyz.tesla.com" && r.DomainNameRecord.Value == "1.3.3.7");
         Assert.True(record.InScope);
 
@@ -478,7 +478,7 @@ public sealed class Tests
         Assert.True(record.InScope);
 
         processor = AssetProcessorFactory.Create();
-        await processor.ProcessAsync("https://1.3.3.7:443", EntityFactory.TaskRecord.Operation, EntityFactory.TaskRecord);
+        await processor.ProcessAsync("https://1.3.3.7:443", EntityFactory.TaskRecord.Id);
         context = new();
         record = context.AssetRecords.Include(r => r.NetworkSocket).First(r => r.NetworkSocket.Address == "tcp://1.3.3.7:443");
         Assert.True(record.InScope);
@@ -486,7 +486,7 @@ public sealed class Tests
         record = context.AssetRecords.Include(r => r.HttpEndpoint).First(r => r.HttpEndpoint.Url == "https://1.3.3.7/");
         Assert.True(record.InScope);
 
-        await processor.ProcessAsync("https://abc.tesla.com", EntityFactory.TaskRecord.Operation, EntityFactory.TaskRecord);
+        await processor.ProcessAsync("https://abc.tesla.com", EntityFactory.TaskRecord.Id);
         record = context.AssetRecords.Include(r => r.HttpEndpoint).First(r => r.HttpEndpoint.Url == "https://abc.tesla.com/");
         Assert.True(record.InScope);
         var serv = context.NetworkSockets.First(s => s.Address == "tcp://abc.tesla.com:443");
@@ -496,7 +496,7 @@ public sealed class Tests
         Assert.True(record.InScope);
         Assert.Equal("tcp://abc.tesla.com:443", record.NetworkSocket.Address);
 
-        await processor.ProcessAsync($$"""{"Asset":"https://qwe.tesla.com","FoundBy":"httpx"}""", EntityFactory.TaskRecord.Operation, EntityFactory.TaskRecord);
+        await processor.ProcessAsync($$"""{"Asset":"https://qwe.tesla.com","FoundBy":"httpx"}""", EntityFactory.TaskRecord.Id);
         serv = context.NetworkSockets.First(s => s.Address == "tcp://qwe.tesla.com:443");
         Assert.NotNull(serv);
 
@@ -512,7 +512,7 @@ public sealed class Tests
         TaskDbRepository repository = new();
         var processor = AssetProcessorFactory.Create();
 
-        await processor.ProcessAsync("172.16.17.0/24", EntityFactory.TaskRecord.Operation, EntityFactory.TaskRecord);
+        await processor.ProcessAsync("172.16.17.0/24", EntityFactory.TaskRecord.Id);
         Assert.True(context.TaskRecords.Include(t => t.Definition).Any(t => t.Definition.Name == ShortName.Create("nmap_basic")));
         Assert.False(context.TaskRecords
                             .Include(t => t.Definition)
@@ -530,7 +530,7 @@ public sealed class Tests
         };
 
         // TaskDefinition.Filter fail test
-        await processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(exampleUrl), EntityFactory.TaskRecord.Operation, EntityFactory.TaskRecord);
+        await processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(exampleUrl), EntityFactory.TaskRecord.Id);
 
         // aggresivness test
         Assert.True(context.TaskRecords.Include(t => t.Definition).Any(t => t.Definition.Name == ShortName.Create("hakrawler")));
@@ -545,7 +545,7 @@ public sealed class Tests
         Assert.Equal("hakrawler -plain -h 'User-Agent: Mozilla/5.0' https://172.16.17.15/api/token", hakrawlerTask.Command);
 
         // TaskDefinition.Filter pass test
-        await processor.ProcessAsync("https://172.16.17.15/", EntityFactory.TaskRecord.Operation, EntityFactory.TaskRecord);
+        await processor.ProcessAsync("https://172.16.17.15/", EntityFactory.TaskRecord.Id);
         Assert.True(context.TaskRecords.Include(t => t.Definition).Any(t => t.Definition.Name == ShortName.Create("ffuf_common")));
 
         // Task added on existing asset
@@ -556,11 +556,11 @@ public sealed class Tests
                {"Protocol", "IIS"}
             }
         };
-        await processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(exampleUrl), EntityFactory.TaskRecord.Operation, EntityFactory.TaskRecord);
+        await processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(exampleUrl), EntityFactory.TaskRecord.Id);
         Assert.True(context.TaskRecords.Include(t => t.Definition).Any(t => t.Definition.Name == ShortName.Create("shortname_scanner")));
 
         // multiple interpolation test
-        await processor.ProcessAsync("sub.tesla.com", EntityFactory.TaskRecord.Operation, EntityFactory.TaskRecord);
+        await processor.ProcessAsync("sub.tesla.com", EntityFactory.TaskRecord.Id);
         var resolutionTask = context.TaskRecords
                                     .Include(t => t.Definition)
                                     .Include(t => t.Record)
@@ -585,7 +585,7 @@ public sealed class Tests
                                     .First(t => t.Definition.Name == ShortName.Create("cloud_enum"));
         Assert.Equal("cloud-enum.sh tesla", cloudEnumTask.Command);
 
-        await processor.ProcessAsync("https://tesla.s3.amazonaws.com", EntityFactory.TaskRecord.Operation, EntityFactory.TaskRecord);
+        await processor.ProcessAsync("https://tesla.s3.amazonaws.com", EntityFactory.TaskRecord.Id);
         var record = context.AssetRecords.Include(r => r.HttpEndpoint).First(r => r.HttpEndpoint.Url == "https://tesla.s3.amazonaws.com/");
 
         var task = context.TaskRecords
@@ -602,7 +602,7 @@ public sealed class Tests
         };
 
         // out of scope test
-        await processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(outOfScope), EntityFactory.TaskRecord.Operation, EntityFactory.TaskRecord);
+        await processor.ProcessAsync(PwnInfraContext.Serializer.Serialize(outOfScope), EntityFactory.TaskRecord.Id);
         var xx = context.AssetRecords
                         .Include(r => r.HttpEndpoint)
                         .Include(r => r.Tasks)
@@ -675,7 +675,7 @@ public sealed class Tests
                             .First(t => t.Definition.Name == ShortName.Create("domain_resolution")
                                    && t.Record.DomainName.Name == parentDomain.Name);
 
-        await processor.TryProcessAsync($$$"""{"Asset":"{{{parentDomain.Name}}}","tags":{"rcode":"SERVFAIL"}}""", op, task);
+        await processor.TryProcessAsync($$$"""{"Asset":"{{{parentDomain.Name}}}","tags":{"rcode":"SERVFAIL"}}""", task.Id);
 
         // check #1 rcode tag got updated
         var rcodeTag = context.Tags
@@ -722,7 +722,7 @@ public sealed class Tests
 
         foreach (var line in stdout.ToString().Split("\n").Where(l => !string.IsNullOrEmpty(l)))
         {
-            await processor.ProcessAsync(line, task.Operation, task);
+            await processor.ProcessAsync(line, task.Id);
         }
 
         var record = context.AssetRecords
@@ -739,7 +739,7 @@ public sealed class Tests
 
         foreach (var line in stdout.ToString().Split("\n").Where(l => !string.IsNullOrEmpty(l)))
         {
-            await processor.ProcessAsync(line, EntityFactory.TaskRecord.Operation, EntityFactory.TaskRecord);
+            await processor.ProcessAsync(line, EntityFactory.TaskRecord.Id);
         }
 
         record = context.AssetRecords
@@ -756,7 +756,7 @@ public sealed class Tests
 
         foreach (var line in stdout.ToString().Split("\n").Where(l => !string.IsNullOrEmpty(l)))
         {
-            await processor.ProcessAsync(line, EntityFactory.TaskRecord.Operation, EntityFactory.TaskRecord);
+            await processor.ProcessAsync(line, EntityFactory.TaskRecord.Id);
         }
 
         record = context.AssetRecords
