@@ -11,8 +11,8 @@ then
     webanalyze -update 2>/dev/null
 fi
 
-webanalyze -crawl 1 -search -host $url -output json > $temp 2>/dev/null
+webanalyze -crawl 3 -search -host $url -output json > $temp 2>/dev/null
 
-tags=$(cat $temp | jq -r -c '.matches[] | "\"\(.app.category_names[0])\": \"\(.app_name)\""' | tr '\n' ',' | head -c -1)
+tags=$(cat $temp | jq -r -c '.matches[] | "\"\(.app.category_names[0])\": \"\(.app_name)\""' | sort -u | tr '\n' ',' | head -c -1)
 
 echo '{"Asset":"'$url'","Tags":{'$tags'}}' 2>/dev/null

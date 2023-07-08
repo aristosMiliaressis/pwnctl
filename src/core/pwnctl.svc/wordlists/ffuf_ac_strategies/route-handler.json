@@ -1,0 +1,15 @@
+{
+	"aspx":["asgfdsgdfsgdfs.aspx","sdfgsdfgds.aspx"],
+	"asmx":["asgfdsgdfsgdfs.asmx","sdfgsdfgds.asmx"],
+	"ashx":["asgfdsgdfsgdfs.ashx","sdfgsdfgds.ashx"],
+	"axd":["asgfdsgdfsgdfs.axd","sdfgsdfgds.axd"],
+	"php":["asgfdsgdfsgdfs.php","sdfgsdfgds.php"],
+	"cgi":["asgfdsgdfsgdfs.cgi","sdfgsdfgds.cgi"],
+	"jsp":["asgfdsgdfsgdfs.jsp","sdfgsdfgds.jsp"],
+	"jsf":["asgfdsgdfsgdfs.jsf","sdfgsdfgds.jsf"],
+	"cfm":["asgfdsgdfsgdfs.cfm","sdfgsdfgds.cfm"],
+	"ini":["asgfdsgdfsgdfs.ini","sdfgsdfgds.ini"],
+	"config":["asgfdsgdfsgdfs.config","sdfgsdfgds.config"],
+	"zip":["asgfdsgdfsgdfs.zip","sdfgsdfgds.zip"],
+	"css":["asgfdsgdfsgdfs.css","sdfgsdfgds.css"]
+}

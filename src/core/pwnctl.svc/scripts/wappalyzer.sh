@@ -2,17 +2,14 @@
 set -euo pipefail 
 
 url=$1
+temp=`mktemp`
+trap "rm $temp" EXIT
 
-tags=$(wappy -u $url | grep -v exception \
-    | grep . \
-    | tail -n +2 \
-    | while read line; \
-    do \
-        key=$(echo $line | cut -d : -f 1|xargs); \
-        value=$(echo $line | cut -d : -f 2 | cut -d '[' -f 1|xargs); \
-        echo "\"$key\":\"$value\""; \
-    done \
-    | tr '\n' ',' \
-    | head -c -1)
+wappy -q -wf $temp -u $url >/dev/null
+
+tags=$(cat $temp \
+    | tail -n +2 | cut -d , -f 3- | tr ',' '\t' \
+    | awk -F '\t' '{print "\""$1"\":\""$2"\",\""$1" version\":\""$3"\""}' \
+    | tr ',' '\n' | grep -v unknown | tr '\n' , | head -c -1)
 
 echo '{"Asset":"'$url'","Tags":{'$tags'}}'

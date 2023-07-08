@@ -1,0 +1,12 @@
+{
+	"WAF_PATH_XSS":["sgdsfgsgf/<script>alert(1)</script>","asdfasdfdsaf/<script>alert(22)</script>"],
+	"WAF_PATH_LFI":["asdfaasg/../../etc/passwd","sadgfdsdfhgdf/../../etc/passwd"],
+	"WAF_PATH_LFI2":["sadgkj/.../.../etc/passwd","asdsdfgfdgd/.../.../etc/passwd"],
+	"WAF_DOUBLE_SLASH":["sadfghkj//etc//passwd","sadfihuyus//etc//passwd"],
+	"WAF_FUZZY_CHAR":["sdfgdsfg::~$()><'!","asfdasdfjlk::~$()><'!"],
+	"WAF_FUZZY_CHAR2":["pNdPspnFahKlNMoe%20/","oFUPFxQF%20/"],
+	"WAF_FUZZY_CHAR3":["pNdPspnFahKlNMoe%0a.html","oFUPFxQF%0a.html"],
+	"WAF_QUERY_XSS":["pNdPspnFahKlNMoe?x=<script>alert(1)</script>","oFUPFxQF?x=<script>alert(22)</script>"],
+	"WAF_FUZZY_QUERY":["pNdPspnFahKlNMoe?x=::~$()><'!","oFUPFxQF?x=~$()><'!:::"],
+	"WAF_QUESTIONMARKS": ["??", "????"]
+}

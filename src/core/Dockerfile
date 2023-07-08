@@ -144,7 +144,7 @@ RUN git clone https://github.com/xnl-h4ck3r/xnLinkFinder.git \
     && python3 setup.py install
 RUN git clone https://github.com/EnableSecurity/wafw00f.git \
     && cd wafw00f && python3 setup.py install
-#RUN go install github.com/rverton/webanalyze/cmd/webanalyze@latest
+RUN go install github.com/rverton/webanalyze/cmd/webanalyze@latest
 RUN go install github.com/sw33tLie/sns@latest
 RUN go install github.com/gwen001/github-subdomains@latest
 RUN pip3 install s3scanner
@@ -166,6 +166,8 @@ RUN go install github.com/sensepost/gowitness@latest
 RUN go install github.com/detectify/page-fetch@latest
 RUN go install github.com/pwnesia/dnstake/cmd/dnstake@latest
 RUN nuclei -ud /opt/nuclei_templates/
+RUN git clone https://github.com/aristosMiliaressis/wordlist_builder.git
+RUN cd wordlist_builder && chmod +x wordlist_builder.sh && ./wordlist_builder.sh /opt/wordlists
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 
@@ -192,7 +194,9 @@ COPY pwnctl.svc/wordlists/ /opt/wordlists/
 COPY pwnctl.svc/nuclei_templates/ /opt/nuclei_templates/
 COPY pwnctl.svc/scripts/* /opt/scripts/
 RUN chmod -R +x /opt/scripts \
-    && mv /opt/scripts/* /usr/local/bin/
+    && mv /opt/scripts/* /usr/local/bin/ \
+    && mkdir -p ~/.config/ffuf/autocalibration \
+    && mv /opt/wordlists/ffuf_ac_strategies/* ~/.config/ffuf/autocalibration
 
 COPY pwnctl.svc/entrypoint.sh /opt/pwnctl-svc/entrypoint.sh
 RUN chmod +x /opt/pwnctl-svc/entrypoint.sh

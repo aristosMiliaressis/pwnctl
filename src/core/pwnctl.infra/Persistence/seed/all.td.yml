@@ -151,6 +151,11 @@ TaskDefinitions:
     Filter: HttpEndpoint.Path == "/"
     Subject: HttpEndpoint
 
+  - Name: webanalyze
+    CommandTemplate: webanalyze.sh {{Url}}
+    Filter: HttpEndpoint.Path == "/"
+    Subject: HttpEndpoint
+
   - Name: webcrawl
     CommandTemplate: webcrawl.sh {{Url}}
     Filter: HttpEndpoint.Path == "/"
@@ -176,12 +181,28 @@ TaskDefinitions:
     Subject: HttpEndpoint
     Filter: Tags["Web servers"].Contains("IIS")||Tags["Web frameworks"]=="Microsoft ASP.NET"||Tags["Server"].Contains("IIS")||Tags["Server"].Contains("Microsoft-HTTPAPI")
 
-  - Name: dir_brute_all
-    CommandTemplate: dir-brute.sh {{Url}} /opt/wordlists/all.txt
+  - Name: dir_fuzz_main
+    CommandTemplate: dir-fuzz.sh {{Url}} /opt/wordlists/directories.txt /opt/wordlists/high_impact.txt
     Filter: HttpEndpoint.Path == "/"
     Subject: HttpEndpoint
 
-  - Name: dir_brute_config
-    CommandTemplate: dir-brute.sh {{Url}} /opt/wordlists/config.txt
-    Filter: HttpEndpoint.Path == "/"
+  - Name: dir_fuzz_iis_asp
+    CommandTemplate: dir-fuzz.sh {{Url}} /opt/wordlists/tech/iis_asp.txt
+    Filter: HttpEndpoint.Path=="/"&&(Tags["Web servers"].Contains("IIS")||Tags["Web frameworks"]=="Microsoft ASP.NET"||Tags["Operating systems"]=="Windows Server")
     Subject: HttpEndpoint
+
+  - Name: dir_fuzz_tomcat_csp
+    CommandTemplate: dir-fuzz.sh {{Url}} /opt/wordlists/tech/tomcat_jsp.txt
+    Filter: HttpEndpoint.Path=="/"&&(Tags["Web servers"].Contains("Apache Tomcat")||Tags["Web frameworks"]=="Spring"||Tags["Programming languages"]=="Java")
+    Subject: HttpEndpoint
+
+  - Name: dir_fuzz_apache_php
+    CommandTemplate: dir-fuzz.sh {{Url}} /opt/wordlists/tech/apache_php.txt
+    Filter: HttpEndpoint.Path=="/"&&(Tags["Web servers"].Equals("Apache")||Tags["Programming languages"]=="PHP")
+    Subject: HttpEndpoint
+
+  - Name: dir_fuzz_nginx
+    CommandTemplate: dir-fuzz.sh {{Url}} /opt/wordlists/tech/nginx.txt
+    Filter: HttpEndpoint.Path=="/"&&Tags["Web servers"].Equals("Nginx")
+    Subject: HttpEndpoint
+
