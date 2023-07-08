@@ -1,17 +1,17 @@
 #!/bin/bash
 
 url=$1
-tmp=`mktemp`
-tmp2=`mktemp`
+katana_tmp=`mktemp`
+temp=`mktemp`
+trap "rm $katana_tmp $temp" EXIT
 
-timeout -k 10 2400 katana -d 10 -silent --no-sandbox -jc -hl -kf all -u $url -o $tmp >/dev/null
+katana -d 10 -silent -nc -or -ob -j -jc -kf all -fx -u $url -o $katana_tmp >/dev/null
 
-echo $url | timeout -k 10 2400 hakrawler -insecure -u -h "User-Agent: $(uagen)" >> $tmp
+cat $katana_tmp | jq -r .request.endpoint | sort -u 2>/dev/null
 
-timeout -k 10 2400 python3 /opt/tools/xnLinkFinder/xnLinkFinder.py -sf $url -insecure -d 1 -i $url -sp $url -u 'desktop' -o $tmp2 -vv > /dev/null
+cat $katana_tmp \
+    | jq -c 'select( .response.forms != null ) | .response.forms[] as $form | select( $form.parameters != null) | $form.parameters[] | { asset:($form.action+"?"+.), tags:{form:true,enctype:$form.enctype,method:$form.method} }' \
+    | jq -c 'if .tags.method != "GET" then .tags.Type="Body" else . end' 2>/dev/null >> $temp
 
-cat $tmp2 >> $tmp
-cat $tmp | sort -u
+cat $temp | grep "form\":true" | while read url; do param=$(echo $url | jq -r .asset | cut -d '?' -f2); tags=$(echo $url | jq -c .tags); echo $url | jq -r .asset | sed 's/%/\\\\x/g' | xargs -I {} printf "{}\n" | unfurl format "{\"asset\":\"%s:%a%p?$param\",\"tags\":$tags}"; done | sort -u 2>/dev/null
 
-rm $tmp2
-rm $tmp

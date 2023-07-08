@@ -95,7 +95,7 @@ RUN go install github.com/projectdiscovery/tlsx/cmd/tlsx@latest
 RUN go install github.com/projectdiscovery/dnsx/cmd/dnsx@latest
 RUN go install github.com/projectdiscovery/httpx/cmd/httpx@latest
 RUN go install github.com/projectdiscovery/notify/cmd/notify@latest
-RUN go install github.com/projectdiscovery/katana/cmd/katana@latest
+#RUN go install github.com/projectdiscovery/katana/cmd/katana@latest
 RUN go install github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
 RUN go install github.com/projectdiscovery/cdncheck/cmd/cdncheck@latest
 RUN go install github.com/projectdiscovery/asnmap/cmd/asnmap@latest
@@ -160,12 +160,14 @@ RUN git clone https://github.com/gokulapap/wappalyzer-cli && cd wappalyzer-cli &
 RUN curl https://github.com/mgdm/htmlq/releases/download/v0.4.0/htmlq-x86_64-linux.tar.gz -L -o htmlq-x86_64-linux.tar.gz \
     && tar xzf htmlq-x86_64-linux.tar.gz \
     && rm htmlq-x86_64-linux.tar.gz && mv htmlq /usr/local/bin
-
-RUN git clone https://github.com/aristosMiliaressis/ffuf.git && go build -C ffuf && mv ffuf/ffuf /usr/local/bin
 RUN go install github.com/sensepost/gowitness@latest
 RUN go install github.com/detectify/page-fetch@latest
 RUN go install github.com/pwnesia/dnstake/cmd/dnstake@latest
 RUN nuclei -ud /opt/nuclei_templates/
+
+RUN git clone https://github.com/aristosMiliaressis/ffuf.git && go build -C ffuf && mv ffuf/ffuf /usr/local/bin
+RUN git clone https://github.com/aristosMiliaressis/katana.git && cd katana && make build && mv ./katana /usr/local/bin/
+
 RUN git clone https://github.com/aristosMiliaressis/wordlist_builder.git
 RUN cd wordlist_builder && chmod +x wordlist_builder.sh && ./wordlist_builder.sh /opt/wordlists
 
