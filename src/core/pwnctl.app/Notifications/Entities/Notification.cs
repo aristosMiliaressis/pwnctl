@@ -38,7 +38,9 @@ namespace pwnctl.app.Notifications.Entities
             if (RuleId.HasValue || Rule != null)
             {
                 if (!string.IsNullOrEmpty(Rule.Template))
-                    return Rule.Template.Interpolate(Record.Asset);
+                    return Rule.Template.Interpolate(Record.Asset, ignoreInvalid: true)
+                                        .Replace("Tags", "")
+                                        .Interpolate(Record, ignoreInvalid: true);
 
                 return $"{Record.Asset} triggered rule {Rule.Name.Value}";
             }

@@ -46,6 +46,12 @@
   Filter: Tags["source"]=="high_impact.txt"
   Topic: misconfigs
 
+- Name: mdwfuzzer
+  Subject: HttpEndpoint
+  Filter: Tags["mdwfuzzer_check"]!=""
+  Template: '{{Url}} triggered mdwfuzzer check {{Tags["mdwfuzzer_check"]}} with word {{Tags["mdwfuzzer_word"]}}'
+  Topic: misconfigs
+
 # - Name: cname_takeover_check
 #   Subject: DomainName
 #   Filter: '!string.IsNullOrEmpty(Tags["cloud_misconfig"])'

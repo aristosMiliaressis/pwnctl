@@ -207,7 +207,7 @@ TaskDefinitions:
     Filter: HttpEndpoint.Path=="/"&&(Tags["Web servers"].Contains("IIS")||Tags["Web frameworks"]=="Microsoft ASP.NET"||Tags["Operating systems"]=="Windows Server")
     Subject: HttpEndpoint
 
-  - Name: dir_fuzz_tomcat_csp
+  - Name: dir_fuzz_tomcat_jsp
     CommandTemplate: dir-fuzz.sh {{Url}} /opt/wordlists/tech/tomcat_jsp.txt
     Filter: HttpEndpoint.Path=="/"&&(Tags["Web servers"].Contains("Apache Tomcat")||Tags["Web frameworks"]=="Spring"||Tags["Programming languages"]=="Java")
     Subject: HttpEndpoint
@@ -222,3 +222,7 @@ TaskDefinitions:
     Filter: HttpEndpoint.Path=="/"&&Tags["Web servers"].Equals("Nginx")
     Subject: HttpEndpoint
 
+  - Name: mdwfuzzer
+    CommandTemplate: mdwfuzzer.sh {{Url}}
+    Filter: HttpEndpoint.Path=="/""
+    Subject: HttpEndpoint

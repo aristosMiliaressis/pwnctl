@@ -65,24 +65,13 @@ namespace pwnctl.app.test.unit
                 return policy;
             }
         }
-
-
-        public static TaskRecord TaskRecord
+        public static Operation Operation
         {
             get
             {
                 PwnctlDbContext context = new();
-                if (context.TaskRecords.Any())
-                    return context.TaskRecords
-                                    .Include(t => t.Operation)
-                                        .ThenInclude(o => o.Policy)
-                                        .ThenInclude(o => o.TaskProfile)
-                                        .ThenInclude(o => o.TaskDefinitions)
-                                    .Include(t => t.Operation)
-                                        .ThenInclude(o => o.Scope)
-                                        .ThenInclude(o => o.Definitions)
-                                        .ThenInclude(o => o.Definition)
-                                    .First();
+                if (context.Operations.Any())
+                    return context.Operations.First();
 
                 var operation = new Operation("test", OperationType.Crawl, Policy, ScopeAggregate);
                 context.Entry(operation.Scope).State = EntityState.Unchanged;
@@ -91,15 +80,40 @@ namespace pwnctl.app.test.unit
                 context.Add(operation);
                 context.SaveChanges();
 
+                return operation;
+            }
+        }
+
+
+        public static TaskRecord TaskRecord
+        {
+            get
+            {
+                PwnctlDbContext context = new();
+                if (context.TaskRecords.Any(t => t.Definition.Name == ShortName.Create("shortname_scanner")))
+                    return context.TaskRecords
+                                    .Include(t => t.Definition)
+                                    .Include(t => t.Operation)
+                                        .ThenInclude(o => o.Policy)
+                                        .ThenInclude(o => o.TaskProfile)
+                                        .ThenInclude(o => o.TaskDefinitions)
+                                    .Include(t => t.Operation)
+                                        .ThenInclude(o => o.Scope)
+                                        .ThenInclude(o => o.Definitions)
+                                        .ThenInclude(o => o.Definition)
+                                    .First(t => t.Definition.Name == ShortName.Create("shortname_scanner"));
+
+                
+
                 var assetRecord = new AssetRecord(new DomainName("dummy.com"));
 
-                var task = new TaskRecord(operation, Policy.TaskProfile.TaskDefinitions.First(t => t.Name == ShortName.Create("shortname_scanner")), assetRecord);
+                var task = new TaskRecord(Operation, Policy.TaskProfile.TaskDefinitions.First(t => t.Name == ShortName.Create("shortname_scanner")), assetRecord);
                 context = new();
                 context.Entry(task.Definition).State = EntityState.Unchanged;
                 context.Add(task);
                 context.SaveChanges();
 
-                task.Operation = operation;
+                task.Operation = Operation;
 
                 return task;
             }

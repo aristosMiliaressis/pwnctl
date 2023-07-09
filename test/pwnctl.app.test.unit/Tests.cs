@@ -716,6 +716,20 @@ public sealed class Tests
 
         notification = context.Notifications.FirstOrDefault(n => n.TaskId == task.Id && n.RecordId == newDomain.Id);
         Assert.NotNull(notification);
+
+        // check #5 notificationRule.Template test
+        var notificationRule = context.NotificationRules.First(n => n.Name == ShortName.Create("mdwfuzzer"));
+
+        await processor.TryProcessAsync($$$"""{"Asset":"https://{{{parentDomain.Name}}}/","tags":{"mdwfuzzer_check":"uri-override-header"}}""", EntityFactory.TaskRecord.Id);
+        var endpoint = context.HttpEndpoints.First(e => e.Url == "https://tesla.com/");
+        notification = context.Notifications
+                                .Include(n => n.Rule)
+                                .Include(n => n.Record)
+                                    .ThenInclude(n => n.Tags)
+                                .Include(n => n.Record)
+                                    .ThenInclude(n => n.HttpEndpoint)
+                                .First(n => n.RuleId == notificationRule.Id);
+        Assert.Equal("https://tesla.com/ triggered mdwfuzzer check uri-override-header with word ", notification.GetText());
     }
 
     [Fact]

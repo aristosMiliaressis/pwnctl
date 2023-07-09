@@ -114,6 +114,8 @@ RUN wget https://github.com/RustScan/RustScan/releases/download/2.0.1/rustscan_2
 RUN curl -o /opt/wordlists/common.txt https://raw.githubusercontent.com/danielmiessler/SecLists/master/Discovery/Web-Content/common.txt
 RUN curl -o /opt/wordlists/commonspeak2.txt https://raw.githubusercontent.com/assetnote/commonspeak2-wordlists/master/subdomains/subdomains.txt
 RUN curl -o /opt/wordlists/subdomains-top-20000.txt https://raw.githubusercontent.com/theMiddleBlue/DNSenum/master/wordlist/subdomains-top1mil-20000.txt
+RUN git clone https://github.com/aristosMiliaressis/wordlist_builder.git
+RUN cd wordlist_builder && chmod +x wordlist_builder.sh && ./wordlist_builder.sh /opt/wordlists
 WORKDIR /opt/tools
 
 RUN git clone https://github.com/zmap/zdns.git && cd zdns && go build && cp zdns /usr/bin
@@ -165,11 +167,9 @@ RUN go install github.com/detectify/page-fetch@latest
 RUN go install github.com/pwnesia/dnstake/cmd/dnstake@latest
 RUN nuclei -ud /opt/nuclei_templates/
 
+RUN go install github.com/aristosMiliaressis/mdwfuzzer@latest
 RUN git clone https://github.com/aristosMiliaressis/ffuf.git && go build -C ffuf && mv ffuf/ffuf /usr/local/bin
 RUN git clone https://github.com/aristosMiliaressis/katana.git && cd katana && make build && mv ./katana /usr/local/bin/
-
-RUN git clone https://github.com/aristosMiliaressis/wordlist_builder.git
-RUN cd wordlist_builder && chmod +x wordlist_builder.sh && ./wordlist_builder.sh /opt/wordlists
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 

@@ -19,6 +19,12 @@
   Topic: misconfigs
   CheckOutOfScope: true
 
+- Name: mdwfuzzer
+  Subject: HttpEndpoint
+  Filter: Tags["mdwfuzzer_check"]!=""
+  Template: '{{Url}} triggered mdwfuzzer check {{Tags["mdwfuzzer_check"]}} with word {{Tags["mdwfuzzer_word"]}}'
+  Topic: misconfigs
+
 - Name: s3_misconfig
   Subject: DomainName
   Filter: Tags["s3-takeover"] == "true" || !string.IsNullOrEmpty(Tags["s3-public-perms"])
