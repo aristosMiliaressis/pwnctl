@@ -52,6 +52,17 @@
   Template: '{{Url}} triggered mdwfuzzer check {{Tags["mdwfuzzer_check"]}} with word {{Tags["mdwfuzzer_word"]}}'
   Topic: misconfigs
 
+- Name: zone_transfer
+  Subject: DomainName
+  Filter: Tags["zone_transfer"] == "true"
+  Topic: misconfigs
+
+- Name: sketchy_open_port
+  Subject: NetworkSocket
+  Filter: new List<uint> {9228,9229,2735,2736,5000,10250,10259,10257,2379,2380,50030,50060,50070,50075,50090,24007,24008,24009,49152,5555,5601,11211,6000,3389,9200,8009,6379}.Contains(NetworkSocket.Port)
+  Template: '{{Address}} triggered sketchy_open_port rule on port {{Port}}'
+  Topic: misconfigs
+
 # - Name: cname_takeover_check
 #   Subject: DomainName
 #   Filter: '!string.IsNullOrEmpty(Tags["cloud_misconfig"])'
@@ -60,204 +71,4 @@
 # - Name: second_order_takeover
 #   Subject: HttpEndpoint
 #   Filter: '!string.IsNullOrEmpty(Tags["cloud_misconfig"])'
-#   Topic: misconfigs
-
-- Name: zone_transfer
-  Subject: DomainName
-  Filter: Tags["zone_transfer"] == "true"
-  Topic: misconfigs
-
-# - Name: node_debug
-#   Subject: NetworkSocket
-#   Filter: NetworkSocket.Port == 9228 || NetworkSocket.Port == 9229
-#   Topic: misconfigs
-
-# - Name: docker_api
-#   Subject: NetworkSocket
-#   Filter: NetworkSocket.Port == 2735 || NetworkSocket.Port == 2736
-#   Topic: misconfigs
-
-# - Name: docker_registry
-#   Subject: NetworkSocket
-#   Filter: NetworkSocket.Port == 5000
-#   Topic: misconfigs
-
-# - Name: kubelete_api
-#   Subject: NetworkSocket
-#   Filter: NetworkSocket.Port == 10250
-#   Topic: misconfigs
-
-# - Name: kube_scheduler
-#   Subject: NetworkSocket
-#   Filter: NetworkSocket.Port == 10259
-#   Topic: misconfigs
-
-# - Name: kube_controller_manager
-#   Subject: NetworkSocket
-#   Filter: NetworkSocket.Port == 10257
-#   Topic: misconfigs
-
-# - Name: etcd
-#   Subject: NetworkSocket
-#   Filter: NetworkSocket.Port == 2379 || NetworkSocket.Port == 2380
-#   Topic: misconfigs
-
-# - Name: hadoop
-#   Subject: NetworkSocket
-#   Filter: new List<int> {50030,50060,50070,50075,50090}.Contains(NetworkSocket.Port)
-#   Topic: misconfigs
-
-# - Name: mongodb
-#   Subject: NetworkSocket
-#   Filter: NetworkSocket.Port == 27017 || NetworkSocket.Port == 27018
-#   Topic: misconfigs
-
-# - Name: clusterfs
-#   Subject: NetworkSocket
-#   Filter: new List<int> {24007,24008,24009,49152}.Contains(NetworkSocket.Port)
-#   Topic: misconfigs
-
-# - Name: rabbitmq
-#   Subject: NetworkSocket
-#   Filter: NetworkSocket.Port == 15672
-#   Topic: misconfigs
-
-# - Name: memcached
-#   Subject: NetworkSocket
-#   Filter: NetworkSocket.Port == 11211
-#   Topic: misconfigs
-
-# - Name: elasticsearch
-#   Subject: NetworkSocket
-#   Filter: NetworkSocket.Port == 9200
-#   Topic: misconfigs
-
-# - Name: raw_printing
-#   Subject: NetworkSocket
-#   Filter: NetworkSocket.Port == 9100
-#   Topic: misconfigs
-
-# - Name: cassandra
-#   Subject: NetworkSocket
-#   Filter: NetworkSocket.Port == 9042 || NetworkSocket.Port == 9160
-#   Topic: misconfigs
-
-# - Name: hsqldb
-#   Subject: NetworkSocket
-#   Filter: NetworkSocket.Port == 9001
-#   Topic: misconfigs
-
-# - Name: fastcgi
-#   Subject: NetworkSocket
-#   Filter: NetworkSocket.Port == 9000
-#   Topic: misconfigs
-
-# - Name: splunkd
-#   Subject: NetworkSocket
-#   Filter: NetworkSocket.Port == 8089
-#   Topic: misconfigs
-
-# - Name: influxdb
-#   Subject: NetworkSocket
-#   Filter: NetworkSocket.Port == 8086
-#   Topic: misconfigs
-
-# - Name: apache_jserv
-#   Subject: NetworkSocket
-#   Filter: NetworkSocket.Port == 8009
-#   Topic: misconfigs
-
-# - Name: redis
-#   Subject: NetworkSocket
-#   Filter: NetworkSocket.Port == 6379
-#   Topic: misconfigs
-
-# - Name: x11
-#   Subject: NetworkSocket
-#   Filter: NetworkSocket.Port == 6000
-#   Topic: misconfigs
-
-# - Name: ms_omi
-#   Subject: NetworkSocket
-#   Filter: NetworkSocket.Port == 5985 || NetworkSocket.Port == 5986
-#   Topic: misconfigs
-
-# - Name: couchdb
-#   Subject: NetworkSocket
-#   Filter: NetworkSocket.Port == 5984 || NetworkSocket.Port == 6984
-#   Topic: misconfigs
-
-# - Name: amqp
-#   Subject: NetworkSocket
-#   Filter: NetworkSocket.Port == 5671 || NetworkSocket.Port == 5672
-#   Topic: misconfigs
-
-# - Name: kibana
-#   Subject: NetworkSocket
-#   Filter: NetworkSocket.Port == 5601
-#   Topic: misconfigs
-
-# - Name: android_debug_bridge
-#   Subject: NetworkSocket
-#   Filter: NetworkSocket.Port == 5555
-#   Topic: misconfigs
-
-# - Name: redshift
-#   Subject: NetworkSocket
-#   Filter: NetworkSocket.Port == 5439
-#   Topic: misconfigs
-
-# - Name: postgresql
-#   Subject: NetworkSocket
-#   Filter: NetworkSocket.Port == 5432 || NetworkSocket.Port == 5433
-#   Topic: misconfigs
-
-# - Name: cisco_smart_install
-#   Subject: NetworkSocket
-#   Filter: NetworkSocket.Port == 4786
-#   Topic: misconfigs
-
-# - Name: epmd
-#   Subject: NetworkSocket
-#   Filter: NetworkSocket.Port == 4369
-#   Topic: misconfigs
-
-# - Name: subversion
-#   Subject: NetworkSocket
-#   Filter: NetworkSocket.Port == 3690
-#   Topic: misconfigs
-
-# - Name: mysql
-#   Subject: NetworkSocket
-#   Filter: NetworkSocket.Port == 3306
-#   Topic: misconfigs
-
-# - Name: sap_router
-#   Subject: NetworkSocket
-#   Filter: NetworkSocket.Port == 3299
-#   Topic: misconfigs
-
-# - Name: iscsi
-#   Subject: NetworkSocket
-#   Filter: NetworkSocket.Port == 3260
-#   Topic: misconfigs
-
-# - Name: mqtt
-#   Subject: NetworkSocket
-#   Filter: NetworkSocket.Port == 1883
-#   Topic: misconfigs
-
-# - Name: oracle
-#   Subject: NetworkSocket
-#   Filter: NetworkSocket.Port >1520 && NetworkSocket.Port < 1530
-#   Topic: misconfigs
-
-# - Name: mssql
-#   Subject: NetworkSocket
-#   Filter: NetworkSocket.Port == 1433
-#   Topic: misconfigs
-
-# - Name: ipsec
-#   Subject: NetworkSocket
-#   Filter: NetworkSocket.Port == 500
-#   Topic: misconfigs
+#   Topic: misconfigst

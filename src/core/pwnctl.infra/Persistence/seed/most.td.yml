@@ -203,5 +203,5 @@ TaskDefinitions:
 
   - Name: mdwfuzzer
     CommandTemplate: mdwfuzzer.sh {{Url}}
-    Filter: HttpEndpoint.Path=="/""
+    Filter: HttpEndpoint.Path=="/"
     Subject: HttpEndpoint

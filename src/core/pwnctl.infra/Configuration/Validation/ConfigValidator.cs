@@ -80,7 +80,7 @@ public static class ConfigValidator
 
             if (definition.Subject == null || string.IsNullOrEmpty(definition.Subject.Value))
             {
-                errorMessage = "Null or Empty Subject on " + definition.Name;
+                errorMessage = "Null or Empty Subject on " + definition.Name.Value;
                 return false;
             }
 
@@ -96,7 +96,7 @@ public static class ConfigValidator
             catch (Exception ex)
             {
                 PwnInfraContext.Logger.Error(ex.ToRecursiveExInfo());
-                errorMessage = $"task definition {definition.Name} failed to interpolate CommandTemplate arguments";
+                errorMessage = $"task definition {definition.Name.Value} failed to interpolate CommandTemplate arguments";
                 return false;
             }
 
@@ -107,7 +107,7 @@ public static class ConfigValidator
             catch (Exception ex)
             {
                 PwnInfraContext.Logger.Error(ex.ToRecursiveExInfo());
-                errorMessage = $"task definition {definition.Name} Filter through exception";
+                errorMessage = $"task definition {definition.Name.Value} Filter through exception";
                 return false;
             }
         }

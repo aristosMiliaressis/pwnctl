@@ -2,6 +2,8 @@ using pwnctl.infra.DependencyInjection;
 using pwnctl.infra.Persistence;
 using pwnctl.app;
 using pwnctl.app.Users.Entities;
+using pwnctl.app.Assets.Interfaces;
+using pwnctl.app.Tasks.Interfaces;
 using pwnctl.api;
 using pwnctl.api.Extensions;
 using pwnctl.api.Middleware;
@@ -14,6 +16,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using pwnctl.infra.Repositories;
+using pwnctl.app.Queueing.Interfaces;
+using pwnctl.infra.Queueing;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +40,8 @@ builder.Services.AddDbContext<PwnctlDbContext>();
 
 builder.Services.AddIdentity<User, IdentityRole>()
       .AddEntityFrameworkStores<PwnctlDbContext>();
+
+builder.Services.AddTransient<TaskQueueService, SQSTaskQueueService>();
 
 builder.Services.AddTransient<UserManager<User>>();
 
@@ -70,6 +77,14 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddIdentityCore<User>()
     .AddEntityFrameworkStores<PwnctlDbContext>()
     .AddDefaultTokenProviders();
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    options.Password.RequiredLength = 10;
+    options.Password.RequireDigit = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireNonAlphanumeric = true;
+});
 
 var app = builder.Build();
 

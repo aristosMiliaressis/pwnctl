@@ -7,6 +7,7 @@ using MediatR;
 using pwnctl.app.Operations.Entities;
 using pwnctl.app.Operations.Enums;
 using pwnctl.infra;
+using pwnctl.infra.Repositories;
 using pwnctl.infra.Scheduling;
 using pwnctl.api.Mediator.Handlers.Scope.Commands;
 using pwnctl.app.Common.ValueObjects;
@@ -30,10 +31,10 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
         private readonly TaskRepository _taskRepository;
         private readonly TaskQueueService _taskQueueService;
 
-        public CreateOperationCommandHandler(AssetRepository assetRepo, TaskRepository taskRepo, TaskQueueService taskQueueSrv)
+        public CreateOperationCommandHandler(TaskQueueService taskQueueSrv)
         {
-            _assetRepository = assetRepo;
-            _taskRepository = taskRepo;
+            _assetRepository = new AssetDbRepository(_context);
+            _taskRepository = new TaskDbRepository(_context);
             _taskQueueService = taskQueueSrv;
         }
 

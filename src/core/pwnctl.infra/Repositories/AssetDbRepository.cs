@@ -192,7 +192,7 @@ namespace pwnctl.infra.Repositories
                     trx.Commit();
                 }
             }
-            catch (Exception ex) when (ex is DbUpdateException || ex is PostgresException || ex is DBConcurrencyException)
+            catch (Exception ex) when (ex is DbUpdateException || ex is PostgresException || ex is DBConcurrencyException || ex is InvalidOperationException)
             {
                 PwnInfraContext.Logger.Warning(ex.ToRecursiveExInfo());
                 
