@@ -1,7 +1,8 @@
 {
-	"ht": [".htaccess",".htpasswd"],
+	"ht": [".htaccess", ".htpasswd"],
+	"ht2": [".htaccess", ".htaccess.bak"],
 	"ssh": [".ssh/id_rsa", ".ssh/authorized_keys"],
 	"git": [".git/HEAD",".git/index"],
-	"axd": ["Trace.axd","Elmah.axd"],
+	"axd": ["Trace.axd", "Elmah.axd"],
 	"bash": [".bash_history", ".bashrc"]
 }

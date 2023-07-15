@@ -14,6 +14,8 @@ public sealed class TaskRecordDTO
     public DateTime FinishedAt { get; set; }
     public double Duration { get; set; }
     public int? ExitCode { get; set; }
+    public int RunCount { get; set; }
+    public string StdErr { get; set; }
 
     public TaskRecordDTO() { }
 
@@ -28,6 +30,8 @@ public sealed class TaskRecordDTO
         StartedAt = record.StartedAt;
         FinishedAt = record.FinishedAt;
         ExitCode = record.ExitCode;
+        RunCount = record.RunCount;
+        StdErr = record.Stderr;
         Duration = (record.FinishedAt - record.StartedAt).TotalSeconds;
     }
 }

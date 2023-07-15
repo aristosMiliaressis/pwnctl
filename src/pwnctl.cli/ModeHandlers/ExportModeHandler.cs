@@ -49,9 +49,6 @@ namespace pwnctl.cli.ModeHandlers
                 var emails = await PwnctlApiClient.Default.Send(new ListEmailsQuery());
                 WriteToFile(Path.Combine(opt.ExportPath, "emails.json"), emails.Rows);
 
-                var endpoints = await PwnctlApiClient.Default.Send(new ListEndpointsQuery());
-                WriteToFile(Path.Combine(opt.ExportPath, "http_endpoints.json"), endpoints.Rows);
-
                 var parameters = await PwnctlApiClient.Default.Send(new ListParametersQuery());
                 WriteToFile(Path.Combine(opt.ExportPath, "http_parameters.json"), parameters.Rows);
 
@@ -60,6 +57,9 @@ namespace pwnctl.cli.ModeHandlers
                 {
                     File.AppendAllText(Path.Combine(opt.ExportPath, "task_records.json"), PwnInfraContext.Serializer.Serialize(task) + "\n");
                 }
+
+                var endpoints = await PwnctlApiClient.Default.Send(new ListEndpointsQuery());
+                WriteToFile(Path.Combine(opt.ExportPath, "http_endpoints.json"), endpoints.Rows);
             });
         }
         

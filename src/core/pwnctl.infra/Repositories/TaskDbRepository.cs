@@ -71,7 +71,7 @@ namespace pwnctl.infra.Repositories
             _context = context;
         }
 
-        public async Task<List<TaskRecord>> ListAsync(int pageIdx, int pageSize = 4096)
+        public async Task<List<TaskRecord>> ListAsync(int pageIdx, int pageSize = 512)
         {
             return await _context.TaskRecords
                                 .Include(p => p.Operation)

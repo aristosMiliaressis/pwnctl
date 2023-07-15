@@ -2,6 +2,7 @@ using pwnctl.dto.Mediator;
 using pwnctl.dto.Db.Queries;
 using pwnctl.dto.Db.Models;
 using pwnctl.infra.Persistence;
+using pwnctl.app.Common;
 
 using Microsoft.EntityFrameworkCore;
 using MediatR;
@@ -55,13 +56,13 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Commands
                 };
 
                 var count = await  context.TaskRecords.Where(e => e.State == TaskState.FINISHED && def.Select(d => d.Id).Contains(e.DefinitionId)).CountAsync();
-                for (var i = 0; i <= count / 1024; i++)
+                for (var i = 0; i <= count / Constants.BATCH_SIZE; i++)
                 {
                     details.Duration += TimeSpan.FromSeconds(context.TaskRecords
                             .Where(e => e.State == TaskState.FINISHED && def.Select(d => d.Id).Contains(e.DefinitionId))
                             .OrderBy(t => t.QueuedAt)
-                            .Skip(i*1024)
-                            .Take(1024)
+                            .Skip(i*Constants.BATCH_SIZE)
+                            .Take(Constants.BATCH_SIZE)
                             .Select(e => e.FinishedAt - e.StartedAt).Sum(e => e.TotalSeconds));
                 }
 

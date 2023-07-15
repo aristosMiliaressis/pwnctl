@@ -177,7 +177,13 @@ TaskDefinitions:
 
   - Name: dir_fuzz_main
     CommandTemplate: dir-fuzz.sh {{Url}} /opt/wordlists/directories.txt /opt/wordlists/high_impact.txt
-    Filter: HttpEndpoint.Path == "/"
+    Filter: HttpEndpoint.Path == "/" && !Tags["Web servers"].Contains("IIS")
+    Subject: HttpEndpoint
+    CheckNotificationRules: true
+
+  - Name: dir_fuzz_main_lowercase
+    CommandTemplate: dir-fuzz.sh {{Url}} /opt/wordlists/directories_lowercase.txt /opt/wordlists/high_impact_lowercase.txt
+    Filter: HttpEndpoint.Path == "/" && Tags["Web servers"].Contains("IIS")
     Subject: HttpEndpoint
     CheckNotificationRules: true
 

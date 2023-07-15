@@ -1,7 +1,10 @@
 {
-	"WILDCARD": 
-	[
+	"WILDCARD": [
 		"testabcde.html",
 		"xyzwdgf.html"
+	],
+	"WILDCARD_NUM": [
+		"12332345",
+		"234243"
 	]
 }

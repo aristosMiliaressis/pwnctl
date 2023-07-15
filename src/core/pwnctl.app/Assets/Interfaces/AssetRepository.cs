@@ -13,14 +13,14 @@ namespace pwnctl.app.Assets.Interfaces
         Task<AssetRecord> UpdateRecordReferences(AssetRecord record, Asset asset);
         Task SaveAsync(AssetRecord record);
 
-        Task<List<AssetRecord>> ListInScopeAsync(int scopeId, AssetClass[] assetClasses, int pageIdx, int pageSize = 4096, CancellationToken token = default);
+        Task<List<AssetRecord>> ListInScopeAsync(int scopeId, AssetClass[] assetClasses, int pageIdx, int pageSize = 512, CancellationToken token = default);
 
-        Task<List<AssetRecord>> ListHostsAsync(int pageIdx, int pageSize = 4096);
-        Task<List<AssetRecord>> ListEndpointsAsync(int pageIdx, int pageSize = 4096);
-        Task<List<AssetRecord>> ListServicesAsync(int pageIdx, int pageSize = 4096);
-        Task<List<AssetRecord>> ListNetRangesAsync(int pageIdx, int pageSize = 4096);
-        Task<List<AssetRecord>> ListDomainsAsync(int pageIdx, int pageSize = 4096);
-        Task<List<AssetRecord>> ListDNSRecordsAsync(int pageIdx, int pageSize = 4096);
-        Task<List<AssetRecord>> ListEmailsAsync(int pageIdx, int pageSize = 4096);
+        Task<List<AssetRecord>> ListHostsAsync(int pageIdx, int pageSize = 512);
+        Task<List<AssetRecord>> ListEndpointsAsync(int pageIdx, int pageSize = 512);
+        Task<List<AssetRecord>> ListServicesAsync(int pageIdx, int pageSize = 512);
+        Task<List<AssetRecord>> ListNetRangesAsync(int pageIdx, int pageSize = 512);
+        Task<List<AssetRecord>> ListDomainsAsync(int pageIdx, int pageSize = 512);
+        Task<List<AssetRecord>> ListDNSRecordsAsync(int pageIdx, int pageSize = 512);
+        Task<List<AssetRecord>> ListEmailsAsync(int pageIdx, int pageSize = 512);
     }
 }

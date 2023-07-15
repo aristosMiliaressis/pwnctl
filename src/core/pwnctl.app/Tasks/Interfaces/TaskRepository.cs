@@ -5,7 +5,7 @@ namespace pwnctl.app.Tasks.Interfaces;
 
 public interface TaskRepository
 {
-    Task<List<TaskRecord>> ListAsync(int pageIdx, int pageSize = 4096);
+    Task<List<TaskRecord>> ListAsync(int pageIdx, int pageSize);
     List<TaskDefinition> ListOutOfScope();
 
     Task<TaskRecord> FindAsync(int taskId);

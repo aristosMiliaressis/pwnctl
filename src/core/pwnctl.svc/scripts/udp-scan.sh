@@ -3,7 +3,10 @@
 ip=$1
 temp=`mktemp`;
 
-nmap -sU --script-args http.useragent="$(uagen)" -sV --version-intensity 0 -F -n $ip -oG $temp >/dev/null;
+params=()
+[[ $ip =~ .*":".* ]] && params+=(-6)
+
+nmap -sU --script-args http.useragent="$(uagen)" -sV "${params[@]}" --version-intensity 0 -F -n $ip -oG $temp >/dev/null;
 
 cat $temp \
 	| sed 's/Ports: /\n/g' \

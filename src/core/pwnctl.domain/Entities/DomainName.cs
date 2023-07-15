@@ -41,7 +41,7 @@ namespace pwnctl.domain.Entities
                     || assetText.Contains("@"))
                     return null;
 
-                if (!_domainRegex.Match(assetText).Success)
+                if (Uri.CheckHostName(assetText) == UriHostNameType.Unknown)
                     return null;
 
                 var domain = new DomainName(assetText);
@@ -78,7 +78,5 @@ namespace pwnctl.domain.Entities
                     .Split(".")
                     .Last() + "." + suffix.Value;
         }
-
-        private static readonly Regex _domainRegex = new Regex("(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]");
     }
 }

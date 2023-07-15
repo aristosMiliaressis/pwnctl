@@ -1,5 +1,6 @@
 using pwnctl.app.Assets.Aggregates;
 using pwnctl.app.Assets.Interfaces;
+using pwnctl.app.Common;
 using pwnctl.app.Operations.Entities;
 using pwnctl.app.Operations.Enums;
 using pwnctl.app.Operations.Interfaces;
@@ -47,7 +48,7 @@ public class OperationInitializer
                 await GenerateScheduledTasksAsync(op, record, monitoringTasks);
             }
 
-            if (records.Count != 4096)
+            if (records.Count != Constants.BATCH_SIZE)
                 break;
 
             page++;

@@ -8,5 +8,6 @@
 	"WAF_FUZZY_CHAR3":["pNdPspnFahKlNMoe%0a.html","oFUPFxQF%0a.html"],
 	"WAF_QUERY_XSS":["pNdPspnFahKlNMoe?x=<script>alert(1)</script>","oFUPFxQF?x=<script>alert(22)</script>"],
 	"WAF_FUZZY_QUERY":["pNdPspnFahKlNMoe?x=::~$()><'!","oFUPFxQF?x=~$()><'!:::"],
-	"WAF_QUESTIONMARKS": ["??", "????"]
+	"WAF_QUESTIONMARKS": ["??", "????"],
+	"WAF_EXCLAMATION": ["!test", "!test2"]
 }

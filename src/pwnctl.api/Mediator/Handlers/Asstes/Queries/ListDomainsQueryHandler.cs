@@ -1,5 +1,6 @@
 using pwnctl.dto.Mediator;
 using pwnctl.infra.Persistence;
+using pwnctl.app.Common;
 
 using MediatR;
 using pwnctl.infra.Repositories;
@@ -19,7 +20,7 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Queries
             var viewModel = new DomainListViewModel(domains);
 
             viewModel.Page = query.Page;
-            viewModel.TotalPages = new PwnctlDbContext().DomainNames.Count() / 4096;
+            viewModel.TotalPages = new PwnctlDbContext().DomainNames.Count() / Constants.BATCH_SIZE;
 
             return MediatedResponse<DomainListViewModel>.Success(viewModel);
         }

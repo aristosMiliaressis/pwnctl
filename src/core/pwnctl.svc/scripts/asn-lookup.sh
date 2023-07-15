@@ -2,5 +2,15 @@
 
 ip=$1
 
-asnmap -silent -j -ip $ip \
-    | jq -c '. as $base | .as_range[] | { asset: ., tags:{ as_number:$base.as_number, as_name:$base.as_name, as_country:$base.as_country }}'
+whois_info=$(whois -h whois.cymru.com -v $ip 2>/dev/null | grep -v Warning | tail -n 1)
+asn=$(echo $whois_info | cut -d '|' -f 1 | xargs)
+cidr=$(echo $whois_info | cut -d '|' -f 3 | xargs)
+country=$(echo $whois_info | cut -d '|' -f 4 | xargs)
+registry=$(echo $whois_info | cut -d '|' -f 5 | xargs)
+date=$(echo $whois_info | cut -d '|' -f 6 | xargs)
+asname=$(echo $whois_info | cut -d '|' -f 7 | xargs)
+
+if [[ $cidr != "NA" ]]
+then
+    echo '{"asset":"'$cidr'", "tags":{"asn":"'$asn'", "asdesc":"'$asname'", "country":"'$country'", "date":"'$date'"}}'
+fi

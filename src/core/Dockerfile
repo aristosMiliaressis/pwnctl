@@ -123,41 +123,42 @@ RUN git clone https://github.com/blechschmidt/massdns.git \
     && cd massdns && make \
     && ln -s /opt/tools/massdns/bin/massdns /usr/local/bin/ \
     && ln -s /opt/tools/massdns/scripts/subbrute.py /usr/local/bin/
-RUN git clone https://github.com/vortexau/dnsvalidator.git \
-    && cd dnsvalidator && python3 setup.py install
+RUN python3 -m pip install -e git+https://github.com/vortexau/dnsvalidator#egg=dnsvalidator
 RUN git clone https://github.com/s0md3v/Corsy.git \
     && pip3 install -r Corsy/requirements.txt \
     && chmod +x Corsy/corsy.py \
     && ln -s /opt/tools/Corsy/corsy.py /usr/local/bin
 RUN git clone https://github.com/cramppet/regulator && cd regulator && pip3 install -r requirements.txt
 RUN pip3 install py-altdns==1.0.2
-RUN git clone https://github.com/dcsync/recontools.git
 RUN curl -L https://github.com/OWASP/Amass/releases/download/v3.22.2/amass_linux_amd64.zip -o /tmp/amass_linux_amd64.zip \
     && unzip -o /tmp/amass_linux_amd64.zip -d /opt/tools/amass/ \
     && rm /tmp/amass_linux_amd64.zip \
     && ln -s /opt/tools/amass/amass_linux_amd64/amass /usr/local/bin
+RUN git clone https://github.com/dcsync/recontools.git
 RUN git clone https://github.com/darkoperator/dnsrecon.git \
     && cd dnsrecon && git checkout 1.1.4 && pip install -r requirements.txt && python3 setup.py install
 RUN git clone https://github.com/initstring/cloud_enum.git \
     && cd cloud_enum \
     && pip install -r requirements.txt
-RUN git clone https://github.com/xnl-h4ck3r/xnLinkFinder.git \
-    && cd xnLinkFinder \
-    && python3 setup.py install
-RUN git clone https://github.com/EnableSecurity/wafw00f.git \
-    && cd wafw00f && python3 setup.py install
+RUN python3 -m pip install -e git+https://github.com/EnableSecurity/wafw00f#egg=wafw00f
 RUN go install github.com/rverton/webanalyze/cmd/webanalyze@latest
 RUN go install github.com/sw33tLie/sns@latest
 RUN go install github.com/gwen001/github-subdomains@latest
 RUN pip3 install s3scanner
 RUN pip3 install emailfinder
+RUN git clone https://github.com/xnl-h4ck3r/xnLinkFinder.git \
+    && cd xnLinkFinder \
+    && python3 setup.py install
 RUN git clone https://github.com/xnl-h4ck3r/urless.git \
     && cd urless && python3 setup.py install \
     && chmod +x urless.py && ln -s /opt/tools/urless/urless.py /usr/local/bin/urless
 RUN git clone https://github.com/xnl-h4ck3r/waymore.git \
     && cd waymore && python3 setup.py install \
     && chmod +x waymore.py && ln -s /opt/tools/waymore/waymore.py /usr/local/bin/waymore
-RUN git clone https://github.com/gokulapap/wappalyzer-cli && cd wappalyzer-cli && pip3 install .
+RUN pip uninstall python-Wappalyzer -y || sudo pip uninstall python-Wappalyzer -y 
+RUN python3 -m pip install -e git+https://github.com/brandonscholet/python-Wappalyzer.git#egg=python-Wappalyzer
+RUN python3 -m pip install -e git+https://github.com/brandonscholet/wappybird.git#egg=wappybird
+RUN pip3 install click && pip3 install validators
 
 RUN curl https://github.com/mgdm/htmlq/releases/download/v0.4.0/htmlq-x86_64-linux.tar.gz -L -o htmlq-x86_64-linux.tar.gz \
     && tar xzf htmlq-x86_64-linux.tar.gz \

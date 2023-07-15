@@ -64,7 +64,7 @@ tasks:
       - terraform -chdir=infra apply -target=module.base
 
   deploy-app:
-    deps: [build-api, install-cli]
+    deps: [test, test-svc, build-api, install-cli]
     cmds:
       - terraform -chdir=infra apply
       - ./bin/upload-conf.sh
