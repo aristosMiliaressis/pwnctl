@@ -1,5 +1,5 @@
 resource "aws_sqs_queue" "main" {
-  name                      = "pwnctl_${random_id.id.hex}.fifo"
+  name                      = "pwnctl_${random_id.nonce.hex}.fifo"
   fifo_queue                  = true
   content_based_deduplication = true
   sqs_managed_sse_enabled = true
@@ -18,7 +18,7 @@ resource "aws_sqs_queue" "main" {
 }
 
 resource "aws_sqs_queue" "dlq" {
-  name                      = "pwnctl_${random_id.id.hex}_dlq.fifo"
+  name                      = "pwnctl_${random_id.nonce.hex}_dlq.fifo"
   fifo_queue                  = true
   content_based_deduplication = true
   sqs_managed_sse_enabled = true
@@ -33,7 +33,7 @@ resource "aws_sqs_queue" "dlq" {
 }
 
 resource "aws_sqs_queue" "output" {
-  name                      = "pwnctl_output_${random_id.id.hex}.fifo"
+  name                      = "pwnctl_output_${random_id.nonce.hex}.fifo"
   fifo_queue                  = true
   content_based_deduplication = true
   sqs_managed_sse_enabled = true
@@ -45,4 +45,29 @@ resource "aws_sqs_queue" "output" {
   tags = {
     Name = "pwnctl_output_queue"
   }
+}
+
+
+data "aws_iam_policy_document" "sqs_readwrite" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "sqs:ChangeMessageVisibility",
+      "sqs:DeleteMessage",
+      "sqs:GetQueueAttributes",
+      "sqs:GetQueueUrl",
+      "sqs:ReceiveMessage",
+      "sqs:SendMessage"
+    ]
+
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_policy" "sqs_readwrite" {
+  name        = "sqs_readwrite"
+  path        = "/"
+  description = "IAM policy for sqs Read/Write access"
+  policy      = data.aws_iam_policy_document.sqs_readwrite.json
 }

@@ -21,17 +21,6 @@ then
     cp "/mnt/efs/whoisxml.conf" $HOME/.config/whoisxml.conf
 fi
 
-if test -f "/mnt/efs/provider-config.yaml";
-then
-    mkdir -p $HOME/.config/notify/
-    cp "/mnt/efs/provider-config.yaml" $HOME/.config/notify/provider-config.yaml
-fi
-
-if ! test -f "/mnt/efs/public_suffix_list.dat";
-then
-    get-psl.sh /mnt/efs
-fi
-
 # if no resolvers list generate new one
 if [ ! -f "/mnt/efs/resolvers.txt" ]
 then
@@ -46,4 +35,4 @@ else
 fi
 cp /mnt/efs/trusted-resolvers.txt /opt/wordlists/dns/trusted-resolvers.txt
 
-exec /opt/pwnctl-svc/pwnsvc
+exec /opt/pwnctl-exec/executor

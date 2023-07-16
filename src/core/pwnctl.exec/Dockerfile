@@ -94,7 +94,6 @@ RUN go install github.com/tomnomnom/anew@latest
 RUN go install github.com/projectdiscovery/tlsx/cmd/tlsx@latest
 RUN go install github.com/projectdiscovery/dnsx/cmd/dnsx@latest
 RUN go install github.com/projectdiscovery/httpx/cmd/httpx@latest
-RUN go install github.com/projectdiscovery/notify/cmd/notify@latest
 #RUN go install github.com/projectdiscovery/katana/cmd/katana@latest
 RUN go install github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
 RUN go install github.com/projectdiscovery/cdncheck/cmd/cdncheck@latest
@@ -174,7 +173,7 @@ RUN git clone https://github.com/aristosMiliaressis/katana.git && cd katana && m
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 
-# building worker service & cli
+# building exec service
 COPY ["/pwnctl.kernel/pwnctl.kernel.csproj", "/src/pwnctl.kernel/"]
 RUN dotnet restore "/src/pwnctl.kernel/pwnctl.kernel.csproj"
 COPY ["/pwnctl.domain/pwnctl.domain.csproj", "/src/pwnctl.domain/"]
@@ -183,24 +182,24 @@ COPY ["/pwnctl.app/pwnctl.app.csproj", "/src/pwnctl.app/"]
 RUN dotnet restore "/src/pwnctl.app/pwnctl.app.csproj"
 COPY ["/pwnctl.infra/pwnctl.infra.csproj", "/src/pwnctl.infra/"]
 RUN dotnet restore "/src/pwnctl.infra/pwnctl.infra.csproj"
-COPY ["/pwnctl.svc/pwnctl.svc.csproj", "/src/pwnctl.svc/"]
-RUN dotnet restore "/src/pwnctl.svc/pwnctl.svc.csproj"
+COPY ["/pwnctl.exec/pwnctl.exec.csproj", "/src/pwnctl.exec/"]
+RUN dotnet restore "/src/pwnctl.exec/pwnctl.exec.csproj"
 
 COPY . src/
 
-RUN dotnet publish "/src/pwnctl.svc/pwnctl.svc.csproj" -c Release -o /publish/svc
+RUN dotnet publish "/src/pwnctl.exec/pwnctl.exec.csproj" -c Release -o /publish/exec
 
 FROM base AS release
 
-COPY --from=build /publish/svc /opt/pwnctl-svc
-COPY pwnctl.svc/wordlists/ /opt/wordlists/
-COPY pwnctl.svc/nuclei_templates/ /opt/nuclei_templates/
-COPY pwnctl.svc/scripts/* /opt/scripts/
+COPY --from=build /publish/exec /opt/pwnctl-exec
+COPY pwnctl.exec/wordlists/ /opt/wordlists/
+COPY pwnctl.exec/nuclei_templates/ /opt/nuclei_templates/
+COPY pwnctl.exec/scripts/* /opt/scripts/
 RUN chmod -R +x /opt/scripts \
     && mv /opt/scripts/* /usr/local/bin/ \
     && mkdir -p ~/.config/ffuf/autocalibration \
     && mv /opt/wordlists/ffuf_ac_strategies/* ~/.config/ffuf/autocalibration
 
-COPY pwnctl.svc/entrypoint.sh /opt/pwnctl-svc/entrypoint.sh
-RUN chmod +x /opt/pwnctl-svc/entrypoint.sh
-ENTRYPOINT ["/opt/pwnctl-svc/entrypoint.sh"]
+COPY pwnctl.exec/entrypoint.sh /opt/pwnctl-exec/entrypoint.sh
+RUN chmod +x /opt/pwnctl-exec/entrypoint.sh
+ENTRYPOINT ["/opt/pwnctl-exec/entrypoint.sh"]

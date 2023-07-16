@@ -141,7 +141,7 @@ namespace pwnctl.infra.Repositories
             try
             {
                 // this prevents race conditions when checking if the record already exists
-                using (var trx = _context.Database.BeginTransaction(IsolationLevel.Serializable)) // TODO: try RepeatbleRead
+                using (var trx = _context.Database.BeginTransaction(IsolationLevel.Serializable)) // TODO: try Snapshot? why?
                 {
                     var existingRecord = await FindRecordAsync(record.Asset);
                     if (existingRecord == null)

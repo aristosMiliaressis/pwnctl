@@ -34,7 +34,7 @@ resource "aws_secretsmanager_secret_version" "admin_password" {
 
 resource "aws_lambda_function" "this" {
   tags = {
-    Name = "pwnctl_lambda_${random_id.id.hex}"
+    Name = "pwnctl_lambda_${random_id.nonce.hex}"
   }
 
   depends_on = [
@@ -44,7 +44,7 @@ resource "aws_lambda_function" "this" {
   ]
 
   filename = "../src/pwnctl.api/bin/lambda.zip"
-  function_name = "pwnctl_api_${random_id.id.hex}"
+  function_name = "pwnctl_api_${random_id.nonce.hex}"
   role = aws_iam_role.lambda.arn
   handler = "pwnctl.api"
   source_code_hash = data.archive_file.this.output_base64sha256

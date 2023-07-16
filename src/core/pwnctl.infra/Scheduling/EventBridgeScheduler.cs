@@ -24,7 +24,7 @@ public class EventBridgeScheduler
 
         var taskDefinition = await ecsClient.ListTaskDefinitionsAsync(new Amazon.ECS.Model.ListTaskDefinitionsRequest
         {
-            FamilyPrefix = "pwnwrk"
+            FamilyPrefix = "pwnctl"
         });
 
         var roles = await iamClient.ListRolesAsync();

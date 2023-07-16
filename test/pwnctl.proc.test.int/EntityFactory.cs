@@ -8,7 +8,7 @@ using pwnctl.app.Scope.Enums;
 using pwnctl.domain.Entities;
 using pwnctl.infra.Persistence;
 
-namespace pwnctl.svc.test.integration
+namespace pwnctl.proc.test.integration
 {
     public static class EntityFactory
     {

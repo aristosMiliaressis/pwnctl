@@ -5,6 +5,7 @@ katana_tmp=`mktemp`
 temp=`mktemp`
 trap "rm $katana_tmp $temp" EXIT
 
+# TODO: -hl & -no-sandbox brakes responses??
 katana -d 10 -silent -nc -or -ob -j -jc -kf all -fx -u $url -o $katana_tmp >/dev/null
 
 cat $katana_tmp | jq -r .request.endpoint | sort -u 2>/dev/null
@@ -15,3 +16,4 @@ cat $katana_tmp \
 
 cat $temp | grep "form\":true" | while read url; do param=$(echo $url | jq -r .asset | cut -d '?' -f2); tags=$(echo $url | jq -c .tags); echo $url | jq -r .asset | sed 's/%/\\\\x/g' | xargs -I {} printf "{}\n" | unfurl format "{\"asset\":\"%s://%a%p?$param\",\"tags\":$tags}"; done | sort -u 2>/dev/null
 
+#TODO: xhr

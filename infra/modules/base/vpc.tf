@@ -1,6 +1,6 @@
 resource "aws_vpc" "main" {
   tags = {
-    Name = "PwnCtl ${random_id.id.hex} VPC"
+    Name = "PwnCtl ${random_id.nonce.hex} VPC"
   }
 
   cidr_block = "10.10.0.0/16"
@@ -11,7 +11,7 @@ resource "aws_internet_gateway" "this" {
   vpc_id = aws_vpc.main.id
 
   tags = {
-    Name = "PwnCtl ${random_id.id.hex} Internet Gateway"
+    Name = "PwnCtl ${random_id.nonce.hex} Internet Gateway"
   }
 
   depends_on = [
@@ -28,7 +28,7 @@ resource "aws_subnet" "public" {
   vpc_id = aws_vpc.main.id
 
   tags = {
-    Name = "PwnCtl ${random_id.id.hex} Public Subnet at ${data.external.aws_region.result.region}${each.key}"
+    Name = "PwnCtl ${random_id.nonce.hex} Public Subnet at ${data.external.aws_region.result.region}${each.key}"
   }
 
   availability_zone = "${data.external.aws_region.result.region}${each.key}"
@@ -44,7 +44,7 @@ resource "aws_subnet" "private" {
   vpc_id = aws_vpc.main.id
 
   tags = {
-    Name = "PwnCtl ${random_id.id.hex} Private Subnet at ${data.external.aws_region.result.region}${each.key}"
+    Name = "PwnCtl ${random_id.nonce.hex} Private Subnet at ${data.external.aws_region.result.region}${each.key}"
   }
 
   availability_zone = "${data.external.aws_region.result.region}${each.key}"
@@ -55,7 +55,7 @@ resource "aws_route_table" "public" {
   vpc_id = aws_vpc.main.id
 
   tags = {
-    Name = "PwnCtl ${random_id.id.hex} Route Table for Public Subnet"
+    Name = "PwnCtl ${random_id.nonce.hex} Route Table for Public Subnet"
   }
 
   route {
@@ -68,7 +68,7 @@ resource "aws_route_table" "private" {
   vpc_id = aws_vpc.main.id
 
   tags = {
-    Name = "PwnCtl ${random_id.id.hex} Route Table for Private Subnet"
+    Name = "PwnCtl ${random_id.nonce.hex} Route Table for Private Subnet"
   }
 }
 

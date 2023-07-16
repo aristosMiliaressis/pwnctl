@@ -2,6 +2,7 @@
 
 domain=$1
 
+#TODO: NSEC3, HTTPS,SRVB,CAA,SRV
 RECORD_TYPES=(NS MX TXT NSEC SRV HTTPS SVCB HINFO CAA DS)
 RESOLVERS_FILE='/opt/wordlists/dns/trusted-resolvers.txt'
 

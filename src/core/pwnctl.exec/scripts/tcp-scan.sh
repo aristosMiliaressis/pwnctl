@@ -5,7 +5,6 @@ temp=`mktemp | sed 's/\/tmp\///g'`;
 touch $temp
 
 rustscan -r 1-65535 -a $ip -- -sSV --script-args http.useragent="Mozilla/9.1" -oG $temp >/dev/null;
-#naabu -silent -Pn -ec -p 1-65535 -host $ip -nmap-cli "nmap -sV -oG $temp" >/dev/null
 
 cat $temp \
 	| sed 's/Ports: /\n/g' \

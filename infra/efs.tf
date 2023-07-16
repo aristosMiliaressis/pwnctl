@@ -1,6 +1,6 @@
 resource "aws_efs_file_system" "this" {
   tags = {
-    Name = "pwnctl_fs_${random_id.id.hex}"
+    Name = "pwnctl_fs_${random_id.nonce.hex}"
   }
 }
 

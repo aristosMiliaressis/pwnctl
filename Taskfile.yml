@@ -2,18 +2,21 @@ version: '3'
 
 tasks:
   simple-setup:
-    deps: [install-deps, build-svc-image, push-svc-image, bootstrap-aws, deploy-app, install-cli, init-app]
+    deps: [install-deps, build-exec-image, push-exec-image, build-proc-image, push-proc-image, bootstrap-aws, deploy-app, install-cli, init-app]
 
   test:
+    deps: [test-core, test-exec]
+
+  test-core:
     cmds:
       - dotnet test --filter "FullyQualifiedName~test.unit"
 
-  test-svc:
+  test-proc:
     cmds:
       - |
-        rm -rf test/pwnctl.svc.test.int/bin
-        export ECR_REGISTRY_URI=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl") | .repositoryUri')
-        dotnet test --filter "FullyQualifiedName~pwnctl.svc"
+        rm -rf test/pwnctl.proc.test.int/bin
+        export ECR_REGISTRY_URI=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-proc") | .repositoryUri')
+        dotnet test --filter "FullyQualifiedName~pwnctl.proc"
 
   build-api:
     cmds:
@@ -23,28 +26,40 @@ tasks:
     cmds:
       - dotnet publish src/pwnctl.cli/pwnctl.cli.csproj -c Release
 
-  build-svc:
-    cmds:
-      - dotnet publish src/core/pwnctl.svc/pwnctl.svc.csproj -c Release
-
-  build-svc-image:
+  build-exec-image:
     cmds:
       - |
-        ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl") | .repositoryUri')
-        docker build src/core/ -t ${ecrUri}:latest
+        ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-exec") | .repositoryUri')
+        docker build src/core/ -f src/core/pwnctl.exec/Dockerfile -t ${ecrUri}:latest
         docker tag ${ecrUri}:latest ${ecrUri}:untested
 
-  push-svc-image:
+  push-exec-image:
     cmds:
       - |
         region=$(aws configure get region)
-        ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl") | .repositoryUri')
+        ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-exec") | .repositoryUri')
+        aws ecr get-login-password --region $region \
+          | docker login --username AWS --password-stdin $ecrUri
+        docker push ${ecrUri}:latest
+
+  build-proc-image:
+    cmds:
+      - |
+        ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-proc") | .repositoryUri')
+        docker build src/core/ -f src/core/pwnctl.proc/Dockerfile -t ${ecrUri}:latest
+        docker tag ${ecrUri}:latest ${ecrUri}:untested
+
+  push-proc-image:
+    cmds:
+      - |
+        region=$(aws configure get region)
+        ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-proc") | .repositoryUri')
         aws ecr get-login-password --region $region \
           | docker login --username AWS --password-stdin $ecrUri
         docker push ${ecrUri}:latest
 
   build-all:
-    deps: [build-cli, build-api, build-svc-image]
+    deps: [build-cli, build-api, build-exec-image, build-proc-image]
 
   install-cli:
     deps: [build-cli]
@@ -54,14 +69,14 @@ tasks:
       - sudo mkdir -p /etc/pwnctl/
       - sudo chown $USER /etc/pwnctl/
       - sudo mv src/pwnctl.cli/bin/Release/net7.0/linux-x64/publish/config.ini /etc/pwnctl/
-      - sudo ./src/core/pwnctl.svc/scripts/get-psl.sh /etc/pwnctl/
+      - sudo ./src/core/pwnctl.exec/scripts/get-psl.sh /etc/pwnctl/
       - sudo cp -r ./src/core/pwnctl.infra/Persistence/seed /etc/pwnctl
 
   deploy-base:
     cmds:
       - gh variable set AWS_REGION --body "$(aws configure get region)"
       - gh variable set AWS_CALLER_IDENTITY --body "$(aws sts get-caller-identity | jq -r .Account)"
-      - terraform -chdir=infra apply -target=module.base
+      - terraform -chdir=infra/modules/base apply # -target=module.base
 
   deploy-app:
     deps: [test, test-svc, build-api, install-cli]
@@ -69,19 +84,31 @@ tasks:
       - terraform -chdir=infra apply
       - ./bin/upload-conf.sh
 
-  debug-svc:
+  debug-exec:
     cmds:
       - |
-        mkdir -p deployment/seed/
-        cp ./src/core/pwnctl.infra/Persistence/seed/*.yml deployment/seed/
-        ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl") | .repositoryUri')
+        ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-exec") | .repositoryUri')
         docker run -e PWNCTL_USE_SQLITE=true -e PWNCTL_TEST_RUN=true -e PWNCTL_INSTALL_PATH=/mnt/efs \
                    -e PWNCTL_Logging__FilePath=/mnt/efs -e PWNCTL_Logging__MinLevel=Information \
                    -v "$(pwd)"/deployment:/mnt/efs -t ${ecrUri}:latest
 
-  get-logs:
+  debug-proc:
     cmds:
-      - awslogs get -s 1440m -G --timestamp /aws/ecs/worker
+      - |
+        mkdir -p deployment/seed/
+        cp ./src/core/pwnctl.infra/Persistence/seed/*.yml deployment/seed/
+        ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-proc") | .repositoryUri')
+        docker run -e PWNCTL_USE_SQLITE=true -e PWNCTL_TEST_RUN=true -e PWNCTL_INSTALL_PATH=/mnt/efs \
+                   -e PWNCTL_Logging__FilePath=/mnt/efs -e PWNCTL_Logging__MinLevel=Information \
+                   -v "$(pwd)"/deployment:/mnt/efs -t ${ecrUri}:latest
+
+  get-exec-logs:
+    cmds:
+      - awslogs get -s 1440m -G --timestamp /aws/ecs/exec
+
+  get-proc-logs:
+    cmds:
+      - awslogs get -s 1440m -G --timestamp /aws/ecs/proc
 
   get-api-logs:
     cmds:

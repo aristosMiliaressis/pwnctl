@@ -92,7 +92,7 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
 
         private async Task StartCrawlOperation(Operation op, IEnumerable<string> input)
         {
-            var processor = AssetProcessorFactory.Create();
+            var proc = AssetProcessorFactory.Create();
 
             foreach (var assetText in input.Where(a => !string.IsNullOrEmpty(a)))
             {

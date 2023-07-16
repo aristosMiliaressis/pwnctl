@@ -1,13 +1,25 @@
-resource "aws_cloudwatch_log_group" "worker" {
-  name              = "/aws/ecs/worker"
+resource "aws_ecs_cluster" "this" {
+  name = var.ecs_cluster.name
+}
+
+resource "aws_cloudwatch_log_group" "exec" {
+  name              = "/aws/ecs/exec"
   retention_in_days = 1
   lifecycle {
     prevent_destroy = false
   }
 }
 
-resource "aws_ecs_task_definition" "this" {
-  family                   = "pwnwrk"
+resource "aws_cloudwatch_log_group" "proc" {
+  name              = "/aws/ecs/proc"
+  retention_in_days = 1
+  lifecycle {
+    prevent_destroy = false
+  }
+}
+
+resource "aws_ecs_task_definition" "exec" {
+  family                   = "pwnctl"
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   cpu                      = 512
@@ -23,13 +35,237 @@ resource "aws_ecs_task_definition" "this" {
   [
     {
       "name": "pwnctl",
-      "image": "${docker_registry_image.pwnctl.name}",
+      "image": "${docker_registry_image.exec.name}",
       "essential": true,
       "stopTimeout": 120,
       "environment": [
         {
           "name": "PWNCTL_IMAGE_HASH",
-          "value": "${docker_registry_image.pwnctl.sha256_digest}"
+          "value": "${docker_registry_image.exec.sha256_digest}"
+        },
+        {
+          "name": "PWNCTL_IS_ECS",
+          "value": "true"
+        },
+        {
+          "name": "PWNCTL_Worker__MaxTaskTimeout",
+          "value": "${var.task_timeout}"
+        },
+        {
+          "name": "PWNCTL_TaskQueue__Name",
+          "value": "${aws_sqs_queue.main.name}"
+        },
+        {
+          "name": "PWNCTL_TaskQueue__VisibilityTimeout",
+          "value": "${module.pwnctl_base.aws_sqs_queue.visibility_timeout_seconds}"
+        },
+        {
+          "name": "PWNCTL_OutputQueue__Name",
+          "value": "${aws_sqs_queue.output.name}"
+        },
+        {
+          "name": "PWNCTL_OutputQueue__VisibilityTimeout",
+          "value": "${var.sqs_visibility_timeout}"
+        },
+        {
+          "name": "PWNCTL_Logging__MinLevel",
+          "value": "Debug"
+        },
+        {
+          "name": "PWNCTL_Logging__FilePath",
+          "value": "${var.efs_mount_point}"
+        },
+        {
+          "name": "PWNCTL_Logging__LogGroup",
+          "value": "${aws_cloudwatch_log_group.exec.name}"
+        },
+        {
+          "name": "PWNCTL_Db__Name",
+          "value": "${var.rds_postgres_databasename}"
+        },
+        {
+          "name": "PWNCTL_Db__Username",
+          "value": "${var.rds_postgres_username}"
+        },
+        {
+          "name": "PWNCTL_Db__Host",
+          "value": "${aws_db_instance.this.endpoint}"
+        },
+        {
+          "name": "PWNCTL_INSTALL_PATH",
+          "value": "${var.efs_mount_point}"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "${aws_cloudwatch_log_group.exec.name}",
+          "awslogs-region": "${data.external.aws_region.result.region}",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "mountPoints": [
+        {
+          "sourceVolume": "pwnctl-fs",
+          "containerPath": "${var.efs_mount_point}"
+        }
+      ]
+    }
+  ]
+  DEFINITION
+
+  volume {
+    name      = "pwnctl-fs"
+    efs_volume_configuration {
+        file_system_id = aws_efs_file_system.this.id
+        root_directory = "/"
+        transit_encryption = "ENABLED"
+        authorization_config {
+            iam = "ENABLED"
+            access_point_id = aws_efs_access_point.this.id
+        }
+    }
+  }
+}
+
+resource "aws_ecs_service" "exec" {
+  name            = var.ecs_service.name
+  cluster         = aws_ecs_cluster.this.id
+  task_definition = aws_ecs_task_definition.exec.arn
+  desired_count   = 0
+  depends_on      = [
+    aws_ecs_cluster.this,
+    aws_ecs_task_definition.exec,
+    aws_iam_role.ecs
+  ]
+
+  network_configuration {
+    subnets = [for k, v in aws_subnet.public : aws_subnet.public[k].id]
+    assign_public_ip = "true"
+  }
+
+  capacity_provider_strategy {
+    capacity_provider = "FARGATE"
+    weight = 1
+  }
+
+    lifecycle {
+        ignore_changes = [ desired_count ]
+    }
+}
+
+resource "aws_appautoscaling_target" "exec" {
+  max_capacity       = var.ecs_service.max_capacity
+  min_capacity       = var.ecs_service.min_capacity
+  resource_id        = "service/${aws_ecs_cluster.this.name}/${aws_ecs_service.exec.name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+  service_namespace  = "ecs"
+}
+
+resource "aws_cloudwatch_metric_alarm" "task_queue_depth_metric" {
+  alarm_name                = "task_queue_depth_metric"
+  comparison_operator       = "GreaterThanOrEqualToThreshold"
+  threshold = 0
+  evaluation_periods        = 1
+  insufficient_data_actions = []
+
+  metric_query {
+    id          = "visibleMessages"
+
+    metric {
+      metric_name = "ApproximateNumberOfMessagesVisible"
+      namespace   = "AWS/SQS"
+      period      = 60
+      stat        = "Maximum"
+
+      dimensions = {
+        QueueName = aws_sqs_queue.main.name
+      }
+    }
+  }
+
+  metric_query {
+    id          = "inFlightMessages"
+
+    metric {
+      metric_name = "ApproximateNumberOfMessagesNotVisible"
+      namespace   = "AWS/SQS"
+      period      = 60
+      stat        = "Maximum"
+
+      dimensions = {
+        QueueName = aws_sqs_queue.main.name
+      }
+    }
+  }
+
+  metric_query {
+    id          = "allMessages"
+    expression  = "visibleMessages + inFlightMessages"
+    return_data = "true"
+  }
+
+  alarm_description = "This metric monitors pending work in the main task queue."
+  alarm_actions     = [aws_appautoscaling_policy.exec.arn]
+}
+
+resource "aws_appautoscaling_policy" "exec" {
+  name               = "pwnctl_svc_sqs_depth_target_autoscale_policy"
+  policy_type        = "StepScaling"
+  resource_id  = aws_appautoscaling_target.exec.id
+  scalable_dimension = aws_appautoscaling_target.exec.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.exec.service_namespace
+
+  step_scaling_policy_configuration {
+    adjustment_type         = "ExactCapacity"
+    metric_aggregation_type = "Maximum"
+
+    step_adjustment {
+      metric_interval_upper_bound = 1
+      scaling_adjustment = 0
+    }
+
+    dynamic "step_adjustment" {
+      for_each = toset([for i in range(0, var.ecs_service.max_capacity/3, 1) : i])
+
+      content {
+        metric_interval_lower_bound = 10 * step_adjustment.value + 1
+        metric_interval_upper_bound = 10 * (step_adjustment.value + 1) + 1
+        scaling_adjustment = (step_adjustment.value+1) * 3 + (var.ecs_service.max_capacity%3)
+      }
+    }
+
+    step_adjustment {
+      metric_interval_lower_bound = 10 * (var.ecs_service.max_capacity/3) + 1
+      scaling_adjustment = var.ecs_service.max_capacity
+    }
+  }
+}
+
+resource "aws_ecs_task_definition" "proc" {
+  family                   = "pwnctl"
+  requires_compatibilities = ["FARGATE"]
+  network_mode             = "awsvpc"
+  cpu                      = 512
+  memory                   = 3072
+  execution_role_arn = aws_iam_role.ecs.arn
+  task_role_arn = aws_iam_role.ecs.arn
+
+  depends_on = [
+    aws_db_instance.this
+  ]
+
+  container_definitions = <<DEFINITION
+  [
+    {
+      "name": "pwnctl",
+      "image": "${docker_registry_image.proc.name}",
+      "essential": true,
+      "stopTimeout": 120,
+      "environment": [
+        {
+          "name": "PWNCTL_IMAGE_HASH",
+          "value": "${docker_registry_image.proc.sha256_digest}"
         },
         {
           "name": "PWNCTL_IS_ECS",
@@ -65,7 +301,7 @@ resource "aws_ecs_task_definition" "this" {
         },
         {
           "name": "PWNCTL_Logging__LogGroup",
-          "value": "${aws_cloudwatch_log_group.worker.name}"
+          "value": "${aws_cloudwatch_log_group.exec.name}"
         },
         {
           "name": "PWNCTL_Db__Name",
@@ -87,7 +323,7 @@ resource "aws_ecs_task_definition" "this" {
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
-          "awslogs-group": "${aws_cloudwatch_log_group.worker.name}",
+          "awslogs-group": "${aws_cloudwatch_log_group.exec.name}",
           "awslogs-region": "${data.external.aws_region.result.region}",
           "awslogs-stream-prefix": "ecs"
         }
@@ -116,18 +352,14 @@ resource "aws_ecs_task_definition" "this" {
   }
 }
 
-resource "aws_ecs_cluster" "this" {
-  name = var.ecs_cluster.name
-}
-
-resource "aws_ecs_service" "this" {
+resource "aws_ecs_service" "proc" {
   name            = var.ecs_service.name
   cluster         = aws_ecs_cluster.this.id
-  task_definition = aws_ecs_task_definition.this.arn
+  task_definition = aws_ecs_task_definition.proc.arn
   desired_count   = 0
   depends_on      = [
     aws_ecs_cluster.this,
-    aws_ecs_task_definition.this,
+    aws_ecs_task_definition.proc,
     aws_iam_role.ecs
   ]
 
@@ -146,68 +378,20 @@ resource "aws_ecs_service" "this" {
     }
 }
 
-resource "aws_appautoscaling_target" "this" {
-  max_capacity       = var.ecs_service.max_capacity
-  min_capacity       = var.ecs_service.min_capacity
-  resource_id        = "service/${aws_ecs_cluster.this.name}/${aws_ecs_service.this.name}"
+resource "aws_appautoscaling_target" "proc" {
+  max_capacity       = 1
+  min_capacity       = 1
+  resource_id        = "service/${aws_ecs_cluster.this.name}/${aws_ecs_service.proc.name}"
   scalable_dimension = "ecs:service:DesiredCount"
   service_namespace  = "ecs"
 }
 
-resource "aws_appautoscaling_policy" "this" {
-  name               = "pwnctl_svc_sqs_depth_target_autoscale_policy"
-  policy_type        = "StepScaling"
-  resource_id  = aws_appautoscaling_target.this.id
-  scalable_dimension = aws_appautoscaling_target.this.scalable_dimension
-  service_namespace  = aws_appautoscaling_target.this.service_namespace
-
-  step_scaling_policy_configuration {
-    adjustment_type         = "ExactCapacity"
-    metric_aggregation_type = "Maximum"
-
-    step_adjustment {
-      metric_interval_upper_bound = 1
-      scaling_adjustment = 0
-    }
-
-    dynamic "step_adjustment" {
-      for_each = toset([for i in range(0, var.ecs_service.max_capacity/3, 1) : i])
-
-      content {
-        metric_interval_lower_bound = 10 * step_adjustment.value + 1
-        metric_interval_upper_bound = 10 * (step_adjustment.value + 1) + 1
-        scaling_adjustment = (step_adjustment.value+1) * 3 + (var.ecs_service.max_capacity%3)
-      }
-    }
-
-    step_adjustment {
-      metric_interval_lower_bound = 10 * (var.ecs_service.max_capacity/3) + 1
-      scaling_adjustment = var.ecs_service.max_capacity
-    }
-  }
-}
-
-resource "aws_cloudwatch_metric_alarm" "task_queue_depth_metric" {
-  alarm_name                = "task_queue_depth_metric"
+resource "aws_cloudwatch_metric_alarm" "output_queue_depth_metric" {
+  alarm_name                = "output_queue_depth_metric"
   comparison_operator       = "GreaterThanOrEqualToThreshold"
   threshold = 0
   evaluation_periods        = 1
   insufficient_data_actions = []
-
-  metric_query {
-    id          = "visibleMessages"
-
-    metric {
-      metric_name = "ApproximateNumberOfMessagesVisible"
-      namespace   = "AWS/SQS"
-      period      = 60
-      stat        = "Maximum"
-
-      dimensions = {
-        QueueName = aws_sqs_queue.main.name
-      }
-    }
-  }
 
   metric_query {
     id          = "visibleOutputMessages"
@@ -225,26 +409,30 @@ resource "aws_cloudwatch_metric_alarm" "task_queue_depth_metric" {
   }
 
   metric_query {
-    id          = "inFlightMessages"
-
-    metric {
-      metric_name = "ApproximateNumberOfMessagesNotVisible"
-      namespace   = "AWS/SQS"
-      period      = 60
-      stat        = "Maximum"
-
-      dimensions = {
-        QueueName = aws_sqs_queue.main.name
-      }
-    }
-  }
-
-  metric_query {
     id          = "allMessages"
-    expression  = "visibleMessages + inFlightMessages + visibleOutputMessages"
+    expression  = "visibleOutputMessages"
     return_data = "true"
   }
 
-  alarm_description = "This metric monitors pending work in the main task queue."
-  alarm_actions     = [aws_appautoscaling_policy.this.arn]
+  alarm_description = "This metric monitors unprocessed batches in the output queue."
+  alarm_actions     = [aws_appautoscaling_policy.proc.arn]
+}
+
+
+resource "aws_appautoscaling_policy" "proc" {
+  name               = "pwnctl-proc"
+  policy_type        = "StepScaling"
+  resource_id  = aws_appautoscaling_target.proc.id
+  scalable_dimension = aws_appautoscaling_target.proc.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.proc.service_namespace
+
+  step_scaling_policy_configuration {
+    adjustment_type         = "ExactCapacity"
+    metric_aggregation_type = "Maximum"
+
+    step_adjustment {
+      metric_interval_upper_bound = 1
+      scaling_adjustment = 1
+    }
+  }
 }

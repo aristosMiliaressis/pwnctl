@@ -1,9 +1,9 @@
 ﻿using pwnctl.infra.DependencyInjection;
-using pwnctl.svc;
+using pwnctl.exec;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddHostedService<TaskConsumerService>();
+builder.Services.AddHostedService<TaskExecutorService>();
 
 await PwnInfraContextInitializer.SetupAsync();
 

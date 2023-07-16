@@ -19,5 +19,6 @@ public sealed class PendingTaskDTO : QueueMessage
         TaskId = record.Id;
         Command = record.Command;
         Metadata["MessageGroupId"] = record.Id.ToString();
+        Metadata["MessageDeduplicationId"] = record.Id.ToString();
     }
 }

@@ -3,7 +3,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net7.0</TargetFramework>
     <LangVersion>latest</LangVersion>
-    <AssemblyName>pwnsvc</AssemblyName>
+    <AssemblyName>processor</AssemblyName>
     <ImplicitUsings>enable</ImplicitUsings>
     <SelfContained>true</SelfContained>
     <RuntimeIdentifier>linux-x64</RuntimeIdentifier>

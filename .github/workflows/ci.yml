@@ -69,7 +69,7 @@ jobs:
       - name: build api
         run: dotnet build src/pwnctl.api/pwnctl.api.csproj
 
-  build-worker-img:
+  build-exec-img:
     needs: unit-test
     runs-on: ubuntu-latest
     steps:
@@ -89,7 +89,7 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Build worker image
+      - name: Build exec image
         uses: docker/build-push-action@v4
         with:
           tags: ${{ steps.login-ecr.outputs.registry }}/pwnctl:untested
@@ -98,8 +98,8 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  test-worker-img:
-    needs: build-worker-img
+  test-proc-img:
+    needs: build-proc-img
     runs-on: ubuntu-latest
     steps:
       - name: Checkout subject branch
@@ -129,13 +129,13 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Test worker image
+      - name: Test proc image
         run: |
           export ECR_REGISTRY_URI=${{ vars.AWS_CALLER_IDENTITY }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/pwnctl
-          dotnet test --filter "FullyQualifiedName~pwnctl.svc"
+          dotnet test --filter "FullyQualifiedName~pwnctl.proc"
 
-  push-wroker-img:
-    needs: test-worker-img
+  push-proc-img:
+    needs: test-proc-img
     runs-on: ubuntu-latest
     steps:
       - name: Set up Docker Buildx

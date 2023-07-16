@@ -33,7 +33,7 @@ TaskDefinitions:
     Filter: DomainNameRecord.Type == DnsRecordType.CNAME
 
   - Name: sub_enum
-    CommandTemplate: ../../../../../src/core/pwnctl.svc/scripts/sub-enum.sh {{Name}}
+    CommandTemplate: ../../../../../src/core/pwnctl.exec/scripts/sub-enum.sh {{Name}}
     Filter: DomainName.ZoneDepth <= 2
     Subject: DomainName
     MonitorRules:
