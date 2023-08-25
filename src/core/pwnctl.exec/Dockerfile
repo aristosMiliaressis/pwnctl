@@ -148,9 +148,8 @@ RUN pip3 install emailfinder
 RUN git clone https://github.com/xnl-h4ck3r/xnLinkFinder.git \
     && cd xnLinkFinder \
     && python3 setup.py install
-RUN git clone https://github.com/xnl-h4ck3r/urless.git \
-    && cd urless && python3 setup.py install \
-    && chmod +x urless.py && ln -s /opt/tools/urless/urless.py /usr/local/bin/urless
+RUN git clone https://github.com/xnl-h4ck3r/urless.git\
+    && cd urless && python3 setup.py install
 RUN git clone https://github.com/xnl-h4ck3r/waymore.git \
     && cd waymore && python3 setup.py install \
     && chmod +x waymore.py && ln -s /opt/tools/waymore/waymore.py /usr/local/bin/waymore
