@@ -27,7 +27,7 @@ provider "aws" {
 
   default_tags {
     tags = {
-      Name     = "pwnctl_${random_id.nonce.hex}"
+      Name     = "pwnctl_${var.nonce}"
     }
   }
 }

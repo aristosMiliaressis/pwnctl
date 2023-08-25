@@ -1,13 +1,13 @@
 
 
 module "sqs" {
-    source = "./modules/sqs"
-    stack_name = "pwnctl"
-    id         = random_id.nonce
+    source  = "./modules/sqs"
+    profile = var.profile
+    nonce   = random_id.nonce.hex
 }
 
 module "base" {
-    source = "./modules/base"
+    source     = "./modules/base"
     stack_name = "pwnctl"
-    id         = random_id.nonce
+    nonce      = random_id.nonce.hex
 }

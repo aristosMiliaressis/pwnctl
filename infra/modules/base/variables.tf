@@ -9,6 +9,6 @@ variable "stack_name" {
   default     = "pwnctl"
 }
 
-resource "random_id" "nonce" {
-  byte_length = 8
+variable "nonce" {
+  type        = string
 }

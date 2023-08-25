@@ -4,3 +4,11 @@ variable "sqs_visibility_timeout" {
 
   default     = 1200
 }
+
+variable "profile" {
+  type        = string
+}
+
+variable "nonce" {
+  type        = string
+}

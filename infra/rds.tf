@@ -25,7 +25,7 @@ resource "aws_secretsmanager_secret_version" "password" {
 
 resource "aws_db_subnet_group" "this" {
   name       = "main"
-  subnet_ids  = [for k, v in aws_subnet.private : aws_subnet.private[k].id]
+  subnet_ids  = [for k, v in module.base.private_subnet : module.base.private_subnet[k].id]
 
   tags = {
     Name = "PwnCtl db subnet group"
@@ -35,14 +35,14 @@ resource "aws_db_subnet_group" "this" {
 resource "aws_security_group" "allow_postgres" {
   name        = "allow_postgres"
   description = "Allow ingress Postgres traffic from VPC"
-  vpc_id      = aws_vpc.main.id
+  vpc_id      = module.base.vpc.id
 
   ingress {
     description      = "Allow ingress Postgres traffic from VPC"
     from_port        = 5432
     to_port          = 5432
     protocol         = "tcp"
-    cidr_blocks      = [aws_vpc.main.cidr_block]
+    cidr_blocks      = [module.base.vpc.cidr_block]
   }
 
   egress {
@@ -51,6 +51,10 @@ resource "aws_security_group" "allow_postgres" {
     protocol         = "-1"
     cidr_blocks      = ["0.0.0.0/0"]
     ipv6_cidr_blocks = ["::/0"]
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 
   tags = {
@@ -85,8 +89,14 @@ resource "aws_db_instance" "this" {
   vpc_security_group_ids = [aws_security_group.allow_postgres.id]
   db_subnet_group_name   = aws_db_subnet_group.this.id
 
+
+  lifecycle {
+    replace_triggered_by = [aws_security_group.allow_postgres]
+  }
+
   depends_on = [
     aws_db_parameter_group.this,
-    aws_db_subnet_group.this
+    aws_db_subnet_group.this,
+    aws_security_group.allow_postgres
   ]
 }

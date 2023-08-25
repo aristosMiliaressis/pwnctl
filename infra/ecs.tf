@@ -19,7 +19,7 @@ resource "aws_cloudwatch_log_group" "proc" {
 }
 
 resource "aws_ecs_task_definition" "exec" {
-  family                   = "pwnctl"
+  family                   = "pwnctl-exec"
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   cpu                      = 512
@@ -35,13 +35,13 @@ resource "aws_ecs_task_definition" "exec" {
   [
     {
       "name": "pwnctl",
-      "image": "${docker_registry_image.exec.name}",
+      "image": "${module.base.exec_image.name}",
       "essential": true,
       "stopTimeout": 120,
       "environment": [
         {
           "name": "PWNCTL_IMAGE_HASH",
-          "value": "${docker_registry_image.exec.sha256_digest}"
+          "value": "${module.base.exec_image.sha256_digest}"
         },
         {
           "name": "PWNCTL_IS_ECS",
@@ -53,19 +53,19 @@ resource "aws_ecs_task_definition" "exec" {
         },
         {
           "name": "PWNCTL_TaskQueue__Name",
-          "value": "${aws_sqs_queue.main.name}"
+          "value": "${module.sqs.main_queue.name}"
         },
         {
           "name": "PWNCTL_TaskQueue__VisibilityTimeout",
-          "value": "${module.pwnctl_base.aws_sqs_queue.visibility_timeout_seconds}"
+          "value": "${module.sqs.sqs_visibility_timeout}"
         },
         {
           "name": "PWNCTL_OutputQueue__Name",
-          "value": "${aws_sqs_queue.output.name}"
+          "value": "${module.sqs.output_queue.name}"
         },
         {
           "name": "PWNCTL_OutputQueue__VisibilityTimeout",
-          "value": "${var.sqs_visibility_timeout}"
+          "value": "${module.sqs.sqs_visibility_timeout}"
         },
         {
           "name": "PWNCTL_Logging__MinLevel",
@@ -129,7 +129,7 @@ resource "aws_ecs_task_definition" "exec" {
 }
 
 resource "aws_ecs_service" "exec" {
-  name            = var.ecs_service.name
+  name            = "pwnctl_exec"
   cluster         = aws_ecs_cluster.this.id
   task_definition = aws_ecs_task_definition.exec.arn
   desired_count   = 0
@@ -140,7 +140,7 @@ resource "aws_ecs_service" "exec" {
   ]
 
   network_configuration {
-    subnets = [for k, v in aws_subnet.public : aws_subnet.public[k].id]
+    subnets = [for k, v in module.base.public_subnet : module.base.public_subnet[k].id]
     assign_public_ip = "true"
   }
 
@@ -149,9 +149,10 @@ resource "aws_ecs_service" "exec" {
     weight = 1
   }
 
-    lifecycle {
-        ignore_changes = [ desired_count ]
-    }
+  lifecycle {
+    ignore_changes = [ desired_count, capacity_provider_strategy ]
+    create_before_destroy = true
+  }
 }
 
 resource "aws_appautoscaling_target" "exec" {
@@ -179,7 +180,7 @@ resource "aws_cloudwatch_metric_alarm" "task_queue_depth_metric" {
       stat        = "Maximum"
 
       dimensions = {
-        QueueName = aws_sqs_queue.main.name
+        QueueName = module.sqs.main_queue.name
       }
     }
   }
@@ -194,7 +195,7 @@ resource "aws_cloudwatch_metric_alarm" "task_queue_depth_metric" {
       stat        = "Maximum"
 
       dimensions = {
-        QueueName = aws_sqs_queue.main.name
+        QueueName = module.sqs.main_queue.name
       }
     }
   }
@@ -243,7 +244,7 @@ resource "aws_appautoscaling_policy" "exec" {
 }
 
 resource "aws_ecs_task_definition" "proc" {
-  family                   = "pwnctl"
+  family                   = "pwnctl-proc"
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   cpu                      = 512
@@ -252,20 +253,21 @@ resource "aws_ecs_task_definition" "proc" {
   task_role_arn = aws_iam_role.ecs.arn
 
   depends_on = [
-    aws_db_instance.this
+    aws_db_instance.this,
+    aws_security_group.allow_postgres
   ]
 
   container_definitions = <<DEFINITION
   [
     {
       "name": "pwnctl",
-      "image": "${docker_registry_image.proc.name}",
+      "image": "${module.base.proc_image.name}",
       "essential": true,
       "stopTimeout": 120,
       "environment": [
         {
           "name": "PWNCTL_IMAGE_HASH",
-          "value": "${docker_registry_image.proc.sha256_digest}"
+          "value": "${module.base.proc_image.sha256_digest}"
         },
         {
           "name": "PWNCTL_IS_ECS",
@@ -277,19 +279,19 @@ resource "aws_ecs_task_definition" "proc" {
         },
         {
           "name": "PWNCTL_TaskQueue__Name",
-          "value": "${aws_sqs_queue.main.name}"
+          "value": "${module.sqs.main_queue.name}"
         },
         {
           "name": "PWNCTL_TaskQueue__VisibilityTimeout",
-          "value": "${var.sqs_visibility_timeout}"
+          "value": "${module.sqs.sqs_visibility_timeout}"
         },
         {
           "name": "PWNCTL_OutputQueue__Name",
-          "value": "${aws_sqs_queue.output.name}"
+          "value": "${module.sqs.output_queue.name}"
         },
         {
           "name": "PWNCTL_OutputQueue__VisibilityTimeout",
-          "value": "${var.sqs_visibility_timeout}"
+          "value": "${module.sqs.sqs_visibility_timeout}"
         },
         {
           "name": "PWNCTL_Logging__MinLevel",
@@ -353,7 +355,7 @@ resource "aws_ecs_task_definition" "proc" {
 }
 
 resource "aws_ecs_service" "proc" {
-  name            = var.ecs_service.name
+  name            = "pwnctl_proc"
   cluster         = aws_ecs_cluster.this.id
   task_definition = aws_ecs_task_definition.proc.arn
   desired_count   = 0
@@ -364,7 +366,7 @@ resource "aws_ecs_service" "proc" {
   ]
 
   network_configuration {
-    subnets = [for k, v in aws_subnet.public : aws_subnet.public[k].id]
+    subnets = [for k, v in module.base.public_subnet : module.base.public_subnet[k].id]
     assign_public_ip = "true"
   }
 
@@ -373,9 +375,10 @@ resource "aws_ecs_service" "proc" {
     weight = 1
   }
 
-    lifecycle {
-        ignore_changes = [ desired_count ]
-    }
+  lifecycle {
+    ignore_changes = [ desired_count, capacity_provider_strategy ]
+    create_before_destroy = true
+  }
 }
 
 resource "aws_appautoscaling_target" "proc" {
@@ -403,7 +406,7 @@ resource "aws_cloudwatch_metric_alarm" "output_queue_depth_metric" {
       stat        = "Maximum"
 
       dimensions = {
-        QueueName = aws_sqs_queue.output.name
+        QueueName = module.sqs.output_queue.name
       }
     }
   }
@@ -422,7 +425,7 @@ resource "aws_cloudwatch_metric_alarm" "output_queue_depth_metric" {
 resource "aws_appautoscaling_policy" "proc" {
   name               = "pwnctl-proc"
   policy_type        = "StepScaling"
-  resource_id  = aws_appautoscaling_target.proc.id
+  resource_id        = aws_appautoscaling_target.proc.id
   scalable_dimension = aws_appautoscaling_target.proc.scalable_dimension
   service_namespace  = aws_appautoscaling_target.proc.service_namespace
 
@@ -431,7 +434,7 @@ resource "aws_appautoscaling_policy" "proc" {
     metric_aggregation_type = "Maximum"
 
     step_adjustment {
-      metric_interval_upper_bound = 1
+      metric_interval_lower_bound = 0
       scaling_adjustment = 1
     }
   }

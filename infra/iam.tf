@@ -22,7 +22,7 @@ resource "aws_iam_role" "ecs" {
 
 resource "aws_iam_role_policy_attachment" "grant_ecs_sqs_readwrite_access" {
   role       = aws_iam_role.ecs.name
-  policy_arn = aws_iam_policy.sqs_readwrite.arn
+  policy_arn = module.sqs.sqs_rw_policy.arn
 }
 
 resource "aws_iam_role_policy_attachment" "grant_ecs_task_execution" {
@@ -207,7 +207,7 @@ resource "aws_iam_role_policy_attachment" "grant_lambda_sm_readwrite_access" {
 
 resource "aws_iam_role_policy_attachment" "grant_lambda_sqs_readwrite_access" {
   role       = aws_iam_role.lambda.name
-  policy_arn = aws_iam_policy.sqs_readwrite.arn
+  policy_arn = module.sqs.sqs_rw_policy.arn
 }
 
 resource "aws_iam_role_policy_attachment" "grant_lambda_cloud_watch_logs_access" {

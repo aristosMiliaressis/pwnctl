@@ -30,7 +30,6 @@ variable "ecs_cluster" {
 
 variable "ecs_service" {
   default = {
-    name = "pwnctl_svc"
     min_capacity = 0
     max_capacity = 30
   }

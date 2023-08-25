@@ -40,6 +40,7 @@ resource "aws_lambda_function" "this" {
   depends_on = [
     aws_efs_mount_target.this,
     aws_security_group.allow_https_from_internet,
+    aws_security_group.allow_postgres,
     aws_iam_role.lambda
   ]
 
@@ -53,7 +54,7 @@ resource "aws_lambda_function" "this" {
   memory_size = 6144
 
   vpc_config {
-    subnet_ids         = [for k, v in aws_subnet.private : aws_subnet.private[k].id]
+    subnet_ids         = [for k, v in module.base.private_subnet : module.base.private_subnet[k].id]
     security_group_ids = [aws_security_group.allow_https_from_internet.id]
   }
 
@@ -66,10 +67,10 @@ resource "aws_lambda_function" "this" {
       variables = {
           PWNCTL_IS_LAMBDA = "true"
           PWNCTL_Worker__MaxTaskTimeout = tostring(var.task_timeout),
-          PWNCTL_TaskQueue__Name = aws_sqs_queue.main.name,
-          PWNCTL_TaskQueue__VisibilityTimeout = tostring(var.sqs_visibility_timeout),
-          PWNCTL_OutputQueue__Name = aws_sqs_queue.output.name,
-          PWNCTL_OutputQueue__VisibilityTimeout = tostring(var.sqs_visibility_timeout),
+          PWNCTL_TaskQueue__Name = module.sqs.main_queue.name,
+          PWNCTL_TaskQueue__VisibilityTimeout = tostring(module.sqs.sqs_visibility_timeout),
+          PWNCTL_OutputQueue__Name = module.sqs.output_queue.name,
+          PWNCTL_OutputQueue__VisibilityTimeout = tostring(module.sqs.sqs_visibility_timeout),
           PWNCTL_Logging__MinLevel = "Debug"
           PWNCTL_Logging__FilePath = var.efs_mount_point
           PWNCTL_Api__AccessTimeoutMinutes = tostring(var.access_timeout_minutes)
@@ -85,7 +86,7 @@ resource "aws_lambda_function" "this" {
 resource "aws_security_group" "allow_https_from_internet" {
   name        = "allow_https_from_internet"
   description = "Allow HTTPS inbound traffic from anywhere"
-  vpc_id      = aws_vpc.main.id
+  vpc_id      = module.base.vpc.id
 
   ingress {
     description      = "Allow HTTPS inbound traffic from anywhere"
@@ -105,8 +106,8 @@ resource "aws_security_group" "allow_https_from_internet" {
   }
 
   depends_on = [
-    aws_vpc.main,
-    aws_subnet.private
+    module.base.vpc,
+    module.base.private_subnet
   ]
 
   lifecycle {

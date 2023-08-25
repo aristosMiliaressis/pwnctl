@@ -1,5 +1,5 @@
 resource "aws_sqs_queue" "main" {
-  name                      = "pwnctl_${random_id.nonce.hex}.fifo"
+  name                      = "pwnctl_${var.nonce}.fifo"
   fifo_queue                  = true
   content_based_deduplication = true
   sqs_managed_sse_enabled = true
@@ -18,7 +18,7 @@ resource "aws_sqs_queue" "main" {
 }
 
 resource "aws_sqs_queue" "dlq" {
-  name                      = "pwnctl_${random_id.nonce.hex}_dlq.fifo"
+  name                      = "pwnctl_${var.nonce}_dlq.fifo"
   fifo_queue                  = true
   content_based_deduplication = true
   sqs_managed_sse_enabled = true
@@ -33,7 +33,7 @@ resource "aws_sqs_queue" "dlq" {
 }
 
 resource "aws_sqs_queue" "output" {
-  name                      = "pwnctl_output_${random_id.nonce.hex}.fifo"
+  name                      = "pwnctl_output_${var.nonce}.fifo"
   fifo_queue                  = true
   content_based_deduplication = true
   sqs_managed_sse_enabled = true
