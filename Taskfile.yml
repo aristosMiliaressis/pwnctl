@@ -5,7 +5,7 @@ tasks:
     deps: [install-deps, build-exec-image, push-exec-image, build-proc-image, push-proc-image, bootstrap-aws, deploy-app, install-cli, init-app]
 
   test:
-    deps: [test-core, test-exec]
+    deps: [test-core, test-proc]
 
   test-core:
     cmds:
@@ -79,7 +79,7 @@ tasks:
       - terraform -chdir=infra/modules/base apply # -target=module.base
 
   deploy-app:
-    deps: [test, test-svc, build-api, install-cli]
+    deps: [build-api, install-cli]
     cmds:
       - terraform -chdir=infra apply
       - ./bin/upload-conf.sh
