@@ -69,7 +69,7 @@ jobs:
       - name: build api
         run: dotnet build src/pwnctl.api/pwnctl.api.csproj
 
-  build-exec-img:
+  build-images:
     needs: unit-test
     runs-on: ubuntu-latest
     steps:
@@ -92,14 +92,25 @@ jobs:
       - name: Build exec image
         uses: docker/build-push-action@v4
         with:
-          tags: ${{ steps.login-ecr.outputs.registry }}/pwnctl:untested
+          tags: ${{ steps.login-ecr.outputs.registry }}/pwnctl-exec:untested
           push: true
           context: src/core/
+          file: pwnctl.exec/Dockerfile
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      
+      - name: Build proc image
+        uses: docker/build-push-action@v4
+        with:
+          tags: ${{ steps.login-ecr.outputs.registry }}/pwnctl-proc:untested
+          push: true
+          context: src/core/
+          file: pwnctl.proc/Dockerfile
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
   test-proc-img:
-    needs: build-proc-img
+    needs: build-images
     runs-on: ubuntu-latest
     steps:
       - name: Checkout subject branch
@@ -131,10 +142,10 @@ jobs:
 
       - name: Test proc image
         run: |
-          export ECR_REGISTRY_URI=${{ vars.AWS_CALLER_IDENTITY }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/pwnctl
+          export ECR_REGISTRY_URI=${{ vars.AWS_CALLER_IDENTITY }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/pwnctl-proc
           dotnet test --filter "FullyQualifiedName~pwnctl.proc"
 
-  push-proc-img:
+  push-images:
     needs: test-proc-img
     runs-on: ubuntu-latest
     steps:
@@ -151,8 +162,14 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Pull untested image
-        run: docker pull ${{ steps.login-ecr.outputs.registry }}/pwnctl:untested
+      - name: Pull untested proc image
+        run: docker pull ${{ steps.login-ecr.outputs.registry }}/pwnctl-proc:untested
 
-      - name: Retag image from untested to latest
-        run: docker buildx imagetools create -t ${{ steps.login-ecr.outputs.registry }}/pwnctl:latest ${{ steps.login-ecr.outputs.registry }}/pwnctl:untested
+      - name: Retag proc image from untested to latest
+        run: docker buildx imagetools create -t ${{ steps.login-ecr.outputs.registry }}/pwnctl-proc:latest ${{ steps.login-ecr.outputs.registry }}/pwnctl-proc:untested
+
+      - name: Pull untested exec image
+        run: docker pull ${{ steps.login-ecr.outputs.registry }}/pwnctl-exec:untested
+
+      - name: Retag exec image from untested to latest
+        run: docker buildx imagetools create -t ${{ steps.login-ecr.outputs.registry }}/pwnctl-exec:latest ${{ steps.login-ecr.outputs.registry }}/pwnctl-exec:untested
