@@ -5,7 +5,7 @@ using pwnctl.app.Notifications.Enums;
 
 public interface NotificationSender
 {
-    void Send(Notification notification);
+    Task SendAsync(Notification notification);
 
-    void Send(string message, NotificationTopic topic);
+    Task SendAsync(string message, NotificationTopic topic);
 }

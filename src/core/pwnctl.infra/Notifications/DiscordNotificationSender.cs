@@ -8,14 +8,14 @@ namespace pwnctl.infra.Notifications
 {
     public sealed class DiscordNotificationSender : NotificationSender
     {
-        public void Send(Notification notification)
+        public async Task SendAsync(Notification notification)
         {
-            Send(notification.GetText(), notification.Rule.Topic);
+            await SendAsync(notification.GetText(), notification.Rule.Topic);
         }
 
-        public void Send(string message, NotificationTopic topic)
+        public async Task SendAsync(string message, NotificationTopic topic)
         {
-            CommandExecutor.ExecuteAsync($"echo {message} | /root/go/bin/notify -bulk -provider discord -id {topic.ToString().ToLower()}").Wait();
+            await CommandExecutor.ExecuteAsync($"echo {message} | /root/go/bin/notify -bulk -provider discord -id {topic.ToString().ToLower()}");
         }
     }
 }

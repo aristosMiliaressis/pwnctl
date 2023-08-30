@@ -12,6 +12,7 @@ using pwnctl.app.Operations.Enums;
 using pwnctl.app.Notifications.Enums;
 using pwnctl.kernel;
 using pwnctl.app.Notifications.Interfaces;
+using System.Collections.Concurrent;
 
 namespace pwnctl.app.Assets
 {
@@ -110,7 +111,7 @@ namespace pwnctl.app.Assets
                 }
                 else if (foundByTask.Operation.Type == OperationType.Monitor)
                 {
-                    CheckMonitoringRules(record, oldTags, foundByTask);
+                    await CheckMonitoringRulesAsync(record, oldTags, foundByTask);
                 }
             }
 
@@ -119,11 +120,11 @@ namespace pwnctl.app.Assets
             var allowedTasks = foundByTask.Operation.Policy.GetAllowedTasks();
             allowedTasks.AddRange(_outOfScopeTasks);
 
-            foreach (var task in record.Tasks)
+            await Parallel.ForEachAsync(record.Tasks, async (task, token) =>
             {
                 task.Definition = allowedTasks.First(t => t.Id == task.DefinitionId);
                 await _taskQueueService.EnqueueAsync(new PendingTaskDTO(task));
-            }
+            });
         }
 
         private void GenerateCrawlingTasks(Operation operation, AssetRecord record)
@@ -145,22 +146,25 @@ namespace pwnctl.app.Assets
 
         private async Task CheckFindingRulesAsync(AssetRecord record)
         {
-            foreach (var rule in _notificationRules.Where(rule => (record.InScope || rule.CheckOutOfScope) && rule.Check(record)))
+            await Parallel.ForEachAsync(_notificationRules, async (rule, token) =>
             {
-                // only send notifications once
-                var notification = await _assetRepository.FindNotificationAsync(record.Asset, rule);
-                if (notification != null)
-                    continue;
+                if ((record.InScope || rule.CheckOutOfScope) && rule.Check(record))
+                {
+                     // only send notifications once
+                    var notification = await _assetRepository.FindNotificationAsync(record.Asset, rule);
+                    if (notification != null)
+                        return;
 
-                notification = new Notification(record, rule);
+                    notification = new Notification(record, rule);
 
-                PwnInfraContext.NotificationSender.Send(notification);
-                notification.SentAt = SystemTime.UtcNow();
-                record.Notifications.Add(notification);
-            }
+                    await PwnInfraContext.NotificationSender.SendAsync(notification);
+                    notification.SentAt = SystemTime.UtcNow();
+                    record.Notifications.Add(notification);
+                }
+            });
         }
 
-        private void CheckMonitoringRules(AssetRecord record, Dictionary<string, string> oldTags, TaskRecord foundByTask)
+        private async Task CheckMonitoringRulesAsync(AssetRecord record, Dictionary<string, string> oldTags, TaskRecord foundByTask)
         {
             Notification notification = null;
 
@@ -170,7 +174,7 @@ namespace pwnctl.app.Assets
             {
                 notification = new Notification(record, foundByTask);
 
-                PwnInfraContext.NotificationSender.Send(notification.GetText(), NotificationTopic.Monitoring);
+                await PwnInfraContext.NotificationSender.SendAsync(notification.GetText(), NotificationTopic.Monitoring);
                 notification.SentAt = SystemTime.UtcNow();
                 record.Notifications.Add(notification);
                 return;
@@ -191,7 +195,7 @@ namespace pwnctl.app.Assets
 
             notification = new Notification(record, foundByTask);
 
-            PwnInfraContext.NotificationSender.Send(notification.GetText(), NotificationTopic.Monitoring);
+            await PwnInfraContext.NotificationSender.SendAsync(notification.GetText(), NotificationTopic.Monitoring);
             notification.SentAt = SystemTime.UtcNow();
             record.Notifications.Add(notification);
         }

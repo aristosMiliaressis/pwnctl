@@ -27,13 +27,13 @@ namespace pwnctl.proc
             _hostApplicationLifetime = hostApplicationLifetime;
             hostApplicationLifetime.ApplicationStopping.Register(() =>
             {
-                PwnInfraContext.NotificationSender.Send($"{nameof(OutputProcessorService)} stoped.", NotificationTopic.Status);
+                PwnInfraContext.NotificationSender.SendAsync($"{nameof(OutputProcessorService)} stoped.", NotificationTopic.Status).Wait();
             });
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            PwnInfraContext.NotificationSender.Send($"{nameof(OutputProcessorService)}:{EnvironmentVariables.IMAGE_HASH} started.", NotificationTopic.Status);
+            await PwnInfraContext.NotificationSender.SendAsync($"{nameof(OutputProcessorService)}:{EnvironmentVariables.IMAGE_HASH} started.", NotificationTopic.Status);
 
             if (int.TryParse(Environment.GetEnvironmentVariable("PWNCTL_Operation"), out int opId))
             {

@@ -23,21 +23,19 @@ namespace pwnctl.exec
             _hostApplicationLifetime = hostApplicationLifetime;
             hostApplicationLifetime.ApplicationStopping.Register(() =>
             {
-                PwnInfraContext.NotificationSender.Send($"{nameof(TaskExecutorService)} stoped.", NotificationTopic.Status);
+                PwnInfraContext.NotificationSender.SendAsync($"{nameof(TaskExecutorService)} stoped.", NotificationTopic.Status).Wait();
             });
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            PwnInfraContext.NotificationSender.Send($"{nameof(TaskExecutorService)}:{EnvironmentVariables.IMAGE_HASH} started.", NotificationTopic.Status);
-
+            await PwnInfraContext.NotificationSender.SendAsync($"{nameof(TaskExecutorService)}:{EnvironmentVariables.IMAGE_HASH} started.", NotificationTopic.Status);
 
             while (!stoppingToken.IsCancellationRequested)
             {
                 try
                 {
                     await ExecutePendingTaskAsync(stoppingToken);
-
                 } 
                 catch (Exception ex)
                 {

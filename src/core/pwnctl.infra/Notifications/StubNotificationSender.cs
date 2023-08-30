@@ -7,13 +7,14 @@ namespace pwnctl.infra.Notifications
 {
     public sealed class StubNotificationSender : NotificationSender
     {
-        public void Send(Notification notification)
+        public async Task SendAsync(Notification notification)
         {
-            Send(notification.GetText(), notification.Rule.Topic);
+            await SendAsync(notification.GetText(), notification.Rule.Topic);
         }
 
-        public void Send(string message, NotificationTopic topic)
+        public Task SendAsync(string message, NotificationTopic topic)
         {
+            return Task.CompletedTask;
         }
     }
 }
