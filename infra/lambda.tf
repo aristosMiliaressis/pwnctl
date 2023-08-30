@@ -66,11 +66,8 @@ resource "aws_lambda_function" "this" {
   environment {
       variables = {
           PWNCTL_IS_LAMBDA = "true"
-          PWNCTL_Worker__MaxTaskTimeout = tostring(var.task_timeout),
           PWNCTL_TaskQueue__Name = module.sqs.main_queue.name,
           PWNCTL_TaskQueue__VisibilityTimeout = tostring(module.sqs.sqs_visibility_timeout),
-          PWNCTL_OutputQueue__Name = module.sqs.output_queue.name,
-          PWNCTL_OutputQueue__VisibilityTimeout = tostring(module.sqs.sqs_visibility_timeout),
           PWNCTL_Logging__MinLevel = "Debug"
           PWNCTL_Logging__FilePath = var.efs_mount_point
           PWNCTL_Api__AccessTimeoutMinutes = tostring(var.access_timeout_minutes)

@@ -23,7 +23,7 @@ resource "aws_ecs_task_definition" "exec" {
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   cpu                      = 512
-  memory                   = 3072
+  memory                   = 2048
   execution_role_arn = aws_iam_role.ecs.arn
   task_role_arn = aws_iam_role.ecs.arn
 
@@ -247,8 +247,8 @@ resource "aws_ecs_task_definition" "proc" {
   family                   = "pwnctl-proc"
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
-  cpu                      = 512
-  memory                   = 3072
+  cpu                      = 1024
+  memory                   = 4096
   execution_role_arn = aws_iam_role.ecs.arn
   task_role_arn = aws_iam_role.ecs.arn
 
@@ -272,10 +272,6 @@ resource "aws_ecs_task_definition" "proc" {
         {
           "name": "PWNCTL_IS_ECS",
           "value": "true"
-        },
-        {
-          "name": "PWNCTL_Worker__MaxTaskTimeout",
-          "value": "${var.task_timeout}"
         },
         {
           "name": "PWNCTL_TaskQueue__Name",
@@ -303,7 +299,7 @@ resource "aws_ecs_task_definition" "proc" {
         },
         {
           "name": "PWNCTL_Logging__LogGroup",
-          "value": "${aws_cloudwatch_log_group.exec.name}"
+          "value": "${aws_cloudwatch_log_group.proc.name}"
         },
         {
           "name": "PWNCTL_Db__Name",
@@ -325,7 +321,7 @@ resource "aws_ecs_task_definition" "proc" {
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
-          "awslogs-group": "${aws_cloudwatch_log_group.exec.name}",
+          "awslogs-group": "${aws_cloudwatch_log_group.proc.name}",
           "awslogs-region": "${data.external.aws_region.result.region}",
           "awslogs-stream-prefix": "ecs"
         }
@@ -383,7 +379,7 @@ resource "aws_ecs_service" "proc" {
 
 resource "aws_appautoscaling_target" "proc" {
   max_capacity       = 1
-  min_capacity       = 1
+  min_capacity       = 0
   resource_id        = "service/${aws_ecs_cluster.this.name}/${aws_ecs_service.proc.name}"
   scalable_dimension = "ecs:service:DesiredCount"
   service_namespace  = "ecs"
@@ -412,8 +408,23 @@ resource "aws_cloudwatch_metric_alarm" "output_queue_depth_metric" {
   }
 
   metric_query {
+    id          = "inFlightOutputMessages"
+
+    metric {
+      metric_name = "ApproximateNumberOfMessagesNotVisible"
+      namespace   = "AWS/SQS"
+      period      = 60
+      stat        = "Maximum"
+
+      dimensions = {
+        QueueName = module.sqs.output_queue.name
+      }
+    }
+  }
+
+  metric_query {
     id          = "allMessages"
-    expression  = "visibleOutputMessages"
+    expression  = "visibleOutputMessages + inFlightOutputMessages"
     return_data = "true"
   }
 
@@ -434,7 +445,12 @@ resource "aws_appautoscaling_policy" "proc" {
     metric_aggregation_type = "Maximum"
 
     step_adjustment {
-      metric_interval_lower_bound = 0
+      metric_interval_upper_bound = 1
+      scaling_adjustment = 0
+    }
+
+    step_adjustment {
+      metric_interval_lower_bound = 1
       scaling_adjustment = 1
     }
   }
