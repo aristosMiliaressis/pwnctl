@@ -1,32 +1,24 @@
-Profiles: [ "all" ]
+Profile: "http"
 
 TaskDefinitions:
   - Name: ffuf_common
     CommandTemplate: "ffuf -H 'User-Agent: Mozilla/5.0' -H 'X-Forwarded-For: 127.0.0.1' -w /opt/SecLists/Discovery/Web-Content/common.txt {{Url}}/FUZZ"
-    IsActive: true
-    Aggressiveness: 8
     Subject: HttpEndpoint
     Filter: HttpEndpoint.Path == "/"
     
   - Name: shortname_scanner
     CommandTemplate: shortname_scanner
-    IsActive: true
-    Aggressiveness: 5
     Subject: HttpEndpoint
     Filter: HttpEndpoint.Path == "/" && Tags["Protocol"] == "IIS"
     CheckNotificationRules: true
 
   - Name: hakrawler
     CommandTemplate: "hakrawler -plain -h 'User-Agent: Mozilla/5.0' {{Url}}"
-    IsActive: true
-    Aggressiveness: 3
     Subject: HttpEndpoint
     Filter: Tags["Content-Type"].Contains("/html")
 
   - Name: sqlmap
     CommandTemplate: sqlmap {{Url}}
-    IsActive: true
-    Aggressiveness: 1000
     Subject: HttpEndpoint
 
   - Name: second_order_takeover

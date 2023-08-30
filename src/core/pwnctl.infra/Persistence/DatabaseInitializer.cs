@@ -100,21 +100,18 @@ namespace pwnctl.infra.Persistence
                 var taskText = File.ReadAllText(taskFile);
                 var file = _deserializer.Deserialize<TaskConfigFile>(taskText);
 
-                foreach (var profileName in file.Profiles)
+                var definitions = file.TaskDefinitions.Select(d => d.ToEntity()).ToList();
+
+                var profile = context.TaskProfiles.FirstOrDefault(p => p.ShortName == ShortName.Create(file.Profile));
+                if (profile == null)
                 {
-                    var definitions = file.TaskDefinitions.Select(d => d.ToEntity()).ToList();
-
-                    var profile = context.TaskProfiles.FirstOrDefault(p => p.ShortName == ShortName.Create(profileName));
-                    if (profile == null)
-                    {
-                        profile = new TaskProfile(profileName, definitions);
-                        context.Add(profile);
-                        continue;
-                    }
-
-                    profile.TaskDefinitions.AddRange(definitions);
-                    context.Update(profile);
+                    profile = new TaskProfile(file.Profile, definitions);
+                    context.Add(profile);
+                    continue;
                 }
+
+                profile.TaskDefinitions.AddRange(definitions);
+                context.Update(profile);
 
                 await context.SaveChangesAsync();
             }

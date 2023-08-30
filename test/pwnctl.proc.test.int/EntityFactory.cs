@@ -5,6 +5,7 @@ using pwnctl.app.Operations.Entities;
 using pwnctl.app.Operations.Enums;
 using pwnctl.app.Scope.Entities;
 using pwnctl.app.Scope.Enums;
+using pwnctl.app.Tasks.Entities;
 using pwnctl.domain.Entities;
 using pwnctl.infra.Persistence;
 
@@ -24,7 +25,7 @@ namespace pwnctl.proc.test.integration
                     new ScopeDefinitionAggregate(scope, new ScopeDefinition(ScopeType.CIDR, "172.16.17.0/24"))
                 };
             var taskProfile = context.TaskProfiles.Include(p => p.TaskDefinitions).First(t => t.ShortName == ShortName.Create("all"));
-            var policy = new Policy(taskProfile);
+            var policy = new Policy(new List<TaskProfile> {taskProfile});
             var op = new Operation("test2", OperationType.Monitor, policy, scope);
             context.Add(op);
             context.SaveChanges();

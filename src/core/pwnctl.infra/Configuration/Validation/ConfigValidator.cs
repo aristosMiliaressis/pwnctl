@@ -1,3 +1,4 @@
+using System.IO;
 namespace pwnctl.infra.Configuration.Validation;
 
 using System.Net;
@@ -52,9 +53,9 @@ public static class ConfigValidator
             return false;
         }
 
-        if (!file.Profiles.Any())
+        if (string.IsNullOrEmpty(file.Profile))
         {
-            errorMessage = $"At least one profile is required";
+            errorMessage = $"Null or empty profile name";
             return false;
         }
 

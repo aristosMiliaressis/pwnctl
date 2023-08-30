@@ -43,6 +43,22 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
 
             builder.HasKey(p => p.Id);
 
+            
+        }
+    }
+
+    public sealed class PolicyTaskProfileConfig : IEntityTypeConfiguration<PolicyTaskProfile>
+    {
+        public void Configure(EntityTypeBuilder<PolicyTaskProfile> builder)
+        {
+            builder.ToTable(builder.GetType().GenericTypeArguments[0].Name.Underscore().Pluralize());
+
+            builder.HasKey(p => new {p.PolicyId, p.TaskProfileId});
+
+            builder.HasOne(p => p.Policy)
+                .WithMany(p => p.TaskProfiles)
+                .HasForeignKey(p => p.PolicyId);
+            
             builder.HasOne(p => p.TaskProfile)
                 .WithMany()
                 .HasForeignKey(p => p.TaskProfileId);

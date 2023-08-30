@@ -13,6 +13,7 @@ public class OperationDbRepository : OperationRepository
     {
         return await _context.Operations
                             .Include(o => o.Policy)
+                                .ThenInclude(p => p.TaskProfiles)
                                 .ThenInclude(p => p.TaskProfile)
                                 .ThenInclude(p => p.TaskDefinitions)
                             .FirstOrDefaultAsync(o => o.Id == id);

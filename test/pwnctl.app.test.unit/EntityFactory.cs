@@ -50,16 +50,15 @@ namespace pwnctl.app.test.unit
 
                 if (context.Policies.Any())
                     return context.Policies
-                                    .Include(p => p.TaskProfile)
+                                    .Include(p => p.TaskProfiles)
+                                    .ThenInclude(p => p.TaskProfile)
                                     .ThenInclude(p => p.TaskDefinitions)
                                     .First();
 
-                var policy = new Policy(context.TaskProfiles.Include(p => p.TaskDefinitions).First());
-                policy.Whitelist = "ffuf_common";
+                var policy = new Policy(context.TaskProfiles.Include(p => p.TaskDefinitions).ToList());
                 policy.Blacklist = "subfinder";
-                policy.MaxAggressiveness = 6;
-                context.Entry(policy.TaskProfile).State = EntityState.Unchanged;
                 context.Add(policy);
+                //context.Entry(policy.TaskProfiles.First()).State = EntityState.Unchanged;
                 context.SaveChanges();
 
                 return policy;
@@ -76,7 +75,7 @@ namespace pwnctl.app.test.unit
                 var operation = new Operation("test", OperationType.Crawl, Policy, ScopeAggregate);
                 context.Entry(operation.Scope).State = EntityState.Unchanged;
                 context.Entry(operation.Policy).State = EntityState.Unchanged;
-                context.Entry(operation.Policy.TaskProfile).State = EntityState.Unchanged;
+                context.Entry(operation.Policy.TaskProfiles.First()).State = EntityState.Unchanged;
                 context.Add(operation);
                 context.SaveChanges();
 
@@ -95,6 +94,7 @@ namespace pwnctl.app.test.unit
                                     .Include(t => t.Definition)
                                     .Include(t => t.Operation)
                                         .ThenInclude(o => o.Policy)
+                                        .ThenInclude(o => o.TaskProfiles)
                                         .ThenInclude(o => o.TaskProfile)
                                         .ThenInclude(o => o.TaskDefinitions)
                                     .Include(t => t.Operation)
@@ -107,7 +107,7 @@ namespace pwnctl.app.test.unit
 
                 var assetRecord = new AssetRecord(new DomainName("dummy.com"));
 
-                var task = new TaskRecord(Operation, Policy.TaskProfile.TaskDefinitions.First(t => t.Name == ShortName.Create("shortname_scanner")), assetRecord);
+                var task = new TaskRecord(Operation, Policy.TaskProfiles.SelectMany(p => p.TaskProfile.TaskDefinitions).First(t => t.Name == ShortName.Create("shortname_scanner")), assetRecord);
                 context = new();
                 context.Entry(task.Definition).State = EntityState.Unchanged;
                 context.Add(task);

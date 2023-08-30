@@ -6,7 +6,7 @@ namespace pwnctl.infra.Configuration;
 
 public class TaskConfigFile
 {
-    public List<string> Profiles { get; set; }
+    public string Profile { get; set; }
     public List<TaskDefinitionDTO> TaskDefinitions { get; set; }
 }
 
@@ -15,8 +15,6 @@ public class TaskDefinitionDTO
     public string Name { get; init; }
     public string Subject { get; init; }
     public string CommandTemplate { get; init; }
-    public bool IsActive { get; init; }
-    public int Aggressiveness { get; init; }
     public string Filter { get; init; }
     public bool MatchOutOfScope { get; init; }
     public bool CheckNotificationRules { get; set; }
@@ -30,8 +28,6 @@ public class TaskDefinitionDTO
             Name = ShortName.Create(Name),
             Subject = AssetClass.Create(Subject),
             CommandTemplate = CommandTemplate,
-            IsActive = IsActive,
-            Aggressiveness = Aggressiveness,
             Filter = Filter,
             MatchOutOfScope = MatchOutOfScope,
             CheckNotificationRules = CheckNotificationRules,

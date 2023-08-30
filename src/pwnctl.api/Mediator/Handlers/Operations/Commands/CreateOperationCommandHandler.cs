@@ -56,17 +56,20 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
                 scopeAggregate = await CreateScopeAggregateCommandHandler.CreateScopeAggregate(_context, command.Scope, cancellationToken);
             }
 
-            var taskProfile = _context.TaskProfiles
+            List<TaskProfile> taskProfiles = new();
+            foreach (var profileName in command.Policy.TaskProfiles)
+            {
+                var profile = _context.TaskProfiles
                                         .Include(p => p.TaskDefinitions)
-                                        .FirstOrDefault(p => p.ShortName == ShortName.Create(command.Policy.TaskProfile));
-            if (taskProfile == null)
-                return MediatedResponse.Error("Task Profile {0} not found.", command.Policy.TaskProfile);
+                                        .FirstOrDefault(p => p.ShortName == ShortName.Create(profileName));
+                if (profile == null)
+                    return MediatedResponse.Error("Task Profile {0} not found.", profileName);
+                
+                taskProfiles.Add(profile);
+            }
 
-            var policy = new Policy(taskProfile);
-            policy.Whitelist = command.Policy.Whitelist;
+            var policy = new Policy(taskProfiles);
             policy.Blacklist = command.Policy.Blacklist;
-            policy.MaxAggressiveness = command.Policy.MaxAggressiveness;
-            policy.OnlyPassive = command.Policy.OnlyPassive;
 
             var op = new Operation(command.ShortName, command.Type, policy, scopeAggregate);
             if (command.CronSchedule != null)

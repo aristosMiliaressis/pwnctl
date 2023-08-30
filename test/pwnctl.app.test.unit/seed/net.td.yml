@@ -1,9 +1,7 @@
-Profiles: [ "all" ]
+Profile: "net"
 
 TaskDefinitions:
   - Name: nmap_basic
     CommandTemplate: nmap -Pn {{CIDR}}
-    IsActive: true
-    Aggressiveness: 5
     Subject: NetworkRange
     

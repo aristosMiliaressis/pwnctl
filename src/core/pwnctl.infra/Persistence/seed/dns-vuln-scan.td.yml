@@ -1,0 +1,22 @@
+Profile: "dns_vuln_scan"
+
+TaskDefinitions:
+  - Name: ns_takeover_check
+    CommandTemplate: ns_takeover_check.sh {{Name}}
+    Subject: DomainName
+    Filter: Tags["rcode"] == "SERVFAIL"
+    CheckNotificationRules: true
+
+  - Name: cname_takeover_check
+    CommandTemplate: cloud_misconfig_scan.sh {{Value}}
+    Subject: DomainNameRecord
+    Filter: DomainNameRecord.Type == pwnctl.domain.Enums.DnsRecordType.CNAME
+    MonitorRules:
+      Schedule: 0 0 * * *
+    CheckNotificationRules: true
+
+#   - Name: second_order_takeover
+#     CommandTemplate: cloud_misconfig_scan.sh {{Url}}
+#     Subject: HttpEndpoint
+#     Filter: CloudServiceRepository.Instance.IsCloudService(HttpEndpoint)
+#     MatchOutOfScope: true

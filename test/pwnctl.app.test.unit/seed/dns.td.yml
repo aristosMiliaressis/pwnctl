@@ -1,16 +1,12 @@
-Profiles: [ "all" ]
+Profile: "dns"
 
 TaskDefinitions:
   - Name: subfinder
     CommandTemplate: subfinder {{Name}}
-    IsActive: false
-    Aggressiveness: 0
     Subject: DomainName
 
   - Name: domain_resolution
     CommandTemplate: dig +short {{Name}} | awk '{print "{{Name}} IN A " $1}'
-    IsActive: false
-    Aggressiveness: 1
     Subject: DomainName
     MonitorRules:
       Schedule: 0 0 * * *
@@ -20,8 +16,6 @@ TaskDefinitions:
 
   - Name: cloud_enum
     CommandTemplate: cloud-enum.sh {{Word}}
-    IsActive: true
-    Aggressiveness: 5
     Subject: DomainName
     MonitorRules:
       Schedule: 0 0 * * *

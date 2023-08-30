@@ -11,8 +11,6 @@ namespace pwnctl.app.Tasks.Entities
         public ShortName Name { get; init; }
         public AssetClass Subject { get; init; }
         public string CommandTemplate { get; init; }
-        public bool IsActive { get; init; }
-        public int Aggressiveness { get; init; }
         public string Filter { get; init; }
         public bool CheckNotificationRules { get; init; }
         public bool MatchOutOfScope { get; init; }

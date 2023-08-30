@@ -7,59 +7,30 @@ namespace pwnctl.app.Operations.Entities
     public sealed class Policy : Entity<int>
     {
         public string Blacklist { get; set; }
-        public string Whitelist { get; set; }
-        public uint MaxAggressiveness { get; set; }
-        public bool OnlyPassive { get; set; }
 
-        [JsonIgnore]
-        public int TaskProfileId { get; private init; }
-        public TaskProfile TaskProfile { get; private init; }
+        public List<PolicyTaskProfile> TaskProfiles { get; private init; }
 
         public Policy() { }
 
-        public Policy(TaskProfile profile)
+        public Policy(List<TaskProfile> profiles)
         {
-            TaskProfile = profile;
+            TaskProfiles = profiles.Select(p => new PolicyTaskProfile { Policy = this, TaskProfile = p }).ToList();
         }
 
         public List<TaskDefinition> GetAllowedTasks()
         {
             List<TaskDefinition> allowedTasks = new();
+            var blacklist = Blacklist?.Split(",") ?? new string[0];
 
-            foreach (var definition in TaskProfile.TaskDefinitions)
+            foreach (var definition in TaskProfiles.SelectMany(p => p.TaskProfile.TaskDefinitions))
             {
-                if (Allows(definition))
+                if (!blacklist.Contains(definition.Name.Value))
                 {
                     allowedTasks.Add(definition);
                 }
             }
 
             return allowedTasks;
-        }
-
-        public bool Allows(TaskDefinition definition)
-        {
-            var whitelist = Whitelist?.Split(",") ?? new string[0];
-            var blacklist = Blacklist?.Split(",") ?? new string[0];
-
-            if (blacklist.Contains(definition.Name.Value))
-            {
-                return false;
-            }
-            else if (whitelist.Contains(definition.Name.Value))
-            {
-                return true;
-            }
-            else if (definition.IsActive && OnlyPassive)
-            {
-                return false;
-            }
-            else if (definition.Aggressiveness <= MaxAggressiveness || MaxAggressiveness == 0)
-            {
-                return true;
-            }
-
-            return false;
         }
     }
 }

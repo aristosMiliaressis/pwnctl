@@ -54,6 +54,7 @@ namespace pwnctl.infra.Persistence
         public DbSet<ScopeAggregate> ScopeAggregates { get; set; }
         public DbSet<ScopeDefinitionAggregate> ScopeDefinitionAggregates { get; set; }
         public DbSet<ScopeDefinition> ScopeDefinitions { get; set; }
+        public DbSet<PolicyTaskProfile> PolicyTaskProfiles { get; set; }
         public DbSet<TaskProfile> TaskProfiles { get; set; }
         public DbSet<TaskDefinition> TaskDefinitions { get; set; }
         public DbSet<NotificationRule> NotificationRules { get; set; }

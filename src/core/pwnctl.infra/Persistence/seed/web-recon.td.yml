@@ -1,45 +1,6 @@
-Profiles: [ "most" ]
+Profile: "web_recon"
 
 TaskDefinitions:
-  - Name: ping_sweep
-    CommandTemplate: ping-sweep.sh {{CIDR}}
-    Subject: NetworkRange
-    MonitorRules:
-      Schedule: 0 0 * * *
-
-  - Name: reverse_range_lookup
-    CommandTemplate: reverse-range-lookup.sh {{CIDR}}
-    Subject: NetworkRange
-    MonitorRules:
-      Schedule: 0 0 * * *
-
-  - Name: asn_lookup
-    CommandTemplate: asn-lookup.sh {{IP}}
-    Subject: NetworkHost
-
-  - Name: reverse_dns_lookup
-    CommandTemplate: dig +short -x {{IP}}
-    Subject: NetworkHost
-
-  - Name: tcp_scan
-    CommandTemplate: tcp-scan.sh {{IP}}
-    Subject: NetworkHost
-    CheckNotificationRules: true
-
-  - Name: tls_probe
-    CommandTemplate: tls-probe.sh {{Address}}
-    Subject: NetworkSocket
-
-  - Name: http_probe
-    CommandTemplate: http-probe.sh {{Address}}
-    Subject: NetworkSocket
-    Filter: Tags["protocol"].Contains("http")
-
-  - Name: udp_scan
-    CommandTemplate: udp-scan.sh {{IP}}
-    Subject: NetworkHost
-    CheckNotificationRules: true
-
   - Name: domain_resolution
     CommandTemplate: resolve.sh {{Name}}
     Subject: DomainName
@@ -89,7 +50,7 @@ TaskDefinitions:
     Subject: HttpEndpoint
     MonitorRules:
       Schedule: 0 0 * * *
-      PreCondition: new List<string>{ "401", "403", "501", "502", "503", "504" }.Contains(Tags["Status"])
+      PreCondition: new List<string>{ "401", "403", "404", "500", "501", "502", "503", "504" }.Contains(Tags["Status"])
       PostCondition: newTags["Status"] != oldTags["Status"]
       NotificationTemplate: Endpoint {{Url}} changed status code from {{oldTags["Status"]}} to {{newTags["Status"]}}
 
@@ -106,40 +67,12 @@ TaskDefinitions:
   - Name: get_all_urls
     CommandTemplate: get-all-urls.sh {{Name}}
     Subject: DomainName
-    Filter: DomainName.ZoneDepth == 1
+    Filter: DomainName.ZoneDepth == 1 && Tags["rcode"] != ""
 
   - Name: webcrawl
     CommandTemplate: webcrawl.sh {{Url}}
     Filter: HttpEndpoint.Path == "/"
     Subject: HttpEndpoint
-
-  - Name: cloud_enum
-    CommandTemplate: cloud-enum.sh {{Word}}
-    Subject: DomainName
-    Filter: DomainName.ZoneDepth == 1
-
-  - Name: ns_takeover_check
-    CommandTemplate: ns_takeover_check.sh {{Name}}
-    Subject: DomainName
-    Filter: Tags["rcode"] == "SERVFAIL"
-    MonitorRules:
-      Schedule: 0 0 * * *
-    CheckNotificationRules: true
-
-  - Name: cname_takeover_check
-    CommandTemplate: cloud_misconfig_scan.sh {{Value}}
-    Subject: DomainNameRecord
-    Filter: DomainNameRecord.Type == pwnctl.domain.Enums.DnsRecordType.CNAME
-    MonitorRules:
-      Schedule: 0 0 * * *
-    CheckNotificationRules: true
-
-  - Name: s3_scan
-    CommandTemplate: s3-scan.sh {{Name}}
-    Subject: DomainName
-    Filter: DomainName.Name.Contains("amazonaws.com") && DomainName.Name.Contains("s3")
-    MatchOutOfScope: true
-    CheckNotificationRules: true
 
   - Name: screenshot
     CommandTemplate: screenshot.sh {{Url}}
@@ -211,3 +144,8 @@ TaskDefinitions:
     CommandTemplate: mdwfuzzer.sh {{Url}}
     Filter: HttpEndpoint.Path=="/"
     Subject: HttpEndpoint
+
+  # - Name: tld_brute
+  #   CommandTemplate: tld-brute.sh {{Name}}
+  #   Subject: DomainName
+  #   Filter: DomainName.ZoneDepth == 1

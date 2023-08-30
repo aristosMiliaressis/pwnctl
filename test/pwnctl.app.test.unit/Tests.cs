@@ -539,10 +539,6 @@ public sealed class Tests
         // TaskDefinition.Filter fail test
         await proc.ProcessAsync(PwnInfraContext.Serializer.Serialize(exampleUrl), EntityFactory.TaskRecord.Id);
 
-        // aggresivness test
-        Assert.True(context.TaskRecords.Include(t => t.Definition).Any(t => t.Definition.Name == ShortName.Create("hakrawler")));
-        Assert.False(context.TaskRecords.Include(t => t.Definition).Any(t => t.Definition.Name == ShortName.Create("sqlmap")));
-
         // Task.Command interpolation test
         var hakrawlerTask = context.TaskRecords
                                     .Include(t => t.Definition)
@@ -620,7 +616,6 @@ public sealed class Tests
 
         // TODO: test that crawl mode is not effected by MonitorRules.PreCondition
 
-        // TODO: AllowActive = false test, csv black&whitelist test
         // TODO: test TaskDefinition.MatchOutOfScope
         // TODO: test NotificationRule.CheckOutOfScope
     }

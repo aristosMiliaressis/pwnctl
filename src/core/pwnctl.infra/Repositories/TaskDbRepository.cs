@@ -56,6 +56,7 @@ namespace pwnctl.infra.Repositories
                                         .ThenInclude(r => r.Scope)
                                     .Include(r => r.Operation)
                                         .ThenInclude(r => r.Policy)
+                                        .ThenInclude(r => r.TaskProfiles)
                                         .ThenInclude(r => r.TaskProfile)
                                         .ThenInclude(r => r.TaskDefinitions)
                                     .Include(r => r.Operation)
@@ -76,6 +77,7 @@ namespace pwnctl.infra.Repositories
             return await _context.TaskRecords
                                 .Include(p => p.Operation)
                                     .ThenInclude(r => r.Policy)
+                                    .ThenInclude(r => r.TaskProfiles)
                                     .ThenInclude(r => r.TaskProfile)
                                     .ThenInclude(r => r.TaskDefinitions)
                                 .Include(p => p.Definition)

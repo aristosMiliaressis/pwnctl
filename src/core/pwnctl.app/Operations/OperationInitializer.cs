@@ -36,7 +36,7 @@ public class OperationInitializer
         op.State = OperationState.Ongoing;
         await _opRepo.SaveAsync(op);
 
-        var monitoringTasks = op.Policy.TaskProfile.TaskDefinitions.Where(def => def.MonitorRules.Schedule != null);
+        var monitoringTasks = op.Policy.TaskProfiles.SelectMany(p => p.TaskProfile.TaskDefinitions).Where(def => def.MonitorRules.Schedule != null);
 
         int page = 0;
         while (true)

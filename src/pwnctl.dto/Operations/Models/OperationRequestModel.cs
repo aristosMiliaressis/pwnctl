@@ -15,9 +15,6 @@ public class OperationRequestModel
 
 public class PolicyModel
 {
-    public string TaskProfile { get; set; }
+    public List<string> TaskProfiles { get; set; }
     public string Blacklist { get; set; }
-    public string Whitelist { get; set; }
-    public uint MaxAggressiveness { get; set; }
-    public bool OnlyPassive { get; set; }
 }
