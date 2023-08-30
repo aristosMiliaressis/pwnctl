@@ -5,7 +5,7 @@ tasks:
     deps: [install-deps, build-exec-image, push-exec-image, build-proc-image, push-proc-image, bootstrap-aws, deploy-app, install-cli, init-app]
 
   test:
-    deps: [test-core, test-proc]
+    deps: [test-core, test-exec, test-proc]
 
   test-core:
     cmds:
@@ -17,6 +17,13 @@ tasks:
         rm -rf test/pwnctl.proc.test.int/bin
         export ECR_REGISTRY_URI=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-proc") | .repositoryUri')
         dotnet test --filter "FullyQualifiedName~pwnctl.proc"
+
+  test-exec:
+    cmds:
+    - |
+      rm -rf test/pwnctl.exec.test.int/bin
+      export ECR_REGISTRY_URI=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-exec") | .repositoryUri')
+      dotnet test --filter "FullyQualifiedName~pwnctl.exec"
 
   build-api:
     cmds:

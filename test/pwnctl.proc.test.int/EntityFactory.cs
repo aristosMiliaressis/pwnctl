@@ -31,7 +31,7 @@ namespace pwnctl.proc.test.integration
             context.SaveChanges();
             var domain = new DomainName("tesla.com");
             var record = new AssetRecord(domain);
-            record.Scope = scope.Definitions.First().Definition;
+            record.SetScopeId(scope.Definitions.First().Definition.Id);
             context.Add(record);
             context.SaveChanges();
 

@@ -34,7 +34,6 @@ public sealed class Tests
         Environment.SetEnvironmentVariable("PWNCTL_TEST_RUN", "true");
         Environment.SetEnvironmentVariable("PWNCTL_USE_SQLITE", "true");
         Environment.SetEnvironmentVariable("PWNCTL_INSTALL_PATH", ".");
-        Environment.SetEnvironmentVariable("PWNCTL_Logging__FilePath", ".");
         Environment.SetEnvironmentVariable("PWNCTL_Logging__MinLevel", "Warning");
         Environment.SetEnvironmentVariable("PWNCTL_TaskQueue__Name", "task-dev.fifo");
         Environment.SetEnvironmentVariable("PWNCTL_OutputQueue__Name", "output-dev.fifo");

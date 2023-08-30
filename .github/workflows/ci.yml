@@ -117,7 +117,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  test-proc-img:
+  test-images:
     needs: build-images
     runs-on: ubuntu-latest
     steps:
@@ -154,9 +154,14 @@ jobs:
         run: |
           export ECR_REGISTRY_URI=${{ vars.AWS_CALLER_IDENTITY }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/pwnctl-proc
           dotnet test --filter "FullyQualifiedName~pwnctl.proc"
+      
+      - name: Test exec image
+        run: |
+          export ECR_REGISTRY_URI=${{ vars.AWS_CALLER_IDENTITY }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/pwnctl-exec
+          dotnet test --filter "FullyQualifiedName~pwnctl.exec"
 
   push-images:
-    needs: test-proc-img
+    needs: test-images
     runs-on: ubuntu-latest
     steps:
       - name: Set up Docker Buildx

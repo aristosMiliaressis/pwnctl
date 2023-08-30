@@ -140,26 +140,14 @@ public sealed class PwnctlApiClient
     {
         AccessTokenRequestModel request = new();
 
-        var (profile, credentials) = TryGetAWSProfileCredentials(PwnInfraContext.Config.Aws.Profile);
-        if (profile == null)
+        var ssmClient = new AmazonSecretsManagerClient();
+        var password = await ssmClient.GetSecretValueAsync(new GetSecretValueRequest
         {
-            Console.WriteLine("Enter Username: ");
-            request.Username = Console.ReadLine();
+            SecretId = "/aws/secret/pwnctl/admin_password"
+        });
 
-            Console.WriteLine("Enter Password: ");
-            request.Password = Console.ReadLine();
-        }
-        else
-        {
-            var ssmClient = new AmazonSecretsManagerClient();
-            var password = await ssmClient.GetSecretValueAsync(new GetSecretValueRequest
-            {
-                SecretId = "/aws/secret/pwnctl/admin_password"
-            });
-
-            request.Username = "admin";
-            request.Password = password.SecretString;
-        }
+        request.Username = "admin";
+        request.Password = password.SecretString;
 
         var json = PwnInfraContext.Serializer.Serialize(request);
 
@@ -175,25 +163,5 @@ public sealed class PwnctlApiClient
         response.EnsureSuccessStatusCode();
 
         return await response.Content.ReadFromJsonAsync<TokenGrantResponse>();
-    }
-
-    private (CredentialProfile, AWSCredentials) TryGetAWSProfileCredentials(string profileName)
-    {
-        try
-        {
-            var credentialProfileStoreChain = new CredentialProfileStoreChain();
-
-            if (!credentialProfileStoreChain.TryGetProfile(profileName, out CredentialProfile profile))
-                throw new AmazonClientException($"Unable to find profile {profile} in CredentialProfileStoreChain.");
-
-            if (!credentialProfileStoreChain.TryGetAWSCredentials(profileName, out AWSCredentials credentials))
-                throw new AmazonClientException($"Unable to find credentials {profile} in CredentialProfileStoreChain.");
-
-            return (profile, credentials);
-        }
-        catch
-        {
-            return (null, null);
-        }
     }
 }

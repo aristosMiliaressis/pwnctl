@@ -1,15 +1,19 @@
-﻿using Amazon.SQS;
+﻿using Amazon;
+using Amazon.Runtime;
+using Amazon.Runtime.CredentialManagement;
+using Amazon.SQS;
 using Amazon.SQS.Model;
 using pwnctl.app;
 using pwnctl.app.Queueing.Interfaces;
 using pwnctl.app.Queueing.DTO;
+using pwnctl.infra.Aws;
 using System.Net;
 
 namespace pwnctl.infra.Queueing
 {
     public sealed class SQSTaskQueueService : TaskQueueService
     {
-        private readonly AmazonSQSClient _sqsClient = new();
+        private readonly AmazonSQSClient _sqsClient = CreateSQSClient();
         private Dictionary<string,string> _queueUrls = new();
         private string this[string messageType]
         {
@@ -141,6 +145,21 @@ namespace pwnctl.infra.Queueing
             {
                 PwnInfraContext.Logger.Exception(ex);
             }
+        }
+
+        private static AmazonSQSClient CreateSQSClient()
+        {
+            var profile = AwsConfigProvider.TryGetAWSProfile(PwnInfraContext.Config.Aws.Profile);
+            if (profile == null)
+            {
+                return new AmazonSQSClient(Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID"),
+                                            Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY"), 
+                                            RegionEndpoint.GetBySystemName(Environment.GetEnvironmentVariable("AWS_DEFAULT_REGION")));
+            }
+
+            var credentials = AwsConfigProvider.TryGetAWSProfileCredentials(PwnInfraContext.Config.Aws.Profile);
+
+            return new AmazonSQSClient(credentials.GetCredentials().AccessKey, credentials.GetCredentials().SecretKey, profile.Region);
         }
     }
 }

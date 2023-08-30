@@ -13,9 +13,7 @@ namespace pwnctl.infra.Logging
         {
             Logger logger = null;
 
-            if (EnvironmentVariables.IS_LAMBDA)
-                logger = CreateConsoleLogger(config);
-            else if (EnvironmentVariables.IS_ECS || EnvironmentVariables.TEST_RUN)
+            if (string.IsNullOrEmpty(config.Logging.FilePath))
                 logger = CreateConsoleLogger(config);
             else
                 logger = CreateFileLogger(config);
