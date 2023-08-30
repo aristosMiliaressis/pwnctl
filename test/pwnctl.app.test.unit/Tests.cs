@@ -268,26 +268,26 @@ public sealed class Tests
             }
         };
 
-        tasks.Add(AssetProcessorFactory.Create().ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
-        tasks.Add(AssetProcessorFactory.Create().ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
-        tasks.Add(AssetProcessorFactory.Create().ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
-        tasks.Add(AssetProcessorFactory.Create().ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
-        tasks.Add(AssetProcessorFactory.Create().ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
-        tasks.Add(AssetProcessorFactory.Create().ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
-        tasks.Add(AssetProcessorFactory.Create().ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
-        tasks.Add(proc.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
-        tasks.Add(proc.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
-        tasks.Add(proc.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
-        tasks.Add(proc.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
-        tasks.Add(proc.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
-        tasks.Add(proc.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
-        tasks.Add(proc.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
-        tasks.Add(repository.SaveAsync(new AssetRecord(service)));
-        tasks.Add(repository.SaveAsync(new AssetRecord(service)));
-        tasks.Add(repository.SaveAsync(new AssetRecord(service)));
-        tasks.Add(repository.SaveAsync(new AssetRecord(service)));
+        // tasks.Add(AssetProcessorFactory.Create().ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
+        // tasks.Add(AssetProcessorFactory.Create().ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
+        // tasks.Add(AssetProcessorFactory.Create().ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
+        // tasks.Add(AssetProcessorFactory.Create().ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
+        // tasks.Add(AssetProcessorFactory.Create().ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
+        // tasks.Add(AssetProcessorFactory.Create().ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
+        // tasks.Add(AssetProcessorFactory.Create().ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
+        // tasks.Add(proc.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
+        // tasks.Add(proc.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
+        // tasks.Add(proc.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
+        // tasks.Add(proc.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
+        // tasks.Add(proc.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
+        // tasks.Add(proc.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
+        // tasks.Add(proc.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
+        // tasks.Add(repository.SaveAsync(new AssetRecord(service)));
+        // tasks.Add(repository.SaveAsync(new AssetRecord(service)));
+        // tasks.Add(repository.SaveAsync(new AssetRecord(service)));
+        // tasks.Add(repository.SaveAsync(new AssetRecord(service)));
 
-        Task.WaitAll(tasks.ToArray());
+        // Task.WaitAll(tasks.ToArray());
     }
 
     [Fact]

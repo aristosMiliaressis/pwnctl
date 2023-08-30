@@ -136,11 +136,11 @@ namespace pwnctl.infra.Repositories
             return record;
         }
 
-        public async Task SaveAsync(AssetRecord record)
+        public async Task SaveSafeAsync(AssetRecord record)
         {
             try
             {
-                // this prevents race conditions when checking if the record already exists
+                // this prevents concurrency conflicts when checking if the record already exists
                 using (var trx = _context.Database.BeginTransaction(IsolationLevel.Serializable)) // TODO: try Snapshot? why?
                 {
                     var existingRecord = await FindRecordAsync(record.Asset);
@@ -197,6 +197,63 @@ namespace pwnctl.infra.Repositories
                 PwnInfraContext.Logger.Warning(ex.ToRecursiveExInfo());
                 
                 // optimistic concurrency yolo!
+            }
+            finally
+            {
+                // detaching record references to avoid an ever growing
+                // change tracking graph and reduce momory consumption.
+                _context.Entry(record.Asset).DetachReferenceGraph();
+                _context.Entry(record).State = EntityState.Detached;
+            }
+        }
+
+        public async Task SaveAsync(AssetRecord record)
+        {
+            try
+            {
+                var existingRecord = await FindRecordAsync(record.Asset);
+                if (existingRecord == null)
+                {
+                    // explicitly track asset to prevent change tracker from
+                    // navigating related assets and attempting to add them.
+                    _context.Entry(record.Asset).State = EntityState.Added;
+
+                    _context.Add(record);
+
+                    await _context.SaveChangesAsync();
+
+                    return;
+                }
+
+                if (record.InScope)
+                {
+                    _context.AssetRecords
+                            .FromSqlRaw($"""UPDATE asset_records SET "InScope" = true, "ScopeId" = %s WHERE "Id" = %s;""",
+                                    record.ScopeId, record.Id);
+                }
+
+                _context.AddRange(record.Tags.Where(t => !existingRecord.Tags.Select(t => t.Name).Contains(t.Name)).Select(t =>
+                {
+                    t.Record = existingRecord;
+                    t.RecordId = existingRecord.Id;
+                    return t;
+                }));
+
+                _context.AddRange(record.Tasks.Where(t => t.Id == default).Select(t =>
+                {
+                    t.Record = null;
+                    t.RecordId = existingRecord.Id;
+                    return t;
+                }));
+
+                _context.AddRange(record.Notifications.Where(t => t.Id == default).Select(t =>
+                {
+                    t.Record = null;
+                    t.RecordId = existingRecord.Id;
+                    return t;
+                }));
+
+                await _context.SaveChangesAsync();
             }
             finally
             {
