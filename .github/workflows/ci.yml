@@ -95,7 +95,7 @@ jobs:
           tags: ${{ steps.login-ecr.outputs.registry }}/pwnctl-exec:untested
           push: true
           context: src/core/
-          file: pwnctl.exec/Dockerfile
+          file: src/core/pwnctl.exec/Dockerfile
           cache-from: type=gha
           cache-to: type=gha,mode=max
       
@@ -105,7 +105,7 @@ jobs:
           tags: ${{ steps.login-ecr.outputs.registry }}/pwnctl-proc:untested
           push: true
           context: src/core/
-          file: pwnctl.proc/Dockerfile
+          file: src/core/pwnctl.proc/Dockerfile
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
