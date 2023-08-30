@@ -36,6 +36,8 @@ public sealed class Tests
         Environment.SetEnvironmentVariable("PWNCTL_INSTALL_PATH", ".");
         Environment.SetEnvironmentVariable("PWNCTL_Logging__FilePath", ".");
         Environment.SetEnvironmentVariable("PWNCTL_Logging__MinLevel", "Warning");
+        Environment.SetEnvironmentVariable("PWNCTL_TaskQueue__Name", "task-dev.fifo");
+        Environment.SetEnvironmentVariable("PWNCTL_OutputQueue__Name", "output-dev.fifo");
 
         PwnInfraContextInitializer.SetupAsync().Wait();
         DatabaseInitializer.SeedAsync().Wait();
@@ -629,7 +631,7 @@ public sealed class Tests
         OperationInitializer initializer = new(new OperationDbRepository(),
                                                 new AssetDbRepository(),
                                                 new TaskDbRepository(),
-                                                TaskQueueServiceFactory.Create());
+                                                new SQSTaskQueueService());
 
         var op = new Operation("monitor_op", OperationType.Monitor, EntityFactory.Policy, EntityFactory.ScopeAggregate);
 

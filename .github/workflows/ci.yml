@@ -88,6 +88,8 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
+        with:
+          mask-password: 'true'
 
       - name: Build exec image
         uses: docker/build-push-action@v4
@@ -139,6 +141,8 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
+        with:
+          mask-password: 'true'
 
       - name: Test proc image
         run: |
@@ -161,7 +165,9 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
-
+        with:
+          mask-password: 'true'
+          
       - name: Pull untested proc image
         run: docker pull ${{ steps.login-ecr.outputs.registry }}/pwnctl-proc:untested
 

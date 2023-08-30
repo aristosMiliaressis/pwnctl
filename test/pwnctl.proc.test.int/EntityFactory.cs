@@ -24,8 +24,8 @@ namespace pwnctl.proc.test.integration
                     new ScopeDefinitionAggregate(scope, new ScopeDefinition(ScopeType.UrlRegex, "(.*:\\/\\/tsl\\.com\\/app\\/.*$)")),
                     new ScopeDefinitionAggregate(scope, new ScopeDefinition(ScopeType.CIDR, "172.16.17.0/24"))
                 };
-            var taskProfile = context.TaskProfiles.Include(p => p.TaskDefinitions).First(t => t.ShortName == ShortName.Create("all"));
-            var policy = new Policy(new List<TaskProfile> {taskProfile});
+            var taskProfiles = context.TaskProfiles.Include(p => p.TaskDefinitions).ToList();
+            var policy = new Policy(taskProfiles);
             var op = new Operation("test2", OperationType.Monitor, policy, scope);
             context.Add(op);
             context.SaveChanges();

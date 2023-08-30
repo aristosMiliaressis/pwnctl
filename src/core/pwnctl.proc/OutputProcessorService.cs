@@ -15,7 +15,7 @@ namespace pwnctl.proc
     {
         private readonly IHostApplicationLifetime _hostApplicationLifetime;
         private static readonly AssetProcessor _processor = AssetProcessorFactory.Create();
-        private static readonly TaskQueueService _queueService = TaskQueueServiceFactory.Create();
+        private static readonly SQSTaskQueueService _queueService = new();
         private static System.Timers.Timer _timer = new();
         private static readonly OperationInitializer _initializer = new(new OperationDbRepository(),
                                                                 new AssetDbRepository(),

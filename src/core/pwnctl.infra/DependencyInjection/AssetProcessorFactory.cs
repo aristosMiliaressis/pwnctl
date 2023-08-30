@@ -17,7 +17,7 @@ public static class AssetProcessorFactory
         var taskRepo = new TaskDbRepository(context);
         var notificationRepo = new NotificationDbRepository(context);
 
-        var taskQueueService = TaskQueueServiceFactory.Create();
+        var taskQueueService = new SQSTaskQueueService();
 
         return new AssetProcessor(assetRepo, taskQueueService, taskRepo, notificationRepo);
     }

@@ -44,7 +44,9 @@ public sealed class Tests
                     .WithEnvironment("PWNCTL_Db__Host", $"{_databaseHostname}:5432")
                     .WithEnvironment("PWNCTL_Db__Name", "postgres")
                     .WithEnvironment("PWNCTL_Db__Username", "postgres")
-                    .WithEnvironment("PWNCTL_Db__Password", "password");                    
+                    .WithEnvironment("PWNCTL_Db__Password", "password")
+                    .WithEnvironment("PWNCTL_TaskQueue__Name", "task-dev.fifo")
+                    .WithEnvironment("PWNCTL_OutputQueue__Name", "output-dev.fifo");                    
 
     public Tests()
     {       
@@ -66,6 +68,8 @@ public sealed class Tests
         Environment.SetEnvironmentVariable("PWNCTL_Db__Name", "postgres");
         Environment.SetEnvironmentVariable("PWNCTL_Db__Username", "postgres");
         Environment.SetEnvironmentVariable("PWNCTL_Db__Password", "password");
+        Environment.SetEnvironmentVariable("PWNCTL_TaskQueue__Name", "task-dev.fifo");
+        Environment.SetEnvironmentVariable("PWNCTL_OutputQueue__Name", "output-dev.fifo");
         PwnInfraContextInitializer.SetupAsync().Wait();
 
         // migrate & seed database

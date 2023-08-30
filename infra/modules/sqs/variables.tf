@@ -8,6 +8,11 @@ variable "env" {
   type        = string
 }
 
+variable "message_retention_seconds" {
+  description = "Message retention in seconds."
+  type        = number
+}
+
 variable "sqs_visibility_timeout" {
   description = "SQS Visibility Timeout"
   type        = number

@@ -14,7 +14,7 @@ namespace pwnctl.exec
     public sealed class TaskExecutorService : BackgroundService
     {
         private readonly IHostApplicationLifetime _hostApplicationLifetime;
-        private static readonly TaskQueueService _queueService = TaskQueueServiceFactory.Create();
+        private static readonly SQSTaskQueueService _queueService = new();
         private static readonly TaskDbRepository _taskRepo = new();
         private static System.Timers.Timer _timer = new();
 
