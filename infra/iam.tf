@@ -1,6 +1,6 @@
 # ECS Execution role
-resource "aws_iam_role" "ecs" {
-  name = "pwnctl_${random_id.nonce.hex}_ecs_service_role"
+resource "aws_iam_role" "ecs_service" {
+  name = "pwnctl-ecs-service"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -14,45 +14,66 @@ resource "aws_iam_role" "ecs" {
       }
     ]
   })
+}
 
-  tags = {
-    Name = "pwnctl_ecs_role_${random_id.nonce.hex}"
+data "aws_iam_policy_document" "sqs_readwrite" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "sqs:ChangeMessageVisibility",
+      "sqs:DeleteMessage",
+      "sqs:GetQueueAttributes",
+      "sqs:GetQueueUrl",
+      "sqs:ReceiveMessage",
+      "sqs:SendMessage"
+    ]
+
+    resources = ["*"]
   }
 }
 
+resource "aws_iam_policy" "sqs_readwrite" {
+  name        = "sqs-readwrite"
+  path        = "/"
+  description = "IAM policy for sqs Read/Write access"
+  policy      = data.aws_iam_policy_document.sqs_readwrite.json
+}
+
+
 resource "aws_iam_role_policy_attachment" "grant_ecs_sqs_readwrite_access" {
-  role       = aws_iam_role.ecs.name
-  policy_arn = module.sqs.sqs_rw_policy.arn
+  role       = aws_iam_role.ecs_service.name
+  policy_arn = aws_iam_policy.sqs_readwrite.arn
 }
 
 resource "aws_iam_role_policy_attachment" "grant_ecs_task_execution" {
-  role       = aws_iam_role.ecs.name
+  role       = aws_iam_role.ecs_service.name
   policy_arn = data.aws_iam_policy.ecs_task_execution.arn
 }
 resource "aws_iam_role_policy_attachment" "grant_ecs_efs_client_full_access" {
-  role       = aws_iam_role.ecs.name
+  role       = aws_iam_role.ecs_service.name
   policy_arn = data.aws_iam_policy.efs_client_full_access.arn
 }
 resource "aws_iam_role_policy_attachment" "grant_ecs_ec2_container_registry_readonly_access" {
-  role       = aws_iam_role.ecs.name
+  role       = aws_iam_role.ecs_service.name
   policy_arn = data.aws_iam_policy.ec2_container_registry_readonly.arn
 }
 resource "aws_iam_role_policy_attachment" "grant_ecs_cloud_watch_logs_full_access" {
-  role       = aws_iam_role.ecs.name
+  role       = aws_iam_role.ecs_service.name
   policy_arn = data.aws_iam_policy.cloud_watch_logs_full_access.arn
 }
 resource "aws_iam_role_policy_attachment" "grant_ecs_rds_full_access" {
-  role       = aws_iam_role.ecs.name
+  role       = aws_iam_role.ecs_service.name
   policy_arn = data.aws_iam_policy.rds_full_access.arn
 }
 
 resource "aws_iam_role_policy_attachment" "grant_ecs_ssm_readonly_access" {
-  role       = aws_iam_role.ecs.name
+  role       = aws_iam_role.ecs_service.name
   policy_arn = data.aws_iam_policy.ssm_readonly_access.arn
 }
 
 resource "aws_iam_role_policy_attachment" "grant_ecs_sm_readwrite_access" {
-  role       = aws_iam_role.ecs.name
+  role       = aws_iam_role.ecs_service.name
   policy_arn = data.aws_iam_policy.sm_readwrite_access.arn
 }
 
@@ -139,7 +160,7 @@ data "aws_iam_policy" "lambda_vpc_access" {
 }
 
 resource "aws_iam_role" "lambda" {
-  name = "pwnctl_${random_id.nonce.hex}_lambda_service_role"
+  name = "pwnctl_lambda_service_role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -155,7 +176,7 @@ resource "aws_iam_role" "lambda" {
   })
 
   tags = {
-    Name = "pwnctl_lambda_role_${random_id.nonce.hex}"
+    Name = "pwnctl_lambda_role"
   }
 }
 
@@ -207,7 +228,7 @@ resource "aws_iam_role_policy_attachment" "grant_lambda_sm_readwrite_access" {
 
 resource "aws_iam_role_policy_attachment" "grant_lambda_sqs_readwrite_access" {
   role       = aws_iam_role.lambda.name
-  policy_arn = module.sqs.sqs_rw_policy.arn
+  policy_arn = aws_iam_policy.sqs_readwrite.arn
 }
 
 resource "aws_iam_role_policy_attachment" "grant_lambda_cloud_watch_logs_access" {

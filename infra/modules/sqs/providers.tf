@@ -6,14 +6,11 @@ terraform {
       source  = "hashicorp/aws"
       version = ">= 5.0.0"
     }
-    random = {
-      source = "hashicorp/random"
-    }
   }
 }
 
 data "external" "aws_region" {
-  program = ["bash", "-c", "aws configure get region | jq --raw-input '. | { region: (.) }'"]
+  program = ["bash", "-c", "aws configure get region --profile ${var.profile} | jq --raw-input '. | { region: (.) }'"]
 }
 
 provider "aws" {
@@ -22,7 +19,7 @@ provider "aws" {
 
   default_tags {
     tags = {
-      Name     = "pwnctl_${var.nonce}"
+      Name     = "pwnctl"
     }
   }
 }

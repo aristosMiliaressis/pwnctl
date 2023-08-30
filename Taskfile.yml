@@ -65,24 +65,32 @@ tasks:
     deps: [build-cli]
     cmds:
       - chmod +x src/pwnctl.cli/bin/Release/net7.0/linux-x64/publish/pwnctl
-      - sudo mv src/pwnctl.cli/bin/Release/net7.0/linux-x64/publish/pwnctl /usr/local/bin
-      - sudo mkdir -p /etc/pwnctl/
-      - sudo chown $USER /etc/pwnctl/
-      - sudo mv src/pwnctl.cli/bin/Release/net7.0/linux-x64/publish/config.ini /etc/pwnctl/
-      - sudo ./src/core/pwnctl.exec/scripts/get-psl.sh /etc/pwnctl/
-      - sudo cp -r ./src/core/pwnctl.infra/Persistence/seed /etc/pwnctl
+      - mv src/pwnctl.cli/bin/Release/net7.0/linux-x64/publish/pwnctl ~/.local/bin
+      - mkdir -p ~/.config/pwnctl/
+      - chown $USER ~/.config/pwnctl/
+      - mv src/pwnctl.cli/bin/Release/net7.0/linux-x64/publish/config.ini ~/.config/pwnctl/
+      - ./src/core/pwnctl.exec/scripts/get-psl.sh ~/.config/pwnctl/
+      - cp -r ./src/core/pwnctl.infra/Persistence/seed ~/.config/pwnctl
 
-  deploy-base:
+  setup-ci:
     cmds:
       - gh variable set AWS_REGION --body "$(aws configure get region)"
       - gh variable set AWS_CALLER_IDENTITY --body "$(aws sts get-caller-identity | jq -r .Account)"
-      - terraform -chdir=infra/modules/base apply # -target=module.base
+      - terraform -chdir=infra/modules/ci apply -auto-approve
 
-  deploy-app:
-    deps: [build-api, install-cli]
+  deploy:
+    deps: [setup-ci, build-api, install-cli]
     cmds:
-      - terraform -chdir=infra apply
+      - terraform -chdir=infra apply -auto-approve
       - ./bin/upload-conf.sh
+
+  destroy:
+    cmds:
+      - ./bin/teardown.sh
+
+  destroy-ci:
+    cmds:
+      - terraform -chdir=infra/modules/ci destroy
 
   debug-exec:
     cmds:
@@ -115,10 +123,6 @@ tasks:
       - |
         functionName=$(aws lambda list-functions | jq -r '.Functions[] | select( .FunctionName | startswith("pwnctl_api_") ) | .FunctionName')
         awslogs get -s 1440m -G --timestamp /aws/lambda/$functionName
-
-  destroy:
-    cmds:
-      - ./bin/teardown.sh
 
   install-deps:
     cmds:

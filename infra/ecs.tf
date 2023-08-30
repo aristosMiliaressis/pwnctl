@@ -1,3 +1,28 @@
+
+data "aws_ecr_repository" "exec" {
+  name                 = "pwnctl-exec"
+
+  tags = {
+    Description = "Task executor image repository."
+  }
+}
+
+data "docker_registry_image" "proc" {
+  name = "${data.aws_ecr_repository.proc.repository_url}:latest"
+}
+
+data "aws_ecr_repository" "proc" {
+  name                 = "pwnctl-proc"
+
+  tags = {
+    Description = "Task processor image repository."
+  }
+}
+
+data "docker_registry_image" "exec" {
+  name = "${data.aws_ecr_repository.exec.repository_url}:latest"
+}
+
 resource "aws_ecs_cluster" "this" {
   name = var.ecs_cluster.name
 }
@@ -24,8 +49,8 @@ resource "aws_ecs_task_definition" "exec" {
   network_mode             = "awsvpc"
   cpu                      = 512
   memory                   = 2048
-  execution_role_arn = aws_iam_role.ecs.arn
-  task_role_arn = aws_iam_role.ecs.arn
+  execution_role_arn = aws_iam_role.ecs_service.arn
+  task_role_arn = aws_iam_role.ecs_service.arn
 
   depends_on = [
     aws_db_instance.this
@@ -35,13 +60,13 @@ resource "aws_ecs_task_definition" "exec" {
   [
     {
       "name": "pwnctl",
-      "image": "${module.base.exec_image.name}",
+      "image": "${data.docker_registry_image.exec.name}",
       "essential": true,
       "stopTimeout": 120,
       "environment": [
         {
           "name": "PWNCTL_IMAGE_HASH",
-          "value": "${module.base.exec_image.sha256_digest}"
+          "value": "${data.docker_registry_image.exec.sha256_digest}"
         },
         {
           "name": "PWNCTL_IS_ECS",
@@ -136,11 +161,11 @@ resource "aws_ecs_service" "exec" {
   depends_on      = [
     aws_ecs_cluster.this,
     aws_ecs_task_definition.exec,
-    aws_iam_role.ecs
+    aws_iam_role.ecs_service
   ]
 
   network_configuration {
-    subnets = [for k, v in module.base.public_subnet : module.base.public_subnet[k].id]
+    subnets = [for k, v in aws_subnet.public : aws_subnet.public[k].id]
     assign_public_ip = "true"
   }
 
@@ -150,8 +175,7 @@ resource "aws_ecs_service" "exec" {
   }
 
   lifecycle {
-    ignore_changes = [ desired_count, capacity_provider_strategy ]
-    create_before_destroy = true
+    ignore_changes = [ desired_count ]
   }
 }
 
@@ -163,8 +187,8 @@ resource "aws_appautoscaling_target" "exec" {
   service_namespace  = "ecs"
 }
 
-resource "aws_cloudwatch_metric_alarm" "task_queue_depth_metric" {
-  alarm_name                = "task_queue_depth_metric"
+resource "aws_cloudwatch_metric_alarm" "task_queue_depth" {
+  alarm_name                = "task-queue-depth"
   comparison_operator       = "GreaterThanOrEqualToThreshold"
   threshold = 0
   evaluation_periods        = 1
@@ -211,7 +235,7 @@ resource "aws_cloudwatch_metric_alarm" "task_queue_depth_metric" {
 }
 
 resource "aws_appautoscaling_policy" "exec" {
-  name               = "pwnctl_svc_sqs_depth_target_autoscale_policy"
+  name               = "exec"
   policy_type        = "StepScaling"
   resource_id  = aws_appautoscaling_target.exec.id
   scalable_dimension = aws_appautoscaling_target.exec.scalable_dimension
@@ -249,8 +273,8 @@ resource "aws_ecs_task_definition" "proc" {
   network_mode             = "awsvpc"
   cpu                      = 1024
   memory                   = 4096
-  execution_role_arn = aws_iam_role.ecs.arn
-  task_role_arn = aws_iam_role.ecs.arn
+  execution_role_arn = aws_iam_role.ecs_service.arn
+  task_role_arn = aws_iam_role.ecs_service.arn
 
   depends_on = [
     aws_db_instance.this,
@@ -261,13 +285,13 @@ resource "aws_ecs_task_definition" "proc" {
   [
     {
       "name": "pwnctl",
-      "image": "${module.base.proc_image.name}",
+      "image": "${data.docker_registry_image.proc.name}",
       "essential": true,
       "stopTimeout": 120,
       "environment": [
         {
           "name": "PWNCTL_IMAGE_HASH",
-          "value": "${module.base.proc_image.sha256_digest}"
+          "value": "${data.docker_registry_image.proc.sha256_digest}"
         },
         {
           "name": "PWNCTL_IS_ECS",
@@ -358,11 +382,11 @@ resource "aws_ecs_service" "proc" {
   depends_on      = [
     aws_ecs_cluster.this,
     aws_ecs_task_definition.proc,
-    aws_iam_role.ecs
+    aws_iam_role.ecs_service
   ]
 
   network_configuration {
-    subnets = [for k, v in module.base.public_subnet : module.base.public_subnet[k].id]
+    subnets = [for k, v in aws_subnet.public : aws_subnet.public[k].id]
     assign_public_ip = "true"
   }
 
@@ -372,8 +396,7 @@ resource "aws_ecs_service" "proc" {
   }
 
   lifecycle {
-    ignore_changes = [ desired_count, capacity_provider_strategy ]
-    create_before_destroy = true
+    ignore_changes = [ desired_count ]
   }
 }
 
@@ -385,8 +408,8 @@ resource "aws_appautoscaling_target" "proc" {
   service_namespace  = "ecs"
 }
 
-resource "aws_cloudwatch_metric_alarm" "output_queue_depth_metric" {
-  alarm_name                = "output_queue_depth_metric"
+resource "aws_cloudwatch_metric_alarm" "output_queue_depth" {
+  alarm_name                = "output-queue-depth"
   comparison_operator       = "GreaterThanOrEqualToThreshold"
   threshold = 0
   evaluation_periods        = 1

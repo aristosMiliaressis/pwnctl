@@ -1,5 +1,5 @@
 resource "aws_sqs_queue" "main" {
-  name                      = "pwnctl_${var.nonce}.fifo"
+  name                      = "task-${var.env}.fifo"
   fifo_queue                  = true
   content_based_deduplication = true
   sqs_managed_sse_enabled = true
@@ -13,12 +13,13 @@ resource "aws_sqs_queue" "main" {
   })
 
   tags = {
-    Name = "pwnctl_queue"
+    Description = "PwnCtl task queue."
+    Env = var.env
   }
 }
 
 resource "aws_sqs_queue" "dlq" {
-  name                        = "pwnctl_${var.nonce}_dlq.fifo"
+  name                        = "task-dlq-${var.env}.fifo"
   fifo_queue                  = true
   content_based_deduplication = true
   sqs_managed_sse_enabled    = true
@@ -28,12 +29,13 @@ resource "aws_sqs_queue" "dlq" {
   receive_wait_time_seconds  = 20
 
   tags = {
-    Name = "pwnctl_dlq"
+    Description = "PwnCtl task dead letter queue."
+    Env = var.env
   }
 }
 
 resource "aws_sqs_queue" "output" {
-  name                      = "pwnctl_output_${var.nonce}.fifo"
+  name                      = "output-${var.env}.fifo"
   fifo_queue                  = true
   content_based_deduplication = true
   sqs_managed_sse_enabled = true
@@ -43,31 +45,8 @@ resource "aws_sqs_queue" "output" {
   receive_wait_time_seconds = 3
 
   tags = {
-    Name = "pwnctl_output_queue"
+    Description = "PwnCtl output queue."
+    Env = var.env
   }
 }
 
-
-data "aws_iam_policy_document" "sqs_readwrite" {
-  statement {
-    effect = "Allow"
-
-    actions = [
-      "sqs:ChangeMessageVisibility",
-      "sqs:DeleteMessage",
-      "sqs:GetQueueAttributes",
-      "sqs:GetQueueUrl",
-      "sqs:ReceiveMessage",
-      "sqs:SendMessage"
-    ]
-
-    resources = ["*"]
-  }
-}
-
-resource "aws_iam_policy" "sqs_readwrite" {
-  name        = "sqs_readwrite"
-  path        = "/"
-  description = "IAM policy for sqs Read/Write access"
-  policy      = data.aws_iam_policy_document.sqs_readwrite.json
-}

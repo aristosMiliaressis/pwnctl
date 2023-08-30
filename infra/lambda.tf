@@ -4,37 +4,9 @@ data "archive_file" "this" {
   output_path = "../src/pwnctl.api/bin/lambda.zip"
 }
 
-resource "random_password" "hmac_key" {
-  length           = 32
-  special          = true
-  override_special = "!#$%&*()-_=+[]{}<>:?"
-}
-
-resource "aws_secretsmanager_secret" "hmac_key" {
-  name = "/aws/secret/pwnctl/Api/HMACSecret"
-
-  recovery_window_in_days = 0
-}
-
-resource "aws_secretsmanager_secret_version" "hmac_key" {
-  secret_id = aws_secretsmanager_secret.hmac_key.id
-  secret_string = random_password.hmac_key.result
-}
-
-resource "aws_secretsmanager_secret" "admin_password" {
-  name = "/aws/secret/pwnctl/admin_password"
-
-  recovery_window_in_days = 0
-}
-
-resource "aws_secretsmanager_secret_version" "admin_password" {
-  secret_id = aws_secretsmanager_secret.admin_password.id
-  secret_string = var.admin_password
-}
-
 resource "aws_lambda_function" "this" {
   tags = {
-    Name = "pwnctl_lambda_${random_id.nonce.hex}"
+    Name = "pwnctl_lambda"
   }
 
   depends_on = [
@@ -45,7 +17,7 @@ resource "aws_lambda_function" "this" {
   ]
 
   filename = "../src/pwnctl.api/bin/lambda.zip"
-  function_name = "pwnctl_api_${random_id.nonce.hex}"
+  function_name = "pwnctl_api"
   role = aws_iam_role.lambda.arn
   handler = "pwnctl.api"
   source_code_hash = data.archive_file.this.output_base64sha256
@@ -54,7 +26,7 @@ resource "aws_lambda_function" "this" {
   memory_size = 6144
 
   vpc_config {
-    subnet_ids         = [for k, v in module.base.private_subnet : module.base.private_subnet[k].id]
+    subnet_ids         = [for k, v in aws_subnet.private : aws_subnet.private[k].id]
     security_group_ids = [aws_security_group.allow_https_from_internet.id]
   }
 
@@ -83,7 +55,7 @@ resource "aws_lambda_function" "this" {
 resource "aws_security_group" "allow_https_from_internet" {
   name        = "allow_https_from_internet"
   description = "Allow HTTPS inbound traffic from anywhere"
-  vpc_id      = module.base.vpc.id
+  vpc_id      = aws_vpc.main.id
 
   ingress {
     description      = "Allow HTTPS inbound traffic from anywhere"
@@ -103,17 +75,9 @@ resource "aws_security_group" "allow_https_from_internet" {
   }
 
   depends_on = [
-    module.base.vpc,
-    module.base.private_subnet
+    aws_vpc.main,
+    aws_subnet.private
   ]
-
-  lifecycle {
-    create_before_destroy = true
-  }
-
-  tags = {
-    Name = "allow_https_from_internet"
-  }
 }
 
 resource "aws_lambda_function_url" "this" {

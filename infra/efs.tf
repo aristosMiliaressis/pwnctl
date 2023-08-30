@@ -1,11 +1,11 @@
 resource "aws_efs_file_system" "this" {
   tags = {
-    Name = "pwnctl_fs_${random_id.nonce.hex}"
+    Description = "PwnCtl Elastic File System."
   }
 }
 
 resource "aws_efs_mount_target" "this" {
-  for_each = module.base.public_subnet
+  for_each = aws_subnet.public
 
   file_system_id = aws_efs_file_system.this.id
   subnet_id      = each.value.id 
@@ -32,16 +32,16 @@ resource "aws_efs_access_point" "this" {
 }
 
 resource "aws_security_group" "allow_nfs" {
-  name        = "allow_nfs"
+  name        = "allow-nfs"
   description = "Allow ingress NFS traffic from VPC"
-  vpc_id      = module.base.vpc.id
+  vpc_id      = aws_vpc.main.id
 
   ingress {
     description      = "Allow ingress NFS traffic from VPC"
     from_port        = 2049
     to_port          = 2049
     protocol         = "tcp"
-    cidr_blocks      = [module.base.vpc.cidr_block]
+    cidr_blocks      = [aws_vpc.main.cidr_block]
   }
 
   egress {
@@ -50,9 +50,5 @@ resource "aws_security_group" "allow_nfs" {
     protocol         = "-1"
     cidr_blocks      = ["0.0.0.0/0"]
     ipv6_cidr_blocks = ["::/0"]
-  }
-
-  tags = {
-    Name = "allow_nfs"
   }
 }

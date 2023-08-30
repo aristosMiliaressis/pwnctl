@@ -1,25 +1,23 @@
 
 variable "profile" {
-  description = "The AWS profile to use."
-  default = "default"
-}
+  description = "The local AWS configuration profile to use."
+  type        = string
 
-resource "random_id" "nonce" {
-  byte_length = 8
+  default = "default"
 }
 
 variable "access_timeout_minutes" {
   description = "The access token expiration in minutes."
+  type        = number
+
   default = 120
 }
 
 variable "refresh_timeout_hours" {
   description = "The refresh token expiration in hours."
-  default = 720
-}
+  type        = number
 
-variable "admin_password" {
-  description = "A password used to seed the default admin user."
+  default = 720
 }
 
 variable "ecs_cluster" {
