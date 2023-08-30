@@ -28,6 +28,12 @@ jobs:
           key: nuget-${{ hashFiles('**/packages.lock.json') }}
           restore-keys: nuget
 
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::${{ vars.AWS_CALLER_IDENTITY }}:role/GitHubAction-AssumeRoleWithAction
+          aws-region:  ${{ vars.AWS_REGION }}
+
       - name: Run Unit Tests
         run: dotnet test --filter "FullyQualifiedName~test.unit"
 
@@ -167,7 +173,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
         with:
           mask-password: 'true'
-          
+
       - name: Pull untested proc image
         run: docker pull ${{ steps.login-ecr.outputs.registry }}/pwnctl-proc:untested
 
