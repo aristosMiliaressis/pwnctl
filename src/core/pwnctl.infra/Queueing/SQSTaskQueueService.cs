@@ -149,17 +149,18 @@ namespace pwnctl.infra.Queueing
 
         private static AmazonSQSClient CreateSQSClient()
         {
-            var profile = AwsConfigProvider.GetAWSProfile(PwnInfraContext.Config.Aws?.Profile);
-            if (profile is null)
-            {
-                return new AmazonSQSClient(Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID"),
-                                            Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY"), 
-                                            RegionEndpoint.GetBySystemName(Environment.GetEnvironmentVariable("AWS_DEFAULT_REGION")));
-            }
+            // var profile = AwsConfigProvider.GetAWSProfile(PwnInfraContext.Config.Aws?.Profile);
+            // if (profile is null)
+            // {
+            //     return new AmazonSQSClient(Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID"),
+            //                                 Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY"), 
+            //                                 RegionEndpoint.GetBySystemName(Environment.GetEnvironmentVariable("AWS_DEFAULT_REGION")));
+            // }
 
-            var credentials = AwsConfigProvider.GetAWSProfileCredentials(PwnInfraContext.Config.Aws.Profile);
+            // var credentials = AwsConfigProvider.GetAWSProfileCredentials(PwnInfraContext.Config.Aws.Profile);
 
-            return new AmazonSQSClient(credentials.GetCredentials().AccessKey, credentials.GetCredentials().SecretKey, profile.Region);
+            // return new AmazonSQSClient(credentials.GetCredentials().AccessKey, credentials.GetCredentials().SecretKey, profile.Region);
+            return new AmazonSQSClient();
         }
     }
 }
