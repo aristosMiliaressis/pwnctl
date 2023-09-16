@@ -3,7 +3,7 @@ namespace pwnctl.domain.ValueObjects;
 using pwnctl.domain.BaseClasses;
 using pwnctl.kernel.BaseClasses;
 
-public sealed class AssetClass : ValueObject
+public record struct AssetClass
 {
     public string Value { get; }
 
@@ -18,11 +18,6 @@ public sealed class AssetClass : ValueObject
     public static AssetClass Create(string value)
     {
         return new AssetClass(value);
-    }
-
-    protected override IEnumerable<object> GetEqualityComponents()
-    {
-        yield return Value;
     }
 
     private static readonly IEnumerable<string> _assetClasses =

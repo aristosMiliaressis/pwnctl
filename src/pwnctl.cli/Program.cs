@@ -17,7 +17,7 @@ internal sealed class Program
 
     static async Task Main(string[] args)
     {
-        await PwnInfraContextInitializer.SetupAsync();
+        PwnInfraContextInitializer.Setup();
 
         if (args.Length < 1)
         {

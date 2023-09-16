@@ -1,5 +1,7 @@
+using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileSystemGlobbing;
+using Microsoft.Data.Sqlite;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 using pwnctl.app.Tasks.Entities;
@@ -27,7 +29,7 @@ namespace pwnctl.infra.Persistence
         {
             PwnctlDbContext context = new();
 
-            if (EnvironmentVariables.USE_SQLITE)
+            if (EnvironmentVariables.USE_LOCAL_INTEGRATIONS)
             {
                 await context.Database.EnsureDeletedAsync();
             }
@@ -37,7 +39,7 @@ namespace pwnctl.infra.Persistence
                 await context.Database.MigrateAsync();
             }
 
-            if (!context.Users.Any() && userManger != null)
+            if (!context.Users.Any() && userManger is not null)
             {
                 await SeedAdminUser(userManger);
             }
@@ -103,7 +105,7 @@ namespace pwnctl.infra.Persistence
                 var definitions = file.TaskDefinitions.Select(d => d.ToEntity()).ToList();
 
                 var profile = context.TaskProfiles.FirstOrDefault(p => p.ShortName == ShortName.Create(file.Profile));
-                if (profile == null)
+                if (profile is null)
                 {
                     profile = new TaskProfile(file.Profile, definitions);
                     context.Add(profile);

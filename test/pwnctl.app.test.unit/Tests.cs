@@ -4,14 +4,20 @@ using pwnctl.domain.BaseClasses;
 using pwnctl.domain.Entities;
 using pwnctl.domain.Enums;
 using pwnctl.app.Assets;
-using pwnctl.app.Assets.Aggregates;
+using pwnctl.app.Assets.Entities;
 using pwnctl.app.Assets.DTO;
 using pwnctl.app.Common.ValueObjects;
+using pwnctl.app.Common.Interfaces;
+using pwnctl.app.Queueing.Interfaces;
+using pwnctl.app.Notifications.Interfaces;
+using pwnctl.app.Tasks.Interfaces;
 using pwnctl.infra;
 using pwnctl.infra.Commands;
 using pwnctl.infra.DependencyInjection;
 using pwnctl.infra.Persistence;
 using pwnctl.infra.Repositories;
+using pwnctl.infra.Queueing;
+using pwnctl.infra.Notifications;
 
 using Xunit;
 using System.Net;
@@ -24,22 +30,22 @@ using System.Collections.Generic;
 using pwnctl.app.Operations.Entities;
 using pwnctl.app.Operations.Enums;
 using pwnctl.app.Operations;
-using pwnctl.infra.Queueing;
 using pwnctl.kernel;
 
 public sealed class Tests
 {
     public Tests()
     {
-        Environment.SetEnvironmentVariable("PWNCTL_TEST_RUN", "true");
-        Environment.SetEnvironmentVariable("PWNCTL_USE_SQLITE", "true");
+        Environment.SetEnvironmentVariable("PWNCTL_USE_LOCAL_INTEGRATIONS", "true");
         Environment.SetEnvironmentVariable("PWNCTL_INSTALL_PATH", ".");
         Environment.SetEnvironmentVariable("PWNCTL_Logging__MinLevel", "Warning");
-        Environment.SetEnvironmentVariable("PWNCTL_TaskQueue__Name", "task-dev.fifo");
-        Environment.SetEnvironmentVariable("PWNCTL_OutputQueue__Name", "output-dev.fifo");
 
-        PwnInfraContextInitializer.SetupAsync().Wait();
+        PwnInfraContextInitializer.Setup();
+        DatabaseInitializer.InitializeAsync(null).Wait();
         DatabaseInitializer.SeedAsync().Wait();
+        PwnInfraContextInitializer.Register<TaskQueueService, FakeTaskQueueService>();
+        PwnInfraContextInitializer.Register<NotificationSender, StubNotificationSender>();
+        PwnInfraContextInitializer.Register<CommandExecutor, BashCommandExecutor>();
     }
 
     [Fact]
@@ -256,7 +262,7 @@ public sealed class Tests
         // concurrency test
         List<Task> tasks = new();
 
-        var proc = AssetProcessorFactory.Create();
+        var proc = new AssetProcessor();
 
         var teslaUrl = new
         {
@@ -294,7 +300,7 @@ public sealed class Tests
     [Fact]
     public async Task Tagging_Tests()
     {
-        var proc = AssetProcessorFactory.Create();
+        var proc = new AssetProcessor();
         PwnctlDbContext context = new();
         AssetDbRepository repository = new();
         TaskDbRepository taskRepository = new();
@@ -403,7 +409,7 @@ public sealed class Tests
     [Fact]
     public async Task AssetProcessor_Tests()
     {
-        var proc = AssetProcessorFactory.Create();
+        var proc = new AssetProcessor();
         PwnctlDbContext context = new();
         TaskDbRepository repository = new();
 
@@ -478,7 +484,7 @@ public sealed class Tests
         record = context.AssetRecords.Include(r => r.HttpParameter).First(r => r.HttpParameter.Url == "https://xyz.tesla.com/api" && r.HttpParameter.Name == "duplicate");
         Assert.True(record.InScope);
 
-        proc = AssetProcessorFactory.Create();
+        proc = new AssetProcessor();
         await proc.ProcessAsync("https://1.3.3.7:443", EntityFactory.TaskRecord.Id);
         context = new();
         record = context.AssetRecords.Include(r => r.NetworkSocket).First(r => r.NetworkSocket.Address == "tcp://1.3.3.7:443");
@@ -518,7 +524,7 @@ public sealed class Tests
     {
         PwnctlDbContext context = new();
         TaskDbRepository repository = new();
-        var proc = AssetProcessorFactory.Create();
+        var proc = new AssetProcessor();
 
         await proc.ProcessAsync("172.16.17.0/24", EntityFactory.TaskRecord.Id);
         Assert.True(context.TaskRecords.Include(t => t.Definition).Any(t => t.Definition.Name == ShortName.Create("nmap_basic")));
@@ -625,12 +631,9 @@ public sealed class Tests
     public async Task OperationInitializer_Tests()
     {
         PwnctlDbContext context = new();
-        var proc = AssetProcessorFactory.Create();
+        var proc = new AssetProcessor();
         AssetDbRepository assetRepo = new();
-        OperationInitializer initializer = new(new OperationDbRepository(),
-                                                new AssetDbRepository(),
-                                                new TaskDbRepository(),
-                                                new SQSTaskQueueService());
+        OperationInitializer initializer = new(new OperationDbRepository());
 
         var op = new Operation("monitor_op", OperationType.Monitor, EntityFactory.Policy, EntityFactory.ScopeAggregate);
 
@@ -732,15 +735,16 @@ public sealed class Tests
     public async Task TaskRecord_Tests()
     {
         PwnctlDbContext context = new();
-        var proc = AssetProcessorFactory.Create();
+        var proc = new AssetProcessor();
         var taskRepo = new TaskDbRepository();
+        var executor = new BashCommandExecutor();
 
         var task = EntityFactory.TaskRecord;
 
         task.Started();
         await taskRepo.UpdateAsync(task);
 
-        (int exitCode, StringBuilder stdout, StringBuilder stderr) = await CommandExecutor.ExecuteAsync("echo example.com");
+        (int exitCode, StringBuilder stdout, StringBuilder stderr) = await executor.ExecuteAsync("echo example.com");
 
         task.Finished(exitCode, stderr.ToString());
         await taskRepo.UpdateAsync(task);
@@ -760,7 +764,7 @@ public sealed class Tests
         Assert.Equal(task.Definition.Name, record?.FoundByTask.Definition.Name);
         Assert.DoesNotContain("foundby", record?.Tags.Select(t => t.Name));
 
-        (_, stdout, _) = await CommandExecutor.ExecuteAsync($$"""echo '{"Asset":"example2.com"}'""");
+        (_, stdout, _) = await executor.ExecuteAsync($$"""echo '{"Asset":"example2.com"}'""");
 
         foreach (var line in stdout.ToString().Split("\n").Where(l => !string.IsNullOrEmpty(l)))
         {
@@ -777,7 +781,7 @@ public sealed class Tests
         Assert.Equal(EntityFactory.TaskRecord.Definition.Name, record?.FoundByTask.Definition.Name);
         Assert.DoesNotContain("foundby", record?.Tags.Select(t => t.Name));
 
-        (_, stdout, _) = await CommandExecutor.ExecuteAsync($$$"""echo '{"Asset":"sub.example3.com","tags":{"test":"tag"}}'""");
+        (_, stdout, _) = await executor.ExecuteAsync($$$"""echo '{"Asset":"sub.example3.com","tags":{"test":"tag"}}'""");
 
         foreach (var line in stdout.ToString().Split("\n").Where(l => !string.IsNullOrEmpty(l)))
         {

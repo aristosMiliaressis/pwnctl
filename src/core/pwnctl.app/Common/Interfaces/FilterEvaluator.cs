@@ -1,6 +1,6 @@
 namespace pwnctl.app.Common.Interfaces;
 
-using pwnctl.app.Assets.Aggregates;
+using pwnctl.app.Assets.Entities;
 
 public interface FilterEvaluator
 {

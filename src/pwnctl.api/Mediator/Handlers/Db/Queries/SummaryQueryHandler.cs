@@ -6,6 +6,7 @@ using pwnctl.app.Common;
 
 using Microsoft.EntityFrameworkCore;
 using MediatR;
+using pwnctl.app;
 using pwnctl.app.Tasks.Enums;
 using pwnctl.domain.Entities;
 using pwnctl.domain.ValueObjects;
@@ -56,13 +57,13 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Commands
                 };
 
                 var count = await  context.TaskRecords.Where(e => e.State == TaskState.FINISHED && def.Select(d => d.Id).Contains(e.DefinitionId)).CountAsync();
-                for (var i = 0; i <= count / Constants.BATCH_SIZE; i++)
+                for (var i = 0; i <= count / PwnInfraContext.Config.Api.BatchSize; i++)
                 {
                     details.Duration += TimeSpan.FromSeconds(context.TaskRecords
                             .Where(e => e.State == TaskState.FINISHED && def.Select(d => d.Id).Contains(e.DefinitionId))
                             .OrderBy(t => t.QueuedAt)
-                            .Skip(i*Constants.BATCH_SIZE)
-                            .Take(Constants.BATCH_SIZE)
+                            .Skip(i*PwnInfraContext.Config.Api.BatchSize)
+                            .Take(PwnInfraContext.Config.Api.BatchSize)
                             .Select(e => e.FinishedAt - e.StartedAt).Sum(e => e.TotalSeconds));
                 }
 

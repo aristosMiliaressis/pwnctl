@@ -29,7 +29,7 @@ namespace pwnctl.cli.ModeHandlers
 
             var result = await PwnctlApiClient.Default.Send(command);
 
-            if (result != null)
+            if (result is not null)
                 Console.WriteLine(PwnInfraContext.Serializer.Serialize(result));
         }
 

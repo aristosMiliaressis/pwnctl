@@ -6,5 +6,5 @@ public interface PublicSuffixRepository
 {
     static PublicSuffixRepository Instance { get; set; }
 
-    PublicSuffix GetSuffix(string name);
+    PublicSuffix? GetSuffix(string name);
 }

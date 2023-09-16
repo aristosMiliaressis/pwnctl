@@ -12,7 +12,7 @@ namespace pwnctl.domain.Entities
         public Guid SocketAddressId { get; private init; }
         public NetworkSocket Socket { get; init; }
         public Guid? ParentEndpointId { get; private init; }
-        public HttpEndpoint ParentEndpoint { get; private set; }
+        public HttpEndpoint? ParentEndpoint { get; private set; }
         public List<HttpParameter> HttpParameters { get; private set; }
 
         public string Scheme { get; init; }
@@ -27,12 +27,12 @@ namespace pwnctl.domain.Entities
             Path = path.EndsWith("/") ? path.Substring(0, path.Length - 1) : path;
             Path = string.IsNullOrEmpty(Path) ? "/" : Path;
 
-            string hostSegment = Socket.NetworkHost != null ? Socket.NetworkHost.IP : Socket.DomainName.Name;
+            string hostSegment = Socket.NetworkHost is not null ? Socket.NetworkHost.IP : Socket.DomainName.Name;
             string portSegment = (scheme == "http" && Socket.Port == 80) || (scheme == "https" && Socket.Port == 443) ? "" : (":" + Socket.Port);
             Url = Scheme+"://"+hostSegment+portSegment+Path;
         }
 
-        public static HttpEndpoint TryParse(string assetText)
+        public static HttpEndpoint? TryParse(string assetText)
         {
             if (!(assetText.ToLower().StartsWith("http") && assetText.Contains("://"))
                 && !assetText.StartsWith("//"))
@@ -45,7 +45,7 @@ namespace pwnctl.domain.Entities
             ushort port = (ushort) (uri.Port == -1 ? 443 : uri.Port);
 
             var host = NetworkHost.TryParse(uri.Host);
-            var socket = host != null
+            var socket = host is not null
                     ? new NetworkSocket(host, port)
                     : new NetworkSocket(new DomainName(uri.Host), port);
 
@@ -53,7 +53,7 @@ namespace pwnctl.domain.Entities
 
             var _params = uri.GetComponents(UriComponents.Query, UriFormat.SafeUnescaped)
                             .Split("&")
-                            .Select(p => new KeyValuePair<string, string>(p.Split("=")[0], p.Contains("=") ? p.Split("=")[1] : null))
+                            .Select(p => new KeyValuePair<string, string?>(p.Split("=")[0], p.Contains("=") ? p.Split("=")[1] : null))
                             .DistinctBy(p => p.Key)
                             .Select(p => new HttpParameter(endpoint, p.Key, ParamType.Query, p.Value))
                             .Where(p => !string.IsNullOrEmpty(p.Name))

@@ -19,8 +19,8 @@ namespace pwnctl.domain.Entities
         public Guid? HostId { get; private init; }
         public Guid? DomainId { get; private init; }
 
-        public NetworkHost NetworkHost { get; private init; }
-        public DomainName DomainName { get; private init; }
+        public NetworkHost? NetworkHost { get; private init; }
+        public DomainName? DomainName { get; private init; }
 
         public List<NetworkHost> SPFHosts { get; private set; }
 
@@ -35,13 +35,13 @@ namespace pwnctl.domain.Entities
             Key = DomainName.Name;
 
             NetworkHost = NetworkHost.TryParse(value);
-            if (NetworkHost != null)
+            if (NetworkHost is not null)
             {
                 NetworkHost.AARecords = new List<DomainNameRecord> { this };
             }
         }
 
-        public static DomainNameRecord TryParse(string assetText)
+        public static DomainNameRecord? TryParse(string assetText)
         {
             assetText = assetText.Replace("\t", " ");
             var parts = assetText.Split(" ").Where(p => !string.IsNullOrWhiteSpace(p)).ToArray();
@@ -67,7 +67,7 @@ namespace pwnctl.domain.Entities
             return spf.Split("ip")
                     .Skip(1)
                     .Select(p => string.Join(":", p.Split(":").Skip(1)).Trim().Split(" ")[0])
-                    .Where(ip => IPAddress.TryParse(ip, out IPAddress address))
+                    .Where(ip => IPAddress.TryParse(ip, out IPAddress _))
                     .Select(ip => new NetworkHost(IPAddress.Parse(ip)))
                     .ToList();
         }

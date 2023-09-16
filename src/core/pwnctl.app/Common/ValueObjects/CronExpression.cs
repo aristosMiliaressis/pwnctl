@@ -3,7 +3,7 @@ using pwnctl.kernel.BaseClasses;
 
 namespace pwnctl.app.Common.ValueObjects;
 
-public sealed class CronExpression : ValueObject
+public sealed record CronExpression
 {
     public string Value { get; }
 
@@ -26,14 +26,9 @@ public sealed class CronExpression : ValueObject
         return new CronExpression(value);
     }
 
-    protected override IEnumerable<object> GetEqualityComponents()
-    {
-        yield return Value;
-    }
-
     private bool Validate(string value)
     {
-        if (value == null || value.Split(" ").Count() != 5)
+        if (value is null || value.Split(" ").Count() != 5)
             return false;
 
         try

@@ -2,7 +2,7 @@ version: '3'
 
 tasks:
   simple-setup:
-    deps: [install-deps, build-exec-image, push-exec-image, build-proc-image, push-proc-image, bootstrap-aws, deploy-app, install-cli, init-app]
+    deps: [install-deps, setup-ci, build-exec-image, push-exec-image, build-proc-image, push-proc-image, deploy, install-cli]
 
   test:
     deps: [test-core, test-exec, test-proc]
@@ -103,8 +103,9 @@ tasks:
     cmds:
       - |
         ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-exec") | .repositoryUri')
-        docker run -e PWNCTL_USE_SQLITE=true -e PWNCTL_TEST_RUN=true -e PWNCTL_INSTALL_PATH=/mnt/efs \
+        docker run -e PWNCTL_USE_LOCAL_INTEGRATIONS=true -e PWNCTL_INSTALL_PATH=/mnt/efs \
                    -e PWNCTL_Logging__FilePath=/mnt/efs -e PWNCTL_Logging__MinLevel=Information \
+                   -e PWNCTL_TaskQueue__VisibilityTimeout=1200 -e PWNCTL_OutputQueue__VisibilityTimeout=1200 \
                    -v "$(pwd)"/deployment:/mnt/efs -t ${ecrUri}:latest
 
   debug-proc:
@@ -113,8 +114,9 @@ tasks:
         mkdir -p deployment/seed/
         cp ./src/core/pwnctl.infra/Persistence/seed/*.yml deployment/seed/
         ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-proc") | .repositoryUri')
-        docker run -e PWNCTL_USE_SQLITE=true -e PWNCTL_TEST_RUN=true -e PWNCTL_INSTALL_PATH=/mnt/efs \
+        docker run -e PWNCTL_USE_LOCAL_INTEGRATIONS=true -e PWNCTL_INSTALL_PATH=/mnt/efs \
                    -e PWNCTL_Logging__FilePath=/mnt/efs -e PWNCTL_Logging__MinLevel=Information \
+                   -e PWNCTL_TaskQueue__VisibilityTimeout=1200 -e PWNCTL_OutputQueue__VisibilityTimeout=1200 \
                    -v "$(pwd)"/deployment:/mnt/efs -t ${ecrUri}:latest
 
   get-exec-logs:

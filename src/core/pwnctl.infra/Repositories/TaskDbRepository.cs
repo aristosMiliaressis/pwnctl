@@ -4,8 +4,9 @@ using pwnctl.infra.Persistence;
 using Microsoft.EntityFrameworkCore;
 using pwnctl.app.Tasks.Interfaces;
 using pwnctl.infra.Persistence.Extensions;
+using pwnctl.app;
 using pwnctl.app.Common;
-using pwnctl.app.Assets.Aggregates;
+using pwnctl.app.Assets.Entities;
 
 namespace pwnctl.infra.Repositories
 {
@@ -37,8 +38,8 @@ namespace pwnctl.infra.Repositories
                                     .Include(r => r.Record)
                                         .ThenInclude(r => r.DomainNameRecord)
                                         .ThenInclude(r => r.NetworkHost)
-                                    .Include(r => r.Record)
-                                        .ThenInclude(r => r.HttpHost)
+                                    // .Include(r => r.Record)
+                                    //     .ThenInclude(r => r.HttpHost)
                                     .Include(r => r.Record)
                                         .ThenInclude(r => r.HttpEndpoint)
                                         .ThenInclude(s => s.Socket)
@@ -72,7 +73,7 @@ namespace pwnctl.infra.Repositories
             _context = context;
         }
 
-        public async Task<List<TaskRecord>> ListAsync(int pageIdx, int pageSize = 512)
+        public async Task<List<TaskRecord>> ListAsync(int pageIdx)
         {
             return await _context.TaskRecords
                                 .Include(p => p.Operation)
@@ -91,8 +92,8 @@ namespace pwnctl.infra.Repositories
                                     .ThenInclude(r => r.DomainName)
                                 .Include(p => p.Record)
                                     .ThenInclude(r => r.DomainNameRecord)
-                                .Include(p => p.Record)
-                                    .ThenInclude(r => r.HttpHost)
+                                // .Include(p => p.Record)
+                                //     .ThenInclude(r => r.HttpHost)
                                 .Include(p => p.Record)
                                     .ThenInclude(r => r.HttpEndpoint)
                                 .Include(p => p.Record)
@@ -100,8 +101,8 @@ namespace pwnctl.infra.Repositories
                                 .Include(p => p.Record)
                                     .ThenInclude(r => r.Email)
                                 .OrderBy(r => r.QueuedAt)
-                                .Skip(pageIdx * pageSize)
-                                .Take(pageSize)
+                                .Skip(pageIdx * PwnInfraContext.Config.Api.BatchSize)
+                                .Take(PwnInfraContext.Config.Api.BatchSize)
                                 .AsNoTracking()
                                 .ToListAsync();
         }

@@ -2,7 +2,7 @@ namespace pwnctl.domain.ValueObjects;
 
 using pwnctl.kernel.BaseClasses;
 
-public sealed class PublicSuffix : ValueObject
+public record struct PublicSuffix
 {
     public string Value { get; }
 
@@ -19,8 +19,8 @@ public sealed class PublicSuffix : ValueObject
         return new PublicSuffix(suffix);
     }
 
-    protected override IEnumerable<object> GetEqualityComponents()
+    public override string ToString() 
     {
-        yield return Value;
+        return Value;
     }
 }

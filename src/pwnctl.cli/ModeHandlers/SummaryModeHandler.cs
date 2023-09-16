@@ -32,7 +32,7 @@ namespace pwnctl.cli.ModeHandlers
                 Console.WriteLine($"{def.ShortName.PadLeft(24)}: Queued {def.Count.ToString().PadLeft(4)} times, ran for {def.Duration.ToString("dd\\.hh\\:mm\\:ss")} and found {def.Findings.ToString().PadLeft(4)} unique assets.");
             }
 
-            if (model.FirstTask != null)
+            if (model.FirstTask is not null)
             {
                 Console.WriteLine();
                 Console.WriteLine("First Queued Task: " + model.FirstTask);

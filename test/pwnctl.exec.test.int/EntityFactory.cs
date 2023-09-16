@@ -9,7 +9,7 @@ using pwnctl.app.Tasks.Entities;
 using pwnctl.domain.Entities;
 using pwnctl.infra.Persistence;
 
-namespace pwnctl.proc.test.integration
+namespace pwnctl.exec.test.integration
 {
     public static class EntityFactory
     {
@@ -28,11 +28,6 @@ namespace pwnctl.proc.test.integration
             var policy = new Policy(taskProfiles);
             var op = new Operation("test2", OperationType.Monitor, policy, scope);
             context.Add(op);
-            context.SaveChanges();
-            var domain = new DomainName("tesla.com");
-            var record = new AssetRecord(domain);
-            record.SetScopeId(scope.Definitions.First().Definition.Id);
-            context.Add(record);
             context.SaveChanges();
 
             return op;

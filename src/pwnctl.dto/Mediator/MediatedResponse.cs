@@ -9,7 +9,7 @@ public class MediatedResponse
 {
     public object Result { get; set; }
 
-    public bool IsSuccess => Errors == null || Errors.Count() == 0;
+    public bool IsSuccess => Errors is null || Errors.Count() == 0;
     public IEnumerable<MediatorError> Errors { get; init; }
 
     public MediatedResponse() {}

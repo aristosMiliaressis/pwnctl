@@ -1,9 +1,11 @@
+using System.Threading;
 using pwnctl.app;
 using pwnctl.app.Assets;
 using pwnctl.app.Queueing.DTO;
 using pwnctl.app.Queueing.Interfaces;
 using pwnctl.app.Notifications.Enums;
 using pwnctl.infra;
+using pwnctl.infra.DependencyInjection;
 using pwnctl.infra.Queueing;
 using pwnctl.infra.Repositories;
 using pwnctl.app.Operations;
@@ -14,13 +16,9 @@ namespace pwnctl.proc
     public sealed class OutputProcessorService : BackgroundService
     {
         private readonly IHostApplicationLifetime _hostApplicationLifetime;
-        private static readonly AssetProcessor _processor = AssetProcessorFactory.Create();
-        private static readonly SQSTaskQueueService _queueService = new();
+        private static readonly AssetProcessor _processor = new();
         private static System.Timers.Timer _timer = new();
-        private static readonly OperationInitializer _initializer = new(new OperationDbRepository(),
-                                                                new AssetDbRepository(),
-                                                                new TaskDbRepository(),
-                                                                _queueService);
+        private static readonly OperationInitializer _initializer = new(new OperationDbRepository());
 
         public OutputProcessorService(IHostApplicationLifetime hostApplicationLifetime)
         {
@@ -42,8 +40,6 @@ namespace pwnctl.proc
                 return;
             }
 
-            var rng = new Random();
-
             while (!stoppingToken.IsCancellationRequested)
             {
                 try
@@ -63,10 +59,11 @@ namespace pwnctl.proc
 
         private async Task ProcessOutputBatchAsync(CancellationToken stoppingToken)
         {
-            var batchDTO = await _queueService.ReceiveAsync<OutputBatchDTO>(stoppingToken);
-            if (batchDTO == null)
+            var batchDTO = await PwnInfraContext.TaskQueueService.ReceiveAsync<OutputBatchDTO>(stoppingToken);
+            if (batchDTO is null)
             {
                 PwnInfraContext.Logger.Information("no work found");
+                Thread.Sleep(5000);
                 return;
             }
 
@@ -75,7 +72,7 @@ namespace pwnctl.proc
             // the max task timeout.
             _timer = new System.Timers.Timer((PwnInfraContext.Config.TaskQueue.VisibilityTimeout - 90) * 1000);
             _timer.Elapsed += async (_, _) =>
-                await _queueService.ChangeMessageVisibilityAsync(batchDTO, PwnInfraContext.Config.TaskQueue.VisibilityTimeout);
+                await PwnInfraContext.TaskQueueService.ChangeMessageVisibilityAsync(batchDTO, PwnInfraContext.Config.TaskQueue.VisibilityTimeout);
             _timer.Start();
 
             try
@@ -87,7 +84,7 @@ namespace pwnctl.proc
                     await _processor.TryProcessAsync(line, batchDTO.TaskId);
                 }
 
-                await _queueService.DequeueAsync(batchDTO);
+                await PwnInfraContext.TaskQueueService.DequeueAsync(batchDTO);
             }
             catch (Exception ex)
             {
@@ -95,7 +92,7 @@ namespace pwnctl.proc
 
                 // return the task to the queue, if this occures to many times,
                 // the task will be put in the dead letter queue
-                await _queueService.ChangeMessageVisibilityAsync(batchDTO, 0);
+                await PwnInfraContext.TaskQueueService.ChangeMessageVisibilityAsync(batchDTO, 0);
             }
             finally
             {

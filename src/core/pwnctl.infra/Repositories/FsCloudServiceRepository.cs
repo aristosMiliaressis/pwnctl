@@ -13,7 +13,7 @@ namespace pwnctl.infra.Repositories
 
         public bool IsCloudService(HttpEndpoint endpoint)
         {
-            if (_services == null)
+            if (_services is null)
                 _services = PwnInfraContext.Serializer.Deserialize<List<CloudService>>(File.ReadAllText(_cloudServiceDataFile));
 
             return _services.SelectMany(s => s.Scope).Any(s => s.Matches(endpoint));

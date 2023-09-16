@@ -19,7 +19,7 @@ namespace pwnctl.app.Assets
                 try
                 {
                     Asset asset = (Asset)tryParseMethod.Invoke(null, new object[] { assetText });
-                    if (asset == null)
+                    if (asset is null)
                         continue;
 
                     return asset;

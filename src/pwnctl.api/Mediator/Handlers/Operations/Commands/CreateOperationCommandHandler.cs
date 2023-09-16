@@ -14,7 +14,7 @@ using pwnctl.app.Common.ValueObjects;
 using pwnctl.app.Assets.DTO;
 using pwnctl.app.Assets;
 using pwnctl.domain.BaseClasses;
-using pwnctl.app.Assets.Aggregates;
+using pwnctl.app.Assets.Entities;
 using pwnctl.app.Queueing.DTO;
 using pwnctl.app.Tasks.Entities;
 using pwnctl.app.Queueing.Interfaces;
@@ -41,16 +41,16 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
         public async Task<MediatedResponse> Handle(CreateOperationCommand command, CancellationToken cancellationToken)
         {
             var existingOperation = await _context.Operations.FirstOrDefaultAsync(p => p.ShortName == ShortName.Create(command.ShortName));
-            if (existingOperation != null)
+            if (existingOperation is not null)
                 return MediatedResponse.Error("Operation {0} already exists.", command.ShortName);
 
             var scopeAggregate = _context.ScopeAggregates
                                         .Include(a => a.Definitions)
                                             .ThenInclude(d => d.Definition)
                                         .FirstOrDefault(a => a.ShortName == ShortName.Create(command.Scope.ShortName));
-            if (scopeAggregate == null)
+            if (scopeAggregate is null)
             {
-                if (command.Scope.ScopeDefinitions == null || !command.Scope.ScopeDefinitions.Any())
+                if (command.Scope.ScopeDefinitions is null || !command.Scope.ScopeDefinitions.Any())
                     return MediatedResponse.Error("Scope Aggregate {0} not found.", command.Scope.ShortName);
 
                 scopeAggregate = await CreateScopeAggregateCommandHandler.CreateScopeAggregate(_context, command.Scope, cancellationToken);
@@ -62,7 +62,7 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
                 var profile = _context.TaskProfiles
                                         .Include(p => p.TaskDefinitions)
                                         .FirstOrDefault(p => p.ShortName == ShortName.Create(profileName));
-                if (profile == null)
+                if (profile is null)
                     return MediatedResponse.Error("Task Profile {0} not found.", profileName);
                 
                 taskProfiles.Add(profile);
@@ -72,7 +72,7 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
             policy.Blacklist = command.Policy.Blacklist;
 
             var op = new Operation(command.ShortName, command.Type, policy, scopeAggregate);
-            if (command.CronSchedule != null)
+            if (command.CronSchedule is not null)
                 op.Schedule = CronExpression.Create(command.CronSchedule);
 
             _context.Operations.Add(op);
@@ -85,7 +85,7 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
             {
                 await StartCrawlOperation(op, command.Input);
             }
-            else if (command.Type == OperationType.Scan || command.CronSchedule != null)
+            else if (command.Type == OperationType.Scan || command.CronSchedule is not null)
             {
                 await _scheduler.ScheduleOperation(op);
             }
@@ -95,8 +95,6 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
 
         private async Task StartCrawlOperation(Operation op, IEnumerable<string> input)
         {
-            var proc = AssetProcessorFactory.Create();
-
             foreach (var assetText in input.Where(a => !string.IsNullOrEmpty(a)))
             {
                 AssetDTO dto = TagParser.Parse(assetText);
@@ -105,9 +103,8 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
 
                 AssetRecord record = new(asset);
 
-
                 var scope = op.Scope.Definitions.FirstOrDefault(scope => scope.Definition.Matches(record.Asset));
-                if (scope != null)
+                if (scope is not null)
                     record.SetScopeId(scope.Definition.Id);
 
                 var outOfScopeTasks = _taskRepository.ListOutOfScope();
@@ -118,7 +115,7 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
                 {
                     // only queue tasks once per definition/asset pair
                     var task = _taskRepository.Find(record, definition);
-                    if (task != null)
+                    if (task is not null)
                         continue;
 
                     task = new TaskRecord(op, definition, record);

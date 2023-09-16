@@ -14,7 +14,6 @@ namespace pwnctl.exec
     public sealed class TaskExecutorService : BackgroundService
     {
         private readonly IHostApplicationLifetime _hostApplicationLifetime;
-        private static readonly SQSTaskQueueService _queueService = new();
         private static readonly TaskDbRepository _taskRepo = new();
         private static System.Timers.Timer _timer = new();
 
@@ -50,7 +49,13 @@ namespace pwnctl.exec
 
         private async Task ExecutePendingTaskAsync(CancellationToken stoppingToken)
         {
-            var taskDTO = await _queueService.ReceiveAsync<PendingTaskDTO>(stoppingToken);
+            var taskDTO = await PwnInfraContext.TaskQueueService.ReceiveAsync<PendingTaskDTO>(stoppingToken);
+            if (taskDTO is null)
+            {
+                PwnInfraContext.Logger.Information("no work found");
+                Thread.Sleep(5000);
+                return;
+            }
 
             // create a linked token that cancels the task when the max task timeout
             // passes or when a SIGTERM is received due to a scale in event
@@ -62,16 +67,16 @@ namespace pwnctl.exec
             // the max task timeout.
             _timer = new System.Timers.Timer((PwnInfraContext.Config.TaskQueue.VisibilityTimeout - 90) * 1000);
             _timer.Elapsed += async (_, _) =>
-                await _queueService.ChangeMessageVisibilityAsync(taskDTO, PwnInfraContext.Config.TaskQueue.VisibilityTimeout);
+                await PwnInfraContext.TaskQueueService.ChangeMessageVisibilityAsync(taskDTO, PwnInfraContext.Config.TaskQueue.VisibilityTimeout);
             _timer.Start();
 
             var task = await _taskRepo.FindAsync(taskDTO.TaskId);
-            if (task == null)
+            if (task is null)
             {
                 PwnInfraContext.Logger.Warning($"Task {taskDTO.TaskId} \"{taskDTO.Command}\" not found in database.");
                 _timer.Stop();
 
-                await _queueService.DequeueAsync(taskDTO);
+                await PwnInfraContext.TaskQueueService.DequeueAsync(taskDTO);
                 return;
             }
 
@@ -85,7 +90,7 @@ namespace pwnctl.exec
                 _timer.Stop();
 
                 // probably a deduplication issue, remove from queue and move on
-                await _queueService.DequeueAsync(taskDTO);
+                await PwnInfraContext.TaskQueueService.DequeueAsync(taskDTO);
                 return;
             }
 
@@ -95,14 +100,14 @@ namespace pwnctl.exec
 
                 (int exitCode,
                 StringBuilder stdout,
-                StringBuilder stderr) = await CommandExecutor.ExecuteAsync(task.Command, token: cts.Token);
+                StringBuilder stderr) = await PwnInfraContext.CommandExecutor.ExecuteAsync(task.Command, token: cts.Token);
 
                 task.Finished(exitCode, stderr.ToString());
                 await _taskRepo.UpdateAsync(task);
 
                 _timer.Stop();
 
-                await _queueService.DequeueAsync(taskDTO);
+                await PwnInfraContext.TaskQueueService.DequeueAsync(taskDTO);
 
                 var lines = stdout.ToString()
                                 .Split("\n")
@@ -112,7 +117,7 @@ namespace pwnctl.exec
 
                 var batches = OutputBatchDTO.FromLines(lines, task.Id);
                 foreach (var batch in batches)
-                    await _queueService.EnqueueAsync(batch);
+                    await PwnInfraContext.TaskQueueService.EnqueueAsync(batch);
             }
             catch (Exception ex)
             {
@@ -125,7 +130,7 @@ namespace pwnctl.exec
 
                 // return the task to the queue, if this occures to many times,
                 // the task will be put in the dead letter queue
-                await _queueService.ChangeMessageVisibilityAsync(taskDTO, 0);
+                await PwnInfraContext.TaskQueueService.ChangeMessageVisibilityAsync(taskDTO, 0);
             }
         }
     }

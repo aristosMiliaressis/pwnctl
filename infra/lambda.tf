@@ -37,7 +37,6 @@ resource "aws_lambda_function" "this" {
 
   environment {
       variables = {
-          PWNCTL_IS_LAMBDA = "true"
           PWNCTL_TaskQueue__Name = module.sqs.main_queue.name,
           PWNCTL_TaskQueue__VisibilityTimeout = tostring(module.sqs.sqs_visibility_timeout),
           PWNCTL_Logging__MinLevel = "Debug"

@@ -3,7 +3,7 @@ using pwnctl.app.Common.Interfaces;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using System.Reflection;
-using pwnctl.app.Assets.Aggregates;
+using pwnctl.app.Assets.Entities;
 using pwnctl.app.Tagging.Entities;
 
 namespace pwnctl.infra.Configuration

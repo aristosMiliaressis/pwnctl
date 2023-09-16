@@ -39,7 +39,7 @@ public static class WebApplicationExtensions
 
             var requestVerb = MediatedRequestTypeHelper.GetVerb(requestType);
 
-            if (requestVerb == null)
+            if (requestVerb is null)
             {
                 throw new Exception($"Mediated Request {requestType.Name} method is required but set to null.");
             }
@@ -70,7 +70,7 @@ public static class WebApplicationExtensions
                 foreach (var param in context.Request.Query)
                 {
                     var prop = requestType.GetProperty(param.Key);
-                    if (prop != null)
+                    if (prop is not null)
                         prop.SetValue(request, Convert.ChangeType(param.Value.ToString(), prop.PropertyType));
                 }
 

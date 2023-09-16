@@ -9,6 +9,8 @@ using pwnctl.dto.Mediator;
 using pwnctl.dto.Operations.Commands;
 using pwnctl.dto.Scope.Commands;
 using pwnctl.dto.Tasks.Commands;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 namespace pwnctl.cli.ModeHandlers
 {
@@ -29,6 +31,10 @@ namespace pwnctl.cli.ModeHandlers
 
         public async Task Handle(string[] args)
         {
+            var deserializer = new DeserializerBuilder()
+                .WithNamingConvention(PascalCaseNamingConvention.Instance)
+                .Build();
+
             await Parser.Default.ParseArguments<CreateModeHandler>(args).WithParsedAsync(async opt => 
             {
                 string line, json = string.Empty;
@@ -37,7 +43,7 @@ namespace pwnctl.cli.ModeHandlers
                     json += line + "\n";
                 }
 
-                var request = (MediatedRequest)PwnInfraContext.Serializer.Deserialize(json, ResourceMap[opt.Resource]);
+                var request = (MediatedRequest)deserializer.Deserialize(json, ResourceMap[opt.Resource]);
 
                 await PwnctlApiClient.Default.Send(request);
             });

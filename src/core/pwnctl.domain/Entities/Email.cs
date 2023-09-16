@@ -20,7 +20,7 @@ namespace pwnctl.domain.Entities
             DomainName = domain;
         }
 
-        public static Email TryParse(string assetText)
+        public static Email? TryParse(string assetText)
         {
             assetText = assetText.StartsWith("mailto:")
                     ? assetText.Substring(7)
@@ -32,7 +32,7 @@ namespace pwnctl.domain.Entities
 
             // for some reason MailKit parses IPv4 as valid email address so if it is ip return false
             if (IPAddress.TryParse(assetText, out IPAddress _)
-             || NetworkRange.TryParse(assetText) != null)
+             || NetworkRange.TryParse(assetText) is not null)
                 return null;
 
             if (!MailboxAddress.TryParse(assetText, out MailboxAddress address))

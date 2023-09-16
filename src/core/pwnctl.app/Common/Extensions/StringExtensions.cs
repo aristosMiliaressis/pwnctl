@@ -32,9 +32,9 @@ public static class StringExtensions
             else
             {
                 var prop = sourceType.GetProperty(param);
-                if (ignoreInvalid && prop == null)
+                if (ignoreInvalid && prop is null)
                     continue;
-                else if (!ignoreInvalid && prop == null)
+                else if (!ignoreInvalid && prop is null)
                     throw new InvalidTemplateStringException($"Property {param} not found on type {sourceType.Name}");
 
                 arg = prop.GetValue(source);
@@ -68,7 +68,7 @@ public static class StringExtensions
             var arg = input.Split("/")[0];
 
             var prop = destType.GetProperty(param);
-            if (prop == null)
+            if (prop is null)
                 throw new InvalidTemplateStringException($"Property {param} not found on type {destType.Name}");
 
             prop.SetValue(dest, arg);
@@ -93,7 +93,7 @@ public static class StringExtensions
         foreach (var param in parameters)
         {
             var prop = objType.GetProperty(param);
-            if (prop == null)
+            if (prop is null)
                 throw new InvalidTemplateStringException($"Property {param} not found on type {objType.Name}");
         }
 

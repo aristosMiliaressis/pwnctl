@@ -1,4 +1,4 @@
-using pwnctl.app.Assets.Aggregates;
+using pwnctl.app.Assets.Entities;
 using pwnctl.app.Common.ValueObjects;
 using pwnctl.app.Notifications.Enums;
 using pwnctl.domain.ValueObjects;
@@ -12,7 +12,7 @@ namespace pwnctl.app.Notifications.Entities
         public AssetClass Subject { get; init; }
         public NotificationTopic Topic { get; init; }
         public string Filter { get; init; }
-        public string Template { get; init; }
+        public string? Template { get; init; }
         public bool CheckOutOfScope { get; init; }
 
         public NotificationRule() { }

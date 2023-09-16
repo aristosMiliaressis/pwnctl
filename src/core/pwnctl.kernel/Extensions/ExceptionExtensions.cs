@@ -19,7 +19,7 @@ public static class ExceptionExtensions
 
         exceptionInfo += "StackTrace:" + Environment.NewLine + ex.StackTrace;
         
-        if (ex.InnerException != null)
+        if (ex.InnerException is not null)
             exceptionInfo += Environment.NewLine + ex.InnerException.ToRecursiveExInfo();
         
         return exceptionInfo;

@@ -11,11 +11,11 @@ namespace pwnctl.app.Operations.Entities
         public ShortName ShortName { get; private init; }
         public OperationType Type { get; private init; }
         public OperationState State { get; set; }
-        public CronExpression Schedule { get; set; }
+        public CronExpression? Schedule { get; set; }
         public DateTime InitiatedAt { get; set; }
 
         [JsonIgnore]
-        public int? PolicyId { get; private init; }
+        public int PolicyId { get; private init; }
         public Policy Policy { get; private init; }
 
         public ScopeAggregate Scope { get; private init; }

@@ -45,7 +45,7 @@ public sealed class PwnctlApiClient
         }
 
         var apiResponse = await _send(concreteRequestType, route, json);
-        if (apiResponse.Result == null)
+        if (apiResponse.Result is null)
             return default;
 
         return PwnInfraContext.Serializer.Deserialize<TResult>((JsonElement)apiResponse.Result);
@@ -110,7 +110,7 @@ public sealed class PwnctlApiClient
             var httpRequest = new HttpRequestMessage
             {
                 Method = MediatedRequestTypeHelper.GetVerb(concreteRequestType),
-                RequestUri = new Uri($"{route}?Page={(view == null ? 0 : view.Page)}", UriKind.Relative),
+                RequestUri = new Uri($"{route}?Page={(view is null ? 0 : view.Page)}", UriKind.Relative),
                 Content = new StringContent(json, Encoding.UTF8, "application/json")
             };
 
@@ -124,7 +124,7 @@ public sealed class PwnctlApiClient
 
             var viewModel = responseType.GetProperties().First(p => p.Name == "Result").GetValue(response) as PaginatedViewModel;
 
-            if (view == null)
+            if (view is null)
                 view = viewModel;
             else
                 view.Rows.AddRange((List<object>) typeof(PaginatedViewModel).GetProperty("Rows").GetValue(viewModel));

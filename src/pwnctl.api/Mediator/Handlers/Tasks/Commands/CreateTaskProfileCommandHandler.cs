@@ -15,7 +15,7 @@ namespace pwnctl.api.Mediator.Handlers.Tasks.Commands
         public async Task<MediatedResponse> Handle(CreateTaskProfileCommand command, CancellationToken cancellationToken)
         {
             var profile = _context.TaskProfiles.FirstOrDefault(a => a.ShortName == ShortName.Create(command.ShortName));
-            if (profile != null)
+            if (profile is not null)
                 return MediatedResponse.Error("Task Profile {0} already exists.", command.ShortName);
 
             profile = new TaskProfile(command.ShortName, new());
@@ -23,7 +23,7 @@ namespace pwnctl.api.Mediator.Handlers.Tasks.Commands
             foreach (var def in command.TaskDefinitions)
             {
                 var taskDef = _context.TaskDefinitions.FirstOrDefault(d => d.Name == ShortName.Create(def.Name));
-                if (taskDef == null)
+                if (taskDef is null)
                 {
                     taskDef = def.ToEntity();
 

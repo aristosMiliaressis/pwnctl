@@ -13,10 +13,10 @@ namespace pwnctl.domain.Entities
         public TransportProtocol TransportProtocol { get; init; }
 
         public Guid? NetworkHostId { get; private init; }
-        public NetworkHost NetworkHost { get; init; }
+        public NetworkHost? NetworkHost { get; init; }
 
         public Guid? DomainNameId { get; private init; }
-        public DomainName DomainName { get; init; }
+        public DomainName? DomainName { get; init; }
 
         public NetworkSocket() { }
 
@@ -36,7 +36,7 @@ namespace pwnctl.domain.Entities
             Address = l4Proto.ToString().ToLower() + "://" + host.IP + ":" + port;
         }
 
-        public static NetworkSocket TryParse(string assetText)
+        public static NetworkSocket? TryParse(string assetText)
         {
             var protocol = TransportProtocol.TCP;
 
@@ -57,11 +57,11 @@ namespace pwnctl.domain.Entities
             var host = NetworkHost.TryParse(assetText);
             var domain = DomainName.TryParse(assetText);
 
-            if (host != null)
+            if (host is not null)
             {
                 return new NetworkSocket(host, port, protocol);
             }
-            else if (domain != null)
+            else if (domain is not null)
             {
                 return new NetworkSocket(domain, port, protocol);
             }

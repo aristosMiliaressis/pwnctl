@@ -2,6 +2,7 @@
 using pwnctl.domain.BaseClasses;
 using System.Text.RegularExpressions;
 using pwnctl.domain.Interfaces;
+using pwnctl.kernel.Extensions;
 
 namespace pwnctl.domain.Entities
 {
@@ -10,7 +11,7 @@ namespace pwnctl.domain.Entities
         [EqualityComponent]
         public string Name { get; init; }
         public int ZoneDepth { get; private init; }
-        public DomainName ParentDomain { get; private set; }
+        public DomainName? ParentDomain { get; private set; }
         public Guid? ParentDomainId { get; private init; }
         public string Word => Name.Replace("."+PublicSuffixRepository.Instance.GetSuffix(Name).Value, "")
                                     .Split(".")
@@ -26,12 +27,12 @@ namespace pwnctl.domain.Entities
             Name = domain;
 
             var suffix = PublicSuffixRepository.Instance.GetSuffix(Name);
-            ZoneDepth = Name.Substring(0, Name.Length - suffix.Value.Length - 1)
+            ZoneDepth = Name.Substring(0, Name.Length - suffix.Value.Value.Length - 1)
                         .Split(".")
                         .Count();
         }
 
-        public static DomainName TryParse(string assetText)
+        public static DomainName? TryParse(string assetText)
         {
             try
             {
@@ -58,7 +59,7 @@ namespace pwnctl.domain.Entities
             }
             catch
             {
-                return null;
+               return null;
             }
        }
 
@@ -67,14 +68,14 @@ namespace pwnctl.domain.Entities
             return Name;
         }
 
-        public string GetRegistrationDomain()
+        public string? GetRegistrationDomain()
         {
             var suffix = PublicSuffixRepository.Instance.GetSuffix(Name);
-            if (suffix == null)
+            if (suffix is null)
                 return null;
 
             return Name
-                    .Substring(0, Name.Length - suffix.Value.Length - 1)
+                    .Substring(0, Name.Length - suffix.Value.Value.Length - 1)
                     .Split(".")
                     .Last() + "." + suffix.Value;
         }

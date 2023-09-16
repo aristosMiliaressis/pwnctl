@@ -9,7 +9,7 @@ namespace pwnctl.infra.Repositories
         private static string _publicSuffixDataFile = Path.Combine(EnvironmentVariables.INSTALL_PATH, "public_suffix_list.dat");
         private static List<PublicSuffix> _suffixes;
 
-        public PublicSuffix GetSuffix(string name)
+        public PublicSuffix? GetSuffix(string name)
         {
             return List()
                 .Where(s => name.EndsWith("."+s.Value))
@@ -19,7 +19,7 @@ namespace pwnctl.infra.Repositories
 
         private List<PublicSuffix> List()
         {
-            if (_suffixes == null || !_suffixes.Any())
+            if (_suffixes is null || !_suffixes.Any())
                 _suffixes = File.ReadLines(_publicSuffixDataFile)
                         .Distinct()
                         .Where(suf => Uri.CheckHostName(suf) == UriHostNameType.Dns) // TODO: benchmark this

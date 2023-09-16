@@ -33,7 +33,7 @@ public class TaskDefinitionDTO
             CheckNotificationRules = CheckNotificationRules,
         };
 
-        if (MonitorRules != null)
+        if (MonitorRules is not null)
         {
             definition.MonitorRules = new MonitorRules
             {

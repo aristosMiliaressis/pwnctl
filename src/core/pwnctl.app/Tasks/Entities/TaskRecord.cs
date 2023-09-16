@@ -1,5 +1,5 @@
 using pwnctl.kernel.BaseClasses;
-using pwnctl.app.Assets.Aggregates;
+using pwnctl.app.Assets.Entities;
 using pwnctl.app.Tasks.Enums;
 using pwnctl.app.Tasks.Exceptions;
 using pwnctl.app.Operations.Entities;
@@ -17,7 +17,7 @@ namespace pwnctl.app.Tasks.Entities
         public TaskState State { get; private set; }
         public int RunCount { get; private set; } = 0;
         public int? ExitCode { get; private set; }
-        public string Stderr { get; set; }
+        public string? Stderr { get; set; }
 
         public int OperationId { get; private init; }
         public Operation Operation { get; set; }

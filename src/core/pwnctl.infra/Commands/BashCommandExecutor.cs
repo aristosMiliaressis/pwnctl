@@ -3,10 +3,11 @@ namespace pwnctl.infra.Commands;
 using System.Diagnostics;
 using System.Text;
 using pwnctl.app;
+using pwnctl.app.Common.Interfaces;
 
-public static class CommandExecutor
+public class BashCommandExecutor : CommandExecutor
 {
-    public static async Task<(int, StringBuilder, StringBuilder)> ExecuteAsync(string command, CancellationToken token = default)
+    public async Task<(int, StringBuilder, StringBuilder)> ExecuteAsync(string command, CancellationToken token = default)
     {
         PwnInfraContext.Logger.Debug("Running: " + command);
         

@@ -11,7 +11,7 @@ using pwnctl.app.Operations.Entities;
 using pwnctl.app.Notifications.Entities;
 using pwnctl.domain.Entities;
 using pwnctl.app.Tagging.Entities;
-using pwnctl.app.Assets.Aggregates;
+using pwnctl.app.Assets.Entities;
 using pwnctl.app.Users.Entities;
 using pwnctl.infra.Configuration;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -72,7 +72,7 @@ namespace pwnctl.infra.Persistence
                                     .EnableSensitiveDataLogging(true)
                                     .ReplaceService<GuidValueGenerator, UUIDv5ValueGenerator>();
 
-                if (EnvironmentVariables.USE_SQLITE)
+                if (EnvironmentVariables.USE_LOCAL_INTEGRATIONS)
                 {
                     optionsBuilder.UseSqlite("Data Source="+Path.Combine(EnvironmentVariables.INSTALL_PATH, "pwnctl.sqlite3"), x => x.MigrationsHistoryTable("__EFMigrationHistory"));
                     return;

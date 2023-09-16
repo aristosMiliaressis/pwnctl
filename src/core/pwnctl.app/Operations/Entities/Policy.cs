@@ -6,7 +6,7 @@ namespace pwnctl.app.Operations.Entities
 {
     public sealed class Policy : Entity<int>
     {
-        public string Blacklist { get; set; }
+        public string? Blacklist { get; set; }
 
         public List<PolicyTaskProfile> TaskProfiles { get; private init; }
 

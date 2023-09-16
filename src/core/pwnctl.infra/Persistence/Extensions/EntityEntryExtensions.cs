@@ -7,12 +7,12 @@ namespace pwnctl.infra.Persistence.Extensions
     {
         public static async Task LoadReferenceGraphAsync(this EntityEntry entry, CancellationToken token = default, List<string> refChain = null)
         {
-            if (entry == null)
+            if (entry is null)
                 return;
 
             // if reference chain is null(i.e recursive entry point) initialize the chain
             // else create a copy, to mentain a separet chain between every reqursive branch
-            refChain = refChain == null
+            refChain = refChain is null
                     ? new List<string>()
                     : new List<string>(refChain);
 
@@ -54,12 +54,12 @@ namespace pwnctl.infra.Persistence.Extensions
 
         public static void DetachReferenceGraph(this EntityEntry entry, List<string> refChain = null)
         {
-            if (entry == null)
+            if (entry is null)
                 return;
 
             // if reference chain is null(i.e recursive entry point) initialize the chain
             // else create a copy, to mentain a separet chain between every reqursive branch
-            refChain = refChain == null
+            refChain = refChain is null
                     ? new List<string>()
                     : new List<string>(refChain);
 
@@ -68,7 +68,7 @@ namespace pwnctl.infra.Persistence.Extensions
                 return;
             refChain.Add(entry.Entity.ToString());
 
-            foreach (var reference in entry.References.Where(r => r.TargetEntry != null))
+            foreach (var reference in entry.References.Where(r => r.TargetEntry is not null))
             {
                 reference.TargetEntry.DetachReferenceGraph(refChain);
             }
@@ -76,13 +76,13 @@ namespace pwnctl.infra.Persistence.Extensions
             foreach (var collection in entry.Collections)
             {
                 var enumerator = collection?.CurrentValue?.GetEnumerator();
-                if (enumerator == null)
+                if (enumerator is null)
                     continue;
 
                 while (enumerator.MoveNext())
                 {
                     var colEntry = collection.FindEntry(enumerator.Current);
-                    if (colEntry != null)
+                    if (colEntry is not null)
                     {
                         colEntry.State = EntityState.Detached;
                     }

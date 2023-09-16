@@ -6,7 +6,7 @@ namespace pwnctl.domain.Entities
 {
     public sealed class HttpParameter : Asset
     {
-        public HttpEndpoint Endpoint { get; private init; }
+        public HttpEndpoint? Endpoint { get; private init; }
         public Guid? EndpointId { get; private init; }
         [EqualityComponent]
         public string Url { get; init; }
@@ -29,7 +29,7 @@ namespace pwnctl.domain.Entities
             Value = value;
         }
 
-        public static HttpParameter TryParse(string assetText)
+        public static HttpParameter? TryParse(string assetText)
         {
             return null;
         }

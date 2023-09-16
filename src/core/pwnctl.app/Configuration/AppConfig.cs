@@ -21,6 +21,7 @@ public sealed class AppConfig
         public string HMACSecret { get; set; }
         public int AccessTimeoutMinutes { get; set; }
         public int RefreshTimeoutHours { get; set; }
+        public int BatchSize { get; set; } = 512;
     }
 
     public sealed class DbSettings

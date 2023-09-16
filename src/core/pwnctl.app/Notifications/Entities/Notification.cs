@@ -1,4 +1,4 @@
-using pwnctl.app.Assets.Aggregates;
+using pwnctl.app.Assets.Entities;
 using pwnctl.app.Common.Extensions;
 using pwnctl.app.Tasks.Entities;
 using pwnctl.kernel.BaseClasses;
@@ -10,10 +10,10 @@ namespace pwnctl.app.Notifications.Entities
         public AssetRecord Record { get; set; }
         public Guid RecordId { get; set; }
 
-        public NotificationRule Rule { get; set; }
+        public NotificationRule? Rule { get; set; }
         public int? RuleId { get; private init; }
 
-        public TaskRecord Task { get; set; }
+        public TaskRecord? Task { get; set; }
         public int? TaskId { get; private init; }
 
         public DateTime SentAt { get; set; }
@@ -35,7 +35,7 @@ namespace pwnctl.app.Notifications.Entities
 
         public string GetText()
         {
-            if (RuleId.HasValue || Rule != null)
+            if (RuleId.HasValue || Rule is not null)
             {
                 if (!string.IsNullOrEmpty(Rule.Template))
                     return Rule.Template.Interpolate(Record.Asset, ignoreInvalid: true)

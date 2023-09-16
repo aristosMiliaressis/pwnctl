@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Reflection;
-using pwnctl.app.Assets.Aggregates;
+using pwnctl.app.Assets.Entities;
 using pwnctl.domain.BaseClasses;
 
 namespace pwnctl.app.Assets.DTO
@@ -25,7 +25,7 @@ namespace pwnctl.app.Assets.DTO
                 Tags = record.Tags.ToDictionary(t => t.Name, t => (object)t.Value);
                 InScope = record.InScope.ToString();
                 FoundAt = record.FoundAt.ToString("yyyy-MM-ddTHH\\:mm\\:ss.ff");
-                FoundBy = record?.FoundByTask?.Definition?.Name?.Value ?? "N/A";
+                FoundBy = record.FoundByTask?.Definition?.Name.Value ?? "N/A";
 
                 var properties = record.Asset.GetType()
                                     .GetProperties(BindingFlags.Public

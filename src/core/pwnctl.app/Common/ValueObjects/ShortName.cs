@@ -3,7 +3,7 @@ using pwnctl.kernel.BaseClasses;
 
 namespace pwnctl.app.Common.ValueObjects;
 
-public sealed class ShortName : ValueObject
+public record struct ShortName
 {
     public string Value { get; }
 
@@ -18,11 +18,6 @@ public sealed class ShortName : ValueObject
     public static ShortName Create(string value)
     {
         return new ShortName(value);
-    }
-
-    protected override IEnumerable<object> GetEqualityComponents()
-    {
-        yield return Value;
     }
 
     private static readonly Regex _shortNameCharSet = new Regex("^[a-zA-Z0-9_]{0,64}$");

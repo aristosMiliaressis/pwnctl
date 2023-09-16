@@ -4,7 +4,7 @@ using MediatR;
 using pwnctl.dto.Assets.Commands;
 using pwnctl.app.Assets;
 using pwnctl.infra.Persistence;
-using pwnctl.app.Assets.Aggregates;
+using pwnctl.app.Assets.Entities;
 
 namespace pwnctl.api.Mediator.Handlers.Targets.Commands
 {

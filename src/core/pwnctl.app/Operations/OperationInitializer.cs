@@ -1,4 +1,4 @@
-using pwnctl.app.Assets.Aggregates;
+using pwnctl.app.Assets.Entities;
 using pwnctl.app.Assets.Interfaces;
 using pwnctl.app.Common;
 using pwnctl.app.Operations.Entities;
@@ -15,17 +15,10 @@ namespace pwnctl.app.Operations;
 public class OperationInitializer
 {
     private readonly OperationRepository _opRepo;
-    private readonly AssetRepository _assetRepo;
-    private readonly TaskRepository _taskRepo;
-    private readonly TaskQueueService _taskQueueService;
 
-    public OperationInitializer(OperationRepository opRepo, AssetRepository assetRepo,
-                                    TaskRepository taskRepo, TaskQueueService taskQueueService)
+    public OperationInitializer(OperationRepository opRepo)
     {
         _opRepo = opRepo;
-        _assetRepo = assetRepo;
-        _taskRepo = taskRepo;
-        _taskQueueService = taskQueueService;
     }
 
     public async Task InitializeAsync(int opId)
@@ -36,19 +29,19 @@ public class OperationInitializer
         op.State = OperationState.Ongoing;
         await _opRepo.SaveAsync(op);
 
-        var monitoringTasks = op.Policy.TaskProfiles.SelectMany(p => p.TaskProfile.TaskDefinitions).Where(def => def.MonitorRules.Schedule != null);
+        var monitoringTasks = op.Policy.TaskProfiles.SelectMany(p => p.TaskProfile.TaskDefinitions).Where(def => def.MonitorRules.Schedule is not null);
 
         int page = 0;
         while (true)
         {
-            var records = await _assetRepo.ListInScopeAsync(op.ScopeId, monitoringTasks.Select(t => t.Subject).Distinct().ToArray(), page);
+            var records = await PwnInfraContext.AssetRepository.ListInScopeAsync(op.ScopeId, monitoringTasks.Select(t => t.Subject).Distinct().ToArray(), page);
 
             foreach (var record in records)
             {
                 await GenerateScheduledTasksAsync(op, record, monitoringTasks);
             }
 
-            if (records.Count != Constants.BATCH_SIZE)
+            if (records.Count != PwnInfraContext.Config.Api.BatchSize)
                 break;
 
             page++;
@@ -63,9 +56,9 @@ public class OperationInitializer
         {
             var task = new TaskRecord(op, def, record);
 
-            await _taskRepo.AddAsync(task);
+            await PwnInfraContext.TaskRepository.AddAsync(task);
 
-            await _taskQueueService.EnqueueAsync<PendingTaskDTO>(new PendingTaskDTO(task));
+            await PwnInfraContext.TaskQueueService.EnqueueAsync<PendingTaskDTO>(new PendingTaskDTO(task));
         }
     }
 }

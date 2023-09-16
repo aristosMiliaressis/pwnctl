@@ -1,9 +1,10 @@
-﻿using pwnctl.domain.BaseClasses;
+﻿using System.Threading.Tasks;
+using pwnctl.domain.BaseClasses;
 using pwnctl.app.Assets.Interfaces;
 using pwnctl.app.Queueing.Interfaces;
 using pwnctl.app.Tasks.Entities;
 using pwnctl.app.Notifications.Entities;
-using pwnctl.app.Assets.Aggregates;
+using pwnctl.app.Assets.Entities;
 using pwnctl.app.Assets.DTO;
 using pwnctl.app.Queueing.DTO;
 using pwnctl.app.Operations.Entities;
@@ -18,21 +19,13 @@ namespace pwnctl.app.Assets
 {
     public sealed class AssetProcessor
     {
-        private readonly AssetRepository _assetRepository;
-        private readonly TaskRepository _taskRepository;
-        private readonly NotificationRepository _notificationRepository;
-        private readonly TaskQueueService _taskQueueService;
         private readonly List<NotificationRule> _notificationRules;
         private readonly List<TaskDefinition> _outOfScopeTasks;
 
-        public AssetProcessor(AssetRepository assetRepo, TaskQueueService taskQueueService, TaskRepository taskRepo, NotificationRepository notificRepo)
+        public AssetProcessor()
         {
-            _assetRepository = assetRepo;
-            _taskRepository = taskRepo;
-            _notificationRepository = notificRepo;
-            _taskQueueService = taskQueueService;
-            _outOfScopeTasks = taskRepo.ListOutOfScope();
-            _notificationRules = notificRepo.ListRules();
+            _outOfScopeTasks = PwnInfraContext.TaskRepository.ListOutOfScope();
+            _notificationRules = PwnInfraContext.NotificationRepository.ListRules();
         }
 
         public async Task<bool> TryProcessAsync(string assetText, int taskId)
@@ -60,7 +53,7 @@ namespace pwnctl.app.Assets
 
         internal async Task ProcessAssetAsync(Asset asset, Dictionary<string, object> tags, int taskId, List<Asset> refChain = null)
         {
-            refChain = refChain == null
+            refChain = refChain is null
                     ? new List<Asset>()
                     : new List<Asset>(refChain);
 
@@ -76,10 +69,10 @@ namespace pwnctl.app.Assets
                 await ProcessAssetAsync(refAsset, null, taskId, refChain);
             }
 
-            var foundByTask = await _taskRepository.FindAsync(taskId);
+            var foundByTask = await PwnInfraContext.TaskRepository.FindAsync(taskId);
 
-            var record = await _assetRepository.FindRecordAsync(asset);
-            if (record == null)
+            var record = await PwnInfraContext.AssetRepository.FindRecordAsync(asset);
+            if (record is null)
             {
                 record = new AssetRecord(asset, foundByTask);
             }
@@ -89,11 +82,11 @@ namespace pwnctl.app.Assets
 
             if (!record.InScope)
             {
-                record = await _assetRepository.UpdateRecordReferences(record, asset);
+                record = await PwnInfraContext.AssetRepository.UpdateRecordReferences(record, asset);
 
                 var scope = foundByTask.Operation.Scope.Definitions.FirstOrDefault(scope => scope.Definition.Matches(record.Asset)
                                                                             || scope.Definition.Matches(asset));
-                if (scope != null)
+                if (scope is not null)
                     record.SetScopeId(scope.Definition.Id);
             }
 
@@ -115,7 +108,7 @@ namespace pwnctl.app.Assets
                 }
             }
 
-            await _assetRepository.SaveAsync(record);
+            await PwnInfraContext.AssetRepository.SaveAsync(record);
 
             var allowedTasks = foundByTask.Operation.Policy.GetAllowedTasks();
             allowedTasks.AddRange(_outOfScopeTasks);
@@ -123,7 +116,7 @@ namespace pwnctl.app.Assets
             await Parallel.ForEachAsync(record.Tasks, async (task, token) =>
             {
                 task.Definition = allowedTasks.First(t => t.Id == task.DefinitionId);
-                await _taskQueueService.EnqueueAsync(new PendingTaskDTO(task));
+                await PwnInfraContext.TaskQueueService.EnqueueAsync(new PendingTaskDTO(task));
             });
         }
 
@@ -135,8 +128,8 @@ namespace pwnctl.app.Assets
             foreach (var definition in allowedTasks.Where(def => (record.InScope || def.MatchOutOfScope) && def.Matches(record)))
             {
                 // only queue tasks once per definition/asset pair
-                var task = _taskRepository.Find(record, definition);
-                if (task != null)
+                var task = PwnInfraContext.TaskRepository.Find(record, definition);
+                if (task is not null)
                     continue;
 
                 task = new TaskRecord(operation, definition, record);
@@ -150,9 +143,9 @@ namespace pwnctl.app.Assets
             {
                 if ((record.InScope || rule.CheckOutOfScope) && rule.Check(record))
                 {
-                     // only send notifications once
-                    var notification = await _assetRepository.FindNotificationAsync(record.Asset, rule);
-                    if (notification != null)
+                    // only send notifications once
+                    var notification = await PwnInfraContext.AssetRepository.FindNotificationAsync(record.Asset, rule);
+                    if (notification is not null)
                         return;
 
                     notification = new Notification(record, rule);
@@ -206,13 +199,13 @@ namespace pwnctl.app.Assets
             List<Asset> assets = assetProperties
                    .Where(p => p.PropertyType.IsAssignableTo(typeof(Asset)))
                    .Select(rf => (Asset)rf.GetValue(asset))
-                   .Where(a => a != null)
+                   .Where(a => a is not null)
                    .ToList();
 
             assets.AddRange(assetProperties
                    .Where(p => p.PropertyType.IsGenericType
                             && p.PropertyType.GetGenericArguments()[0].IsAssignableTo(typeof(Asset))
-                            && p.GetValue(asset) != null)
+                            && p.GetValue(asset) is not null)
                    .SelectMany(rf => (IEnumerable<Asset>)rf.GetValue(asset)));
 
             return assets;

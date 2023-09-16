@@ -4,10 +4,10 @@
 #   Filter: Tags["vuln-default-creds"] == "true"
 #   Topic: misconfigs
 
-- Name: cors_misconfig
-  Subject: HttpEndpoint
-  Filter: Tags["cors-misconfig"] == "true"
-  Topic: misconfigs
+# - Name: cors_misconfig
+#   Subject: HttpEndpoint
+#   Filter: Tags["cors-misconfig"] == "true"
+#   Topic: misconfigs
 
 - Name: swagger_discovery
   Subject: HttpEndpoint
@@ -43,7 +43,7 @@
 
 - Name: high_impact_wordlist_hit
   Subject: HttpEndpoint
-  Filter: Tags["source"]=="high_impact.txt"
+  Filter: Tags["source"]=="/opt/wordlists/high_impact.txt"
   Topic: misconfigs
 
 - Name: mdwfuzzer

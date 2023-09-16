@@ -1,4 +1,4 @@
-using pwnctl.app.Assets.Aggregates;
+using pwnctl.app.Assets.Entities;
 using pwnctl.kernel.BaseClasses;
 
 namespace pwnctl.app.Tagging.Entities

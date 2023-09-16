@@ -90,7 +90,9 @@ var app = builder.Build();
 
 var userManager = app.Services.GetService<UserManager<User>>();
 
-await PwnInfraContextInitializer.SetupAsync(userManager);
+PwnInfraContextInitializer.Setup();
+
+await DatabaseInitializer.InitializeAsync(userManager);
 
 app.UseHttpsRedirection();
 

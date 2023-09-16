@@ -1,12 +1,12 @@
 using pwnctl.dto.Mediator;
 using pwnctl.infra.Persistence;
 using pwnctl.app.Common;
+using pwnctl.app;
 
 using MediatR;
 using pwnctl.infra.Repositories;
 using pwnctl.dto.Assets.Queries;
 using pwnctl.dto.Assets.Models;
-using pwnctl.app;
 
 namespace pwnctl.api.Mediator.Handlers.Targets.Queries
 {
@@ -24,7 +24,7 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Queries
             PwnInfraContext.Logger.Warning("HERE3");
 
             viewModel.Page = query.Page;
-            viewModel.TotalPages = new PwnctlDbContext().HttpEndpoints.Count() / Constants.BATCH_SIZE;
+            viewModel.TotalPages = new PwnctlDbContext().HttpEndpoints.Count() / PwnInfraContext.Config.Api.BatchSize;
             PwnInfraContext.Logger.Warning("HERE4");
 
             return MediatedResponse<EndpointListViewModel>.Success(viewModel);

@@ -69,10 +69,6 @@ resource "aws_ecs_task_definition" "exec" {
           "value": "${data.docker_registry_image.exec.sha256_digest}"
         },
         {
-          "name": "PWNCTL_IS_ECS",
-          "value": "true"
-        },
-        {
           "name": "PWNCTL_Worker__MaxTaskTimeout",
           "value": "${var.task_timeout}"
         },
@@ -292,10 +288,6 @@ resource "aws_ecs_task_definition" "proc" {
         {
           "name": "PWNCTL_IMAGE_HASH",
           "value": "${data.docker_registry_image.proc.sha256_digest}"
-        },
-        {
-          "name": "PWNCTL_IS_ECS",
-          "value": "true"
         },
         {
           "name": "PWNCTL_TaskQueue__Name",

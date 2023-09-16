@@ -3,6 +3,7 @@ using pwnctl.dto.Tasks.Models;
 using pwnctl.dto.Mediator;
 using pwnctl.infra.Persistence;
 using pwnctl.app.Common;
+using pwnctl.app;
 
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +22,7 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Queries
             var viewModel = new TaskRecordListViewModel(tasks);
 
             viewModel.Page = query.Page;
-            viewModel.TotalPages = new PwnctlDbContext().TaskRecords.Count() / Constants.BATCH_SIZE;
+            viewModel.TotalPages = new PwnctlDbContext().TaskRecords.Count() / PwnInfraContext.Config.Api.BatchSize;
 
             return MediatedResponse<TaskRecordListViewModel>.Success(viewModel);
         }

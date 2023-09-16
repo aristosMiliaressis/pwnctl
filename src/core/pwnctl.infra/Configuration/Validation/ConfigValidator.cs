@@ -3,7 +3,7 @@ namespace pwnctl.infra.Configuration.Validation;
 
 using System.Net;
 using pwnctl.app;
-using pwnctl.app.Assets.Aggregates;
+using pwnctl.app.Assets.Entities;
 using pwnctl.app.Notifications.Entities;
 using pwnctl.app.Operations.Entities;
 using pwnctl.app.Tasks.Entities;
@@ -79,7 +79,7 @@ public static class ConfigValidator
                 return false;
             }
 
-            if (definition.Subject == null || string.IsNullOrEmpty(definition.Subject.Value))
+            if (string.IsNullOrEmpty(definition.Subject.Value))
             {
                 errorMessage = "Null or Empty Subject on " + definition.Name.Value;
                 return false;
@@ -147,7 +147,7 @@ public static class ConfigValidator
                 return false;
             }
 
-            if (rule.Subject == null || string.IsNullOrEmpty(rule.Subject.Value))
+            if (string.IsNullOrEmpty(rule.Subject.Value))
             {
                 errorMessage = "Null or Empty Subject on " + rule.Name.Value;
                 return false;

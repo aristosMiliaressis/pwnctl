@@ -3,6 +3,7 @@ using pwnctl.app.Notifications.Entities;
 using pwnctl.app.Notifications.Interfaces;
 using pwnctl.infra.Commands;
 using pwnctl.app.Notifications.Enums;
+using pwnctl.app;
 
 namespace pwnctl.infra.Notifications
 {
@@ -15,7 +16,7 @@ namespace pwnctl.infra.Notifications
 
         public async Task SendAsync(string message, NotificationTopic topic)
         {
-            await CommandExecutor.ExecuteAsync($"echo {message} | /root/go/bin/notify -bulk -provider discord -id {topic.ToString().ToLower()}");
+            await PwnInfraContext.CommandExecutor.ExecuteAsync($"echo {message} | /root/go/bin/notify -bulk -provider discord -id {topic.ToString().ToLower()}");
         }
     }
 }

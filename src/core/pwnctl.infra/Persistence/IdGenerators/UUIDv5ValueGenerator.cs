@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
-using pwnctl.app.Assets.Aggregates;
+using pwnctl.app.Assets.Entities;
 using Be.Vlaanderen.Basisregisters.Generators.Guid;
 
 namespace pwnctl.infra.Persistence.IdGenerators
@@ -25,7 +25,7 @@ namespace pwnctl.infra.Persistence.IdGenerators
                 asset = record.Asset;
             }
 
-            if (asset == null)
+            if (asset is null)
                 return default;
 
             return GenerateByString(asset.ToString());

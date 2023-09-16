@@ -13,7 +13,7 @@ namespace pwnctl.api.Mediator.Handlers.Scope.Commands
         public async Task<MediatedResponse> Handle(DeleteScopeAggregateCommand command, CancellationToken cancellationToken)
         {
             var scopeAggregate = _context.ScopeAggregates.FirstOrDefault(a => a.ShortName == ShortName.Create(command.ShortName));
-            if (scopeAggregate == null)
+            if (scopeAggregate is null)
                 return MediatedResponse.Error("Scope Aggregate {0} not found.", command.ShortName);
 
             _context.Remove(scopeAggregate);

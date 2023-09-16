@@ -4,19 +4,25 @@ using System;
 using pwnctl.domain.Entities;
 using pwnctl.domain.Interfaces;
 using pwnctl.infra.DependencyInjection;
-
+using pwnctl.infra.Commands;
+using pwnctl.infra.Queueing;
+using pwnctl.infra.Notifications;
+using pwnctl.app.Common.Interfaces;
+using pwnctl.app.Queueing.Interfaces;
+using pwnctl.app.Notifications.Interfaces;
+using pwnctl.app.Tasks.Interfaces;
 using Xunit;
 
 public sealed class Tests
 {
     public Tests()
     {
-        Environment.SetEnvironmentVariable("PWNCTL_TEST_RUN", "true");
-        Environment.SetEnvironmentVariable("PWNCTL_USE_SQLITE", "true");
+        Environment.SetEnvironmentVariable("PWNCTL_USE_LOCAL_INTEGRATIONS", "true");
         Environment.SetEnvironmentVariable("PWNCTL_INSTALL_PATH", ".");
         Environment.SetEnvironmentVariable("PWNCTL_Logging__MinLevel", "Warning");
 
-        PwnInfraContextInitializer.SetupAsync().Wait();
+        PwnInfraContextInitializer.Setup();
+        PwnInfraContextInitializer.Register<TaskQueueService, FakeTaskQueueService>();
     }
 
     [Fact]
@@ -25,12 +31,12 @@ public sealed class Tests
         var exampleDomain = new DomainName("xyz.example.com");
 
         Assert.Equal("example.com", exampleDomain.GetRegistrationDomain());
-        Assert.Equal("com", PublicSuffixRepository.Instance.GetSuffix(exampleDomain.Name).Value);
+        Assert.Equal("com", PublicSuffixRepository.Instance.GetSuffix(exampleDomain.Name).Value.Value);
 
         var exampleSubDomain = new DomainName("sub.example.azurewebsites.net");
 
         Assert.Equal("example.azurewebsites.net", exampleSubDomain.GetRegistrationDomain());
-        Assert.Equal("azurewebsites.net", PublicSuffixRepository.Instance.GetSuffix(exampleSubDomain.Name).Value);
+        Assert.Equal("azurewebsites.net", PublicSuffixRepository.Instance.GetSuffix(exampleSubDomain.Name).Value.Value);
     }
 
     [Fact]

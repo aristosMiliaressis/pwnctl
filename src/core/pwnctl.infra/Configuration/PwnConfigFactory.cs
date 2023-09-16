@@ -8,11 +8,13 @@ namespace pwnctl.infra.Configuration
         public static AppConfig Create()
         {
             IConfigurationBuilder builder = new ConfigurationBuilder()
-                                        .SetBasePath(Path.GetFullPath(EnvironmentVariables.INSTALL_PATH))
+                                        .SetBasePath(EnvironmentVariables.INSTALL_PATH is null 
+                                                ? $"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}/.config/pwnctl" 
+                                                : Path.GetFullPath(EnvironmentVariables.INSTALL_PATH))
                                         .AddIniFile("config.ini", optional: true, reloadOnChange: true)
                                         .AddEnvironmentVariables(prefix: "PWNCTL_");
-         
-            if (!EnvironmentVariables.TEST_RUN)
+
+            if (!EnvironmentVariables.USE_LOCAL_INTEGRATIONS)
             {
                 builder = builder
                             .AddSystemsManager("/pwnctl")

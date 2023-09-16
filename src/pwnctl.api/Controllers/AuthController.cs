@@ -20,7 +20,7 @@ public sealed class AuthController : ControllerBase
     public async Task<ActionResult<TokenGrantResponse>> Grant(AccessTokenRequestModel request)
     {
         var response = await _bearerManager.Grant(request.Username, request.Password);
-        if (response == null)
+        if (response is null)
             return Unauthorized();
 
         return Ok(response);
@@ -30,7 +30,7 @@ public sealed class AuthController : ControllerBase
     public async Task<ActionResult<TokenGrantResponse>> Refresh(RefreshTokenRequestModel request)
     {
         var response = await _bearerManager.Refresh(request.AccessToken, request.RefreshToken);
-        if (response == null)
+        if (response is null)
             return Unauthorized();
 
         return Ok(response);

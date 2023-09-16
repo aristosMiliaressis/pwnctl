@@ -5,6 +5,7 @@
     <LangVersion>latest</LangVersion>
     <AssemblyName>processor</AssemblyName>
     <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
     <SelfContained>true</SelfContained>
     <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
     <PublishReadyToRun>true</PublishReadyToRun>

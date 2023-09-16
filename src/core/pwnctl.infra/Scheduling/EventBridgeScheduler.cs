@@ -30,7 +30,7 @@ public class EventBridgeScheduler
         var roles = await iamClient.ListRolesAsync();
 
         // if no schedule provided, schedule immediatly (i.e in 2 minutes)
-        var schedule = op.Schedule == null
+        var schedule = op.Schedule is null
                      ? SystemTime.UtcNow().AddMinutes(2).ToString("m H d M ? yyyy")
                      : $"{op.Schedule.Value} *";
 

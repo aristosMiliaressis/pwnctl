@@ -8,19 +8,19 @@ using pwnctl.domain.Entities;
 using pwnctl.app.Notifications.Entities;
 using pwnctl.kernel;
 
-namespace pwnctl.app.Assets.Aggregates;
+namespace pwnctl.app.Assets.Entities;
 
 public sealed class AssetRecord : Entity<Guid>
 {
     public Asset Asset => (Asset)typeof(AssetRecord).GetProperty(Subject.Value).GetValue(this);
 
     public DateTime FoundAt { get; private init; }
-    public TaskRecord FoundByTask { get; private init; }
+    public TaskRecord? FoundByTask { get; private init; }
     public int? FoundByTaskId { get; private init; }
     public Guid ConcurrencyToken { get; set; }
 
     public bool InScope { get; private set; }
-    public ScopeDefinition Scope { get; set; }
+    public ScopeDefinition? Scope { get; set; }
     public int? ScopeId { get; private set; }
 
     public List<Tag> Tags { get; private init; } = new List<Tag>();
@@ -28,32 +28,32 @@ public sealed class AssetRecord : Entity<Guid>
     public List<Notification> Notifications { get; private init; } = new List<Notification>();
     public AssetClass Subject { get; set; }
 
-    public NetworkHost NetworkHost { get; private init; }
+    public NetworkHost? NetworkHost { get; private init; }
     public Guid? NetworkHostId { get; private init; }
 
-    public NetworkSocket NetworkSocket { get; private init; }
+    public NetworkSocket? NetworkSocket { get; private init; }
     public Guid? NetworkSocketId { get; private init; }
 
-    public HttpEndpoint HttpEndpoint { get; private init; }
+    public HttpEndpoint? HttpEndpoint { get; private init; }
     public Guid? HttpEndpointId { get; private init; }
 
-    public DomainName DomainName { get; private init; }
+    public DomainName? DomainName { get; private init; }
     public Guid? DomainNameId { get; private init; }
 
-    public DomainNameRecord DomainNameRecord { get; private init; }
+    public DomainNameRecord? DomainNameRecord { get; private init; }
     public Guid? DomainNameRecordId { get; private init; }
 
-    public NetworkRange NetworkRange { get; private init; }
+    public NetworkRange? NetworkRange { get; private init; }
     public Guid? NetworkRangeId { get; private init; }
 
-    public Email Email { get; private init; }
+    public Email? Email { get; private init; }
     public Guid? EmailId { get; private init; }
 
-    public HttpParameter HttpParameter { get; private init; }
+    public HttpParameter? HttpParameter { get; private init; }
     public Guid? HttpParameterId { get; private init; }
 
-    public HttpHost HttpHost { get; private init; }
-    public Guid? HttpHostId { get; private init; }
+    // public HttpHost? HttpHost { get; private init; }
+    // public Guid? HttpHostId { get; private init; }
 
     private AssetRecord() {}
 
@@ -78,14 +78,14 @@ public sealed class AssetRecord : Entity<Guid>
 
     public void MergeTags(Dictionary<string, object> tags, bool updateExisting)
     {
-        if (tags == null)
+        if (tags is null)
             return;
 
         tags.ToList().ForEach(t =>
         {
             // if a property with the tag name exists on the asset class, set that property instead of adding a tag.
             var property = typeof(AssetRecord).GetProperties().FirstOrDefault(p => p.Name.ToLower() == t.Key.ToLower());
-            if (property != null)
+            if (property is not null)
             {
                 if (property.GetValue(this) == default)
                     property.SetValue(this, t.Value?.ToString());
@@ -96,7 +96,7 @@ public sealed class AssetRecord : Entity<Guid>
                 return;
 
             var existingTag = Tags.FirstOrDefault(eT => eT.Name == t.Key.ToLower());
-            if (existingTag != null)
+            if (existingTag is not null)
             {
                 if (updateExisting)
                     existingTag.Value = t.Value?.ToString();

@@ -66,19 +66,6 @@ aside from direct matching assets will be considered inscope according to the fo
 
 scope definitions & scope aggregates can be created trough the rest api & cli.
 
-**sample ScopeAggregate creation request**
-```json
-{
-  "ShortName": "tesla_scope",
-  "ScopeDefinitions":
-  [
-    { "Type": 0, "Pattern": "(^tesla\\.com$|.*\\.tesla\\.com$)" },
-    { "Type": 1, "Pattern": "(.*:\\/\\/tsl\\.com\\/app\\/.*$)" },
-    { "Type": 2, "Pattern": "172.16.17.0/24" }
-  ]
-}
-```
-
 ### Tasks & Notifications
 
 tasks are configured trough TaskDefinitions and can be organized into TaskProfiles.
@@ -215,13 +202,34 @@ notification rules can be seeded trough yaml files or created trough the rest ap
 
 there are three types of operations `Crawl`, `Scan` & `Monitor`.
 
-every operation has an associated `ScopeAggregate` and `TaskProfile`.
+every operation has an associated `ScopeAggregate` and  a list of `TaskProfiles`.
 
 **Crawl** operations have an addition Input list that contains the initial assets that should be processed to start a recursive loop where tasks will find new assets and further tasks will be queued for the new assets to keep the loop going untill all the discoverable scope has been crawled according to the `TaskProfile` configuration.
 
 **Scan** operations can be used to expand on the collected assets or discover misconfigurations in a controlled manner where pre-discovered assets will get assigned tasks but outputs will not be recursivly processed like in crawl mode.
 
 **Monitor** operations allow you to periodicly monitor assets for change, `Monitor` operations have cron schedule that controls when the operation starts and task definitions have optional monitoring rules with an extra cron expression that allows certain tasks to be scheduled less frequently than the operation level schedule.
+
+**sample operation creation request**
+```yaml
+ShortName: tesla_crawl
+Type: CRAWL
+
+Policy:
+    TaskProfiles:
+        - "net_recon"
+        - "web_recon"
+        - "cloud_recon"
+
+Scope:
+    ShortName: tesla_scope
+    ScopeDefinitions:
+        - Type: DomainRegex
+          Pattern: (^tesla\.com|.*\.tesla\.com)$
+
+Input:
+    - tesla.com
+```
 
 ## How to set it up?
 

@@ -17,7 +17,7 @@ namespace pwnctl.app.Common
         {
             var type = asset.GetType();
 
-            var uniqnessProperties = type.GetProperties().Where(p => p.GetCustomAttribute(typeof(EqualityComponentAttribute)) != null);
+            var uniqnessProperties = type.GetProperties().Where(p => p.GetCustomAttribute(typeof(EqualityComponentAttribute)) is not null);
 
             var _param = Expression.Parameter(type, "e");
 
@@ -28,7 +28,7 @@ namespace pwnctl.app.Common
                 var rval = Expression.Constant(property.GetValue(asset));
                 var propertyExpression = Expression.Equal(lref, rval);
 
-                expression = (expression == null)
+                expression = (expression is null)
                     ? propertyExpression
                     : Expression.AndAlso(expression, propertyExpression);
             }

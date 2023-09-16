@@ -22,7 +22,7 @@ namespace pwnctl.domain.Entities
             Name = name;
         }
 
-        public static HttpHost TryParse(string assetText)
+        public static HttpHost? TryParse(string assetText)
         {
             return null;
         }

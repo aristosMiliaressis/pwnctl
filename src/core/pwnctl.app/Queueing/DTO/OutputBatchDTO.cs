@@ -22,6 +22,8 @@ public sealed class OutputBatchDTO : QueueMessage
     public static List<OutputBatchDTO> FromLines(IEnumerable<string> lines, int taskId)
     {
         List<OutputBatchDTO> batches = new();
+        if (lines.Count() == 0)
+            return batches;
 
         OutputBatchDTO outputBatch = new(taskId);
         for (int max = 10, i = 0; i < lines.Count(); i++)

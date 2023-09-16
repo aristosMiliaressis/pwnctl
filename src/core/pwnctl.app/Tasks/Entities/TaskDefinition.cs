@@ -1,4 +1,4 @@
-using pwnctl.app.Assets.Aggregates;
+using pwnctl.app.Assets.Entities;
 using pwnctl.app.Common.ValueObjects;
 using pwnctl.domain.ValueObjects;
 using pwnctl.kernel;
@@ -11,7 +11,7 @@ namespace pwnctl.app.Tasks.Entities
         public ShortName Name { get; init; }
         public AssetClass Subject { get; init; }
         public string CommandTemplate { get; init; }
-        public string Filter { get; init; }
+        public string? Filter { get; init; }
         public bool CheckNotificationRules { get; init; }
         public bool MatchOutOfScope { get; init; }
 
@@ -51,14 +51,14 @@ namespace pwnctl.app.Tasks.Entities
 
     public struct MonitorRules
     {
-        public CronExpression Schedule { get; init; }
-        public string PreCondition { get; init; }
-        public string PostCondition { get; init; }
-        public string NotificationTemplate { get; init; }
+        public CronExpression? Schedule { get; init; }
+        public string? PreCondition { get; init; }
+        public string? PostCondition { get; init; }
+        public string? NotificationTemplate { get; init; }
 
         public bool Matches(AssetRecord record, TaskRecord lastOccurence)
         {
-            if (lastOccurence != null && Schedule != null &&
+            if (lastOccurence is not null && Schedule is not null &&
                 Schedule.GetNextOccurrence(lastOccurence.QueuedAt) > SystemTime.UtcNow())
             {
                 return false;

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using pwnctl.app.Assets.Aggregates;
+using pwnctl.app.Assets.Entities;
 using pwnctl.app.Common.ValueObjects;
 using pwnctl.app.Operations.Entities;
 using pwnctl.app.Operations.Enums;

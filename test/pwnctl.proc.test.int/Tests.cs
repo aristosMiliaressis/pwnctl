@@ -1,14 +1,12 @@
 namespace pwnctl.proc.test.integration;
 
 using pwnctl.app.Common.ValueObjects;
+using pwnctl.app.Queueing.Interfaces;
 using pwnctl.app.Tasks.Enums;
-using pwnctl.infra.Aws;
 using pwnctl.infra.Configuration;
 using pwnctl.infra.DependencyInjection;
+using pwnctl.infra.Queueing;
 using pwnctl.infra.Persistence;
-
-using Amazon.Runtime;
-using Amazon.Runtime.CredentialManagement;
 using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Configurations;
 using DotNet.Testcontainers.Networks;
@@ -25,14 +23,12 @@ using Xunit;
 
 public sealed class Tests
 {
-    private static readonly string _hostBasePath = EnvironmentVariables.GITHUB_ACTIONS
+    private static readonly string _hostBasePath = EnvironmentVariables.IN_GHA
                 ? "/home/runner/work/pwnctl/pwnctl/test/pwnctl.exec.test.int/deployment"
                 : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "deployment");
 
     private static INetwork _pwnctlNetwork = new NetworkBuilder().Build();
     private static string _databaseHostname = $"postgres_{Guid.NewGuid()}";
-    private static CredentialProfile _awsProfile = AwsConfigProvider.TryGetAWSProfile("default");
-    private static AWSCredentials _awsCreds = AwsConfigProvider.TryGetAWSProfileCredentials("default");
 
     private static PostgreSqlContainer _pwnctlDb = new PostgreSqlBuilder()
                     .WithNetwork(_pwnctlNetwork)
@@ -47,10 +43,7 @@ public sealed class Tests
                     .WithImage($"{Environment.GetEnvironmentVariable("ECR_REGISTRY_URI")}:untested")
                     .WithNetwork(_pwnctlNetwork)
                     .WithBindMount(_hostBasePath, "/mnt/efs", AccessMode.ReadWrite)
-                    .WithEnvironment("PWNCTL_TEST_RUN", "true")
-                    .WithEnvironment("AWS_ACCESS_KEY_ID",  _awsCreds.GetCredentials().AccessKey)
-                    .WithEnvironment("AWS_SECRET_ACCESS_KEY", _awsCreds.GetCredentials().SecretKey)
-                    .WithEnvironment("AWS_DEFAULT_REGION", _awsProfile.Region.SystemName)
+                    .WithBindMount($"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}/.aws/", "/root/.aws/")
                     .WithEnvironment("PWNCTL_Logging__FilePath", "/mnt/efs")
                     .WithEnvironment("PWNCTL_Logging__MinLevel", "Debug")
                     .WithEnvironment("PWNCTL_INSTALL_PATH", "/mnt/efs")
@@ -59,7 +52,8 @@ public sealed class Tests
                     .WithEnvironment("PWNCTL_Db__Username", "postgres")
                     .WithEnvironment("PWNCTL_Db__Password", "password")
                     .WithEnvironment("PWNCTL_TaskQueue__Name", "task-dev.fifo")
-                    .WithEnvironment("PWNCTL_OutputQueue__Name", "output-dev.fifo");                    
+                    .WithEnvironment("PWNCTL_OutputQueue__Name", "output-dev.fifo")
+                    .WithEnvironment("PWNCTL_OutputQueue__VisibilityTimeout", "1200");
 
     public Tests()
     {
@@ -75,7 +69,6 @@ public sealed class Tests
         _pwnctlDb.StartAsync().Wait();
 
         // setup ambiant configuration context
-        Environment.SetEnvironmentVariable("PWNCTL_TEST_RUN", "true");
         Environment.SetEnvironmentVariable("PWNCTL_INSTALL_PATH", _hostBasePath);
         Environment.SetEnvironmentVariable("PWNCTL_Db__Host", $"{_pwnctlDb.Hostname}:55432");
         Environment.SetEnvironmentVariable("PWNCTL_Db__Name", "postgres");
@@ -83,11 +76,12 @@ public sealed class Tests
         Environment.SetEnvironmentVariable("PWNCTL_Db__Password", "password");
         Environment.SetEnvironmentVariable("PWNCTL_TaskQueue__Name", "task-dev.fifo");
         Environment.SetEnvironmentVariable("PWNCTL_OutputQueue__Name", "output-dev.fifo");
-        PwnInfraContextInitializer.SetupAsync().Wait();
+        PwnInfraContextInitializer.Setup();
 
         // migrate & seed database
         DatabaseInitializer.InitializeAsync(null).Wait();
         DatabaseInitializer.SeedAsync().Wait();
+        PwnInfraContextInitializer.Register<TaskQueueService, SQSTaskQueueService>();
     }
 
     [Fact]
@@ -118,8 +112,8 @@ public sealed class Tests
     }
 
     [Fact]
-    public async Task Process_Output_Batch_Happy_Path() 
+    public Task Process_Output_Batch_Happy_Path() 
     {
-        // TODO: implement
+        return Task.CompletedTask;  // TODO: implement
     }
 }
