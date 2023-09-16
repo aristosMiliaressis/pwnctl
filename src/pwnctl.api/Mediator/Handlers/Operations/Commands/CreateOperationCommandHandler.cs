@@ -74,6 +74,8 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
             var op = new Operation(command.ShortName, command.Type, policy, scopeAggregate);
             if (command.CronSchedule is not null)
                 op.Schedule = CronExpression.Create(command.CronSchedule);
+            else
+                op.InitiatedAt = SystemTime.UtcNow();
 
             _context.Operations.Add(op);
             if (command.Type == OperationType.Crawl)

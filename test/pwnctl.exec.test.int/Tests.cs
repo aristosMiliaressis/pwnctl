@@ -129,10 +129,7 @@ public sealed class Tests
         task = context.TaskRecords.First(t => t.Id == task.Id);
         Assert.Equal(TaskState.FINISHED, task.State);
         
-        // TODO: 
-        // - check that task queue was consumed?
-        // - check that output queue was populated
-        // - check that task status was updated
+        // TODO: check that output queue was populated
     }
 
     [Fact]

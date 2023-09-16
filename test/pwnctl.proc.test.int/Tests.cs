@@ -1,6 +1,12 @@
 namespace pwnctl.proc.test.integration;
 
+using pwnctl.app;
+using pwnctl.app.Assets;
+using pwnctl.app.Assets.Entities;
+using pwnctl.app.Tasks.Entities;
+using pwnctl.domain.Entities;
 using pwnctl.app.Common.ValueObjects;
+using pwnctl.app.Queueing.DTO;
 using pwnctl.app.Queueing.Interfaces;
 using pwnctl.app.Tasks.Enums;
 using pwnctl.infra.Configuration;
@@ -87,7 +93,13 @@ public sealed class Tests
     [Fact]
     public async Task InitializeOperation_Happy_Path_Test()
     {
-        var op = EntityFactory.CreateOperation();
+        var context = new PwnctlDbContext();
+
+        var op = context.Operations.FirstOrDefault();
+        if (op == null)
+        {
+            op = EntityFactory.CreateOperation();
+        }
 
         CancellationTokenSource _cts = new(TimeSpan.FromMinutes(10));
 
@@ -99,7 +111,6 @@ public sealed class Tests
 
         Thread.Sleep(20000);
 
-        var context = new PwnctlDbContext();
 
         var def = context.TaskDefinitions.First(d => d.Name == ShortName.Create("domain_resolution"));
         var task = context.TaskRecords.Include(t => t.Definition).First(t => t.Definition.Name == ShortName.Create("domain_resolution"));
@@ -112,8 +123,58 @@ public sealed class Tests
     }
 
     [Fact]
-    public Task Process_Output_Batch_Happy_Path() 
+    public async Task Process_Output_Batch_Happy_Path() 
     {
-        return Task.CompletedTask;  // TODO: implement
+        var context = new PwnctlDbContext();
+        var taskQueue = new SQSTaskQueueService();
+        var processor = new AssetProcessor();
+
+        // populate db / TaskId
+        var op = context.Operations.FirstOrDefault();
+        if (op == null)
+        {
+            op = EntityFactory.CreateOperation();
+        }
+
+        var domain = new DomainName("starlink.com");
+        var asset = new AssetRecord(domain);
+
+        var subEnum = context.TaskDefinitions.First(d => d.Name == ShortName.Create("sub_enum"));
+        var task = new TaskRecord(op, subEnum, asset);
+        task.Started();
+        task.Finished(0, null);
+        context.Add(asset);
+        context.Add(task);
+        context.SaveChanges();
+
+        // populate output queue
+        var lines = new List<string> {
+            "example.com",
+            "starlink.com",
+            "sub2.starlink.com",
+            "1.2.3.4",
+            "sub2.starlink.com IN A 1.2.3.4"
+        };
+
+        var batches = OutputBatchDTO.FromLines(lines, task.Id);
+        //batches[0].Command = Guid.NewGuid().ToString();
+        Console.WriteLine(PwnInfraContext.Serializer.Serialize(batches[0]));
+        await taskQueue.EnqueueAsync(batches[0]);
+
+        CancellationTokenSource _cts = new(TimeSpan.FromMinutes(10));
+
+        var pwnctlContainer = _pwnctlContainerBuilder
+                    .WithEnvironment("PWNCTL_Operation", op.Id.ToString())
+                    .Build();
+
+        await pwnctlContainer.StartAsync(_cts.Token).ConfigureAwait(false);
+
+        Thread.Sleep(20000);
+
+        context = new PwnctlDbContext();
+        var host = context.NetworkHosts.First(h => h.IP == "1.2.3.4");
+        // check
+        // - task queue was populated
+        // - db was populated
     }
 }
