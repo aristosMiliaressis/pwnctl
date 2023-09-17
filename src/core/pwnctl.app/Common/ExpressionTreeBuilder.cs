@@ -13,7 +13,7 @@ namespace pwnctl.app.Common
         /// <summary>
         /// builds a LambdaExpression object that matches the `asset` parameter
         /// </summary>
-        public static LambdaExpression BuildAssetMatchingLambda(Asset asset)
+        public static LambdaExpression? BuildAssetMatchingLambda(Asset asset)
         {
             var type = asset.GetType();
 
@@ -21,7 +21,7 @@ namespace pwnctl.app.Common
 
             var _param = Expression.Parameter(type, "e");
 
-            Expression expression = null;
+            Expression? expression = null;
             foreach (var property in uniqnessProperties)
             {
                 var lref = Expression.PropertyOrField(_param, property.Name);
@@ -34,7 +34,7 @@ namespace pwnctl.app.Common
             }
 
             var lamdaMethod = _lambdaMethod.MakeGenericMethod(typeof(Func<,>).MakeGenericType(type, typeof(bool)));
-            var lambda = (LambdaExpression) lamdaMethod.Invoke(null, new object[] { expression, new ParameterExpression[] { _param } });
+            var lambda = (LambdaExpression?) lamdaMethod.Invoke(null, new object?[] { expression, new ParameterExpression[] { _param } });
 
             return lambda;
         }
@@ -42,7 +42,7 @@ namespace pwnctl.app.Common
         /// <summary>
         /// builds a LambdaExpression object that matches a task of the provided TaskDefinition that has been queued against the provided asset.
         /// </summary>
-        public static LambdaExpression BuildTaskMatchingLambda(Guid assetId, int definitionId)
+        public static LambdaExpression? BuildTaskMatchingLambda(Guid assetId, int definitionId)
         {
             var type = typeof(TaskRecord);
 
@@ -59,12 +59,12 @@ namespace pwnctl.app.Common
             expression = Expression.AndAlso(expression, assetExpression);
 
             var lamdaMethod = _lambdaMethod.MakeGenericMethod(typeof(Func<,>).MakeGenericType(type, typeof(bool)));
-            var lambda = (LambdaExpression)lamdaMethod.Invoke(null, new object[] { expression, new ParameterExpression[] { _param } });
+            var lambda = (LambdaExpression?)lamdaMethod.Invoke(null, new object[] { expression, new ParameterExpression[] { _param } });
 
             return lambda;
         }
 
-        public static LambdaExpression BuildNotificationMatchingLambda(Guid assetId, int ruleId)
+        public static LambdaExpression? BuildNotificationMatchingLambda(Guid assetId, int ruleId)
         {
             var type = typeof(Notification);
 
@@ -82,7 +82,7 @@ namespace pwnctl.app.Common
             expression = Expression.AndAlso(expression, assetExpression);
 
             var lamdaMethod = _lambdaMethod.MakeGenericMethod(typeof(Func<,>).MakeGenericType(type, typeof(bool)));
-            var lambda = (LambdaExpression)lamdaMethod.Invoke(null, new object[] { expression, new ParameterExpression[] { _param } });
+            var lambda = (LambdaExpression?)lamdaMethod.Invoke(null, new object[] { expression, new ParameterExpression[] { _param } });
 
             return lambda;
         }

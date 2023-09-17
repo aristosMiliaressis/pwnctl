@@ -12,7 +12,7 @@ namespace pwnctl.app.Assets.Entities;
 
 public sealed class AssetRecord : Entity<Guid>
 {
-    public Asset Asset => (Asset)typeof(AssetRecord).GetProperty(Subject.Value).GetValue(this);
+    public Asset Asset => (Asset)(typeof(AssetRecord).GetProperty(Subject.Value)?.GetValue(this) ?? throw new Exception("AssetRecord reference not loaded."));
 
     public DateTime FoundAt { get; private init; }
     public TaskRecord? FoundByTask { get; private init; }
@@ -60,7 +60,7 @@ public sealed class AssetRecord : Entity<Guid>
     public AssetRecord(Asset asset)
     {
         Subject = AssetClass.Create(asset.GetType().Name);
-        typeof(AssetRecord).GetProperty(Subject.Value).SetValue(this, asset);
+        typeof(AssetRecord).GetProperty(Subject.Value)!.SetValue(this, asset);
     }
 
     public AssetRecord(Asset asset, TaskRecord foundBy)
@@ -76,7 +76,7 @@ public sealed class AssetRecord : Entity<Guid>
         InScope = true;
     }
 
-    public void MergeTags(Dictionary<string, object> tags, bool updateExisting)
+    public void MergeTags(Dictionary<string, string>? tags, bool updateExisting)
     {
         if (tags is null)
             return;
@@ -88,22 +88,22 @@ public sealed class AssetRecord : Entity<Guid>
             if (property is not null)
             {
                 if (property.GetValue(this) == default)
-                    property.SetValue(this, t.Value?.ToString());
+                    property.SetValue(this, t.Value.ToString());
                 return;
             }
 
-            if (string.IsNullOrEmpty(t.Value?.ToString()))
+            if (string.IsNullOrEmpty(t.Value.ToString()))
                 return;
 
             var existingTag = Tags.FirstOrDefault(eT => eT.Name == t.Key.ToLower());
             if (existingTag is not null)
             {
                 if (updateExisting)
-                    existingTag.Value = t.Value?.ToString();
+                    existingTag.Value = t.Value.ToString();
                 return;
             }
 
-            var tag = new Tag(this, t.Key, t.Value?.ToString());
+            var tag = new Tag(this, t.Key, t.Value.ToString());
             Tags.Add(tag);
         });
     }

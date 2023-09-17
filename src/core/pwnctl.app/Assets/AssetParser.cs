@@ -7,7 +7,7 @@ namespace pwnctl.app.Assets
 {
     public static class AssetParser
     {
-        public static Asset Parse(string assetText)
+        public static Asset Parse(string? assetText)
         {
             if (string.IsNullOrEmpty(assetText))
                 throw new ArgumentException(assetText, nameof(assetText));
@@ -18,7 +18,7 @@ namespace pwnctl.app.Assets
             {
                 try
                 {
-                    Asset asset = (Asset)tryParseMethod.Invoke(null, new object[] { assetText });
+                    Asset? asset = (Asset?)tryParseMethod?.Invoke(null, new object[] { assetText });
                     if (asset is null)
                         continue;
 
@@ -33,9 +33,9 @@ namespace pwnctl.app.Assets
             throw new UnparsableAssetException(assetText);
         }
 
-        private static readonly IEnumerable<MethodInfo> _tryParseMethod = Assembly.GetAssembly(typeof(Asset))
-                                                .GetTypes()
-                                                .Where(t => !t.IsAbstract && typeof(Asset).IsAssignableFrom(t))
-                                                .Select(t => t.GetMethod("TryParse"));
+        private static readonly IEnumerable<MethodInfo?> _tryParseMethod = Assembly.GetAssembly(typeof(Asset))
+                    !.GetTypes()
+                    .Where(t => !t.IsAbstract && typeof(Asset).IsAssignableFrom(t))
+                    .Select(t => t.GetMethod("TryParse"));
     }
 }

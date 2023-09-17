@@ -6,14 +6,14 @@ namespace pwnctl.domain.BaseClasses
     {
         public abstract override string ToString();
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is Asset asset && ToString().Equals(asset.ToString());
         }
 
-        public bool Equals(Asset asset)
+        public bool Equals(Asset? asset)
         {
-            return Equals((object)asset);
+            return Equals((object?)asset);
         }
 
         public static bool operator ==(Asset left, Asset right)

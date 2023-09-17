@@ -51,7 +51,7 @@ namespace pwnctl.app.Assets
             await ProcessAssetAsync(asset, dto.Tags, taskId);
         }
 
-        internal async Task ProcessAssetAsync(Asset asset, Dictionary<string, object> tags, int taskId, List<Asset> refChain = null)
+        internal async Task ProcessAssetAsync(Asset asset, Dictionary<string, string>? tags, int taskId, List<Asset>? refChain = null)
         {
             refChain = refChain is null
                     ? new List<Asset>()
@@ -159,7 +159,7 @@ namespace pwnctl.app.Assets
 
         private async Task CheckMonitoringRulesAsync(AssetRecord record, Dictionary<string, string> oldTags, TaskRecord foundByTask)
         {
-            Notification notification = null;
+            Notification? notification = null;
 
             var rules = foundByTask.Definition.MonitorRules;
 
@@ -198,7 +198,7 @@ namespace pwnctl.app.Assets
             var assetProperties = asset.GetType().GetProperties();
             List<Asset> assets = assetProperties
                    .Where(p => p.PropertyType.IsAssignableTo(typeof(Asset)))
-                   .Select(rf => (Asset)rf.GetValue(asset))
+                   .Select(rf => (Asset?)rf.GetValue(asset))
                    .Where(a => a is not null)
                    .ToList();
 
@@ -206,7 +206,7 @@ namespace pwnctl.app.Assets
                    .Where(p => p.PropertyType.IsGenericType
                             && p.PropertyType.GetGenericArguments()[0].IsAssignableTo(typeof(Asset))
                             && p.GetValue(asset) is not null)
-                   .SelectMany(rf => (IEnumerable<Asset>)rf.GetValue(asset)));
+                   .SelectMany(rf => (IEnumerable<Asset>)(rf.GetValue(asset) ?? new List<Asset>())));
 
             return assets;
         }

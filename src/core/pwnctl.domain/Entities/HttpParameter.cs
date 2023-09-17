@@ -16,11 +16,11 @@ namespace pwnctl.domain.Entities
         [EqualityComponent]
         public ParamType Type { get; init; }
 
-        public string Value { get; private init; }
+        public string? Value { get; private init; }
 
         public HttpParameter() {}
         
-        public HttpParameter(HttpEndpoint endpoint, string name, ParamType type, string value)
+        public HttpParameter(HttpEndpoint endpoint, string name, ParamType type, string? value)
         {
             Endpoint = endpoint;
             Url = endpoint.Url;

@@ -8,6 +8,7 @@ namespace pwnctl.infra.Persistence
     {
         public PwnctlDbContext CreateDbContext(string[] args)
         {
+            Environment.SetEnvironmentVariable("PWNCTL_INSTALL_PATH", ".");
             PwnInfraContextInitializer.Setup();
 
             var optionsBuilder = new DbContextOptionsBuilder<PwnctlDbContext>();

@@ -11,7 +11,7 @@ namespace pwnctl.app.Assets.DTO
     public sealed class AssetDTO
     {
         public string Asset { get; set; }
-        public Dictionary<string, object> Tags { get; set; }
+        public Dictionary<string, string> Tags { get; set; }
         public string InScope { get; set; }
         public string FoundAt { get; set; }
         public string FoundBy { get; set; }
@@ -22,7 +22,7 @@ namespace pwnctl.app.Assets.DTO
         {
             {
                 Asset = record.Asset.ToString();
-                Tags = record.Tags.ToDictionary(t => t.Name, t => (object)t.Value);
+                Tags = record.Tags.ToDictionary(t => t.Name, t => t.Value);
                 InScope = record.InScope.ToString();
                 FoundAt = record.FoundAt.ToString("yyyy-MM-ddTHH\\:mm\\:ss.ff");
                 FoundBy = record.FoundByTask?.Definition?.Name.Value ?? "N/A";
@@ -39,12 +39,17 @@ namespace pwnctl.app.Assets.DTO
                 properties.ForEach(p =>
                 {
                     var val = p.GetValue(record.Asset);
+                    if (val is null)
+                        return;
 
-                    val = p.PropertyType.IsEnum
+                    var strVal = p.PropertyType.IsEnum
                         ? Enum.GetName(p.PropertyType, val)
-                        : val;
+                        : val.ToString();
 
-                    Tags.Add(p.Name, val);
+                    if (strVal is null)
+                        return;
+                    
+                    Tags.Add(p.Name, strVal);
                 });
             }
         }

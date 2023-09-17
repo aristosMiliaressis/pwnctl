@@ -19,7 +19,7 @@ namespace pwnctl.app.Scope.Entities
             Pattern = pattern;
         }
 
-        public bool Matches(Asset asset)
+        public bool Matches(Asset? asset)
         {
             return Type switch
             {
@@ -30,7 +30,7 @@ namespace pwnctl.app.Scope.Entities
             };
         }
 
-        private bool CidrMatchingChecks(Asset asset)
+        private bool CidrMatchingChecks(Asset? asset)
         {
             return asset switch
             {
@@ -40,12 +40,12 @@ namespace pwnctl.app.Scope.Entities
                 DomainNameRecord record => record.NetworkHost is not null && Matches(record.NetworkHost),
                 //HttpHost vh => Matches(vh.Socket),
                 HttpEndpoint ep => Matches(ep.Socket),
-                HttpParameter param => Matches(param.Endpoint),
+                HttpParameter param => Matches(param?.Endpoint),
                 _ => false
             };
         }
 
-        private bool DomainMatchingChecks(Asset asset)
+        private bool DomainMatchingChecks(Asset? asset)
         {
             return asset switch
             {
@@ -61,7 +61,7 @@ namespace pwnctl.app.Scope.Entities
             };
         }
 
-        private bool UrlMatchingChecks(Asset asset)
+        private bool UrlMatchingChecks(Asset? asset)
         {
             return asset switch
             {

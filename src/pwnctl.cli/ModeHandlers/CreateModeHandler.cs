@@ -37,13 +37,16 @@ namespace pwnctl.cli.ModeHandlers
 
             await Parser.Default.ParseArguments<CreateModeHandler>(args).WithParsedAsync(async opt => 
             {
-                string line, json = string.Empty;
-                while (!string.IsNullOrEmpty(line = Console.ReadLine()))
+                string line = string.Empty;
+                string yaml = string.Empty;
+                do
                 {
-                    json += line + "\n";
+                    yaml += line + "\n";
+                    line = Console.ReadLine();
                 }
+                while (line != null);
 
-                var request = (MediatedRequest)deserializer.Deserialize(json, ResourceMap[opt.Resource]);
+                var request = (MediatedRequest)deserializer.Deserialize(yaml, ResourceMap[opt.Resource]);
 
                 await PwnctlApiClient.Default.Send(request);
             });

@@ -37,15 +37,15 @@ namespace pwnctl.app.Notifications.Entities
         {
             if (RuleId.HasValue || Rule is not null)
             {
-                if (!string.IsNullOrEmpty(Rule.Template))
+                if (!string.IsNullOrEmpty(Rule?.Template))
                     return Rule.Template.Interpolate(Record.Asset, ignoreInvalid: true)
                                         .Replace("Tags", "")
                                         .Interpolate(Record, ignoreInvalid: true);
 
-                return $"{Record.Asset} triggered rule {Rule.Name.Value}";
+                return $"{Record.Asset} triggered rule {Rule?.Name.Value}";
             }
 
-            if (!string.IsNullOrEmpty(Task.Definition.MonitorRules.NotificationTemplate))
+            if (!string.IsNullOrEmpty(Task?.Definition?.MonitorRules.NotificationTemplate))
             {
                 var message = Task.Definition.MonitorRules.NotificationTemplate.Interpolate(Record.Asset, ignoreInvalid: true);
                 message = message.Replace("oldTags", "").Interpolate(Task.Record, ignoreInvalid: true);
@@ -53,7 +53,7 @@ namespace pwnctl.app.Notifications.Entities
                 return message;
             }
 
-            return $"new asset {Record.Asset} found by task {Task.Definition.Name.Value} on asset {Task.Record.Asset}";
+            return $"new asset {Record.Asset} found by task {Task?.Definition.Name.Value} on asset {Task?.Record.Asset}";
         }
     }
 }

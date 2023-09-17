@@ -6,7 +6,6 @@ using Amazon.SQS.Model;
 using pwnctl.app;
 using pwnctl.app.Queueing.Interfaces;
 using pwnctl.app.Queueing.DTO;
-using pwnctl.infra.Aws;
 using System.Net;
 
 namespace pwnctl.infra.Queueing

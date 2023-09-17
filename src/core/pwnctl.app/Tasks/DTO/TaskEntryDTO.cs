@@ -15,7 +15,7 @@ public sealed class TaskRecordDTO
     public double Duration { get; set; }
     public int? ExitCode { get; set; }
     public int RunCount { get; set; }
-    public string StdErr { get; set; }
+    public string? StdErr { get; set; }
 
     public TaskRecordDTO() { }
 

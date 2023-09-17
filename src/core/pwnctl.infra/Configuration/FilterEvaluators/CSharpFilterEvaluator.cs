@@ -14,7 +14,7 @@ namespace pwnctl.infra.Configuration
         /// constructs and evaluates a CSharpScript expression by prefixing the `script` parameter
         /// with a lambda parameter expression `(X, Tags) => ` where X is the name of the concrete type of parameter `asset`
         /// </summary>
-        public bool Evaluate(string filter, AssetRecord record)
+        public bool Evaluate(string? filter, AssetRecord record)
         {
             if (string.IsNullOrEmpty(filter))
                 return true;
@@ -41,7 +41,7 @@ namespace pwnctl.infra.Configuration
             }
         }
 
-        public bool Evaluate(string filter, Dictionary<string, object> args)
+        public bool Evaluate(string? filter, Dictionary<string, object> args)
         {
             if (string.IsNullOrEmpty(filter))
                 return true;

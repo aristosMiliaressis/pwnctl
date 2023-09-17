@@ -11,7 +11,7 @@ public class NotificationRuleDTO
     public string Subject { get; private set; }
     public NotificationTopic Topic { get; private init; }
     public string Filter { get; private init; }
-    public string Template { get; private init; }
+    public string? Template { get; private init; }
     public bool CheckOutOfScope { get; private init; }
 
     public NotificationRule ToEntity()

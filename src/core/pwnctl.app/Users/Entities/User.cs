@@ -7,5 +7,5 @@ public sealed class User : IdentityUser
 {
     public UserRole Role { get; set; }
 
-    public string RefreshToken { get; set; }
+    public string? RefreshToken { get; set; }
 }

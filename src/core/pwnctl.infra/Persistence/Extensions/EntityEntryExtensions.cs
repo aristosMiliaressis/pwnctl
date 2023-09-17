@@ -5,7 +5,7 @@ namespace pwnctl.infra.Persistence.Extensions
 {
     public static class EntityEntryExtensions
     {
-        public static async Task LoadReferenceGraphAsync(this EntityEntry entry, CancellationToken token = default, List<string> refChain = null)
+        public static async Task LoadReferenceGraphAsync(this EntityEntry entry, CancellationToken token = default, List<string>? refChain = null)
         {
             if (entry is null)
                 return;
@@ -52,7 +52,7 @@ namespace pwnctl.infra.Persistence.Extensions
             entry.State = EntityState.Detached;
         }
 
-        public static void DetachReferenceGraph(this EntityEntry entry, List<string> refChain = null)
+        public static void DetachReferenceGraph(this EntityEntry entry, List<string>? refChain = null)
         {
             if (entry is null)
                 return;

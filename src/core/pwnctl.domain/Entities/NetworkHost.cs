@@ -31,7 +31,7 @@ namespace pwnctl.domain.Entities
             if (assetText.Contains("]"))
                 return null;
 
-            if (!IPAddress.TryParse(assetText, out IPAddress address))
+            if (!IPAddress.TryParse(assetText, out IPAddress? address))
                 return null;
 
             return new NetworkHost(address);

@@ -8,10 +8,9 @@ public static class ExceptionExtensions
     {
         string exceptionInfo = $"--> {ex.GetType().Name}: {ex.Message}{Environment.NewLine}";
 
-        if (ex is DbUpdateException)
+        var dbUpdateEx = ex as DbUpdateException;
+        if (dbUpdateEx is not null && dbUpdateEx.Entries is not null)
         {
-            var dbUpdateEx = ex as DbUpdateException;
-
             var entriesInfo = string.Join(Environment.NewLine, dbUpdateEx.Entries.Select(e => e.ToString()));
 
             exceptionInfo += "Entries:" + Environment.NewLine + entriesInfo + Environment.NewLine;

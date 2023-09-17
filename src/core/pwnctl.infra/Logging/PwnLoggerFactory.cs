@@ -9,9 +9,20 @@ namespace pwnctl.infra.Logging
 {
     public static class PwnLoggerFactory
     {
+        private static string _fileOutputTemplate = $"[{{Timestamp:yyyy-MM-dd HH:mm:ss.fff}} {EnvironmentVariables.HOSTNAME} {{Level:u3}}] {{Message:lj}}\n";
+        private static string _consoleOutputTemplate = "[{Level:u3}] {Message:lj}\n";
+
+        public static AppLogger DefaultLogger = new PwnLogger(new LoggerConfiguration()
+                    .MinimumLevel.Is(LogEventLevel.Information)
+                    .WriteTo.File(path: EnvironmentVariables.INSTALL_PATH is null 
+                                        ? $"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}/.config/pwnctl" 
+                                        : Path.GetFullPath(EnvironmentVariables.INSTALL_PATH),
+                                  outputTemplate: _consoleOutputTemplate)
+                    .CreateLogger());
+
         public static AppLogger Create(AppConfig config)
         {
-            Logger logger = null;
+            Logger? logger = null;
 
             if (string.IsNullOrEmpty(config.Logging.FilePath))
                 logger = CreateConsoleLogger(config);
@@ -38,8 +49,5 @@ namespace pwnctl.infra.Logging
                     .WriteTo.Console(outputTemplate: _consoleOutputTemplate)
                     .CreateLogger();
         }
-
-        private static string _fileOutputTemplate = $"[{{Timestamp:yyyy-MM-dd HH:mm:ss.fff}} {EnvironmentVariables.HOSTNAME} {{Level:u3}}] {{Message:lj}}\n";
-        private static string _consoleOutputTemplate = "[{Level:u3}] {Message:lj}\n";
     }
 }

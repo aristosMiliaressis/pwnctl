@@ -308,7 +308,7 @@ public sealed class Tests
         var exampleUrl = new AssetDTO
         {
             Asset = "https://example.com",
-            Tags = new Dictionary<string, object>{
+            Tags = new Dictionary<string, string>{
                {"Content-Type", "text/html"},
                {"Status", "200"},
                {"Server", "IIS"}
@@ -331,7 +331,7 @@ public sealed class Tests
         var srvTag = endpointRecord.Tags.First(t => t.Name == "server");
         Assert.Equal("IIS", srvTag.Value);
 
-        exampleUrl.Tags = new Dictionary<string, object> {
+        exampleUrl.Tags = new Dictionary<string, string> {
             {"Server", "apache"},   // testing that existing tags don't get updated
             {"newTag", "whatever"}, // testing that new tags are added to existing assets
             {"emptyTag", ""},        // testing that empty tags are not added
@@ -671,7 +671,7 @@ public sealed class Tests
         Assert.Equal(2, context.TaskRecords.Include(t => t.Definition).Count(t => t.Definition.Name == ShortName.Create("sub_enum")));
 
         // PostCondition & NotificationTemplate tests
-        record2.MergeTags(new Dictionary<string, object> { { "rcode", "NXDOMAIN"} }, true);
+        record2.MergeTags(new Dictionary<string, string> { { "rcode", "NXDOMAIN"} }, true);
         await assetRepo.SaveAsync(record2);
 
         var task = context.TaskRecords

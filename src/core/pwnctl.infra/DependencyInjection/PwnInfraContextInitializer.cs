@@ -23,11 +23,11 @@ public static class PwnInfraContextInitializer
 {
     public static void Setup()
     {
-        var config = PwnConfigFactory.Create();
-        var logger = PwnLoggerFactory.Create(config);
-
         try 
         {
+            var config = PwnConfigFactory.Create();
+            var logger = PwnLoggerFactory.Create(config);
+
             PublicSuffixRepository.Instance = new FsPublicSuffixRepository();
             CloudServiceRepository.Instance = new FsCloudServiceRepository();
 
@@ -43,7 +43,7 @@ public static class PwnInfraContextInitializer
         }
         catch (Exception ex)
         {
-            logger.Exception(ex);
+            PwnLoggerFactory.DefaultLogger.Exception(ex);
             throw;
         }
     }

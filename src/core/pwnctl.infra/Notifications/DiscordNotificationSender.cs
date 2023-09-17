@@ -11,7 +11,7 @@ namespace pwnctl.infra.Notifications
     {
         public async Task SendAsync(Notification notification)
         {
-            await SendAsync(notification.GetText(), notification.Rule.Topic);
+            await SendAsync(notification.GetText(), notification.Rule!.Topic);
         }
 
         public async Task SendAsync(string message, NotificationTopic topic)

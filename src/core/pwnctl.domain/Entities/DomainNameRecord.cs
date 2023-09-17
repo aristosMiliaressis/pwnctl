@@ -32,7 +32,7 @@ namespace pwnctl.domain.Entities
             Value = value;
 
             DomainName = DomainName.TryParse(key);
-            Key = DomainName.Name;
+            Key = DomainName?.Name ?? throw new Exception("unparssable dns record key");
 
             NetworkHost = NetworkHost.TryParse(value);
             if (NetworkHost is not null)

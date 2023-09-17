@@ -130,7 +130,7 @@ tasks:
   get-api-logs:
     cmds:
       - |
-        functionName=$(aws lambda list-functions | jq -r '.Functions[] | select( .FunctionName | startswith("pwnctl_api_") ) | .FunctionName')
+        functionName=$(aws lambda list-functions | jq -r '.Functions[] | select( .FunctionName | startswith("pwnctl_api") ) | .FunctionName')
         awslogs get -s 1440m -G --timestamp /aws/lambda/$functionName
 
   install-deps:

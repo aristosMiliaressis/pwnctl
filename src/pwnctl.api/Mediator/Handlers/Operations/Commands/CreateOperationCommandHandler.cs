@@ -4,6 +4,7 @@ using pwnctl.infra.Persistence;
 using pwnctl.dto.Operations.Commands;
 
 using MediatR;
+using pwnctl.kernel;
 using pwnctl.app.Operations.Entities;
 using pwnctl.app.Operations.Enums;
 using pwnctl.infra;

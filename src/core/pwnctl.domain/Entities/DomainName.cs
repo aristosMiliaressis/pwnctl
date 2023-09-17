@@ -13,7 +13,7 @@ namespace pwnctl.domain.Entities
         public int ZoneDepth { get; private init; }
         public DomainName? ParentDomain { get; private set; }
         public Guid? ParentDomainId { get; private init; }
-        public string Word => Name.Replace("."+PublicSuffixRepository.Instance.GetSuffix(Name).Value, "")
+        public string Word => Name.Replace("."+PublicSuffixRepository.Instance.GetSuffix(Name)!.Value, "")
                                     .Split(".")
                                     .Last();
 
@@ -27,7 +27,7 @@ namespace pwnctl.domain.Entities
             Name = domain;
 
             var suffix = PublicSuffixRepository.Instance.GetSuffix(Name);
-            ZoneDepth = Name.Substring(0, Name.Length - suffix.Value.Value.Length - 1)
+            ZoneDepth = Name.Substring(0, Name.Length - suffix!.Value.Value.Length - 1)
                         .Split(".")
                         .Count();
         }
@@ -46,9 +46,12 @@ namespace pwnctl.domain.Entities
                     return null;
 
                 var domain = new DomainName(assetText);
+                var regDomain = domain.GetRegistrationDomain();
+                if (regDomain is null)
+                    return null;
 
                 var tmp = domain;
-                var registrationDomain = new DomainName(domain.GetRegistrationDomain());
+                var registrationDomain = new DomainName(regDomain);
                 while (tmp.Name != registrationDomain.Name)
                 {
                     tmp.ParentDomain = new DomainName(string.Join(".", tmp.Name.Split(".").Skip(1)));

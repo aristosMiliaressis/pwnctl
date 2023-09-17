@@ -27,7 +27,7 @@ namespace pwnctl.domain.Entities
             Path = path.EndsWith("/") ? path.Substring(0, path.Length - 1) : path;
             Path = string.IsNullOrEmpty(Path) ? "/" : Path;
 
-            string hostSegment = Socket.NetworkHost is not null ? Socket.NetworkHost.IP : Socket.DomainName.Name;
+            string hostSegment = Socket.NetworkHost is not null ? Socket.NetworkHost.IP : Socket.DomainName!.Name;
             string portSegment = (scheme == "http" && Socket.Port == 80) || (scheme == "https" && Socket.Port == 443) ? "" : (":" + Socket.Port);
             Url = Scheme+"://"+hostSegment+portSegment+Path;
         }

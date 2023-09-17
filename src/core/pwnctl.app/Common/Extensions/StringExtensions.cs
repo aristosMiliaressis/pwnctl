@@ -4,9 +4,12 @@ namespace pwnctl.app.Common.Extensions;
 
 public static class StringExtensions
 {
-    public static string Interpolate(this string template, object source, bool ignoreInvalid = false)
+    public static string Interpolate(this string template, object? source, bool ignoreInvalid = false)
     {
-        List<string> arguments = new();
+        if (source is null)
+            return template;
+
+        List<string?> arguments = new();
         List<string> parameters = new();
 
         foreach (var seg in template.Split("}}"))
@@ -21,13 +24,13 @@ public static class StringExtensions
 
         foreach (var param in parameters)
         {
-            object arg = null;
+            object? arg = null;
 
             if (param.StartsWith("[\""))
             {
                 var index = param.Split("[\"")[1].Split("\"]")[0];
                 var indexer = sourceType.GetProperties().Where(p => p.GetIndexParameters().Length != 0).First();
-                arg = indexer.GetGetMethod().Invoke(source, new object[] { index });
+                arg = indexer.GetGetMethod()?.Invoke(source, new object[] { index });
             }
             else
             {
@@ -37,10 +40,10 @@ public static class StringExtensions
                 else if (!ignoreInvalid && prop is null)
                     throw new InvalidTemplateStringException($"Property {param} not found on type {sourceType.Name}");
 
-                arg = prop.GetValue(source);
+                arg = prop?.GetValue(source);
             }
 
-            arguments.Add(arg.ToString());
+            arguments.Add(arg?.ToString());
         }
 
         string result = template;
