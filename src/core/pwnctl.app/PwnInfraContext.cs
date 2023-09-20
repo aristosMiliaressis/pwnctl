@@ -1,3 +1,5 @@
+namespace pwnctl.app;
+
 using pwnctl.app.Common.Interfaces;
 using pwnctl.app.Logging.Interfaces;
 using pwnctl.app.Configuration;
@@ -6,31 +8,28 @@ using pwnctl.app.Notifications.Interfaces;
 using pwnctl.app.Tasks.Interfaces;
 using pwnctl.app.Queueing.Interfaces;
 
-namespace pwnctl.app
+public static class PwnInfraContext
 {
-    public static class PwnInfraContext
+    public static void Setup(AppConfig config, AppLogger logger, Serializer serializer, FilterEvaluator evaluator, 
+                            AssetRepository assetRepo, TaskRepository taskRepo, NotificationRepository notificationRepo)
     {
-        public static void Setup(AppConfig config, AppLogger logger, Serializer serializer, FilterEvaluator evaluator, 
-                                AssetRepository assetRepo, TaskRepository taskRepo, NotificationRepository notificationRepo)
-        {
-            Config = config;
-            Logger = logger;
-            Serializer = serializer;
-            FilterEvaluator = evaluator;
-            AssetRepository = assetRepo;
-            TaskRepository = taskRepo;
-            NotificationRepository = notificationRepo;
-        }
-
-        public static AppConfig Config { get; set; }
-        public static AppLogger Logger { get; private set; }
-        public static Serializer Serializer { get; private set; }
-        public static NotificationSender NotificationSender { get; private set; }
-        public static FilterEvaluator FilterEvaluator { get; private set; }
-        public static CommandExecutor CommandExecutor { get; private set; }
-        public static AssetRepository AssetRepository { get; private set; }
-        public static TaskRepository TaskRepository { get; private set; }
-        public static NotificationRepository NotificationRepository { get; private set; }
-        public static TaskQueueService TaskQueueService { get; private set; }
+        Config = config;
+        Logger = logger;
+        Serializer = serializer;
+        FilterEvaluator = evaluator;
+        AssetRepository = assetRepo;
+        TaskRepository = taskRepo;
+        NotificationRepository = notificationRepo;
     }
+
+    public static AppConfig Config { get; set; }
+    public static AppLogger Logger { get; private set; }
+    public static Serializer Serializer { get; private set; }
+    public static NotificationSender NotificationSender { get; private set; }
+    public static FilterEvaluator FilterEvaluator { get; private set; }
+    public static CommandExecutor CommandExecutor { get; private set; }
+    public static AssetRepository AssetRepository { get; private set; }
+    public static TaskRepository TaskRepository { get; private set; }
+    public static NotificationRepository NotificationRepository { get; private set; }
+    public static TaskQueueService TaskQueueService { get; private set; }
 }

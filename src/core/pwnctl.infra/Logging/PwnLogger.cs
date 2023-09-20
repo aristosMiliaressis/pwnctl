@@ -1,3 +1,5 @@
+namespace pwnctl.infra.Logging;
+
 using pwnctl.app.Logging;
 using pwnctl.app.Logging.Interfaces;
 using pwnctl.kernel.Extensions;

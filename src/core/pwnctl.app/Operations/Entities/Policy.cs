@@ -1,36 +1,35 @@
+namespace pwnctl.app.Operations.Entities;
+
 using pwnctl.kernel.BaseClasses;
 using pwnctl.app.Tasks.Entities;
 using System.Text.Json.Serialization;
 
-namespace pwnctl.app.Operations.Entities
+public sealed class Policy : Entity<int>
 {
-    public sealed class Policy : Entity<int>
+    public string? Blacklist { get; set; }
+
+    public List<PolicyTaskProfile> TaskProfiles { get; private init; }
+
+    public Policy() { }
+
+    public Policy(List<TaskProfile> profiles)
     {
-        public string? Blacklist { get; set; }
+        TaskProfiles = profiles.Select(p => new PolicyTaskProfile { Policy = this, TaskProfile = p }).ToList();
+    }
 
-        public List<PolicyTaskProfile> TaskProfiles { get; private init; }
+    public List<TaskDefinition> GetAllowedTasks()
+    {
+        List<TaskDefinition> allowedTasks = new();
+        var blacklist = Blacklist?.Split(",") ?? new string[0];
 
-        public Policy() { }
-
-        public Policy(List<TaskProfile> profiles)
+        foreach (var definition in TaskProfiles.SelectMany(p => p.TaskProfile.TaskDefinitions))
         {
-            TaskProfiles = profiles.Select(p => new PolicyTaskProfile { Policy = this, TaskProfile = p }).ToList();
-        }
-
-        public List<TaskDefinition> GetAllowedTasks()
-        {
-            List<TaskDefinition> allowedTasks = new();
-            var blacklist = Blacklist?.Split(",") ?? new string[0];
-
-            foreach (var definition in TaskProfiles.SelectMany(p => p.TaskProfile.TaskDefinitions))
+            if (!blacklist.Contains(definition.Name.Value))
             {
-                if (!blacklist.Contains(definition.Name.Value))
-                {
-                    allowedTasks.Add(definition);
-                }
+                allowedTasks.Add(definition);
             }
-
-            return allowedTasks;
         }
+
+        return allowedTasks;
     }
 }

@@ -1,3 +1,5 @@
+namespace pwnctl.app.Tagging;
+
 using System.Text.Json;
 using pwnctl.app;
 using pwnctl.app.Assets.DTO;

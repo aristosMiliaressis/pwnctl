@@ -1,59 +1,58 @@
+namespace pwnctl.app.Notifications.Entities;
+
 using pwnctl.app.Assets.Entities;
 using pwnctl.app.Common.Extensions;
 using pwnctl.app.Tasks.Entities;
 using pwnctl.kernel.BaseClasses;
 
-namespace pwnctl.app.Notifications.Entities
+public sealed class Notification : Entity<int>
 {
-    public sealed class Notification : Entity<int>
+    public AssetRecord Record { get; set; }
+    public Guid RecordId { get; set; }
+
+    public NotificationRule? Rule { get; set; }
+    public int? RuleId { get; private init; }
+
+    public TaskRecord? Task { get; set; }
+    public int? TaskId { get; private init; }
+
+    public DateTime SentAt { get; set; }
+
+    public Notification() { }
+
+    public Notification(AssetRecord record, NotificationRule rule)
     {
-        public AssetRecord Record { get; set; }
-        public Guid RecordId { get; set; }
+        Record = record;
+        Rule = rule;
+    }
 
-        public NotificationRule? Rule { get; set; }
-        public int? RuleId { get; private init; }
+    public Notification(AssetRecord record, TaskRecord task)
+    {
+        Record = record;
+        Task = task;
+        TaskId = task.Id;
+    }
 
-        public TaskRecord? Task { get; set; }
-        public int? TaskId { get; private init; }
-
-        public DateTime SentAt { get; set; }
-
-        public Notification() { }
-
-        public Notification(AssetRecord record, NotificationRule rule)
+    public string GetText()
+    {
+        if (RuleId.HasValue || Rule is not null)
         {
-            Record = record;
-            Rule = rule;
+            if (!string.IsNullOrEmpty(Rule?.Template))
+                return Rule.Template.Interpolate(Record.Asset, ignoreInvalid: true)
+                                    .Replace("Tags", "")
+                                    .Interpolate(Record, ignoreInvalid: true);
+
+            return $"{Record.Asset} triggered rule {Rule?.Name.Value}";
         }
 
-        public Notification(AssetRecord record, TaskRecord task)
+        if (!string.IsNullOrEmpty(Task?.Definition?.MonitorRules.NotificationTemplate))
         {
-            Record = record;
-            Task = task;
-            TaskId = task.Id;
+            var message = Task.Definition.MonitorRules.NotificationTemplate.Interpolate(Record.Asset, ignoreInvalid: true);
+            message = message.Replace("oldTags", "").Interpolate(Task.Record, ignoreInvalid: true);
+            message = message.Replace("newTags", "").Interpolate(Record, ignoreInvalid: true);
+            return message;
         }
 
-        public string GetText()
-        {
-            if (RuleId.HasValue || Rule is not null)
-            {
-                if (!string.IsNullOrEmpty(Rule?.Template))
-                    return Rule.Template.Interpolate(Record.Asset, ignoreInvalid: true)
-                                        .Replace("Tags", "")
-                                        .Interpolate(Record, ignoreInvalid: true);
-
-                return $"{Record.Asset} triggered rule {Rule?.Name.Value}";
-            }
-
-            if (!string.IsNullOrEmpty(Task?.Definition?.MonitorRules.NotificationTemplate))
-            {
-                var message = Task.Definition.MonitorRules.NotificationTemplate.Interpolate(Record.Asset, ignoreInvalid: true);
-                message = message.Replace("oldTags", "").Interpolate(Task.Record, ignoreInvalid: true);
-                message = message.Replace("newTags", "").Interpolate(Record, ignoreInvalid: true);
-                return message;
-            }
-
-            return $"new asset {Record.Asset} found by task {Task?.Definition.Name.Value} on asset {Task?.Record.Asset}";
-        }
+        return $"new asset {Record.Asset} found by task {Task?.Definition.Name.Value} on asset {Task?.Record.Asset}";
     }
 }

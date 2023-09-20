@@ -1,77 +1,76 @@
-﻿using pwnctl.kernel.Attributes;
+﻿namespace pwnctl.domain.Entities;
+
+using pwnctl.kernel.Attributes;
 using pwnctl.domain.BaseClasses;
 using pwnctl.domain.Enums;
 
-namespace pwnctl.domain.Entities
+public sealed class NetworkSocket : Asset
 {
-    public sealed class NetworkSocket : Asset
+    [EqualityComponent]
+    public string Address { get; init; }
+
+    public ushort Port { get; init; }
+    public TransportProtocol TransportProtocol { get; init; }
+
+    public Guid? NetworkHostId { get; private init; }
+    public NetworkHost? NetworkHost { get; init; }
+
+    public Guid? DomainNameId { get; private init; }
+    public DomainName? DomainName { get; init; }
+
+    public NetworkSocket() { }
+
+    public NetworkSocket(DomainName domain, ushort port, TransportProtocol l4Proto = TransportProtocol.TCP)
     {
-        [EqualityComponent]
-        public string Address { get; init; }
+        DomainName = domain;
+        TransportProtocol = l4Proto;
+        Port = port;
+        Address = l4Proto.ToString().ToLower() + "://" + domain.Name + ":" + port;
+    }
 
-        public ushort Port { get; init; }
-        public TransportProtocol TransportProtocol { get; init; }
+    public NetworkSocket(NetworkHost host, ushort port, TransportProtocol l4Proto = TransportProtocol.TCP)
+    {
+        NetworkHost = host;
+        TransportProtocol = l4Proto;
+        Port = port;
+        Address = l4Proto.ToString().ToLower() + "://" + host.IP + ":" + port;
+    }
 
-        public Guid? NetworkHostId { get; private init; }
-        public NetworkHost? NetworkHost { get; init; }
+    public static NetworkSocket? TryParse(string assetText)
+    {
+        var protocol = TransportProtocol.TCP;
 
-        public Guid? DomainNameId { get; private init; }
-        public DomainName? DomainName { get; init; }
-
-        public NetworkSocket() { }
-
-        public NetworkSocket(DomainName domain, ushort port, TransportProtocol l4Proto = TransportProtocol.TCP)
+        if (assetText.Contains("://"))
         {
-            DomainName = domain;
-            TransportProtocol = l4Proto;
-            Port = port;
-            Address = l4Proto.ToString().ToLower() + "://" + domain.Name + ":" + port;
+            if (!Enum.TryParse<TransportProtocol>(assetText.ToUpper().Split("://")[0], out protocol))
+                return null;
+
+            assetText = assetText.Split("://")[1];
         }
 
-        public NetworkSocket(NetworkHost host, ushort port, TransportProtocol l4Proto = TransportProtocol.TCP)
+        string strPort = assetText.Split(':').Last();
+        
+        assetText = assetText.Substring(0, assetText.Length - strPort.Length - 1);
+
+        var port = ushort.Parse(strPort);
+
+        var host = NetworkHost.TryParse(assetText);
+        var domain = DomainName.TryParse(assetText);
+
+        if (host is not null)
         {
-            NetworkHost = host;
-            TransportProtocol = l4Proto;
-            Port = port;
-            Address = l4Proto.ToString().ToLower() + "://" + host.IP + ":" + port;
+            return new NetworkSocket(host, port, protocol);
+        }
+        else if (domain is not null)
+        {
+            return new NetworkSocket(domain, port, protocol);
         }
 
-        public static NetworkSocket? TryParse(string assetText)
-        {
-            var protocol = TransportProtocol.TCP;
+        return null;
+    }
 
-            if (assetText.Contains("://"))
-            {
-                if (!Enum.TryParse<TransportProtocol>(assetText.ToUpper().Split("://")[0], out protocol))
-                    return null;
-
-                assetText = assetText.Split("://")[1];
-            }
-
-            string strPort = assetText.Split(':').Last();
-            
-            assetText = assetText.Substring(0, assetText.Length - strPort.Length - 1);
-
-            var port = ushort.Parse(strPort);
-
-            var host = NetworkHost.TryParse(assetText);
-            var domain = DomainName.TryParse(assetText);
-
-            if (host is not null)
-            {
-                return new NetworkSocket(host, port, protocol);
-            }
-            else if (domain is not null)
-            {
-                return new NetworkSocket(domain, port, protocol);
-            }
-
-            return null;
-        }
-
-        public override string ToString()
-        {
-            return Address;
-        }
+    public override string ToString()
+    {
+        return Address;
     }
 }

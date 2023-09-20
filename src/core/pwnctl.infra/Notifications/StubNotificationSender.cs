@@ -1,20 +1,19 @@
+namespace pwnctl.infra.Notifications;
+
 using pwnctl.domain.BaseClasses;
 using pwnctl.app.Notifications.Entities;
 using pwnctl.app.Notifications.Interfaces;
 using pwnctl.app.Notifications.Enums;
 
-namespace pwnctl.infra.Notifications
+public sealed class StubNotificationSender : NotificationSender
 {
-    public sealed class StubNotificationSender : NotificationSender
+    public async Task SendAsync(Notification notification)
     {
-        public async Task SendAsync(Notification notification)
-        {
-            await SendAsync(notification.GetText(), notification.Rule!.Topic);
-        }
+        await SendAsync(notification.GetText(), notification.Rule!.Topic);
+    }
 
-        public Task SendAsync(string message, NotificationTopic topic)
-        {
-            return Task.CompletedTask;
-        }
+    public Task SendAsync(string message, NotificationTopic topic)
+    {
+        return Task.CompletedTask;
     }
 }

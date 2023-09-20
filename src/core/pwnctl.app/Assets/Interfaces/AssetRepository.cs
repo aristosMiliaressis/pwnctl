@@ -1,26 +1,25 @@
+namespace pwnctl.app.Assets.Interfaces;
+
 using pwnctl.app.Assets.Entities;
 using pwnctl.app.Notifications.Entities;
 using pwnctl.app.Tasks.Entities;
 using pwnctl.domain.BaseClasses;
 using pwnctl.domain.ValueObjects;
 
-namespace pwnctl.app.Assets.Interfaces
+public interface AssetRepository
 {
-    public interface AssetRepository
-    {
-        Task<AssetRecord> FindRecordAsync(Asset asset);
-        Task<Notification> FindNotificationAsync(Asset asset, NotificationRule rule);
-        Task<AssetRecord> UpdateRecordReferences(AssetRecord record, Asset asset);
-        Task SaveAsync(AssetRecord record);
+    Task<AssetRecord> FindRecordAsync(Asset asset);
+    Task<Notification> FindNotificationAsync(Asset asset, NotificationRule rule);
+    Task<AssetRecord> UpdateRecordReferences(AssetRecord record, Asset asset);
+    Task SaveAsync(AssetRecord record);
 
-        Task<List<AssetRecord>> ListInScopeAsync(int scopeId, AssetClass[] assetClasses, int pageIdx, CancellationToken token = default);
+    Task<List<AssetRecord>> ListInScopeAsync(int scopeId, AssetClass[] assetClasses, int pageIdx, CancellationToken token = default);
 
-        Task<List<AssetRecord>> ListHostsAsync(int pageIdx);
-        Task<List<AssetRecord>> ListEndpointsAsync(int pageIdx);
-        Task<List<AssetRecord>> ListServicesAsync(int pageIdx);
-        Task<List<AssetRecord>> ListNetRangesAsync(int pageIdx);
-        Task<List<AssetRecord>> ListDomainsAsync(int pageIdx);
-        Task<List<AssetRecord>> ListDNSRecordsAsync(int pageIdx);
-        Task<List<AssetRecord>> ListEmailsAsync(int pageIdx);
-    }
+    Task<List<AssetRecord>> ListHostsAsync(int pageIdx);
+    Task<List<AssetRecord>> ListEndpointsAsync(int pageIdx);
+    Task<List<AssetRecord>> ListServicesAsync(int pageIdx);
+    Task<List<AssetRecord>> ListNetRangesAsync(int pageIdx);
+    Task<List<AssetRecord>> ListDomainsAsync(int pageIdx);
+    Task<List<AssetRecord>> ListDNSRecordsAsync(int pageIdx);
+    Task<List<AssetRecord>> ListEmailsAsync(int pageIdx);
 }
