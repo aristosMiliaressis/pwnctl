@@ -14,6 +14,7 @@ using pwnctl.api.Mediator.Handlers.Scope.Commands;
 using pwnctl.app.Common.ValueObjects;
 using pwnctl.app.Assets.DTO;
 using pwnctl.app.Assets;
+using pwnctl.app.Tagging;
 using pwnctl.domain.BaseClasses;
 using pwnctl.app.Assets.Entities;
 using pwnctl.app.Queueing.DTO;
