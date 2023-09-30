@@ -30,7 +30,7 @@ namespace pwnctl.infra.Queueing
             await _executor.ExecuteAsync($"echo '{json}' >> {_queuePath}");
         }
 
-        public async Task<TMessage> ReceiveAsync<TMessage>(CancellationToken token = default)
+        public async Task<TMessage?> ReceiveAsync<TMessage>(CancellationToken token = default)
             where TMessage : QueueMessage
         {
             (_, StringBuilder stdout, _) = await _executor.ExecuteAsync($"if read line <{_queuePath}; then echo $line; tmp=\"$(tail -n +2 {_queuePath})\"; echo \"$tmp\" > {_queuePath}; fi");

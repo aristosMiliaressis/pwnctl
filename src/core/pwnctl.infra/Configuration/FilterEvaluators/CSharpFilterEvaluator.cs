@@ -59,7 +59,7 @@ public class CSharpFilterEvaluator : FilterEvaluator
                 _scriptOptions, null, null, CancellationToken.None
             });
 
-            var filterExpr = typeof(Task<>).MakeGenericType(funcType).GetProperty("Result").GetValue(evalTask);
+            var filterExpr = typeof(Task<>).MakeGenericType(funcType).GetProperty("Result")?.GetValue(evalTask);
             var invokeMethod = funcType.GetMethod(nameof(Func<Asset>.Invoke));
             return (bool)invokeMethod.Invoke(filterExpr, args.Values.ToArray());
         }

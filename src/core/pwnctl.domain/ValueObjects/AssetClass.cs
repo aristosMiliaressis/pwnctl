@@ -3,7 +3,7 @@ namespace pwnctl.domain.ValueObjects;
 using pwnctl.domain.BaseClasses;
 using pwnctl.kernel.BaseClasses;
 
-public record struct AssetClass
+public readonly record struct AssetClass
 {
     public string Value { get; }
 

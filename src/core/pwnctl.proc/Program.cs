@@ -1,5 +1,7 @@
 ﻿using pwnctl.infra.DependencyInjection;
 using pwnctl.proc;
+using pwnctl.app.Common.Interfaces;
+using pwnctl.infra.Commands;
 using pwnctl.infra.Configuration;
 using pwnctl.infra.Queueing;
 using pwnctl.infra.Notifications;
@@ -15,6 +17,7 @@ PwnInfraContextInitializer.Register<TaskQueueService, SQSTaskQueueService>();
 if (EnvironmentVariables.IN_VPC)
 {
     PwnInfraContextInitializer.Register<NotificationSender, DiscordNotificationSender>();
+    PwnInfraContextInitializer.Register<CommandExecutor, BashCommandExecutor>();
 }
 else
 {

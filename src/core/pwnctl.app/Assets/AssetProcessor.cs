@@ -95,7 +95,7 @@ public sealed class AssetProcessor
         {
             if (foundByTask.Definition.CheckNotificationRules)
             {
-                await CheckFindingRulesAsync(record);
+                await CheckNotificationRulesAsync(record);
             }
 
             if (foundByTask.Operation.Type == OperationType.Crawl
@@ -138,14 +138,14 @@ public sealed class AssetProcessor
         }
     }
 
-    private async Task CheckFindingRulesAsync(AssetRecord record)
+    private async Task CheckNotificationRulesAsync(AssetRecord record)
     {
         await Parallel.ForEachAsync(_notificationRules, async (rule, token) =>
         {
             if ((record.InScope || rule.CheckOutOfScope) && rule.Check(record))
             {
                 // only send notifications once
-                var notification = await PwnInfraContext.AssetRepository.FindNotificationAsync(record.Asset, rule);
+                var notification = await PwnInfraContext.NotificationRepository.FindNotificationAsync(record.Asset, rule);
                 if (notification is not null)
                     return;
 

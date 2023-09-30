@@ -5,10 +5,10 @@ using pwnctl.domain.ValueObjects;
 
 namespace pwnctl.infra.Configuration;
 
-public class NotificationRuleDTO
+public readonly record struct NotificationRuleDTO
 {
     public string Name { get; private init; }
-    public string Subject { get; private set; }
+    public string Subject { get; private init; }
     public NotificationTopic Topic { get; private init; }
     public string Filter { get; private init; }
     public string? Template { get; private init; }
@@ -16,7 +16,7 @@ public class NotificationRuleDTO
 
     public NotificationRule ToEntity()
     {
-        return new NotificationRule
+        return new NotificationRule()
         {
             Name = ShortName.Create(Name),
             Subject = AssetClass.Create(Subject),

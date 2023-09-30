@@ -15,6 +15,9 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
             builder.ToTable(builder.GetType().GenericTypeArguments[0].Name.Underscore().Pluralize());
 
             builder.Property(r => r.Id).HasValueGenerator<UUIDv5ValueGenerator>();
+            
+            builder.HasIndex(nameof(AssetRecord.TextNotation)).IsUnique();
+            builder.Property(r => r.TextNotation).IsRequired(true);
 
             builder.HasKey(r => r.Id);
 

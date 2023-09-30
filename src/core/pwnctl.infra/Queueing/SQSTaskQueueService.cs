@@ -62,7 +62,7 @@ namespace pwnctl.infra.Queueing
             }
         }
 
-        public async Task<TMessage> ReceiveAsync<TMessage>(CancellationToken token = default)
+        public async Task<TMessage?> ReceiveAsync<TMessage>(CancellationToken token = default)
             where TMessage : QueueMessage
         {
             try

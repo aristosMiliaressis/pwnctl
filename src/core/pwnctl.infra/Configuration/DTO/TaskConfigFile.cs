@@ -4,18 +4,14 @@ using pwnctl.domain.ValueObjects;
 
 namespace pwnctl.infra.Configuration;
 
-public class TaskConfigFile
-{
-    public string Profile { get; set; }
-    public List<TaskDefinitionDTO> TaskDefinitions { get; set; }
-}
+public readonly record struct TaskConfigFile(string Profile, List<TaskDefinitionDTO> TaskDefinitions);
 
 public class TaskDefinitionDTO
 {
     public string Name { get; init; }
     public string Subject { get; init; }
     public string CommandTemplate { get; init; }
-    public string Filter { get; init; }
+    public string? Filter { get; init; }
     public bool MatchOutOfScope { get; init; }
     public bool CheckNotificationRules { get; set; }
     
@@ -33,25 +29,16 @@ public class TaskDefinitionDTO
             CheckNotificationRules = CheckNotificationRules,
         };
 
-        if (MonitorRules is not null)
+        definition.MonitorRules = new MonitorRules
         {
-            definition.MonitorRules = new MonitorRules
-            {
-                Schedule = CronExpression.Create(MonitorRules.Schedule),
-                PreCondition = MonitorRules.PreCondition,
-                PostCondition = MonitorRules.PostCondition,
-                NotificationTemplate = MonitorRules.NotificationTemplate
-            };
-        }
+            Schedule = MonitorRules.Schedule == null ? null : CronExpression.Create(MonitorRules.Schedule),
+            PreCondition = MonitorRules.PreCondition,
+            PostCondition = MonitorRules.PostCondition,
+            NotificationTemplate = MonitorRules.NotificationTemplate
+        };
 
         return definition;
     }
 }
 
-public class MonitorRulesDTO
-{
-    public string Schedule { get; init; }
-    public string PreCondition { get; init; }
-    public string PostCondition { get; init; }
-    public string NotificationTemplate { get; init; }
-}
+public readonly record struct MonitorRulesDTO(string? Schedule, string? PreCondition, string? PostCondition, string? NotificationTemplate);

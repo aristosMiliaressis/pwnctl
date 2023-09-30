@@ -19,16 +19,14 @@ namespace pwnctl.infra.Persistence.IdGenerators
 
         private Guid Generate(object asset)
         {
-            if (asset is AssetRecord)
-            {
-                var record = asset as AssetRecord;
-                asset = record.Asset;
-            }
+            var textNotation = asset is AssetRecord record
+                            ? record.TextNotation
+                            : asset.ToString();
 
-            if (asset is null)
+            if (string.IsNullOrEmpty(textNotation))
                 return default;
 
-            return GenerateByString(asset.ToString());
+            return GenerateByString(textNotation);
         }
 
         public static Guid GenerateByString(string asset)

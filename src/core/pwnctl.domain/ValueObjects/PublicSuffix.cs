@@ -2,7 +2,7 @@ namespace pwnctl.domain.ValueObjects;
 
 using pwnctl.kernel.BaseClasses;
 
-public record struct PublicSuffix
+public readonly record struct PublicSuffix
 {
     public string Value { get; }
 

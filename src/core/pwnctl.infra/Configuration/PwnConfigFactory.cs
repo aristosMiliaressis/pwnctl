@@ -11,8 +11,7 @@ public static class PwnConfigFactory
                                     .SetBasePath(EnvironmentVariables.INSTALL_PATH is null 
                                             ? $"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}/.config/pwnctl" 
                                             : Path.GetFullPath(EnvironmentVariables.INSTALL_PATH))
-                                    .AddIniFile("config.ini", optional: true, reloadOnChange: true)
-                                    .AddEnvironmentVariables(prefix: "PWNCTL_");
+                                    .AddIniFile("config.ini", optional: true, reloadOnChange: true);
 
         if (!EnvironmentVariables.USE_LOCAL_INTEGRATIONS)
         {
@@ -25,6 +24,9 @@ public static class PwnConfigFactory
             });
         }
 
-        return builder.Build().Get<AppConfig>();
+        return builder
+                    .AddEnvironmentVariables(prefix: "PWNCTL_")
+                    .Build()
+                    .Get<AppConfig>();
     }
 }

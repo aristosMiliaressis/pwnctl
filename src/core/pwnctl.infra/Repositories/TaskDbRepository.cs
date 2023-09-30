@@ -12,49 +12,14 @@ namespace pwnctl.infra.Repositories
 {
     public sealed class TaskDbRepository : TaskRepository
     {
-        private PwnctlDbContext _context = new PwnctlDbContext();
+        private PwnctlDbContext _context;
+        
         private static Func<PwnctlDbContext, int, Task<TaskRecord>> FindRecordQuery
                                 = EF.CompileAsyncQuery<PwnctlDbContext, int, TaskRecord>(
                         (context, id) => context.TaskRecords
                                     .Include(r => r.Definition)
                                     .Include(r => r.Record)
                                         .ThenInclude(r => r.Tags)
-                                    .Include(r => r.Record)
-                                        .ThenInclude(r => r.NetworkHost)
-                                        .ThenInclude(r => r.AARecords)
-                                    .Include(r => r.Record)
-                                        .ThenInclude(r => r.NetworkRange)
-                                    .Include(r => r.Record)
-                                        .ThenInclude(r => r.NetworkSocket)
-                                        .ThenInclude(r => r.NetworkHost)
-                                    .Include(r => r.Record)
-                                        .ThenInclude(r => r.NetworkSocket)
-                                        .ThenInclude(r => r.DomainName)
-                                    .Include(r => r.Record)
-                                        .ThenInclude(r => r.DomainName)
-                                    .Include(r => r.Record)
-                                        .ThenInclude(r => r.DomainNameRecord)
-                                        .ThenInclude(r => r.DomainName)
-                                    .Include(r => r.Record)
-                                        .ThenInclude(r => r.DomainNameRecord)
-                                        .ThenInclude(r => r.NetworkHost)
-                                    // .Include(r => r.Record)
-                                    //     .ThenInclude(r => r.HttpHost)
-                                    .Include(r => r.Record)
-                                        .ThenInclude(r => r.HttpEndpoint)
-                                        .ThenInclude(s => s.Socket)
-                                        .ThenInclude(s => s.DomainName)
-                                    .Include(r => r.Record)
-                                        .ThenInclude(r => r.HttpEndpoint)
-                                        .ThenInclude(s => s.Socket)
-                                        .ThenInclude(s => s.NetworkHost)
-                                    .Include(r => r.Record)
-                                        .ThenInclude(r => r.HttpParameter)
-                                    .Include(r => r.Record)
-                                        .ThenInclude(r => r.Email)
-                                        .ThenInclude(r => r.DomainName)
-                                    .Include(r => r.Record)
-                                        .ThenInclude(r => r.Scope)
                                     .Include(r => r.Operation)
                                         .ThenInclude(r => r.Policy)
                                         .ThenInclude(r => r.TaskProfiles)
@@ -66,7 +31,10 @@ namespace pwnctl.infra.Repositories
                                         .ThenInclude(o => o.Definition)
                                     .FirstOrDefault(r => r.Id == id));
 
-        public TaskDbRepository() { }
+        public TaskDbRepository() 
+        { 
+            _context = new();
+        }
 
         public TaskDbRepository(PwnctlDbContext context)
         {
@@ -83,23 +51,6 @@ namespace pwnctl.infra.Repositories
                                     .ThenInclude(r => r.TaskDefinitions)
                                 .Include(p => p.Definition)
                                 .Include(p => p.Record)
-                                    .ThenInclude(r => r.NetworkRange)
-                                .Include(p => p.Record)
-                                    .ThenInclude(r => r.NetworkHost)
-                                .Include(p => p.Record)
-                                    .ThenInclude(r => r.NetworkSocket)
-                                .Include(p => p.Record)
-                                    .ThenInclude(r => r.DomainName)
-                                .Include(p => p.Record)
-                                    .ThenInclude(r => r.DomainNameRecord)
-                                // .Include(p => p.Record)
-                                //     .ThenInclude(r => r.HttpHost)
-                                .Include(p => p.Record)
-                                    .ThenInclude(r => r.HttpEndpoint)
-                                .Include(p => p.Record)
-                                    .ThenInclude(r => r.HttpParameter)
-                                .Include(p => p.Record)
-                                    .ThenInclude(r => r.Email)
                                 .OrderBy(r => r.QueuedAt)
                                 .Skip(pageIdx * PwnInfraContext.Config.Api.BatchSize)
                                 .Take(PwnInfraContext.Config.Api.BatchSize)

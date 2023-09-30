@@ -11,9 +11,15 @@ public static class TagParser
     {
         try
         {
-            return assetText.TrimStart().StartsWith("{")
-                ? PwnInfraContext.Serializer.Deserialize<AssetDTO>(assetText)
-                : new AssetDTO { Asset = assetText, FoundBy = "input" };
+            if (assetText.TrimStart().StartsWith("{"))
+            {
+                var dto = PwnInfraContext.Serializer.Deserialize<AssetDTO>(assetText);
+                if (dto == null)
+                    throw new NullReferenceException(assetText);
+                return dto;
+            }
+            
+            return new AssetDTO { Asset = assetText, FoundBy = "input" };
         }
         catch (JsonException ex)
         {

@@ -115,6 +115,10 @@ resource "aws_ecs_task_definition" "exec" {
         {
           "name": "PWNCTL_INSTALL_PATH",
           "value": "${var.efs_mount_point}"
+        },
+        {
+          "name": "PWNCTL_IN_VPC",
+          "value": "true"
         }
       ],
       "logConfiguration": {
@@ -332,6 +336,10 @@ resource "aws_ecs_task_definition" "proc" {
         {
           "name": "PWNCTL_INSTALL_PATH",
           "value": "${var.efs_mount_point}"
+        },
+        {
+          "name": "PWNCTL_IN_VPC",
+          "value": "true"
         }
       ],
       "logConfiguration": {

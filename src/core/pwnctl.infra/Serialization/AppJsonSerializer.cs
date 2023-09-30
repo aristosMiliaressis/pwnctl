@@ -7,17 +7,17 @@ public class AppJsonSerializer : Serializer
 {
     private static JsonSerializerOptions _options = JsonSerializerOptionsFactory.Create();
 
-    public object Deserialize(string json, Type type)
+    public object? Deserialize(string json, Type type)
     {
         return JsonSerializer.Deserialize(json, type, _options);
     }
 
-    public T Deserialize<T>(string json)
+    public T? Deserialize<T>(string json)
     {
         return JsonSerializer.Deserialize<T>(json, _options);
     }
 
-    public T Deserialize<T>(JsonElement element)
+    public T? Deserialize<T>(JsonElement element)
     {
         return element.Deserialize<T>(_options);
     }

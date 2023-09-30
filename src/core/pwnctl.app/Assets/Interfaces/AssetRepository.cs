@@ -9,7 +9,6 @@ using pwnctl.domain.ValueObjects;
 public interface AssetRepository
 {
     Task<AssetRecord> FindRecordAsync(Asset asset);
-    Task<Notification> FindNotificationAsync(Asset asset, NotificationRule rule);
     Task<AssetRecord> UpdateRecordReferences(AssetRecord record, Asset asset);
     Task SaveAsync(AssetRecord record);
 

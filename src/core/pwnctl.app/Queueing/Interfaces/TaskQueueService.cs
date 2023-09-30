@@ -7,7 +7,7 @@ public interface TaskQueueService
     /// </summary>
     /// <param name="task"></param>
     Task EnqueueAsync<TMessage>(TMessage msg, CancellationToken token = default) where TMessage : QueueMessage;
-    Task<TMessage> ReceiveAsync<TMessage>(CancellationToken token = default) where TMessage : QueueMessage;
+    Task<TMessage?> ReceiveAsync<TMessage>(CancellationToken token = default) where TMessage : QueueMessage;
 
     Task DequeueAsync(QueueMessage msg);
     Task ChangeMessageVisibilityAsync(QueueMessage msg, int visibilityTimeout, CancellationToken token = default);

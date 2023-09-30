@@ -58,6 +58,7 @@ public sealed class Tests
                     .WithEnvironment("PWNCTL_Db__Username", "postgres")
                     .WithEnvironment("PWNCTL_Db__Password", "password")
                     .WithEnvironment("PWNCTL_TaskQueue__Name", "task-dev.fifo")
+                    .WithEnvironment("PWNCTL_TaskQueue__VisibilityTimeout", "1200")
                     .WithEnvironment("PWNCTL_OutputQueue__Name", "output-dev.fifo")
                     .WithEnvironment("PWNCTL_OutputQueue__VisibilityTimeout", "1200");
 
@@ -173,8 +174,9 @@ public sealed class Tests
 
         context = new PwnctlDbContext();
         var host = context.NetworkHosts.First(h => h.IP == "1.2.3.4");
-        // check
-        // - task queue was populated
-        // - db was populated
+        var tasks = context.TaskRecords.Where(t => t.RecordId == host.Id).ToList();
+        Assert.Equal(3, tasks.Count());
+        Assert.True(tasks.All(t => t.State == TaskState.QUEUED));
+        // check that task queue was populated
     }
 }

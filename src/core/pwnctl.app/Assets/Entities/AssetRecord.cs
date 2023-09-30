@@ -13,6 +13,7 @@ namespace pwnctl.app.Assets.Entities;
 public sealed class AssetRecord : Entity<Guid>
 {
     public Asset Asset => (Asset)(typeof(AssetRecord).GetProperty(Subject.Value)?.GetValue(this) ?? throw new Exception("AssetRecord reference not loaded."));
+    public string TextNotation { get; set; }
 
     public DateTime FoundAt { get; private init; }
     public TaskRecord? FoundByTask { get; private init; }
@@ -55,10 +56,24 @@ public sealed class AssetRecord : Entity<Guid>
     // public HttpHost? HttpHost { get; private init; }
     // public Guid? HttpHostId { get; private init; }
 
-    private AssetRecord() {}
+    // private constructor for orm querying
+    // constructs immutable domain layer reference graph
+    // from assets TextNotation
+    public AssetRecord(string textNotation, AssetClass subject)
+    {
+        Subject = subject;
+        var asset = AssetParser.Parse(textNotation);
+        if (asset is HttpEndpoint ep && ep.HttpParameters.Any())
+        {
+            asset = ep.HttpParameters.First();
+        }
+        
+        typeof(AssetRecord).GetProperty(subject.Value)!.SetValue(this, asset);
+    }
 
     public AssetRecord(Asset asset)
     {
+        TextNotation = asset.ToString();
         Subject = AssetClass.Create(asset.GetType().Name);
         typeof(AssetRecord).GetProperty(Subject.Value)!.SetValue(this, asset);
     }

@@ -302,8 +302,8 @@ public sealed class Tests
     {
         var proc = new AssetProcessor();
         PwnctlDbContext context = new();
-        AssetDbRepository repository = new();
-        TaskDbRepository taskRepository = new();
+        AssetDbRepository repository = new(context);
+        TaskDbRepository taskRepository = new(context);
 
         var exampleUrl = new AssetDTO
         {
@@ -370,7 +370,7 @@ public sealed class Tests
         // process same asset twice and make sure tasks are only assigned once
         await proc.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id);
         endpointRecord = repository.ListEndpointsAsync(0).Result.First(ep => ep.HttpEndpoint.Url == "https://iis.tesla.com/");
-        var tasks = context.TaskRecords.Include(t => t.Definition).Where(t => t.Record.Id == endpointRecord.Asset.Id).ToList();
+        var tasks = context.TaskRecords.Include(t => t.Definition).Where(t => t.Record.Id == endpointRecord.Id).ToList();
         Assert.DoesNotContain(tasks.GroupBy(t => t.DefinitionId), g => g.Count() > 1);
         srvTag = endpointRecord.Tags.First(t => t.Name == "protocol");
         Assert.Equal("IIS", srvTag.Value);
@@ -411,32 +411,35 @@ public sealed class Tests
     {
         var proc = new AssetProcessor();
         PwnctlDbContext context = new();
-        TaskDbRepository repository = new();
+        TaskDbRepository repository = new(context);
 
         await proc.ProcessAsync("tesla.com", EntityFactory.TaskRecord.Id);
 
-        var record = context.AssetRecords.Include(r => r.DomainName).First(r => r.DomainName.Name == "tesla.com");
+        var record = context.AssetRecords.First(r => r.DomainName.Name == "tesla.com");
         Assert.True(record.InScope);
         Assert.Equal("tesla", record.DomainName.Word);
 
         var cloudEnumTask = context.TaskRecords
                                     .Include(t => t.Definition)
                                     .Include(t => t.Record)
-                                    .ThenInclude(t => t.DomainName)
                                     .First(t => t.Definition.Name == ShortName.Create("cloud_enum"));
         Assert.Equal("cloud-enum.sh tesla", cloudEnumTask.Command);
 
         await proc.ProcessAsync("tesla.com IN A 31.3.3.7", EntityFactory.TaskRecord.Id);
 
-        record = context.AssetRecords.Include(r => r.DomainNameRecord).First(r => r.DomainNameRecord.Key == "tesla.com" && r.DomainNameRecord.Value == "31.3.3.7");
+        record = context.AssetRecords.First(r => r.DomainNameRecord.Key == "tesla.com" && r.DomainNameRecord.Value == "31.3.3.7");
         Assert.True(record.InScope);
 
-        record = context.AssetRecords.Include(r => r.NetworkHost).ThenInclude(h => h.AARecords).First(r => r.NetworkHost.IP == "31.3.3.7");
+        record = context.AssetRecords
+                        .Include(r => r.NetworkHost)
+                            .ThenInclude(h => h.AARecords)
+                            .ThenInclude(h => h.DomainName)
+                        .First(r => r.NetworkHost.IP == "31.3.3.7");
         Assert.True(record.InScope);
         Assert.NotNull(record.NetworkHost.AARecords.First());
         Assert.Contains(EntityFactory.ScopeAggregate.Definitions, scope => scope.Definition.Matches(record.NetworkHost));
 
-        record = context.AssetRecords.Include(r => r.DomainNameRecord).First(r => r.DomainNameRecord.Key == "tesla.com" && r.DomainNameRecord.Value == "31.3.3.7");
+        record = context.AssetRecords.First(r => r.DomainNameRecord.Key == "tesla.com" && r.DomainNameRecord.Value == "31.3.3.7");
         Assert.True(record.InScope);
 
         await proc.ProcessAsync("6.6.6.6:65530", EntityFactory.TaskRecord.Id);
@@ -454,52 +457,51 @@ public sealed class Tests
         await proc.ProcessAsync("https://xyz.tesla.com:443/api?key=xxx", EntityFactory.TaskRecord.Id);
         await proc.ProcessAsync("https://xyz.tesla.com:443/api?duplicate=xxx&duplicate=yyy", EntityFactory.TaskRecord.Id);
         await proc.ProcessAsync("xyz.tesla.com. IN A 1.3.3.7", EntityFactory.TaskRecord.Id);
-        record = context.AssetRecords.Include(r => r.DomainNameRecord).First(r => r.DomainNameRecord.Key == "xyz.tesla.com" && r.DomainNameRecord.Value == "1.3.3.7");
+        record = context.AssetRecords.First(r => r.DomainNameRecord.Key == "xyz.tesla.com" && r.DomainNameRecord.Value == "1.3.3.7");
         Assert.True(record.InScope);
 
-        record = context.AssetRecords.Include(r => r.NetworkHost).First(r => r.NetworkHost.IP == "1.3.3.7");
+        record = context.AssetRecords.First(r => r.NetworkHost.IP == "1.3.3.7");
         Assert.True(record.InScope);
 
-        record = context.AssetRecords.Include(r => r.DomainNameRecord).First(r => r.DomainNameRecord.Value == "1.3.3.7");
+        record = context.AssetRecords.First(r => r.DomainNameRecord.Value == "1.3.3.7");
         Assert.True(record.InScope);
 
-        record = context.AssetRecords.Include(r => r.DomainName).First(r => r.DomainName.Name == "xyz.tesla.com");
+        record = context.AssetRecords.First(r => r.DomainName.Name == "xyz.tesla.com");
         Assert.True(record.InScope);
 
-        record = context.AssetRecords.Include(r => r.NetworkSocket).First(r => r.NetworkSocket.Address == "tcp://1.3.3.7:443");
+        record = context.AssetRecords.First(r => r.NetworkSocket.Address == "tcp://1.3.3.7:443");
         Assert.False(record.InScope);
 
-        record = context.AssetRecords.Include(r => r.HttpEndpoint).First(r => r.HttpEndpoint.Url == "https://1.3.3.7/");
+        record = context.AssetRecords.First(r => r.HttpEndpoint.Url == "https://1.3.3.7/");
         Assert.False(record.InScope);
 
-        record = context.AssetRecords.Include(r => r.NetworkSocket).First(r => r.NetworkSocket.Address == "tcp://xyz.tesla.com:443");
+        record = context.AssetRecords.First(r => r.NetworkSocket.Address == "tcp://xyz.tesla.com:443");
         Assert.True(record.InScope);
 
-        record = context.AssetRecords.Include(r => r.HttpEndpoint).First(r => r.HttpEndpoint.Url == "https://xyz.tesla.com/");
+        record = context.AssetRecords.First(r => r.HttpEndpoint.Url == "https://xyz.tesla.com/");
         Assert.True(record.InScope);
 
-        record = context.AssetRecords.Include(r => r.HttpParameter).First(r => r.HttpParameter.Url == "https://xyz.tesla.com/api" && r.HttpParameter.Name == "key");
+        record = context.AssetRecords.First(r => r.HttpParameter.Url == "https://xyz.tesla.com/api" && r.HttpParameter.Name == "key");
         Assert.True(record.InScope);
 
-        record = context.AssetRecords.Include(r => r.HttpParameter).First(r => r.HttpParameter.Url == "https://xyz.tesla.com/api" && r.HttpParameter.Name == "duplicate");
+        record = context.AssetRecords.First(r => r.HttpParameter.Url == "https://xyz.tesla.com/api" && r.HttpParameter.Name == "duplicate");
         Assert.True(record.InScope);
 
         proc = new AssetProcessor();
         await proc.ProcessAsync("https://1.3.3.7:443", EntityFactory.TaskRecord.Id);
         context = new();
-        record = context.AssetRecords.Include(r => r.NetworkSocket).First(r => r.NetworkSocket.Address == "tcp://1.3.3.7:443");
+        record = context.AssetRecords.First(r => r.HttpEndpoint.Url == "https://1.3.3.7/");
         Assert.True(record.InScope);
-
-        record = context.AssetRecords.Include(r => r.HttpEndpoint).First(r => r.HttpEndpoint.Url == "https://1.3.3.7/");
+        record = context.AssetRecords.First(r => r.NetworkSocket.Address == "tcp://1.3.3.7:443");
         Assert.True(record.InScope);
 
         await proc.ProcessAsync("https://abc.tesla.com", EntityFactory.TaskRecord.Id);
-        record = context.AssetRecords.Include(r => r.HttpEndpoint).First(r => r.HttpEndpoint.Url == "https://abc.tesla.com/");
+        record = context.AssetRecords.First(r => r.HttpEndpoint.Url == "https://abc.tesla.com/");
         Assert.True(record.InScope);
         var serv = context.NetworkSockets.First(s => s.Address == "tcp://abc.tesla.com:443");
         Assert.NotNull(serv);
 
-        record = context.AssetRecords.Include(r => r.NetworkSocket).First(r => r.Id == serv.Id);
+        record = context.AssetRecords.First(r => r.Id == serv.Id);
         Assert.True(record.InScope);
         Assert.Equal("tcp://abc.tesla.com:443", record.NetworkSocket.Address);
 
@@ -514,24 +516,30 @@ public sealed class Tests
         notification = context.Notifications.Include(n => n.Rule).FirstOrDefault(n => n.Rule.Name == ShortName.Create("second_order_takeover") && n.RecordId == endpoint.Id);
         Assert.Null(notification);
 
-        record = context.AssetRecords.Include(r => r.NetworkSocket).First(r => r.Id == serv.Id);
+        record = context.AssetRecords.First(r => r.Id == serv.Id);
         Assert.True(record.InScope);
         Assert.Equal("tcp://qwe.tesla.com:443", record.NetworkSocket.Address);
+
+        await proc.ProcessAsync($$"""{"Asset":"https://qwe.tesla.com","Tags":{"shortname-misconfig":"true"},"FoundBy":"httpx"}""", EntityFactory.TaskRecord.Id);
+
+        var line = "{\"asset\":\"https://vuln.tesla.com/.git/config\",\"tags\":{\"nuclei-68b329da9893e34099c7d8ad5cb9c940\":\"{\\\"template\\\":\\\"git-config\\\",\\\"severity\\\":\\\"medium\\\",\\\"matcher\\\":null,\\\"extracted\\\":null}\"}}";
+
+        await proc.ProcessAsync(line, EntityFactory.TaskRecord.Id);
+
     }
 
     [Fact]
     public async Task TaskFiltering_Tests()
     {
         PwnctlDbContext context = new();
-        TaskDbRepository repository = new();
-        var proc = new AssetProcessor();
+        TaskDbRepository repository = new(context);
+        AssetProcessor proc = new();
 
         await proc.ProcessAsync("172.16.17.0/24", EntityFactory.TaskRecord.Id);
         Assert.True(context.TaskRecords.Include(t => t.Definition).Any(t => t.Definition.Name == ShortName.Create("nmap_basic")));
         Assert.False(context.TaskRecords
                             .Include(t => t.Definition)
                             .Include(t => t.Record)
-                                .ThenInclude(r => r.NetworkRange)
                             .Any(t => t.Record.NetworkRange.FirstAddress == "172.16.17.0"
                                    && t.Definition.Name == ShortName.Create("ffuf_common")));
 
@@ -550,7 +558,6 @@ public sealed class Tests
         var hakrawlerTask = context.TaskRecords
                                     .Include(t => t.Definition)
                                     .Include(t => t.Record)
-                                        .ThenInclude(r => r.HttpEndpoint)
                                     .First(t => t.Definition.Name == ShortName.Create("hakrawler"));
         Assert.Equal("hakrawler -plain -h 'User-Agent: Mozilla/5.0' https://172.16.17.15/api/token", hakrawlerTask.Command);
 
@@ -574,7 +581,6 @@ public sealed class Tests
         var resolutionTask = context.TaskRecords
                                     .Include(t => t.Definition)
                                     .Include(t => t.Record)
-                                        .ThenInclude(r => r.DomainName)
                                     .First(t => t.Record.DomainName.Name == "sub.tesla.com"
                                              && t.Definition.Name == ShortName.Create("domain_resolution"));
         Assert.Equal("dig +short sub.tesla.com | awk '{print \"sub.tesla.com IN A \" $1}'", resolutionTask.Command);
@@ -583,7 +589,6 @@ public sealed class Tests
         Assert.False(context.TaskRecords
                                     .Include(t => t.Definition)
                                     .Include(t => t.Record)
-                                        .ThenInclude(r => r.DomainName)
                                     .Any(t => t.Record.DomainName.Name == "sub.tesla.com"
                                            && t.Definition.Name == ShortName.Create("subfinder")));
 
@@ -591,12 +596,11 @@ public sealed class Tests
         var cloudEnumTask = context.TaskRecords
                                     .Include(t => t.Definition)
                                     .Include(t => t.Record)
-                                        .ThenInclude(r => r.DomainName)
                                     .First(t => t.Definition.Name == ShortName.Create("cloud_enum"));
         Assert.Equal("cloud-enum.sh tesla", cloudEnumTask.Command);
 
         await proc.ProcessAsync("https://tesla.s3.amazonaws.com", EntityFactory.TaskRecord.Id);
-        var record = context.AssetRecords.Include(r => r.HttpEndpoint).First(r => r.HttpEndpoint.Url == "https://tesla.s3.amazonaws.com/");
+        var record = context.AssetRecords.First(r => r.HttpEndpoint.Url == "https://tesla.s3.amazonaws.com/");
 
         var task = context.TaskRecords
                             .Include(t => t.Definition)
@@ -631,7 +635,7 @@ public sealed class Tests
     public async Task OperationInitializer_Tests()
     {
         PwnctlDbContext context = new();
-        var proc = new AssetProcessor();
+        AssetProcessor proc = new();
         AssetDbRepository assetRepo = new();
         OperationInitializer initializer = new(new OperationDbRepository());
 
@@ -677,7 +681,6 @@ public sealed class Tests
         var task = context.TaskRecords
                             .Include(t => t.Definition)
                             .Include(t => t.Record)
-                                .ThenInclude(r => r.DomainName)
                             .First(t => t.Definition.Name == ShortName.Create("domain_resolution")
                                    && t.Record.DomainName.Name == parentDomain.Name);
 
@@ -691,8 +694,6 @@ public sealed class Tests
         context = new();
         // check #2 notification sent?
         var notification = context.Notifications
-                            .Include(n => n.Record)
-                                .ThenInclude(r => r.DomainName)
                             .Include(n => n.Record)
                                 .ThenInclude(r => r.Tags)
                             .Include(n => n.Task)
@@ -725,8 +726,6 @@ public sealed class Tests
                                 .Include(n => n.Rule)
                                 .Include(n => n.Record)
                                     .ThenInclude(n => n.Tags)
-                                .Include(n => n.Record)
-                                    .ThenInclude(n => n.HttpEndpoint)
                                 .First(n => n.RuleId == notificationRule.Id);
         Assert.Equal("https://tesla.com/ triggered mdwfuzzer check uri-override-header with word ", notification.GetText());
     }
@@ -736,7 +735,7 @@ public sealed class Tests
     {
         PwnctlDbContext context = new();
         var proc = new AssetProcessor();
-        var taskRepo = new TaskDbRepository();
+        var taskRepo = new TaskDbRepository(context);
         var executor = new BashCommandExecutor();
 
         var task = EntityFactory.TaskRecord;

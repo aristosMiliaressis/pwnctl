@@ -36,15 +36,14 @@ namespace pwnctl.infra.Repositories
                     (context, id) => context.AssetRecords
                                             .Include(r => r.Tags)
                                             .Include(r => r.FoundByTask)
-                                            .Include(r => r.NetworkRange)
+                                            // needed for in-scope decision
                                             .Include(r => r.NetworkHost)
+                                                .ThenInclude(h => h.AARecords)
+                                                .ThenInclude(r => r.DomainName)
                                             .Include(r => r.NetworkSocket)
-                                            .Include(r => r.DomainName)
-                                            .Include(r => r.DomainNameRecord)
-                                            //.Include(r => r.HttpHost)
-                                            .Include(r => r.HttpEndpoint)
-                                            .Include(r => r.HttpParameter)
-                                            .Include(r => r.Email)
+                                                .ThenInclude(s => s.NetworkHost)
+                                                .ThenInclude(h => h.AARecords)
+                                                .ThenInclude(r => r.DomainName)
                                             .FirstOrDefault(r => r.Id == id));
 
 
@@ -65,15 +64,6 @@ namespace pwnctl.infra.Repositories
             return await _context.AssetRecords
                                 .Include(r => r.Tasks)
                                     .ThenInclude(t => t.Definition)
-                                .Include(r => r.NetworkRange)
-                                .Include(r => r.NetworkHost)
-                                .Include(r => r.NetworkSocket)
-                                .Include(r => r.DomainName)
-                                .Include(r => r.DomainNameRecord)
-                                //.Include(r => r.HttpHost)
-                                .Include(r => r.HttpEndpoint)
-                                .Include(r => r.HttpParameter)
-                                .Include(r => r.Email)
                                 .Where(a => assetClasses.Contains(a.Subject) && a.ScopeId.HasValue && scopeDefinitionIds.Contains(a.ScopeId.Value))
                                 .OrderBy(a => a.FoundAt)
                                 .Skip(pageIdx * PwnInfraContext.Config.Api.BatchSize)
@@ -86,13 +76,6 @@ namespace pwnctl.infra.Repositories
             var lambda = ExpressionTreeBuilder.BuildAssetMatchingLambda(asset);
 
             return _context.FirstFromLambda<Asset>(lambda);
-        }
-
-        public async Task<Notification> FindNotificationAsync(Asset asset, NotificationRule rule)
-        {
-            var lambda = ExpressionTreeBuilder.BuildNotificationMatchingLambda(asset.Id, rule.Id);
-
-            return await _context.FirstNotTrackedFromLambdaAsync<Notification>(lambda);
         }
 
         public async Task<AssetRecord> UpdateRecordReferences(AssetRecord record, Asset asset)
@@ -270,9 +253,6 @@ namespace pwnctl.infra.Repositories
                             .Include(e => e.FoundByTask)
                                 .ThenInclude(e => e.Definition)
                             .Include(e => e.Tags)
-                            .Include(e => e.NetworkHost)
-                                .ThenInclude(e => e.AARecords)
-                                .ThenInclude(e => e.DomainName)
                             .Where(r => r.NetworkHostId != null)
                             .OrderBy(r => r.FoundAt)
                             .Skip(pageIdx*PwnInfraContext.Config.Api.BatchSize)
@@ -287,8 +267,6 @@ namespace pwnctl.infra.Repositories
                             .Include(e => e.FoundByTask)
                                 .ThenInclude(e => e.Definition)
                             .Include(e => e.Tags)
-                            .Include(e => e.DomainName)
-                                .ThenInclude(e => e.ParentDomain)
                             .Where(r => r.DomainNameId != null)
                             .OrderBy(r => r.FoundAt)
                             .Skip(pageIdx * PwnInfraContext.Config.Api.BatchSize)
@@ -303,10 +281,6 @@ namespace pwnctl.infra.Repositories
                             .Include(e => e.FoundByTask)
                                 .ThenInclude(e => e.Definition)
                             .Include(e => e.Tags)
-                            .Include(e => e.DomainNameRecord)
-                                .ThenInclude(e => e.DomainName)
-                            .Include(e => e.DomainNameRecord)
-                                .ThenInclude(e => e.NetworkHost)
                             .Where(r => r.DomainNameRecordId != null)
                             .OrderBy(r => r.FoundAt)
                             .Skip(pageIdx * PwnInfraContext.Config.Api.BatchSize)
@@ -321,7 +295,6 @@ namespace pwnctl.infra.Repositories
                             .Include(e => e.FoundByTask)
                                 .ThenInclude(e => e.Definition)
                             .Include(e => e.Tags)
-                            .Include(e => e.HttpEndpoint)
                             .Where(r => r.HttpEndpointId != null)
                             .OrderBy(r => r.FoundAt)
                             .Skip(pageIdx * PwnInfraContext.Config.Api.BatchSize)
@@ -336,7 +309,6 @@ namespace pwnctl.infra.Repositories
                             .Include(e => e.FoundByTask)
                                 .ThenInclude(e => e.Definition)
                             .Include(e => e.Tags)
-                            .Include(e => e.NetworkRange)
                             .Where(r => r.NetworkRangeId != null)
                             .OrderBy(r => r.FoundAt)
                             .Skip(pageIdx * PwnInfraContext.Config.Api.BatchSize)
@@ -351,14 +323,6 @@ namespace pwnctl.infra.Repositories
                             .Include(e => e.FoundByTask)
                                 .ThenInclude(e => e.Definition)
                             .Include(e => e.Tags)
-                            .Include(e => e.HttpParameter)
-                                .ThenInclude(e => e.Endpoint)
-                                .ThenInclude(e => e.Socket)
-                                .ThenInclude(s => s.NetworkHost)
-                            .Include(e => e.HttpParameter)
-                                .ThenInclude(e => e.Endpoint)
-                                .ThenInclude(e => e.Socket)
-                                .ThenInclude(s => s.DomainName)
                             .Where(r => r.HttpParameterId != null)
                             .OrderBy(r => r.FoundAt)
                             .Skip(pageIdx * PwnInfraContext.Config.Api.BatchSize)
@@ -373,10 +337,6 @@ namespace pwnctl.infra.Repositories
                             .Include(e => e.FoundByTask)
                                 .ThenInclude(e => e.Definition)
                             .Include(e => e.Tags)
-                            .Include(e => e.NetworkSocket)
-                                .ThenInclude(s => s.NetworkHost)
-                            .Include(e => e.NetworkSocket)
-                                .ThenInclude(s => s.DomainName)
                             .Where(r => r.NetworkSocketId != null)
                             .OrderBy(r => r.FoundAt)
                             .Skip(pageIdx * PwnInfraContext.Config.Api.BatchSize)
@@ -391,8 +351,6 @@ namespace pwnctl.infra.Repositories
                             .Include(e => e.FoundByTask)
                                 .ThenInclude(e => e.Definition)
                             .Include(e => e.Tags)
-                            .Include(e => e.Email)
-                                .ThenInclude(e => e.DomainName)
                             .Where(r => r.EmailId != null)
                             .OrderBy(r => r.FoundAt)
                             .Skip(pageIdx * PwnInfraContext.Config.Api.BatchSize)

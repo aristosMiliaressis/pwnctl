@@ -3,7 +3,7 @@ using pwnctl.kernel.BaseClasses;
 
 namespace pwnctl.app.Common.ValueObjects;
 
-public record struct ShortName
+public readonly record struct ShortName
 {
     public string Value { get; }
 
