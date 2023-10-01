@@ -1,6 +1,7 @@
 namespace pwnctl.domain.Entities;
 
 using pwnctl.kernel.Attributes;
+using pwnctl.kernel.BaseClasses;
 using pwnctl.domain.BaseClasses;
 using pwnctl.domain.Enums;
 
@@ -29,9 +30,16 @@ public sealed class HttpParameter : Asset
         Value = value;
     }
 
-    public static HttpParameter? TryParse(string assetText)
+    public static Result<HttpParameter, string> TryParse(string assetText)
     {
-        return null;
+        try
+        {
+            return $"{assetText} is not a {nameof(HttpParameter)}";
+        }
+        catch
+        {
+            return $"{assetText} is not a {nameof(HttpParameter)}";
+        }
     }
 
     public override string ToString()

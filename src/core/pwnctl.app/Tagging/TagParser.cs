@@ -1,13 +1,14 @@
 namespace pwnctl.app.Tagging;
 
 using System.Text.Json;
+using pwnctl.kernel.BaseClasses;
+using pwnctl.kernel.Extensions;
 using pwnctl.app;
 using pwnctl.app.Assets.DTO;
-using pwnctl.app.Assets.Exceptions;
 
 public static class TagParser
 {
-    public static AssetDTO Parse(string assetText)
+    public static Result<AssetDTO, string> Parse(string assetText)
     {
         try
         {
@@ -15,7 +16,8 @@ public static class TagParser
             {
                 var dto = PwnInfraContext.Serializer.Deserialize<AssetDTO>(assetText);
                 if (dto == null)
-                    throw new NullReferenceException(assetText);
+                    return $"Can't parse asset {assetText}";
+                
                 return dto;
             }
             
@@ -23,7 +25,7 @@ public static class TagParser
         }
         catch (JsonException ex)
         {
-            throw new UnparsableAssetException(assetText, ex);
+            return $"Can't parse asset {assetText}\r\n{ex.ToRecursiveExInfo()}" ;
         }
     }
 }

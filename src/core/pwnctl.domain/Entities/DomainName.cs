@@ -1,6 +1,7 @@
 ﻿namespace pwnctl.domain.Entities;
 
 using pwnctl.kernel.Attributes;
+using pwnctl.kernel.BaseClasses;
 using pwnctl.kernel.Extensions;
 using pwnctl.domain.BaseClasses;
 using pwnctl.domain.Interfaces;
@@ -32,7 +33,7 @@ public sealed class DomainName : Asset
                     .Count();
     }
 
-    public static DomainName? TryParse(string assetText)
+    public static Result<DomainName, string> TryParse(string assetText)
     {
         try
         {
@@ -40,15 +41,15 @@ public sealed class DomainName : Asset
                 || assetText.Contains("/")
                 || assetText.Contains("*")
                 || assetText.Contains("@"))
-                return null;
+                return $"{assetText} is not a {nameof(DomainName)}";
 
             if (Uri.CheckHostName(assetText) == UriHostNameType.Unknown)
-                return null;
+                return $"{assetText} is not a {nameof(DomainName)}";
 
             var domain = new DomainName(assetText);
             var regDomain = domain.GetRegistrationDomain();
             if (regDomain is null)
-                return null;
+                return $"{assetText} is not a {nameof(DomainName)}";
 
             var tmp = domain;
             var registrationDomain = new DomainName(regDomain);
@@ -62,7 +63,7 @@ public sealed class DomainName : Asset
         }
         catch
         {
-            return null;
+            return $"{assetText} is not a {nameof(DomainName)}";
         }
     }
 

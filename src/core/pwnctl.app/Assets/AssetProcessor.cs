@@ -11,10 +11,12 @@ using pwnctl.app.Assets.DTO;
 using pwnctl.app.Queueing.DTO;
 using pwnctl.app.Operations.Entities;
 using pwnctl.app.Tagging;
+using pwnctl.app.Tasks.Enums;
 using pwnctl.app.Tasks.Interfaces;
 using pwnctl.app.Operations.Enums;
 using pwnctl.app.Notifications.Enums;
 using pwnctl.kernel;
+using pwnctl.kernel.BaseClasses;
 using pwnctl.app.Notifications.Interfaces;
 using System.Collections.Concurrent;
 
@@ -33,8 +35,11 @@ public sealed class AssetProcessor
     {
         try
         {
-            await ProcessAsync(assetText, taskId);
-            return true;
+            (bool result, string error) = await ProcessAsync(assetText, taskId);
+            if (!result)
+                PwnInfraContext.Logger.Error(error);
+            
+            return result;
         }
         catch (Exception ex)
         {
@@ -43,13 +48,19 @@ public sealed class AssetProcessor
         }
     }
 
-    public async Task ProcessAsync(string assetText, int taskId)
+    public async Task<(bool, string)> ProcessAsync(string assetText, int taskId)
     {
-        AssetDTO dto = TagParser.Parse(assetText);
+        Result<AssetDTO, string> dto = TagParser.Parse(assetText);
+        if (!dto.IsOk)
+            return (false, dto.Error);
 
-        Asset asset = AssetParser.Parse(dto.Asset);
+        Result<Asset, string> asset = AssetParser.Parse(dto.Value.Asset);
+        if (!asset.IsOk)
+            return (false, asset.Error);
 
-        await ProcessAssetAsync(asset, dto.Tags, taskId);
+        await ProcessAssetAsync(asset.Value, dto.Value.Tags, taskId);
+
+        return (true, "");
     }
 
     internal async Task ProcessAssetAsync(Asset asset, Dictionary<string, string>? tags, int taskId, List<Asset>? refChain = null)
@@ -114,7 +125,8 @@ public sealed class AssetProcessor
         var allowedTasks = foundByTask.Operation.Policy.GetAllowedTasks();
         allowedTasks.AddRange(_outOfScopeTasks);
 
-        await Parallel.ForEachAsync(record.Tasks, async (task, token) =>
+        await Parallel.ForEachAsync(record.Tasks.Where(t => t.Id == default), 
+        async (task, token) =>
         {
             task.Definition = allowedTasks.First(t => t.Id == task.DefinitionId);
             await PwnInfraContext.TaskQueueService.EnqueueAsync(new PendingTaskDTO(task));

@@ -1,4 +1,3 @@
-
 namespace pwnctl.kernel.BaseClasses;
 
 public abstract class Entity<TPKey> : IEquatable<Entity<TPKey>>

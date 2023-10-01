@@ -1,6 +1,7 @@
 using pwnctl.app;
 using pwnctl.app.Queueing.DTO;
 using pwnctl.app.Queueing.Interfaces;
+using pwnctl.app.Tasks.Enums;
 using pwnctl.app.Notifications.Enums;
 using pwnctl.infra.Commands;
 using pwnctl.infra.Queueing;
@@ -80,13 +81,12 @@ namespace pwnctl.exec
                 return;
             }
 
-            try
+
+            bool succeeded = task.Started();
+            if (!succeeded)
             {
-                task.Started();
-            }
-            catch (TaskStateException ex)
-            {
-                PwnInfraContext.Logger.Warning(ex.Message);
+                PwnInfraContext.Logger.Warning($"Invalid {nameof(TaskRecord)}:{task.Id} state transition from {task.State} to {TaskState.RUNNING}.");
+
                 _timer.Stop();
 
                 // probably a deduplication issue, remove from queue and move on
@@ -97,17 +97,30 @@ namespace pwnctl.exec
             try
             {
                 await _taskRepo.UpdateAsync(task);
+            }
+            catch (Exception ex)
+            {
+                PwnInfraContext.Logger.Exception(ex);
 
+                _timer.Dispose();
+
+                // return the task to the queue, if this occures to many times,
+                // the task will be put in the dead letter queue
+                await PwnInfraContext.TaskQueueService.ChangeMessageVisibilityAsync(taskDTO, 0);
+            }
+
+            try
+            {
                 (int exitCode,
                 StringBuilder stdout,
                 StringBuilder stderr) = await PwnInfraContext.CommandExecutor.ExecuteAsync(task.Command, token: cts.Token);
 
                 task.Finished(exitCode, stderr.ToString());
+
                 await _taskRepo.UpdateAsync(task);
 
-                _timer.Stop();
-
                 await PwnInfraContext.TaskQueueService.DequeueAsync(taskDTO);
+                _timer.Stop();
 
                 var lines = stdout.ToString()
                                 .Split("\n")
@@ -123,14 +136,22 @@ namespace pwnctl.exec
             {
                 PwnInfraContext.Logger.Exception(ex);
 
-                task.Failed();
-                await _taskRepo.UpdateAsync(task);
-
                 _timer.Dispose();
 
-                // return the task to the queue, if this occures to many times,
-                // the task will be put in the dead letter queue
-                await PwnInfraContext.TaskQueueService.ChangeMessageVisibilityAsync(taskDTO, 0);
+                if (task.State == TaskState.RUNNING)
+                {
+                    // return the task to the queue, if this occures to many times,
+                    // the task will be put in the dead letter queue
+                    await PwnInfraContext.TaskQueueService.ChangeMessageVisibilityAsync(taskDTO, 0);
+
+                    task.Failed();
+                }
+                else
+                {
+                    await PwnInfraContext.TaskQueueService.DequeueAsync(taskDTO);
+                }
+
+                await _taskRepo.UpdateAsync(task);
             }
         }
     }

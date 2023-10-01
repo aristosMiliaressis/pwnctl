@@ -1,6 +1,7 @@
 ﻿namespace pwnctl.domain.Entities;
 
 using pwnctl.kernel.Attributes;
+using pwnctl.kernel.BaseClasses;
 using pwnctl.domain.BaseClasses;
 using System.Net.Sockets;
 using System.Net;
@@ -21,20 +22,27 @@ public sealed class NetworkHost : Asset
         Version = address.AddressFamily;
     }
 
-    public static NetworkHost? TryParse(string assetText)
+    public static Result<NetworkHost, string> TryParse(string assetText)
     {
-        // if inside square brakets could be an ipv6
-        assetText = assetText.StartsWith("[") && assetText.EndsWith("]")
-                ? assetText.Substring(1, assetText.Length-2)
-                : assetText;
+        try
+        {
+            // if inside square brakets could be an ipv6
+            assetText = assetText.StartsWith("[") && assetText.EndsWith("]")
+                    ? assetText.Substring(1, assetText.Length-2)
+                    : assetText;
 
-        if (assetText.Contains("]"))
-            return null;
+            if (assetText.Contains("]"))
+                return $"{assetText} is not a {nameof(NetworkHost)}";
 
-        if (!IPAddress.TryParse(assetText, out IPAddress? address))
-            return null;
+            if (!IPAddress.TryParse(assetText, out IPAddress? address))
+                return $"{assetText} is not a {nameof(NetworkHost)}";
 
-        return new NetworkHost(address);
+            return new NetworkHost(address);
+        }
+        catch
+        {
+            return $"{assetText} is not a {nameof(NetworkHost)}";
+        }
     }
 
     public override string ToString()

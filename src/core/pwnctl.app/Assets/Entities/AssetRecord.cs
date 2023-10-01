@@ -56,19 +56,24 @@ public sealed class AssetRecord : Entity<Guid>
     // public HttpHost? HttpHost { get; private init; }
     // public Guid? HttpHostId { get; private init; }
 
-    // private constructor for orm querying
-    // constructs immutable domain layer reference graph
-    // from assets TextNotation
-    public AssetRecord(string textNotation, AssetClass subject)
+    // constructs immutable domain layer 
+    // reference graph from assets TextNotation
+    // preventing the need to JOIN tables
+    private AssetRecord(string textNotation)
     {
-        Subject = subject;
-        var asset = AssetParser.Parse(textNotation);
-        if (asset is HttpEndpoint ep && ep.HttpParameters.Any())
+        var result = AssetParser.Parse(textNotation);
+        if (!result.IsOk)
+            throw new Exception($"TextNotation {textNotation} is not valid");
+
+        if (result.Value is HttpEndpoint ep && ep.HttpParameters.Any())
         {
-            asset = ep.HttpParameters.First();
+            Subject = AssetClass.Create(nameof(HttpParameter));
+            typeof(AssetRecord).GetProperty(Subject.Value)!.SetValue(this, ep.HttpParameters.First());
+            return;
         }
-        
-        typeof(AssetRecord).GetProperty(subject.Value)!.SetValue(this, asset);
+
+        Subject = AssetClass.Create(result.Value.GetType().Name);
+        typeof(AssetRecord).GetProperty(Subject.Value)!.SetValue(this, result.Value);
     }
 
     public AssetRecord(Asset asset)

@@ -2,6 +2,7 @@
 
 using pwnctl.domain.BaseClasses;
 using pwnctl.kernel.BaseClasses;
+using pwnctl.kernel.BaseClasses;
 using pwnctl.kernel.Attributes;
 
 public sealed class HttpHost : Entity<Guid>//: Asset
@@ -22,9 +23,16 @@ public sealed class HttpHost : Entity<Guid>//: Asset
         Name = name;
     }
 
-    public static HttpHost? TryParse(string assetText)
+    public static Result<HttpHost, string> TryParse(string assetText)
     {
-        return null;
+        try
+        {
+            return $"{assetText} is not a {nameof(HttpHost)}";
+        }
+        catch
+        {
+            return $"{assetText} is not a {nameof(HttpHost)}";
+        }
     }
 
     public override string ToString()

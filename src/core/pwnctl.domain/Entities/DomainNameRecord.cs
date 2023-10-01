@@ -2,6 +2,7 @@
 
 using System.Net;
 using pwnctl.kernel.Attributes;
+using pwnctl.kernel.BaseClasses;
 using pwnctl.domain.BaseClasses;
 using pwnctl.domain.Enums;
 
@@ -31,35 +32,47 @@ public sealed class DomainNameRecord : Asset
         Type = type;
         Value = value;
 
-        DomainName = DomainName.TryParse(key);
-        Key = DomainName?.Name ?? throw new Exception("unparssable dns record key");
+        var result = DomainName.TryParse(key);
+        if (!result.IsOk)
+            throw new Exception("unparssable dns record key");
 
-        NetworkHost = NetworkHost.TryParse(value);
-        if (NetworkHost is not null)
+        DomainName = result.Value;
+        Key = DomainName.Name;
+
+        var hostResult = NetworkHost.TryParse(value);
+        if (hostResult.IsOk)
         {
+            NetworkHost = hostResult.Value;
             NetworkHost.AARecords = new List<DomainNameRecord> { this };
         }
     }
 
-    public static DomainNameRecord? TryParse(string assetText)
+    public static Result<DomainNameRecord, string> TryParse(string assetText)
     {
-        assetText = assetText.Replace("\t", " ");
-        var parts = assetText.Split(" ").Where(p => !string.IsNullOrWhiteSpace(p)).ToArray();
-
-        if (parts.Length >= 4 && parts[1] == "IN"
-            && Enum.GetNames(typeof(DnsRecordType)).Contains(parts[2]))
+        try
         {
-            var record = new DomainNameRecord(Enum.Parse<DnsRecordType>(parts[2]), parts[0], string.Join(" ", parts.Skip(3)));
+            assetText = assetText.Replace("\t", " ");
+            var parts = assetText.Split(" ").Where(p => !string.IsNullOrWhiteSpace(p)).ToArray();
 
-            if (record.Type == DnsRecordType.TXT && record.Value.Contains("spf"))
+            if (parts.Length >= 4 && parts[1] == "IN"
+                && Enum.GetNames(typeof(DnsRecordType)).Contains(parts[2]))
             {
-                record.SPFHosts = DomainNameRecord.ParseSPFString(record.Value);
+                var record = new DomainNameRecord(Enum.Parse<DnsRecordType>(parts[2]), parts[0], string.Join(" ", parts.Skip(3)));
+
+                if (record.Type == DnsRecordType.TXT && record.Value.Contains("spf"))
+                {
+                    record.SPFHosts = DomainNameRecord.ParseSPFString(record.Value);
+                }
+
+                return record;
             }
 
-            return record;
+            return $"{assetText} is not a {nameof(DomainNameRecord)}";
         }
-
-        return null;
+        catch
+        {
+            return $"{assetText} is not a {nameof(DomainNameRecord)}";
+        }
     }
 
     public static List<NetworkHost> ParseSPFString(string spf)

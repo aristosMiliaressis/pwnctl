@@ -51,15 +51,15 @@ public sealed class Tests
     [Fact]
     public void AssetParser_Tests()
     {
-        Asset asset = AssetParser.Parse("example.com");
-        Assert.IsType<DomainName>(asset);
-        Assert.NotNull(((DomainName)asset).Word);
+        var asset = AssetParser.Parse("example.com");
+        Assert.IsType<DomainName>(asset.Value);
+        Assert.NotNull(((DomainName)asset.Value).Word);
 
         // parent domain parsing test
         asset = AssetParser.Parse("multi.level.sub.example.com");
-        Assert.IsType<DomainName>(asset);
+        Assert.IsType<DomainName>(asset.Value);
 
-        var domain = (DomainName)asset;
+        var domain = (DomainName)asset.Value;
         Assert.Equal("multi.level.sub.example.com", domain.Name);
         Assert.Equal("level.sub.example.com", domain.ParentDomain.Name);
         Assert.Equal("sub.example.com", domain.ParentDomain.ParentDomain.Name);
@@ -68,106 +68,111 @@ public sealed class Tests
 
         // fqdn parsing test
         asset = AssetParser.Parse("fqdn.example.com.");
-        Assert.IsType<DomainName>(asset);
+        Assert.IsType<DomainName>(asset.Value);
 
-        domain = (DomainName)asset;
+        domain = (DomainName)asset.Value;
         Assert.Equal("fqdn.example.com", domain.Name);
         Assert.Equal("example.com", domain.ParentDomain.Name);
         Assert.Equal("example", domain.Word);
 
         // host
         asset = AssetParser.Parse("1.3.3.7");
-        Assert.IsType<NetworkHost>(asset);
+        Assert.IsType<NetworkHost>(asset.Value);
 
         //ipv6 parsing
         asset = AssetParser.Parse("FD00:DEAD:BEEF:64:35::2");
-        Assert.IsType<NetworkHost>(asset);
+        Assert.IsType<NetworkHost>(asset.Value);
 
         // service
         asset = AssetParser.Parse("76.24.104.208:65533");
-        Assert.IsType<domain.Entities.NetworkSocket>(asset);
-        Assert.NotNull(((domain.Entities.NetworkSocket)asset).NetworkHost);
+        Assert.IsType<domain.Entities.NetworkSocket>(asset.Value);
+        Assert.NotNull(((domain.Entities.NetworkSocket)asset.Value).NetworkHost);
 
         // ipv6 parsing
         asset = AssetParser.Parse("[FD00:DEAD:BEEF:64:35::2]:163");
-        Assert.IsType<domain.Entities.NetworkSocket>(asset);
-        Assert.NotNull(((domain.Entities.NetworkSocket)asset).NetworkHost);
+        Assert.IsType<domain.Entities.NetworkSocket>(asset.Value);
+        Assert.NotNull(((domain.Entities.NetworkSocket)asset.Value).NetworkHost);
 
         // transport protocol parsing test
         asset = AssetParser.Parse("udp://76.24.104.208:161");
-        Assert.IsType<NetworkSocket>(asset);
-        Assert.NotNull(((NetworkSocket)asset).NetworkHost);
-        Assert.Equal(TransportProtocol.UDP, ((NetworkSocket)asset).TransportProtocol);
-        Assert.Equal(161, ((NetworkSocket)asset).Port);
+        Assert.IsType<NetworkSocket>(asset.Value);
+        Assert.NotNull(((NetworkSocket)asset.Value).NetworkHost);
+        Assert.Equal(TransportProtocol.UDP, ((NetworkSocket)asset.Value).TransportProtocol);
+        Assert.Equal(161, ((NetworkSocket)asset.Value).Port);
 
         // netrange
         asset = AssetParser.Parse("172.16.17.0/24");
-        Assert.IsType<NetworkRange>(asset);
+        Assert.IsType<NetworkRange>(asset.Value);
 
         // ipv6 parsing
         asset = AssetParser.Parse("2001:db8::/48");
-        Assert.IsType<NetworkRange>(asset);
+        Assert.IsType<NetworkRange>(asset.Value);
 
         // dns record
         asset = AssetParser.Parse("xyz.example.com IN A 31.3.3.7");
-        Assert.IsType<DomainNameRecord>(asset);
-        Assert.NotNull(((DomainNameRecord)asset).DomainName);
-        Assert.NotNull(((DomainNameRecord)asset).NetworkHost);
+        Assert.IsType<DomainNameRecord>(asset.Value);
+        Assert.NotNull(((DomainNameRecord)asset.Value).DomainName);
+        Assert.NotNull(((DomainNameRecord)asset.Value).NetworkHost);
 
         asset = AssetParser.Parse("zzz.example.com      IN         A            31.3.3.8");
-        Assert.IsType<DomainNameRecord>(asset);
-        Assert.NotNull(((DomainNameRecord)asset).DomainName);
-        Assert.NotNull(((DomainNameRecord)asset).NetworkHost);
+        Assert.IsType<DomainNameRecord>(asset.Value);
+        Assert.NotNull(((DomainNameRecord)asset.Value).DomainName);
+        Assert.NotNull(((DomainNameRecord)asset.Value).NetworkHost);
+
+        asset = AssetParser.Parse("8.8.8.8.in-addr.arpa IN PTR dns.google.");
+        Assert.IsType<DomainNameRecord>(asset.Value);
+        Assert.NotNull(((DomainNameRecord)asset.Value).DomainName);
+        Assert.Equal("8.8.8.8.in-addr.arpa", ((DomainNameRecord)asset.Value).DomainName.Name);
+        Assert.Null(((DomainNameRecord)asset.Value).NetworkHost);
 
         // spf record parsing
         var spfRecord = "tesla.com IN TXT \"v=spf1 ip4:2.2.2.2 ipv4: 3.3.3.3 ipv6:FD00:DEAD:BEEF:64:34::2 include: spf.protection.outlook.com include:servers.mcsv.net -all\"";
         asset = AssetParser.Parse(spfRecord);
-        Assert.IsType<DomainNameRecord>(asset);
-        Assert.Equal(3, ((DomainNameRecord)asset).SPFHosts.Count());
-        Assert.NotNull(((DomainNameRecord)asset).DomainName);
+        Assert.IsType<DomainNameRecord>(asset.Value);
+        Assert.Equal(3, ((DomainNameRecord)asset.Value).SPFHosts.Count());
+        Assert.NotNull(((DomainNameRecord)asset.Value).DomainName);
 
         //endpoint
         // subdirectory parsing test
         asset = AssetParser.Parse("https://xyz.example.com:8443/api/token");
-        Assert.IsType<HttpEndpoint>(asset);
-        Assert.NotNull(((HttpEndpoint)asset).Socket);
-        Assert.NotNull(((HttpEndpoint)asset).ParentEndpoint);
+        Assert.IsType<HttpEndpoint>(asset.Value);
+        Assert.NotNull(((HttpEndpoint)asset.Value).Socket);
+        Assert.NotNull(((HttpEndpoint)asset.Value).ParentEndpoint);
 
         // protocol relative url parsing
         asset = AssetParser.Parse("//prurl.example.com/test");
-        Assert.IsType<HttpEndpoint>(asset);
+        Assert.IsType<HttpEndpoint>(asset.Value);
 
         // TODO: UNC parsing
         // asset = AssetParser.Parse("\\unc.example.com:8443");
-        // Assert.IsType<HttpEndpoint>(asset);
+        // Assert.IsType<HttpEndpoint>(asset.Value);
 
         // parameter
         asset = AssetParser.Parse("https://xyz.example.com:8443/api/token?_u=xxx&second=");
-        Assert.IsType<HttpEndpoint>(asset);
-        Assert.Equal(2, ((HttpEndpoint)asset).HttpParameters.Count);
+        Assert.IsType<HttpEndpoint>(asset.Value);
+        Assert.Equal(2, ((HttpEndpoint)asset.Value).HttpParameters.Count);
 
         // ipv6 parsing
         asset = AssetParser.Parse("http://[FD00:DEAD:BEEF:64:35::2]:80/ipv6test");
-        Assert.IsType<HttpEndpoint>(asset);
-        Assert.NotNull(((HttpEndpoint)asset).Socket);
+        Assert.IsType<HttpEndpoint>(asset.Value);
+        Assert.NotNull(((HttpEndpoint)asset.Value).Socket);
 
         // email
         asset = AssetParser.Parse("no-reply@tesla.com");
-        Assert.IsType<Email>(asset);
-        Assert.NotNull(((Email)asset).DomainName);
+        Assert.IsType<Email>(asset.Value);
+        Assert.NotNull(((Email)asset.Value).DomainName);
 
         // mailto: parsing test
         asset = AssetParser.Parse("mailto:test@tesla.com");
-        Assert.IsType<Email>(asset);
-        Assert.NotNull(((Email)asset).DomainName);
+        Assert.IsType<Email>(asset.Value);
+        Assert.NotNull(((Email)asset.Value).DomainName);
 
         // maito: parsing test
         asset = AssetParser.Parse("maito:test@tesla.com");
-        Assert.IsType<Email>(asset);
-        Assert.NotNull(((Email)asset).DomainName);
+        Assert.IsType<Email>(asset.Value);
+        Assert.NotNull(((Email)asset.Value).DomainName);
 
         // TODO: HttpHosts
-        // TODO: PTR records
     }
 
     [Fact]
@@ -258,43 +263,6 @@ public sealed class Tests
         Assert.Null(repository.FindMatching(service));
         await repository.SaveAsync(new AssetRecord(service));
         Assert.NotNull(repository.FindMatching(service));
-
-        // concurrency test
-        List<Task> tasks = new();
-
-        var proc = new AssetProcessor();
-
-        var teslaUrl = new
-        {
-            asset = "https://sub.tesla.com/1/2/3/1",
-            tags = new Dictionary<string, string>{
-               {"Content-Type", "text/html"},
-               {"Status", "200"},
-               {"Protocol", "IIS"},
-               { "cors-misconfig", "true" } 
-            }
-        };
-
-        // tasks.Add(AssetProcessorFactory.Create().ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
-        // tasks.Add(AssetProcessorFactory.Create().ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
-        // tasks.Add(AssetProcessorFactory.Create().ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
-        // tasks.Add(AssetProcessorFactory.Create().ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
-        // tasks.Add(AssetProcessorFactory.Create().ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
-        // tasks.Add(AssetProcessorFactory.Create().ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
-        // tasks.Add(AssetProcessorFactory.Create().ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
-        // tasks.Add(proc.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
-        // tasks.Add(proc.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
-        // tasks.Add(proc.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
-        // tasks.Add(proc.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
-        // tasks.Add(proc.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
-        // tasks.Add(proc.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
-        // tasks.Add(proc.ProcessAsync(PwnInfraContext.Serializer.Serialize(teslaUrl), EntityFactory.TaskRecord.Id));
-        // tasks.Add(repository.SaveAsync(new AssetRecord(service)));
-        // tasks.Add(repository.SaveAsync(new AssetRecord(service)));
-        // tasks.Add(repository.SaveAsync(new AssetRecord(service)));
-        // tasks.Add(repository.SaveAsync(new AssetRecord(service)));
-
-        // Task.WaitAll(tasks.ToArray());
     }
 
     [Fact]
@@ -624,8 +592,6 @@ public sealed class Tests
                         .First();
         Assert.Empty(xx.Tasks);
 
-
-        // TODO: test that crawl mode is not effected by MonitorRules.PreCondition
 
         // TODO: test TaskDefinition.MatchOutOfScope
         // TODO: test NotificationRule.CheckOutOfScope

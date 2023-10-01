@@ -41,34 +41,37 @@ public sealed class TaskRecord : Entity<int>
         RecordId = record.Id;
     }
 
-    public void Started()
+    public bool Started()
     {
         if (State == TaskState.FINISHED)
-            throw new TaskStateException(State, TaskState.RUNNING);
+            return false;
 
         State = TaskState.RUNNING;
         StartedAt = SystemTime.UtcNow();
         RunCount++;
+        return true;
     }
 
-    public void Finished(int exitCode, string stderr)
+    public bool Finished(int exitCode, string stderr)
     {
         if (State != TaskState.RUNNING)
-            throw new TaskStateException(State, TaskState.FINISHED);
+            return false;
 
         ExitCode = exitCode;
         State = TaskState.FINISHED;
         FinishedAt = SystemTime.UtcNow();
         Stderr = stderr;
+        return true;
     }
 
-    public void Failed()
+    public bool Failed()
     {
         if (State != TaskState.RUNNING)
-            throw new TaskStateException(State, TaskState.FAILED);
+            return false;
 
         State = TaskState.FAILED;
         FinishedAt = SystemTime.UtcNow();
+        return true;
     }
 
     // Interpolate asset arguments into CommandTemplate

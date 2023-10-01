@@ -1,6 +1,7 @@
 ﻿namespace pwnctl.domain.Entities;
 
 using pwnctl.kernel.Attributes;
+using pwnctl.kernel.BaseClasses;
 using pwnctl.domain.BaseClasses;
 using System.Net;
 
@@ -21,7 +22,7 @@ public sealed class NetworkRange : Asset
         NetPrefixBits = netPrefix;
     }
 
-    public static NetworkRange? TryParse(string assetText)
+    public static Result<NetworkRange, string> TryParse(string assetText)
     {
         try
         {
@@ -33,7 +34,7 @@ public sealed class NetworkRange : Asset
         }
         catch
         {
-            return null;
+            return $"{assetText} is not a {nameof(NetworkRange)}";
         }
     }
 
