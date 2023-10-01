@@ -145,5 +145,17 @@ namespace pwnctl.infra.Queueing
                 PwnInfraContext.Logger.Exception(ex);
             }
         }
+
+        public async Task Purge<TMessage>(CancellationToken token = default)
+        {
+            var queueUrl = this[typeof(TMessage).Name];
+
+            var response = await _sqsClient.PurgeQueueAsync(queueUrl, token);
+            if (response.HttpStatusCode != HttpStatusCode.OK)
+            {
+                PwnInfraContext.Logger.Warning(PwnInfraContext.Serializer.Serialize(response));
+                PwnInfraContext.Logger.Warning("HttpStatusCode: "+response.HttpStatusCode);
+            }
+        }
     }
 }

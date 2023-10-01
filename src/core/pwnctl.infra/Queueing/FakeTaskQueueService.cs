@@ -50,5 +50,10 @@ namespace pwnctl.infra.Queueing
         {
             return Task.CompletedTask;
         }
+
+        public Task Purge<TMessage>(CancellationToken token = default)
+        {
+            return Task.CompletedTask;
+        }
     }
 }

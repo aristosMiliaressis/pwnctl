@@ -11,5 +11,7 @@ public interface TaskQueueService
 
     Task DequeueAsync(QueueMessage msg);
     Task ChangeMessageVisibilityAsync(QueueMessage msg, int visibilityTimeout, CancellationToken token = default);
+
+    Task Purge<TMessage>(CancellationToken token = default);
 }
 

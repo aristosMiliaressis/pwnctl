@@ -105,6 +105,8 @@ public sealed class Tests
         var taskQueue = new SQSTaskQueueService();
         var processor = new AssetProcessor();
 
+        await taskQueue.Purge<PendingTaskDTO>();
+
         var op = EntityFactory.CreateOperation();
         var domain = new DomainName("tesla.com");
         var asset = new AssetRecord(domain);

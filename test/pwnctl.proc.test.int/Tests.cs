@@ -130,6 +130,8 @@ public sealed class Tests
         var taskQueue = new SQSTaskQueueService();
         var processor = new AssetProcessor();
 
+        await taskQueue.Purge<OutputBatchDTO>();
+
         // populate db / TaskId
         var op = context.Operations.FirstOrDefault();
         if (op == null)

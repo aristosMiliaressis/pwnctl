@@ -56,6 +56,9 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Commands
                     Findings = context.AssetRecords.Include(r => r.FoundByTask).Where(r => def.Select(d => d.Id).Contains(r.FoundByTask.DefinitionId)).Count()
                 };
 
+                if (details.Count == 0)
+                    continue;
+
                 var count = await  context.TaskRecords.Where(e => e.State == TaskState.FINISHED && def.Select(d => d.Id).Contains(e.DefinitionId)).CountAsync();
                 for (var i = 0; i <= count / PwnInfraContext.Config.Api.BatchSize; i++)
                 {
