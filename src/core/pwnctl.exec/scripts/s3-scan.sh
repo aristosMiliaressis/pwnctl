@@ -17,5 +17,5 @@ s3scanner -i scan -b $bucketName \
     | grep bucket_exists \
     | cut -d '|' -f 3 \
     | while read perms; do if [ "${#perms}" -gt 30 ]; then \
-            echo '{"Asset":"'$url'","Tags"{"s3-public-perms":"'$perms'"}}'; \
+            echo '{"Asset":"'$url'","Tags":{"s3-public-perms":"'$perms'"}}'; \
         fi; done

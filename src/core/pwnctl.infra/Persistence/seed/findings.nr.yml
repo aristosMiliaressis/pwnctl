@@ -63,12 +63,17 @@
   Template: '{{Address}} triggered sketchy_open_port rule on port {{Port}}'
   Topic: misconfigs
 
-# - Name: cname_takeover_check
-#   Subject: DomainName
-#   Filter: '!string.IsNullOrEmpty(Tags["cloud_misconfig"])'
-#   Topic: misconfigs
+- Name: nuclei_domain
+  Subject: DomainName
+  Filter: Tags.Tags.Any(tag => tag.Name.StartsWith("nuclei-") && (tag.Value.Contains("severity\":\"crit") || tag.Value.Contains("severity\":\"high") || tag.Value.Contains("severity\":\"medium") || tag.Value.Contains("severity\":\"low")))
+  Topic: misconfigs
 
-# - Name: second_order_takeover
-#   Subject: HttpEndpoint
-#   Filter: '!string.IsNullOrEmpty(Tags["cloud_misconfig"])'
-#   Topic: misconfigst
+- Name: nuclei_net
+  Subject: NetworkSocket
+  Filter: Tags.Tags.Any(tag => tag.Name.StartsWith("nuclei-") && (tag.Value.Contains("severity\":\"crit") || tag.Value.Contains("severity\":\"high") || tag.Value.Contains("severity\":\"medium") || tag.Value.Contains("severity\":\"low")))
+  Topic: misconfigs
+
+- Name: nuclei_http
+  Subject: HttpEndpoint
+  Filter: Tags.Tags.Any(tag => tag.Name.StartsWith("nuclei-") && (tag.Value.Contains("severity\":\"crit") || tag.Value.Contains("severity\":\"high") || tag.Value.Contains("severity\":\"medium") || tag.Value.Contains("severity\":\"low")))
+  Topic: misconfigs

@@ -1,11 +1,11 @@
 #!/bin/bash
 
-temp=`mktemp` 
 cidr=$1
-RESOLVERS=$(cat /opt/wordlists/dns/trusted-resolvers.txt| tr '\n' ',')
 
-dnsrecon -r $cidr -t rvl -j $temp -n $RESOLVERS >/dev/null
+RESOLVERS_FILE='/opt/wordlists/dns/trusted-resolvers.txt'
 
-cat $temp | jq -c .[] | grep "\[{" | jq -r .[].name
-
-rm $temp
+mapcidr -silent -cidr $cidr \
+    | zdns PTR --name-servers @$RESOLVERS_FILE --result-verbosity short \
+    | jq -r '.data | select(.answers != null ) |.answers[] | select( .type == "PTR" ) | "\(.name) IN \(.type) \(.answer)"' \
+    | grep -v null \
+    | sort -u

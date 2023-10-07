@@ -246,3 +246,8 @@
   Subject: NetworkSocket
   Filter: NetworkSocket.Port == 500
   Topic: misconfigs
+
+- Name: nuclei_http
+  Subject: HttpEndpoint
+  Filter: Tags.Tags.Any(tag => tag.Name.StartsWith("nuclei-") && (tag.Value.Contains("severity\":\"crit") || tag.Value.Contains("severity\":\"high") || tag.Value.Contains("severity\":\"medium")))
+  Topic: misconfigs

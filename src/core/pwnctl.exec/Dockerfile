@@ -94,10 +94,11 @@ RUN go install github.com/tomnomnom/anew@latest
 RUN go install github.com/projectdiscovery/tlsx/cmd/tlsx@latest
 RUN go install github.com/projectdiscovery/dnsx/cmd/dnsx@latest
 RUN go install github.com/projectdiscovery/httpx/cmd/httpx@latest
-#RUN go install github.com/projectdiscovery/katana/cmd/katana@latest
+RUN go install github.com/projectdiscovery/katana/cmd/katana@latest
 RUN go install github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
 RUN go install github.com/projectdiscovery/cdncheck/cmd/cdncheck@latest
 RUN go install github.com/projectdiscovery/asnmap/cmd/asnmap@latest
+RUN go install github.com/projectdiscovery/mapcidr/cmd/mapcidr@latest
 #RUN go install github.com/projectdiscovery/naabu/v2/cmd/naabu@latest
 RUN go install github.com/lc/gau/v2/cmd/gau@latest
 RUN go install github.com/hakluke/hakrawler@latest
@@ -164,11 +165,14 @@ RUN curl https://github.com/mgdm/htmlq/releases/download/v0.4.0/htmlq-x86_64-lin
 RUN go install github.com/sensepost/gowitness@latest
 RUN go install github.com/detectify/page-fetch@latest
 RUN go install github.com/pwnesia/dnstake/cmd/dnstake@latest
-RUN nuclei -ud /opt/nuclei_templates/
+RUN go install github.com/xm1k3/cent@latest
+
+RUN mkdir -p /opt/nuclei_templates/community && mkdir /opt/nuclei_templates/official
+RUN nuclei -ud /opt/nuclei_templates/official
+RUN cent -k -t 20 -p /opt/nuclei_templates/community
 
 RUN go install github.com/aristosMiliaressis/mdwfuzzer@latest
 RUN git clone https://github.com/aristosMiliaressis/ffuf.git && go build -C ffuf && mv ffuf/ffuf /usr/local/bin
-RUN git clone https://github.com/aristosMiliaressis/katana.git && cd katana && make build && mv ./katana /usr/local/bin/
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 
