@@ -16,9 +16,11 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Commands
 
             foreach (var assetText in command.Assets)
             {
-                var asset = AssetParser.Parse(assetText);
+                var result = AssetParser.Parse(assetText);
+                if (!result.IsOk)
+                    continue;
 
-                var record = new AssetRecord(asset);
+                var record = new AssetRecord(result.Value);
 
                 context.AssetRecords.Add(record);
             }

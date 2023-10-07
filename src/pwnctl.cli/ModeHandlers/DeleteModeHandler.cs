@@ -18,8 +18,8 @@ namespace pwnctl.cli.ModeHandlers
         [Option('r', "resource", Required = true, HelpText = "The resource type to be deleted.")]
         public string Resource { get; set; }
 
-        [Option('n', "name", Required = true, HelpText = "The resource ShortName to be deleted.")]
-        public string ShortName { get; set; }
+        [Option('n', "name", Required = true, HelpText = "The resource Name to be deleted.")]
+        public string Name { get; set; }
 
 
         private static Dictionary<string, Type> ResourceMap = new()
@@ -34,7 +34,7 @@ namespace pwnctl.cli.ModeHandlers
         {
             await Parser.Default.ParseArguments<DeleteModeHandler>(args).WithParsedAsync(async opt =>
             {
-                var request = (MediatedRequest)PwnInfraContext.Serializer.Deserialize($$"""{"ShortName":"{{opt.ShortName}}"}""", ResourceMap[opt.Resource]);
+                var request = (MediatedRequest)PwnInfraContext.Serializer.Deserialize($$"""{"Name":"{{opt.Name}}"}""", ResourceMap[opt.Resource]);
 
                 await PwnctlApiClient.Default.Send(request);
             });

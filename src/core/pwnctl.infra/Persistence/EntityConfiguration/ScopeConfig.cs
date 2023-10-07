@@ -25,11 +25,11 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
 
             builder.HasKey(p => p.Id);
 
-            builder.Property(c => c.ShortName)
+            builder.Property(c => c.Name)
                     .HasConversion(name => name.Value, value => ShortName.Create(value),
                     new ValueComparer<ShortName>((l, r) => l == r, v => v.GetHashCode()));
 
-            builder.HasIndex(u => u.ShortName).IsUnique();
+            builder.HasIndex(u => u.Name).IsUnique();
         }
     }
 

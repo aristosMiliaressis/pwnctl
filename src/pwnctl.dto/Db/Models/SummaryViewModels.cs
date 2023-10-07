@@ -31,7 +31,7 @@ public sealed class SummaryViewModel
 
     public class TaskDefinitionDetails 
     {
-        public string ShortName { get; set; }
+        public string Name { get; set; }
         public int Count { get; set; }
         public TimeSpan Duration { get; set; }
         public int Findings { get; set; }

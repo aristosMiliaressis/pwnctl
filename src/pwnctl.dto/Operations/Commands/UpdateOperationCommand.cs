@@ -5,9 +5,9 @@ using pwnctl.dto.Mediator;
 
 public sealed class UpdateOperationCommand : MediatedRequest
 {
-    public static string Route => "/ops/{ShortName}";
+    public static string Route => "/ops/{Name}";
     public static HttpMethod Verb => HttpMethod.Put;
 
-    public string ShortName { get; set; }
+    public string Name { get; set; }
     public OperationState State { get; set; }
 }

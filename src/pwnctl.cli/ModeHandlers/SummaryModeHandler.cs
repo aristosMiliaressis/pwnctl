@@ -29,7 +29,7 @@ namespace pwnctl.cli.ModeHandlers
             Console.WriteLine();
             foreach(var def in model.TaskDetails.OrderBy(t => t.Count))
             {
-                Console.WriteLine($"{def.ShortName.PadLeft(24)}: Queued {def.Count.ToString().PadLeft(4)} times, ran for {def.Duration.ToString("dd\\.hh\\:mm\\:ss")} and found {def.Findings.ToString().PadLeft(4)} unique assets.");
+                Console.WriteLine($"{def.Name.PadLeft(24)}: Queued {def.Count.ToString().PadLeft(4)} times, ran for {def.Duration.ToString("dd\\.hh\\:mm\\:ss")} and found {def.Findings.ToString().PadLeft(4)} unique assets.");
             }
 
             if (model.FirstTask is not null)

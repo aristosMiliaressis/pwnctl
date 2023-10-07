@@ -18,8 +18,8 @@ namespace pwnctl.cli.ModeHandlers
         [Option('r', "resource", Required = true, HelpText = "The resource type to be deleted.")]
         public string Resource { get; set; }
 
-        [Option('n', "name", Required = true, HelpText = "The resource ShortName to be deleted.")]
-        public string ShortName { get; set; }
+        [Option('n', "name", Required = true, HelpText = "The resource Name to be deleted.")]
+        public string Name { get; set; }
 
         private static Dictionary<string, Type> ResourceMap = new()
         {

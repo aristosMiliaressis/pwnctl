@@ -14,9 +14,9 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
 
         public async Task<MediatedResponse> Handle(DeleteOperationCommand command, CancellationToken cancellationToken)
         {
-            var op = _context.Operations.FirstOrDefault(a => a.ShortName == ShortName.Create(command.ShortName));
+            var op = _context.Operations.FirstOrDefault(a => a.Name == ShortName.Create(command.Name));
             if (op is null)
-                return MediatedResponse.Error("Operation {0} not found.", command.ShortName);
+                return MediatedResponse.Error("Operation {0} not found.", command.Name);
 
             await _scheduler.DisableScheduledOperation(op);
 

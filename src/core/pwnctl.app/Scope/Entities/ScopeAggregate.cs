@@ -5,7 +5,7 @@ using pwnctl.kernel.BaseClasses;
 
 public class ScopeAggregate : Entity<int>
 {
-    public ShortName ShortName { get; private init; }
+    public ShortName Name { get; private init; }
     public string? Description { get; private init; }
 
     public List<ScopeDefinitionAggregate> Definitions { get; set; } = new();
@@ -14,7 +14,7 @@ public class ScopeAggregate : Entity<int>
 
     public ScopeAggregate(string name, string description)
     {
-        ShortName = ShortName.Create(name);
+        Name = ShortName.Create(name);
         Description = description;
     }
 }

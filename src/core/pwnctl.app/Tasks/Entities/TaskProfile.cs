@@ -5,14 +5,14 @@ using pwnctl.kernel.BaseClasses;
 
 public sealed class TaskProfile : Entity<int>
 {
-    public ShortName ShortName { get; private init; }
+    public ShortName Name { get; private init; }
     public List<TaskDefinition> TaskDefinitions { get; private set;}
 
     public TaskProfile() { }
 
     public TaskProfile(string name, List<TaskDefinition> definitions) 
     {
-        ShortName = ShortName.Create(name);
+        Name = ShortName.Create(name);
         TaskDefinitions = definitions;
     }
 }

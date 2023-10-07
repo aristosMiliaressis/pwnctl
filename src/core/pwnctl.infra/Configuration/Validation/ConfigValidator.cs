@@ -67,7 +67,7 @@ public static class ConfigValidator
 
         if (taskDefinitions.Select(d => d.Name.Value).Distinct().Count() != taskDefinitions.Count())
         {
-            errorMessage = "Duplicate ShortName";
+            errorMessage = "Duplicate Name";
             return false;
         }
 
@@ -75,7 +75,7 @@ public static class ConfigValidator
         {
             if (string.IsNullOrEmpty(definition.Name.Value))
             {
-                errorMessage = "Null or Empty ShortName";
+                errorMessage = "Null or Empty Name";
                 return false;
             }
 
@@ -135,7 +135,7 @@ public static class ConfigValidator
 
         if (notificationRules.Select(d => d.Name).Distinct().Count() != notificationRules.Count())
         {
-            errorMessage = "Duplicate ShortName";
+            errorMessage = "Duplicate Name";
             return false;
         }
 
@@ -143,7 +143,7 @@ public static class ConfigValidator
         {
             if (string.IsNullOrEmpty(rule.Name.Value))
             {
-                errorMessage = "Null or Empty ShortName";
+                errorMessage = "Null or Empty Name";
                 return false;
             }
 

@@ -4,8 +4,8 @@ using pwnctl.dto.Mediator;
 
 public sealed class UpdateTaskProfileCommand : MediatedRequest
 {
-    public static string Route => "/tasks/profiles/{ShortName}";
+    public static string Route => "/tasks/profiles/{Name}";
     public static HttpMethod Verb => HttpMethod.Put;
 
-    public string ShortName { get; set; }
+    public string Name { get; set; }
 }

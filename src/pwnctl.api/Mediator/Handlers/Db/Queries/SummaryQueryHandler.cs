@@ -51,7 +51,7 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Commands
             {
                 var details = new SummaryViewModel.TaskDefinitionDetails
                 {
-                    ShortName = def.First().Name.Value,
+                    Name = def.First().Name.Value,
                     Count = await context.TaskRecords.Where(e => def.Select(d => d.Id).Contains(e.DefinitionId)).CountAsync(),
                     Findings = context.AssetRecords.Include(r => r.FoundByTask).Where(r => def.Select(d => d.Id).Contains(r.FoundByTask.DefinitionId)).Count()
                 };

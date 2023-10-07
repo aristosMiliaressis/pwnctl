@@ -212,7 +212,7 @@ every operation has an associated `ScopeAggregate` and  a list of `TaskProfiles`
 
 **sample operation creation request**
 ```yaml
-ShortName: tesla_crawl
+Name: tesla_crawl
 Type: CRAWL
 
 Policy:
@@ -222,7 +222,7 @@ Policy:
         - "cloud_recon"
 
 Scope:
-    ShortName: tesla_scope
+    Name: tesla_scope
     ScopeDefinitions:
         - Type: DomainRegex
           Pattern: (^tesla\.com|.*\.tesla\.com)$

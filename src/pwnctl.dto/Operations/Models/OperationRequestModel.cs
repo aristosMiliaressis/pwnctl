@@ -5,7 +5,7 @@ using pwnctl.dto.Scope.Models;
 
 public class OperationRequestModel
 {
-    public string ShortName { get; set; }
+    public string Name { get; set; }
     public OperationType Type { get; set; }
     public string CronSchedule { get; set; }
     public PolicyModel Policy { get; set; }

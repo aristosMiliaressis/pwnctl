@@ -104,7 +104,7 @@ namespace pwnctl.infra.Persistence
 
                 var definitions = file.TaskDefinitions.Select(d => d.ToEntity()).ToList();
 
-                var profile = context.TaskProfiles.FirstOrDefault(p => p.ShortName == ShortName.Create(file.Profile));
+                var profile = context.TaskProfiles.FirstOrDefault(p => p.Name == ShortName.Create(file.Profile));
                 if (profile is null)
                 {
                     profile = new TaskProfile(file.Profile, definitions);

@@ -16,9 +16,9 @@ namespace pwnctl.api.Mediator.Handlers.Tasks.Commands
 
         public async Task<MediatedResponse> Handle(DeleteTaskProfileCommand command, CancellationToken cancellationToken)
         {
-            var profile = _context.TaskProfiles.FirstOrDefault(a => a.ShortName == ShortName.Create(command.ShortName));
+            var profile = _context.TaskProfiles.FirstOrDefault(a => a.Name == ShortName.Create(command.Name));
             if (profile is null)
-                return MediatedResponse.Error("Task Profile {0} not found.", command.ShortName);
+                return MediatedResponse.Error("Task Profile {0} not found.", command.Name);
 
             _context.Remove(profile);
             await _context.SaveChangesAsync(cancellationToken);

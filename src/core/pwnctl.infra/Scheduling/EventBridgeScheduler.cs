@@ -36,18 +36,18 @@ public class EventBridgeScheduler
 
         await client.PutRuleAsync(new PutRuleRequest
         {
-            Name = $"{op.ShortName.Value}_schedule",
+            Name = $"{op.Name.Value}_schedule",
             ScheduleExpression = $"cron({schedule})"
         });
 
         var respone = await client.PutTargetsAsync(new PutTargetsRequest
         {
-            Rule = $"{op.ShortName.Value}_schedule",
+            Rule = $"{op.Name.Value}_schedule",
             Targets = new List<Target>
             {
                 new Target
                 {
-                    Id = $"{op.ShortName.Value}_target",
+                    Id = $"{op.Name.Value}_target",
                     Arn = cluster.ClusterArns.First(),
                     RoleArn = roles.Roles.First(r => r.RoleName == "ecs_events").Arn,
                     EcsParameters = new EcsParameters
@@ -83,13 +83,13 @@ public class EventBridgeScheduler
         {
             await client.RemoveTargetsAsync(new RemoveTargetsRequest
             {
-                Rule = $"{op.ShortName.Value}_schedule",
-                Ids = new() { $"{op.ShortName.Value}_target" }
+                Rule = $"{op.Name.Value}_schedule",
+                Ids = new() { $"{op.Name.Value}_target" }
             });
 
             await client.DeleteRuleAsync(new DeleteRuleRequest
             {
-                Name = $"{op.ShortName.Value}_schedule"
+                Name = $"{op.Name.Value}_schedule"
             });
         }
         catch (Exception ex)

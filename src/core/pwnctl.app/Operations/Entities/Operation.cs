@@ -8,7 +8,7 @@ using pwnctl.app.Common.ValueObjects;
 
 public class Operation : Entity<int>
 {
-    public ShortName ShortName { get; private init; }
+    public ShortName Name { get; private init; }
     public OperationType Type { get; private init; }
     public OperationState State { get; set; }
     public CronExpression? Schedule { get; set; }
@@ -25,7 +25,7 @@ public class Operation : Entity<int>
 
     public Operation(string name, OperationType type, Policy policy, ScopeAggregate scope)
     {
-        ShortName = ShortName.Create(name);
+        Name = ShortName.Create(name);
         Type = type;
         Policy = policy;
         Scope = scope;

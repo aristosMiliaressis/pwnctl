@@ -5,6 +5,7 @@ using pwnctl.dto.Operations.Commands;
 
 using MediatR;
 using pwnctl.kernel;
+using pwnctl.kernel.BaseClasses;
 using pwnctl.app.Operations.Entities;
 using pwnctl.app.Operations.Enums;
 using pwnctl.infra;
@@ -42,18 +43,18 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
 
         public async Task<MediatedResponse> Handle(CreateOperationCommand command, CancellationToken cancellationToken)
         {
-            var existingOperation = await _context.Operations.FirstOrDefaultAsync(p => p.ShortName == ShortName.Create(command.ShortName));
+            var existingOperation = await _context.Operations.FirstOrDefaultAsync(p => p.Name == ShortName.Create(command.Name));
             if (existingOperation is not null)
-                return MediatedResponse.Error("Operation {0} already exists.", command.ShortName);
+                return MediatedResponse.Error("Operation {0} already exists.", command.Name);
 
             var scopeAggregate = _context.ScopeAggregates
                                         .Include(a => a.Definitions)
                                             .ThenInclude(d => d.Definition)
-                                        .FirstOrDefault(a => a.ShortName == ShortName.Create(command.Scope.ShortName));
+                                        .FirstOrDefault(a => a.Name == ShortName.Create(command.Scope.Name));
             if (scopeAggregate is null)
             {
                 if (command.Scope.ScopeDefinitions is null || !command.Scope.ScopeDefinitions.Any())
-                    return MediatedResponse.Error("Scope Aggregate {0} not found.", command.Scope.ShortName);
+                    return MediatedResponse.Error("Scope Aggregate {0} not found.", command.Scope.Name);
 
                 scopeAggregate = await CreateScopeAggregateCommandHandler.CreateScopeAggregate(_context, command.Scope, cancellationToken);
             }
@@ -63,7 +64,7 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
             {
                 var profile = _context.TaskProfiles
                                         .Include(p => p.TaskDefinitions)
-                                        .FirstOrDefault(p => p.ShortName == ShortName.Create(profileName));
+                                        .FirstOrDefault(p => p.Name == ShortName.Create(profileName));
                 if (profile is null)
                     return MediatedResponse.Error("Task Profile {0} not found.", profileName);
                 
@@ -73,7 +74,7 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
             var policy = new Policy(taskProfiles);
             policy.Blacklist = command.Policy.Blacklist;
 
-            var op = new Operation(command.ShortName, command.Type, policy, scopeAggregate);
+            var op = new Operation(command.Name, command.Type, policy, scopeAggregate);
             if (command.CronSchedule is not null)
                 op.Schedule = CronExpression.Create(command.CronSchedule);
             else
@@ -101,11 +102,11 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
         {
             foreach (var assetText in input.Where(a => !string.IsNullOrEmpty(a)))
             {
-                AssetDTO dto = TagParser.Parse(assetText);
+                Result<Asset, string> result = AssetParser.Parse(assetText);
+                if (!result.IsOk)
+                    continue;
 
-                Asset asset = AssetParser.Parse(dto.Asset);
-
-                AssetRecord record = new(asset);
+                AssetRecord record = new(result.Value);
 
                 var scope = op.Scope.Definitions.FirstOrDefault(scope => scope.Definition.Matches(record.Asset));
                 if (scope is not null)

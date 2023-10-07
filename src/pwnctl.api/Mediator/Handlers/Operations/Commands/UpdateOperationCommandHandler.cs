@@ -16,9 +16,9 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
 
         public async Task<MediatedResponse> Handle(UpdateOperationCommand command, CancellationToken cancellationToken)
         {
-            var existingOperation = await _context.Operations.FirstOrDefaultAsync(p => p.ShortName == ShortName.Create(command.ShortName));
+            var existingOperation = await _context.Operations.FirstOrDefaultAsync(p => p.Name == ShortName.Create(command.Name));
             if (existingOperation is null)
-                return MediatedResponse.Error("Operation {0} not found.", command.ShortName);
+                return MediatedResponse.Error("Operation {0} not found.", command.Name);
 
             existingOperation.State = command.State;
 

@@ -5,7 +5,7 @@ namespace pwnctl.app.Tasks.DTO;
 public sealed class TaskRecordDTO
 {
     public int Id { get; set; }
-    public string ShortName { get; set; }
+    public string Name { get; set; }
     public string Subject { get; set; }
     public string Asset { get; set; }
     public string State { get; set; }
@@ -22,7 +22,7 @@ public sealed class TaskRecordDTO
     public TaskRecordDTO(TaskRecord record)
     {
         Id = record.Id;
-        ShortName = record.Definition.Name.Value;
+        Name = record.Definition.Name.Value;
         Subject = record.Definition.Subject.Value;
         Asset = record.Record.Asset.ToString();
         State = record.State.ToString();
