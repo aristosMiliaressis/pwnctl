@@ -4,11 +4,11 @@ using pwnctl.app.Assets.Entities;
 using pwnctl.app.Assets.DTO;
 using pwnctl.dto.Mediator;
 
-public sealed class HostListViewModel : PaginatedViewModel<AssetDTO>
+public sealed class NetworkHostListViewModel : PaginatedViewModel<AssetDTO>
 {
-    public HostListViewModel() { }
+    public NetworkHostListViewModel() { }
 
-    public HostListViewModel(List<AssetRecord> hosts)
+    public NetworkHostListViewModel(IEnumerable<AssetRecord> hosts)
     {
         Rows = hosts.Select(e => new AssetDTO(e)).ToList();
     }

@@ -74,6 +74,12 @@ public sealed class Tests
         Assert.Equal("fqdn.example.com", domain.Name);
         Assert.Equal("example.com", domain.ParentDomain.Name);
         Assert.Equal("example", domain.Word);
+        
+        asset = AssetParser.Parse("_dmarc.00example.com");
+        Assert.IsType<DomainName>(asset.Value);
+        domain = (DomainName)asset.Value;
+        Assert.Equal("_dmarc.00example.com", domain.Name);
+        Assert.Equal("00example.com", domain.ParentDomain.Name);
 
         // host
         asset = AssetParser.Parse("1.3.3.7");

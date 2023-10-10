@@ -5,7 +5,7 @@ using pwnctl.domain.BaseClasses;
 
 public interface NotificationRepository
 {
-    List<NotificationRule> ListRules();
+    IEnumerable<NotificationRule> ListRules();
 
     Task<Notification> FindNotificationAsync(Asset asset, NotificationRule rule);
 }

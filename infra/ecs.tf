@@ -90,11 +90,7 @@ resource "aws_ecs_task_definition" "exec" {
         },
         {
           "name": "PWNCTL_Logging__MinLevel",
-          "value": "Debug"
-        },
-        {
-          "name": "PWNCTL_Logging__FilePath",
-          "value": "${var.efs_mount_point}"
+          "value": "Information"
         },
         {
           "name": "PWNCTL_Logging__LogGroup",
@@ -311,11 +307,7 @@ resource "aws_ecs_task_definition" "proc" {
         },
         {
           "name": "PWNCTL_Logging__MinLevel",
-          "value": "Debug"
-        },
-        {
-          "name": "PWNCTL_Logging__FilePath",
-          "value": "${var.efs_mount_point}"
+          "value": "Information"
         },
         {
           "name": "PWNCTL_Logging__LogGroup",

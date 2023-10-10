@@ -12,7 +12,7 @@ public sealed class Policy : Entity<int>
 
     public Policy() { }
 
-    public Policy(List<TaskProfile> profiles)
+    public Policy(IEnumerable<TaskProfile> profiles)
     {
         TaskProfiles = profiles.Select(p => new PolicyTaskProfile { Policy = this, TaskProfile = p }).ToList();
     }

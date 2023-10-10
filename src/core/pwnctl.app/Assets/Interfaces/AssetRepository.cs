@@ -10,15 +10,15 @@ public interface AssetRepository
 {
     Task<AssetRecord> FindRecordAsync(Asset asset);
     Task<AssetRecord> UpdateRecordReferences(AssetRecord record, Asset asset);
-    Task SaveAsync(AssetRecord record);
+    Task<IEnumerable<TaskRecord>> SaveAsync(AssetRecord record);
 
     Task<List<AssetRecord>> ListInScopeAsync(int scopeId, AssetClass[] assetClasses, int pageIdx, CancellationToken token = default);
 
-    Task<List<AssetRecord>> ListHostsAsync(int pageIdx);
-    Task<List<AssetRecord>> ListEndpointsAsync(int pageIdx);
-    Task<List<AssetRecord>> ListServicesAsync(int pageIdx);
-    Task<List<AssetRecord>> ListNetRangesAsync(int pageIdx);
-    Task<List<AssetRecord>> ListDomainsAsync(int pageIdx);
-    Task<List<AssetRecord>> ListDNSRecordsAsync(int pageIdx);
-    Task<List<AssetRecord>> ListEmailsAsync(int pageIdx);
+    Task<IEnumerable<AssetRecord>> ListHostsAsync(int pageIdx);
+    Task<IEnumerable<AssetRecord>> ListEndpointsAsync(int pageIdx);
+    Task<IEnumerable<AssetRecord>> ListServicesAsync(int pageIdx);
+    Task<IEnumerable<AssetRecord>> ListNetRangesAsync(int pageIdx);
+    Task<IEnumerable<AssetRecord>> ListDomainsAsync(int pageIdx);
+    Task<IEnumerable<AssetRecord>> ListDNSRecordsAsync(int pageIdx);
+    Task<IEnumerable<AssetRecord>> ListEmailsAsync(int pageIdx);
 }

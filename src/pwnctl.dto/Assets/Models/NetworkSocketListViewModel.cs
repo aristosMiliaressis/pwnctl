@@ -4,11 +4,11 @@ using pwnctl.app.Assets.Entities;
 using pwnctl.app.Assets.DTO;
 using pwnctl.dto.Mediator;
 
-public sealed class ServiceListViewModel : PaginatedViewModel<AssetDTO>
+public sealed class NetworkSocketListViewModel : PaginatedViewModel<AssetDTO>
 {
-    public ServiceListViewModel() { }
+    public NetworkSocketListViewModel() { }
 
-    public ServiceListViewModel(List<AssetRecord> services)
+    public NetworkSocketListViewModel(IEnumerable<AssetRecord> services)
     {
         Rows = services.Select(e => new AssetDTO(e)).ToList();
     }

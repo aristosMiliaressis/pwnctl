@@ -22,8 +22,8 @@ using System.Collections.Concurrent;
 
 public sealed class AssetProcessor
 {
-    private readonly List<NotificationRule> _notificationRules;
-    private readonly List<TaskDefinition> _outOfScopeTasks;
+    private readonly IEnumerable<NotificationRule> _notificationRules;
+    private readonly IEnumerable<TaskDefinition> _outOfScopeTasks;
 
     public AssetProcessor()
     {
@@ -120,12 +120,12 @@ public sealed class AssetProcessor
             }
         }
 
-        await PwnInfraContext.AssetRepository.SaveAsync(record);
+        IEnumerable<TaskRecord> newTasks = await PwnInfraContext.AssetRepository.SaveAsync(record);
 
         var allowedTasks = foundByTask.Operation.Policy.GetAllowedTasks();
         allowedTasks.AddRange(_outOfScopeTasks);
 
-        await Parallel.ForEachAsync(record.Tasks.Where(t => t.Id == default), 
+        await Parallel.ForEachAsync(newTasks,
         async (task, token) =>
         {
             task.Definition = allowedTasks.First(t => t.Id == task.DefinitionId);
@@ -206,7 +206,7 @@ public sealed class AssetProcessor
         record.Notifications.Add(notification);
     }
 
-    private List<Asset> GetReferencedAssets(Asset asset)
+    private IEnumerable<Asset> GetReferencedAssets(Asset asset)
     {
         var assetProperties = asset.GetType().GetProperties();
         List<Asset> assets = assetProperties

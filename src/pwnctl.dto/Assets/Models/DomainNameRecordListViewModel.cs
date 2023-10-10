@@ -4,11 +4,11 @@ using pwnctl.app.Assets.Entities;
 using pwnctl.app.Assets.DTO;
 using pwnctl.dto.Mediator;
 
-public sealed class DnsRecordListViewModel : PaginatedViewModel<AssetDTO>
+public sealed class DomainNameRecordListViewModel : PaginatedViewModel<AssetDTO>
 {
-    public DnsRecordListViewModel() { }
+    public DomainNameRecordListViewModel() { }
 
-    public DnsRecordListViewModel(List<AssetRecord> dnsRecords)
+    public DomainNameRecordListViewModel(IEnumerable<AssetRecord> dnsRecords)
     {
         Rows = dnsRecords.Select(e => new AssetDTO(e)).ToList();
     }

@@ -4,11 +4,11 @@ using pwnctl.app.Assets.Entities;
 using pwnctl.app.Assets.DTO;
 using pwnctl.dto.Mediator;
 
-public sealed class NetRangeListViewModel : PaginatedViewModel<AssetDTO>
+public sealed class NetworkRangeListViewModel : PaginatedViewModel<AssetDTO>
 {
-    public NetRangeListViewModel() {}
+    public NetworkRangeListViewModel() {}
 
-    public NetRangeListViewModel(List<AssetRecord> netRanges)
+    public NetworkRangeListViewModel(IEnumerable<AssetRecord> netRanges)
     {
         Rows = netRanges.Select(e => new AssetDTO(e)).ToList();
     }

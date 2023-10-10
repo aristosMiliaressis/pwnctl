@@ -41,7 +41,7 @@ namespace pwnctl.infra.Repositories
             _context = context;
         }
 
-        public async Task<List<TaskRecord>> ListAsync(int pageIdx)
+        public async Task<IEnumerable<TaskRecord>> ListAsync(int pageIdx)
         {
             return await _context.TaskRecords
                                 .Include(p => p.Operation)
@@ -70,7 +70,7 @@ namespace pwnctl.infra.Repositories
             return _context.FirstFromLambda<TaskRecord>(lambda);
         }
 
-        public List<TaskDefinition> ListOutOfScope()
+        public IEnumerable<TaskDefinition> ListOutOfScope()
         {
             return _context.TaskDefinitions
                             .Where(d => d.MatchOutOfScope)

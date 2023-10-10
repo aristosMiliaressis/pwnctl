@@ -2,6 +2,7 @@ using pwnctl.domain.BaseClasses;
 using pwnctl.domain.Entities;
 using pwnctl.app.Assets.Entities;
 using pwnctl.app.Assets.Interfaces;
+using pwnctl.app.Tasks.Entities;
 using pwnctl.app.Common;
 using pwnctl.infra.Persistence;
 using pwnctl.infra.Persistence.Extensions;
@@ -119,78 +120,7 @@ namespace pwnctl.infra.Repositories
             return record;
         }
 
-        public async Task SaveSafeAsync(AssetRecord record)
-        {
-            try
-            {
-                // this prevents concurrency conflicts when checking if the record already exists
-                using (var trx = _context.Database.BeginTransaction(IsolationLevel.Serializable)) // TODO: try Snapshot? why?
-                {
-                    var existingRecord = await FindRecordAsync(record.Asset);
-                    if (existingRecord is null)
-                    {
-                        // explicitly track asset to prevent change tracker from
-                        // navigating related assets and attempting to add them.
-                        _context.Entry(record.Asset).State = EntityState.Added;
-
-                        _context.Add(record);
-
-                        await _context.SaveChangesAsync();
-
-                        trx.Commit();
-                        return;
-                    }
-
-                    if (record.InScope)
-                    {
-                        _context.AssetRecords
-                                .FromSqlRaw("UPDATE asset_records SET \"InScope\" = true, \"ScopeId\" = %s, \"ConcurrencyToken\" = %s WHERE \"ScopeId\" != %s AND \"ConcurrencyToken\" = "
-                                        + "(SELECT \"ConcurrencyToken\" FROM asset_records WHERE \"ConcurrencyToken\" = %s FOR UPDATE SKIP LOCKED);",
-                                        record.ScopeId, Guid.NewGuid(), record.ScopeId, existingRecord.ConcurrencyToken);
-                    }
-
-                    _context.AddRange(record.Tags.Where(t => !existingRecord.Tags.Select(t => t.Name).Contains(t.Name)).Select(t =>
-                    {
-                        t.Record = existingRecord;
-                        t.RecordId = existingRecord.Id;
-                        return t;
-                    }));
-
-                    _context.AddRange(record.Tasks.Where(t => t.Id == default).Select(t =>
-                    {
-                        t.Record = null;
-                        t.RecordId = existingRecord.Id;
-                        return t;
-                    }));
-
-                    _context.AddRange(record.Notifications.Where(t => t.Id == default).Select(t =>
-                    {
-                        t.Record = null;
-                        t.RecordId = existingRecord.Id;
-                        return t;
-                    }));
-
-                    await _context.SaveChangesAsync();
-
-                    trx.Commit();
-                }
-            }
-            catch (Exception ex) when (ex is DbUpdateException || ex is PostgresException || ex is DBConcurrencyException || ex is InvalidOperationException)
-            {
-                PwnInfraContext.Logger.Warning(ex.ToRecursiveExInfo());
-                
-                // optimistic concurrency yolo!
-            }
-            finally
-            {
-                // detaching record references to avoid an ever growing
-                // change tracking graph and reduce momory consumption.
-                _context.Entry(record.Asset).DetachReferenceGraph();
-                _context.Entry(record).State = EntityState.Detached;
-            }
-        }
-
-        public async Task SaveAsync(AssetRecord record)
+        public async Task<IEnumerable<TaskRecord>> SaveAsync(AssetRecord record)
         {
             try
             {
@@ -205,7 +135,7 @@ namespace pwnctl.infra.Repositories
 
                     await _context.SaveChangesAsync();
 
-                    return;
+                    return record.Tasks;
                 }
 
                 if (record.InScope)
@@ -222,7 +152,8 @@ namespace pwnctl.infra.Repositories
                     return t;
                 }));
 
-                _context.AddRange(record.Tasks.Where(t => t.Id == default).Select(t =>
+                var newTasks = record.Tasks.Where(t => t.Id == default);
+                _context.AddRange(newTasks.Select(t =>
                 {
                     t.Record = null;
                     t.RecordId = existingRecord.Id;
@@ -237,6 +168,8 @@ namespace pwnctl.infra.Repositories
                 }));
 
                 await _context.SaveChangesAsync();
+
+                return newTasks;
             }
             finally
             {
@@ -247,7 +180,7 @@ namespace pwnctl.infra.Repositories
             }
         }
 
-        public async Task<List<AssetRecord>> ListHostsAsync(int pageIdx)
+        public async Task<IEnumerable<AssetRecord>> ListHostsAsync(int pageIdx)
         {
             return await _context.AssetRecords
                             .Include(e => e.FoundByTask)
@@ -261,7 +194,7 @@ namespace pwnctl.infra.Repositories
                             .ToListAsync();
         }
 
-        public async Task<List<AssetRecord>> ListDomainsAsync(int pageIdx)
+        public async Task<IEnumerable<AssetRecord>> ListDomainsAsync(int pageIdx)
         {
             return await _context.AssetRecords
                             .Include(e => e.FoundByTask)
@@ -275,7 +208,7 @@ namespace pwnctl.infra.Repositories
                             .ToListAsync();
         }
 
-        public async Task<List<AssetRecord>> ListDNSRecordsAsync(int pageIdx)
+        public async Task<IEnumerable<AssetRecord>> ListDNSRecordsAsync(int pageIdx)
         {
             return await _context.AssetRecords
                             .Include(e => e.FoundByTask)
@@ -289,7 +222,7 @@ namespace pwnctl.infra.Repositories
                             .ToListAsync();
         }
 
-        public async Task<List<AssetRecord>> ListEndpointsAsync(int pageIdx)
+        public async Task<IEnumerable<AssetRecord>> ListEndpointsAsync(int pageIdx)
         {
             return await _context.AssetRecords
                             .Include(e => e.FoundByTask)
@@ -303,7 +236,7 @@ namespace pwnctl.infra.Repositories
                             .ToListAsync();
         }
 
-        public async Task<List<AssetRecord>> ListNetRangesAsync(int pageIdx)
+        public async Task<IEnumerable<AssetRecord>> ListNetRangesAsync(int pageIdx)
         {
             return await _context.AssetRecords
                             .Include(e => e.FoundByTask)
@@ -317,7 +250,7 @@ namespace pwnctl.infra.Repositories
                             .ToListAsync();
         }
 
-        public async Task<List<AssetRecord>> ListParametersAsync(int pageIdx)
+        public async Task<IEnumerable<AssetRecord>> ListParametersAsync(int pageIdx)
         {
             return await _context.AssetRecords
                             .Include(e => e.FoundByTask)
@@ -331,7 +264,7 @@ namespace pwnctl.infra.Repositories
                             .ToListAsync();
         }
 
-        public async Task<List<AssetRecord>> ListServicesAsync(int pageIdx)
+        public async Task<IEnumerable<AssetRecord>> ListServicesAsync(int pageIdx)
         {
             return await _context.AssetRecords
                             .Include(e => e.FoundByTask)
@@ -345,7 +278,7 @@ namespace pwnctl.infra.Repositories
                             .ToListAsync();
         }
 
-        public async Task<List<AssetRecord>> ListEmailsAsync(int pageIdx)
+        public async Task<IEnumerable<AssetRecord>> ListEmailsAsync(int pageIdx)
         {
             return await _context.AssetRecords
                             .Include(e => e.FoundByTask)
@@ -359,4 +292,75 @@ namespace pwnctl.infra.Repositories
                             .ToListAsync();
         }
     }
+
+    // public async Task SaveSafeAsync(AssetRecord record)
+    // {
+    //     try
+    //     {
+    //         // this prevents concurrency conflicts when checking if the record already exists
+    //         using (var trx = _context.Database.BeginTransaction(IsolationLevel.Serializable)) // TODO: try Snapshot? why?
+    //         {
+    //             var existingRecord = await FindRecordAsync(record.Asset);
+    //             if (existingRecord is null)
+    //             {
+    //                 // explicitly track asset to prevent change tracker from
+    //                 // navigating related assets and attempting to add them.
+    //                 _context.Entry(record.Asset).State = EntityState.Added;
+
+    //                 _context.Add(record);
+
+    //                 await _context.SaveChangesAsync();
+
+    //                 trx.Commit();
+    //                 return;
+    //             }
+
+    //             if (record.InScope)
+    //             {
+    //                 _context.AssetRecords
+    //                         .FromSqlRaw("UPDATE asset_records SET \"InScope\" = true, \"ScopeId\" = %s, \"ConcurrencyToken\" = %s WHERE \"ScopeId\" != %s AND \"ConcurrencyToken\" = "
+    //                                 + "(SELECT \"ConcurrencyToken\" FROM asset_records WHERE \"ConcurrencyToken\" = %s FOR UPDATE SKIP LOCKED);",
+    //                                 record.ScopeId, Guid.NewGuid(), record.ScopeId, existingRecord.ConcurrencyToken);
+    //             }
+
+    //             _context.AddRange(record.Tags.Where(t => !existingRecord.Tags.Select(t => t.Name).Contains(t.Name)).Select(t =>
+    //             {
+    //                 t.Record = existingRecord;
+    //                 t.RecordId = existingRecord.Id;
+    //                 return t;
+    //             }));
+
+    //             _context.AddRange(record.Tasks.Where(t => t.Id == default).Select(t =>
+    //             {
+    //                 t.Record = null;
+    //                 t.RecordId = existingRecord.Id;
+    //                 return t;
+    //             }));
+
+    //             _context.AddRange(record.Notifications.Where(t => t.Id == default).Select(t =>
+    //             {
+    //                 t.Record = null;
+    //                 t.RecordId = existingRecord.Id;
+    //                 return t;
+    //             }));
+
+    //             await _context.SaveChangesAsync();
+
+    //             trx.Commit();
+    //         }
+    //     }
+    //     catch (Exception ex) when (ex is DbUpdateException || ex is PostgresException || ex is DBConcurrencyException || ex is InvalidOperationException)
+    //     {
+    //         PwnInfraContext.Logger.Warning(ex.ToRecursiveExInfo());
+            
+    //         // optimistic concurrency yolo!
+    //     }
+    //     finally
+    //     {
+    //         // detaching record references to avoid an ever growing
+    //         // change tracking graph and reduce momory consumption.
+    //         _context.Entry(record.Asset).DetachReferenceGraph();
+    //         _context.Entry(record).State = EntityState.Detached;
+    //     }
+    // }
 }

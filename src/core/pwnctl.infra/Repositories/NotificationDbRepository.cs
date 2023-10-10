@@ -18,7 +18,7 @@ public sealed class NotificationDbRepository : NotificationRepository
         _context = context;
     }
 
-    public List<NotificationRule> ListRules()
+    public IEnumerable<NotificationRule> ListRules()
     {
         return _context.NotificationRules.ToList();
     }

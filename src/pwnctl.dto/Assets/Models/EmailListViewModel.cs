@@ -8,7 +8,7 @@ public sealed class EmailListViewModel : PaginatedViewModel<AssetDTO>
 {
     public EmailListViewModel() { }
 
-    public EmailListViewModel(List<AssetRecord> emails)
+    public EmailListViewModel(IEnumerable<AssetRecord> emails)
     {
         Rows = emails.Select(e => new AssetDTO(e)).ToList();
     }

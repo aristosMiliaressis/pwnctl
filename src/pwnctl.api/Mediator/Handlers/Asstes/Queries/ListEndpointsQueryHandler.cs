@@ -10,9 +10,9 @@ using pwnctl.dto.Assets.Models;
 
 namespace pwnctl.api.Mediator.Handlers.Targets.Queries
 {
-    public sealed class ListEndpointsQueryHandler : IRequestHandler<ListEndpointsQuery, MediatedResponse<EndpointListViewModel>>
+    public sealed class ListEndpointsQueryHandler : IRequestHandler<ListEndpointsQuery, MediatedResponse<HttpEndpointListViewModel>>
     {
-        public async Task<MediatedResponse<EndpointListViewModel>> Handle(ListEndpointsQuery query, CancellationToken cancellationToken)
+        public async Task<MediatedResponse<HttpEndpointListViewModel>> Handle(ListEndpointsQuery query, CancellationToken cancellationToken)
         {
             AssetDbRepository repository = new();
             
@@ -20,14 +20,14 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Queries
             var endpoints = await repository.ListEndpointsAsync(query.Page);
             PwnInfraContext.Logger.Warning("HERE2");
 
-            var viewModel = new EndpointListViewModel(endpoints);
+            var viewModel = new HttpEndpointListViewModel(endpoints);
             PwnInfraContext.Logger.Warning("HERE3");
 
             viewModel.Page = query.Page;
             viewModel.TotalPages = new PwnctlDbContext().HttpEndpoints.Count() / PwnInfraContext.Config.Api.BatchSize;
             PwnInfraContext.Logger.Warning("HERE4");
 
-            return MediatedResponse<EndpointListViewModel>.Success(viewModel);
+            return MediatedResponse<HttpEndpointListViewModel>.Success(viewModel);
         }
     }
 }

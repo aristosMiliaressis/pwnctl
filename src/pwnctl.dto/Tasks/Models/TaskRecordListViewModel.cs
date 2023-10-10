@@ -8,7 +8,7 @@ public sealed class TaskRecordListViewModel : PaginatedViewModel<TaskRecordDTO>
 {
     public TaskRecordListViewModel() { }
 
-    public TaskRecordListViewModel(List<TaskRecord> tasks)
+    public TaskRecordListViewModel(IEnumerable<TaskRecord> tasks)
     {
         Rows = tasks.Select(t => new TaskRecordDTO(t)).ToList();
     }

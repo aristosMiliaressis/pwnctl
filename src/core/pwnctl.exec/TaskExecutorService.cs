@@ -85,7 +85,7 @@ namespace pwnctl.exec
             bool succeeded = task.Started();
             if (!succeeded)
             {
-                PwnInfraContext.Logger.Warning($"Invalid {nameof(TaskRecord)}:{task.Id} state transition from {task.State} to {TaskState.RUNNING}.");
+                PwnInfraContext.Logger.Warning($"Invalid TaskRecord:{task.Id} state transition from {task.State} to {TaskState.RUNNING}.");
 
                 _timer.Stop();
 

@@ -10,20 +10,20 @@ using pwnctl.dto.Assets.Models;
 
 namespace pwnctl.api.Mediator.Handlers.Targets.Queries
 {
-    public sealed class ListDomainsQueryHandler : IRequestHandler<ListDomainsQuery, MediatedResponse<DomainListViewModel>>
+    public sealed class ListDomainsQueryHandler : IRequestHandler<ListDomainsQuery, MediatedResponse<DomainNameListViewModel>>
     {
-        public async Task<MediatedResponse<DomainListViewModel>> Handle(ListDomainsQuery query, CancellationToken cancellationToken)
+        public async Task<MediatedResponse<DomainNameListViewModel>> Handle(ListDomainsQuery query, CancellationToken cancellationToken)
         {
             AssetDbRepository repository = new();
 
             var domains = await repository.ListDomainsAsync(query.Page);
 
-            var viewModel = new DomainListViewModel(domains);
+            var viewModel = new DomainNameListViewModel(domains);
 
             viewModel.Page = query.Page;
             viewModel.TotalPages = new PwnctlDbContext().DomainNames.Count() / PwnInfraContext.Config.Api.BatchSize;
 
-            return MediatedResponse<DomainListViewModel>.Success(viewModel);
+            return MediatedResponse<DomainNameListViewModel>.Success(viewModel);
         }
     }
 }

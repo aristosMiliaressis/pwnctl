@@ -43,7 +43,11 @@ public sealed class DomainName : Asset
                 || assetText.Contains("@"))
                 return $"{assetText} is not a {nameof(DomainName)}";
 
-            if (Uri.CheckHostName(assetText) == UriHostNameType.Unknown)
+            // support FQDN notation ending with a dot.
+            assetText = assetText.EndsWith(".") ? assetText.Substring(0, assetText.Length - 1) : assetText;
+
+            var match = _matcher.Matches(assetText);
+            if (match.Count != 1)
                 return $"{assetText} is not a {nameof(DomainName)}";
 
             var domain = new DomainName(assetText);
@@ -83,4 +87,6 @@ public sealed class DomainName : Asset
                 .Split(".")
                 .Last() + "." + suffix.Value;
     }
+
+    private static readonly Regex _matcher = new Regex(@"^(?=.{0,253}$)(([a-z0-9_][a-z0-9_-]{0,61}[a-z0-9_]|[a-z0-9_])\.)+((?=.*[^0-9])([a-z0-9][a-z0-9-]{0,61}[a-z0-9]|[a-z0-9]))$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 }

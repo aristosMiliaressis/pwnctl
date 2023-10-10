@@ -40,7 +40,6 @@ resource "aws_lambda_function" "this" {
           PWNCTL_TaskQueue__Name = module.sqs.main_queue.name,
           PWNCTL_TaskQueue__VisibilityTimeout = tostring(module.sqs.sqs_visibility_timeout),
           PWNCTL_Logging__MinLevel = "Debug"
-          PWNCTL_Logging__FilePath = var.efs_mount_point
           PWNCTL_Api__AccessTimeoutMinutes = tostring(var.access_timeout_minutes)
           PWNCTL_Api__RefreshTimeoutHours = tostring(var.refresh_timeout_hours)
           PWNCTL_Db__Name = var.rds_postgres_databasename

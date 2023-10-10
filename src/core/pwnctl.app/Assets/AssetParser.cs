@@ -29,9 +29,8 @@ public static class AssetParser
 
                 return (Asset)Result_Value_Property.GetValue(result);
             }
-            catch (Exception ex)
+            catch
             {
-                Console.WriteLine(ex.ToRecursiveExInfo());
                 continue;
             }
         }
