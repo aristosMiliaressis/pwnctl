@@ -12,6 +12,7 @@ public sealed class TaskDefinition : Entity<int>
     public AssetClass Subject { get; init; }
     public string CommandTemplate { get; init; }
     public string? Filter { get; init; }
+    public string? StdinQuery { get; init; }
     public bool CheckNotificationRules { get; init; }
     public bool MatchOutOfScope { get; init; }
 

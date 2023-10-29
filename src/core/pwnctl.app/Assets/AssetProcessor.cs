@@ -23,11 +23,9 @@ using System.Collections.Concurrent;
 public sealed class AssetProcessor
 {
     private readonly IEnumerable<NotificationRule> _notificationRules;
-    private readonly IEnumerable<TaskDefinition> _outOfScopeTasks;
 
     public AssetProcessor()
     {
-        _outOfScopeTasks = PwnInfraContext.TaskRepository.ListOutOfScope();
         _notificationRules = PwnInfraContext.NotificationRepository.ListRules();
     }
 
@@ -123,7 +121,6 @@ public sealed class AssetProcessor
         IEnumerable<TaskRecord> newTasks = await PwnInfraContext.AssetRepository.SaveAsync(record);
 
         var allowedTasks = foundByTask.Operation.Policy.GetAllowedTasks();
-        allowedTasks.AddRange(_outOfScopeTasks);
 
         await Parallel.ForEachAsync(newTasks,
         async (task, token) =>
@@ -136,7 +133,6 @@ public sealed class AssetProcessor
     private void GenerateCrawlingTasks(Operation operation, AssetRecord record)
     {
         var allowedTasks = operation.Policy.GetAllowedTasks();
-        allowedTasks.AddRange(_outOfScopeTasks);
 
         foreach (var definition in allowedTasks.Where(def => (record.InScope || def.MatchOutOfScope) && def.Matches(record)))
         {

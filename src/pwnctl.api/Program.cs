@@ -83,7 +83,7 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Password.RequireDigit = false;
     options.Password.RequireLowercase = false;
     options.Password.RequireUppercase = false;
-    options.Password.RequireNonAlphanumeric = true;
+    options.Password.RequireNonAlphanumeric = false;
 });
 
 var app = builder.Build();

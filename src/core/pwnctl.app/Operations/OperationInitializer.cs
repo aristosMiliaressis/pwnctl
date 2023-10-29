@@ -29,16 +29,20 @@ public class OperationInitializer
         op.State = OperationState.Ongoing;
         await _opRepo.SaveAsync(op);
 
-        var monitoringTasks = op.Policy.TaskProfiles.SelectMany(p => p.TaskProfile.TaskDefinitions).Where(def => def.MonitorRules.Schedule is not null);
+        var taskDefinitions = op.Policy.TaskProfiles
+                                    .SelectMany(p => p.TaskProfile.TaskDefinitions);
+        
+        if (op.Type == OperationType.Monitor)
+            taskDefinitions = taskDefinitions.Where(def => def.MonitorRules.Schedule is not null);
 
         int page = 0;
         while (true)
         {
-            var records = await PwnInfraContext.AssetRepository.ListInScopeAsync(op.ScopeId, monitoringTasks.Select(t => t.Subject).Distinct().ToArray(), page);
+            var records = await PwnInfraContext.AssetRepository.ListInScopeAsync(op.ScopeId, taskDefinitions.Select(t => t.Subject).Distinct().ToArray(), page);
 
             foreach (var record in records)
             {
-                await GenerateScheduledTasksAsync(op, record, monitoringTasks);
+                await GenerateScheduledTasksAsync(op, record, taskDefinitions);
             }
 
             if (records.Count != PwnInfraContext.Config.Api.BatchSize)
@@ -50,9 +54,9 @@ public class OperationInitializer
         await _opRepo.SaveAsync(op);
     }
 
-    public async Task GenerateScheduledTasksAsync(Operation op, AssetRecord record, IEnumerable<TaskDefinition> monitoringTasks)
+    public async Task GenerateScheduledTasksAsync(Operation op, AssetRecord record, IEnumerable<TaskDefinition> taskDefinitions)
     {
-        foreach (var def in monitoringTasks.Where(def => def.Matches(record, minitoring: op.Type == OperationType.Monitor)))
+        foreach (var def in taskDefinitions.Where(def => def.Matches(record, minitoring: op.Type == OperationType.Monitor)))
         {
             var task = new TaskRecord(op, def, record);
 

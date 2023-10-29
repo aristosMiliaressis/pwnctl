@@ -34,7 +34,7 @@ public static class ConfigValidator
                 .Build();
 
 
-    public static bool TryValidateTaskDefinitions(string fileName, out string errorMessage)
+    public static bool TryValidateTaskDefinitions(string fileName, out string? errorMessage)
     {
         errorMessage = null;
 
@@ -116,7 +116,7 @@ public static class ConfigValidator
         return true;
     }
 
-    public static bool TryValidateNotificationRules(string fileName, out string errorMessage)
+    public static bool TryValidateNotificationRules(string fileName, out string? errorMessage)
     {
         errorMessage = null;
 

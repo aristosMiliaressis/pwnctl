@@ -91,8 +91,8 @@ data "aws_iam_policy_document" "event_publisher" {
   }
 }
 
-resource "aws_iam_role" "ecs_events" {
-  name               = "ecs_events"
+resource "aws_iam_role" "event_publisher" {
+  name               = "event_publisher"
   assume_role_policy = data.aws_iam_policy_document.event_publisher.json
 }
 
@@ -112,7 +112,7 @@ data "aws_iam_policy_document" "ecs_events_run_task_with_any_role" {
 
 resource "aws_iam_role_policy" "ecs_events_run_task_with_any_role" {
   name   = "ecs_events_run_task_with_any_role"
-  role   = aws_iam_role.ecs_events.id
+  role   = aws_iam_role.event_publisher.id
   policy = data.aws_iam_policy_document.ecs_events_run_task_with_any_role.json
 }
 

@@ -171,7 +171,9 @@ RUN mkdir -p /opt/nuclei_templates/community && mkdir /opt/nuclei_templates/offi
 RUN nuclei -ud /opt/nuclei_templates/official
 RUN cent -k -t 20 -p /opt/nuclei_templates/community
 
+RUN go install github.com/aristosMiliaressis/vhost-brute@latest
 RUN go install github.com/aristosMiliaressis/mdwfuzzer@latest
+RUN go install github.com/aristosMiliaressis/cache-prober@latest
 RUN git clone https://github.com/aristosMiliaressis/ffuf.git && go build -C ffuf && mv ffuf/ffuf /usr/local/bin
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build

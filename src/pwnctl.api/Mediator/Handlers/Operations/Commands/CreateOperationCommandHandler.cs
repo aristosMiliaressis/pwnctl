@@ -112,9 +112,7 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
                 if (scope is not null)
                     record.SetScopeId(scope.Definition.Id);
 
-                var outOfScopeTasks = _taskRepository.ListOutOfScope();
                 var allowedTasks = op.Policy.GetAllowedTasks();
-                allowedTasks.AddRange(outOfScopeTasks);
 
                 foreach (var definition in allowedTasks.Where(def => (record.InScope || def.MatchOutOfScope) && def.Matches(record)))
                 {

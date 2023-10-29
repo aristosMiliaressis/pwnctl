@@ -5,5 +5,5 @@ using System.Text;
 
 public interface CommandExecutor
 {
-    Task<(int exitCode, StringBuilder stdout, StringBuilder stderr)> ExecuteAsync(string command, StringBuilder stdin = null, CancellationToken token = default);
+    Task<(int exitCode, StringBuilder stdout, StringBuilder stderr)> ExecuteAsync(string command, StringBuilder? stdin = null, CancellationToken token = default);
 }

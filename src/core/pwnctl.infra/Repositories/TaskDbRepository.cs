@@ -70,13 +70,6 @@ namespace pwnctl.infra.Repositories
             return _context.FirstFromLambda<TaskRecord>(lambda);
         }
 
-        public IEnumerable<TaskDefinition> ListOutOfScope()
-        {
-            return _context.TaskDefinitions
-                            .Where(d => d.MatchOutOfScope)
-                            .ToList();
-        }
-
         public async Task UpdateAsync(TaskRecord task)
         {
             _context.Entry(task).State = EntityState.Modified;

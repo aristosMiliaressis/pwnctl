@@ -11,6 +11,7 @@ public class TaskDefinitionDTO
     public string Name { get; init; }
     public string Subject { get; init; }
     public string CommandTemplate { get; init; }
+    public string? StdinQuery { get; init; }
     public string? Filter { get; init; }
     public bool MatchOutOfScope { get; init; }
     public bool CheckNotificationRules { get; set; }
@@ -25,6 +26,7 @@ public class TaskDefinitionDTO
             Subject = AssetClass.Create(Subject),
             CommandTemplate = CommandTemplate,
             Filter = Filter,
+            StdinQuery = StdinQuery,
             MatchOutOfScope = MatchOutOfScope,
             CheckNotificationRules = CheckNotificationRules,
         };

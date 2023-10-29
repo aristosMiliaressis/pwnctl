@@ -124,7 +124,7 @@ public sealed class FsController : ControllerBase
     {
         var provider = new FileExtensionContentTypeProvider();
 
-        return provider.TryGetContentType(filePath, out string contentType)
+        return provider.TryGetContentType(filePath, out string? contentType)
                         ? contentType
                         : "application/octet-stream";
     }
