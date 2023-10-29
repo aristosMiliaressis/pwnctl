@@ -77,3 +77,8 @@
   Subject: HttpEndpoint
   Filter: Tags.Tags.Any(tag => tag.Name.StartsWith("nuclei-") && (tag.Value.Contains("severity\":\"crit") || tag.Value.Contains("severity\":\"high") || tag.Value.Contains("severity\":\"medium") || tag.Value.Contains("severity\":\"low")))
   Topic: misconfigs
+
+- Name: cache_prober
+  Subject: HttpEndpoint
+  Filter: Tags.Tags.Any(tag => tag.Name.StartsWith("cache-prober-"))
+  Topic: misconfigs

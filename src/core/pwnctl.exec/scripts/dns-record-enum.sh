@@ -2,8 +2,7 @@
 
 domain=$1
 
-#TODO: NSEC3, HTTPS,SRVB,CAA,SRV
-RECORD_TYPES=(NS MX TXT NSEC SRV HTTPS SVCB HINFO CAA DS)
+RECORD_TYPES=(NS MX TXT NSEC HTTPS SVCB HINFO)
 RESOLVERS_FILE='/opt/wordlists/dns/trusted-resolvers.txt'
 
 domainfile=$1
@@ -21,3 +20,11 @@ for record in "${RECORD_TYPES[@]}"
 do
     enum_records $record
 done
+
+dig +nottlid TXT _dmarc.$domain 2>/dev/null | tr '\t' ' ' | grep ' IN TXT '
+dig +nottlid TXT _mta-sts.$domain 2>/dev/null | tr '\t' ' ' | grep ' IN TXT '
+
+if [[ $2 == "1" ]]
+then
+    cat /opt/wordlists/dns/srv-records.txt | xargs -I {} dig +nottlid SRV {}.$domain | tr '\t' ' ' | grep ' IN SRV '
+fi

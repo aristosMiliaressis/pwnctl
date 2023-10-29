@@ -15,7 +15,7 @@ then
     fi
 fi
 
-sns --check -u $url 2>/dev/null | grep -q VULNERABLE \
-    && echo '{"Asset":"'$url'", "tags":{"shortname-misconfig":"true"}}'
+echo No | java -jar /opt/toos/ShortNameScanner/iis_shortname_scanner.jar 2 20 $url \
+        | grep -q 'Vulnerable!' && echo '{"Asset":"'$url'", "tags":{"shortname-misconfig":"true"}}'
 
 rm $temp

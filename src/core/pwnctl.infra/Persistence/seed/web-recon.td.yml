@@ -4,24 +4,25 @@ TaskDefinitions:
   - Name: domain_resolution
     CommandTemplate: resolve.sh {{Name}}
     Subject: DomainName
+    Filter: Tags["rcode"] == ""
     MonitorRules:
       Schedule: 0 0 * * *
       PostCondition: newTags["rcode"] != oldTags["rcode"]
       NotificationTemplate: domain {{Name}} changed rcode from {{oldTags["rcode"]}} to {{newTags["rcode"]}}
 
   - Name: httpx
-    CommandTemplate: echo {{Name}} | httpx -silent
+    CommandTemplate: echo {{Name}} | httpx -silent -csp-probe
     Subject: DomainName
 
   - Name: sub_enum
-    CommandTemplate: sub-enum.sh {{Name}} {{ZoneDepth}}
+    CommandTemplate: sub-enum.sh {{Name}} -d -m 110
     Filter: DomainName.ZoneDepth == 1
     Subject: DomainName
     MonitorRules:
       Schedule: 0 0 * * *
 
   - Name: dns_record_enum
-    CommandTemplate: dns-record-enum.sh {{Name}}
+    CommandTemplate: dns-record-enum.sh {{Name}} {{ZoneDepth}}
     Subject: DomainName
 
   - Name: email_finder
@@ -45,7 +46,7 @@ TaskDefinitions:
     Subject: DomainNameRecord
 
   - Name: grab_url_metadata
-    CommandTemplate: grab-url-metadata.sh {{Url}}
+    CommandTemplate: grab-headers.sh {{Url}}
     Filter: HttpEndpoint.Path == "/"
     Subject: HttpEndpoint
     MonitorRules:
@@ -67,7 +68,7 @@ TaskDefinitions:
   - Name: get_all_urls
     CommandTemplate: get-all-urls.sh {{Name}}
     Subject: DomainName
-    Filter: DomainName.ZoneDepth == 1 && Tags["rcode"] != ""
+    Filter: DomainName.ZoneDepth == 1
 
   - Name: webcrawl
     CommandTemplate: webcrawl.sh {{Url}}
@@ -145,7 +146,8 @@ TaskDefinitions:
     Filter: HttpEndpoint.Path=="/"
     Subject: HttpEndpoint
 
-  # - Name: tld_brute
-  #   CommandTemplate: tld-brute.sh {{Name}}
-  #   Subject: DomainName
-  #   Filter: DomainName.ZoneDepth == 1
+  - Name: vhost_scan
+    CommandTemplate: vhost-scan.sh {{Url}}
+    Subject: HttpEndpoint
+    Filter: false && HttpEndpoint.Path=="/" && HttpEndpoint.Socket.DomainNameId == null
+    StdinQuery: SELECT "Name" FROM "asset_records" JOIN "domain_names" ON "DomainId" WHERE "DomainId" != null AND "Domain"."InScope" == true

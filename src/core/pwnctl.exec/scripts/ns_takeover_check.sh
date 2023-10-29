@@ -2,4 +2,5 @@
 
 domain=$1
 
-dnstake --silent -t $domain | jq -c --raw-input '. | {Asset:(.),Tags:{"ns-takeover":"true"}}'
+python3 /opt/tools/dnsReaper/main.py single --domain $domain &> | grep -q ':: SIGNATURE' \
+    && echo '{"Asset":"'$url'", "tags":{"ns-takeover":"true"}}'
