@@ -7,7 +7,7 @@ using pwnctl.app.Common.Interfaces;
 
 public class BashCommandExecutor : CommandExecutor
 {
-    public async Task<(int, StringBuilder, StringBuilder)> ExecuteAsync(string command, CancellationToken token = default)
+    public async Task<(int, StringBuilder, StringBuilder)> ExecuteAsync(string command, StringBuilder? stdin = null, CancellationToken token = default)
     {
         PwnInfraContext.Logger.Debug("Running: " + command);
         
@@ -29,6 +29,12 @@ public class BashCommandExecutor : CommandExecutor
 
         process.BeginErrorReadLine();
         process.BeginOutputReadLine();
+
+        if (stdin != null)
+        {
+            stdin = stdin.Replace("'", "'\\''");
+            command = "echo '"+ stdin + "' | " + command;
+        }
 
         using (StreamWriter sr = process.StandardInput)
         {

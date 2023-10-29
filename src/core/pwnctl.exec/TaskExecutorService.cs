@@ -109,11 +109,19 @@ namespace pwnctl.exec
                 await PwnInfraContext.TaskQueueService.ChangeMessageVisibilityAsync(taskDTO, 0);
             }
 
-            try
+        try
+        {
+            StringBuilder? stdin = null;
+            if (task.Definition.StdinQuery is not null)
             {
-                (int exitCode,
-                StringBuilder stdout,
-                StringBuilder stderr) = await PwnInfraContext.CommandExecutor.ExecuteAsync(task.Command, token: cts.Token);
+                var json = await _queryRunner.RunAsync(task.Definition.StdinQuery);
+
+                stdin = new(json);
+            }
+
+            (int exitCode,
+            StringBuilder stdout,
+            StringBuilder stderr) = await PwnInfraContext.CommandExecutor.ExecuteAsync(task.Command, stdin, token: cts.Token);
 
                 task.Finished(exitCode, stderr.ToString());
 
