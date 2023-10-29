@@ -1,7 +1,7 @@
 resource "random_password" "db" {
   length           = 16
-  special          = true
-  override_special = "_$&*'`!"
+  special          = false
+  override_special = "!#$%&*()-_=+[]{}<>:?"
 }
 
 resource "aws_secretsmanager_secret" "db_password" {
@@ -17,8 +17,7 @@ resource "aws_secretsmanager_secret_version" "db_password" {
 
 resource "random_password" "admin" {
   length           = 16
-  special          = true
-  override_special = "_$&*'`!"
+  special          = false
 }
 
 resource "aws_secretsmanager_secret" "admin_password" {
@@ -39,8 +38,7 @@ resource "aws_secretsmanager_secret_version" "admin_password" {
 
 resource "random_password" "hmac_secret" {
   length           = 32
-  special          = true
-  override_special = "!#$%&*()-_=+[]{}<>:?"
+  special          = false
 }
 
 resource "aws_secretsmanager_secret" "hmac_secret" {

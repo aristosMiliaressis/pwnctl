@@ -46,7 +46,7 @@ public sealed class Tests
                     .Build();
     
     private static ContainerBuilder _pwnctlContainerBuilder = new ContainerBuilder()
-                    .WithImage($"{Environment.GetEnvironmentVariable("ECR_REGISTRY_URI")}:untested")
+                    .WithImage($"{Environment.GetEnvironmentVariable("ECR_REGISTRY_URI")}:untested_{EnvironmentVariables.IMAGE_HASH}")
                     .WithNetwork(_pwnctlNetwork)
                     .WithBindMount(_hostBasePath, "/mnt/efs", AccessMode.ReadWrite)
                     .WithBindMount($"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}/.aws/", "/root/.aws/")

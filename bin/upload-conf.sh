@@ -27,7 +27,7 @@ uploadDirectory() {
      done
 }
 
-./src/core/pwnctl.exec/scripts/get-psl.sh deployment/
+./src/core/pwnctl.exec/scripts/get-psl.sh deployment
 cp src/core/pwnctl.exec/wordlists/cloud-services.json deployment/ 2>/dev/null
 curl -s https://raw.githubusercontent.com/trickest/resolvers/main/resolvers.txt > deployment/resolvers.txt
 curl -s https://raw.githubusercontent.com/trickest/resolvers/main/resolvers-trusted.txt | tr -d '[\t ]' > deployment/trusted-resolvers.txt

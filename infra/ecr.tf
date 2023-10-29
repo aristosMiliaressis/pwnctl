@@ -8,7 +8,7 @@ data "aws_ecr_repository" "exec" {
 }
 
 resource "docker_registry_image" "exec" {
-  name = "${data.aws_ecr_repository.exec.repository_url}:latest"
+  name = "${data.aws_ecr_repository.exec.repository_url}:${data.external.commit_hash.result.sha}"
   keep_remotely = true
 }
 
@@ -21,6 +21,6 @@ data "aws_ecr_repository" "proc" {
 }
 
 resource "docker_registry_image" "proc" {
-  name = "${data.aws_ecr_repository.proc.repository_url}:latest"
+  name = "${data.aws_ecr_repository.proc.repository_url}:${data.external.commit_hash.result.sha}"
   keep_remotely = true
 }

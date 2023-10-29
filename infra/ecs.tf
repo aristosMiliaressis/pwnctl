@@ -1,27 +1,4 @@
 
-data "aws_ecr_repository" "exec" {
-  name                 = "pwnctl-exec"
-
-  tags = {
-    Description = "Task executor image repository."
-  }
-}
-
-data "docker_registry_image" "proc" {
-  name = "${data.aws_ecr_repository.proc.repository_url}:latest"
-}
-
-data "aws_ecr_repository" "proc" {
-  name                 = "pwnctl-proc"
-
-  tags = {
-    Description = "Task processor image repository."
-  }
-}
-
-data "docker_registry_image" "exec" {
-  name = "${data.aws_ecr_repository.exec.repository_url}:latest"
-}
 
 resource "aws_ecs_cluster" "this" {
   name = var.ecs_cluster.name
@@ -60,13 +37,13 @@ resource "aws_ecs_task_definition" "exec" {
   [
     {
       "name": "pwnctl",
-      "image": "${data.docker_registry_image.exec.name}",
+      "image": "${docker_registry_image.exec.name}",
       "essential": true,
       "stopTimeout": 120,
       "environment": [
         {
           "name": "PWNCTL_IMAGE_HASH",
-          "value": "${data.docker_registry_image.exec.sha256_digest}"
+          "value": "${docker_registry_image.exec.sha256_digest}"
         },
         {
           "name": "PWNCTL_Worker__MaxTaskTimeout",
@@ -281,13 +258,13 @@ resource "aws_ecs_task_definition" "proc" {
   [
     {
       "name": "pwnctl",
-      "image": "${data.docker_registry_image.proc.name}",
+      "image": "${docker_registry_image.proc.name}",
       "essential": true,
       "stopTimeout": 120,
       "environment": [
         {
           "name": "PWNCTL_IMAGE_HASH",
-          "value": "${data.docker_registry_image.proc.sha256_digest}"
+          "value": "${docker_registry_image.proc.sha256_digest}"
         },
         {
           "name": "PWNCTL_TaskQueue__Name",

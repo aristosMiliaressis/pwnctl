@@ -15,6 +15,7 @@ tasks:
     cmds:
       - |
         rm -rf test/pwnctl.proc.test.int/bin
+        export PWNCTL_IMAGE_HASH=$(git rev-parse --short HEAD)
         export ECR_REGISTRY_URI=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-proc") | .repositoryUri')
         dotnet test --filter "FullyQualifiedName~pwnctl.proc"
 
@@ -22,6 +23,7 @@ tasks:
     cmds:
     - |
       rm -rf test/pwnctl.exec.test.int/bin
+      export PWNCTL_IMAGE_HASH=$(git rev-parse --short HEAD)
       export ECR_REGISTRY_URI=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-exec") | .repositoryUri')
       dotnet test --filter "FullyQualifiedName~pwnctl.exec"
 
@@ -36,34 +38,38 @@ tasks:
   build-exec-image:
     cmds:
       - |
+        commitHash=$(git rev-parse --short HEAD)
         ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-exec") | .repositoryUri')
-        docker build src/core/ -f src/core/pwnctl.exec/Dockerfile -t ${ecrUri}:latest
-        docker tag ${ecrUri}:latest ${ecrUri}:untested
+        docker buildx build --ssh default=$SSH_AUTH_SOCK src/core/ -f src/core/pwnctl.exec/Dockerfile -t ${ecrUri}:$commitHash
+        docker tag ${ecrUri}:$commitHash ${ecrUri}:untested_$commitHash
 
   push-exec-image:
     cmds:
       - |
+        commitHash=$(git rev-parse --short HEAD)
         region=$(aws configure get region)
         ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-exec") | .repositoryUri')
         aws ecr get-login-password --region $region \
           | docker login --username AWS --password-stdin $ecrUri
-        docker push ${ecrUri}:latest
+        docker push ${ecrUri}:$commitHash
 
   build-proc-image:
     cmds:
       - |
+        commitHash=$(git rev-parse --short HEAD)
         ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-proc") | .repositoryUri')
-        docker build src/core/ -f src/core/pwnctl.proc/Dockerfile -t ${ecrUri}:latest
-        docker tag ${ecrUri}:latest ${ecrUri}:untested
+        docker build src/core/ -f src/core/pwnctl.proc/Dockerfile -t ${ecrUri}:$commitHash
+        docker tag ${ecrUri}:$commitHash ${ecrUri}:untested_$commitHash
 
   push-proc-image:
     cmds:
       - |
+        commitHash=$(git rev-parse --short HEAD)
         region=$(aws configure get region)
         ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-proc") | .repositoryUri')
         aws ecr get-login-password --region $region \
           | docker login --username AWS --password-stdin $ecrUri
-        docker push ${ecrUri}:latest
+        docker push ${ecrUri}:$commitHash
 
   build-all:
     deps: [build-cli, build-api, build-exec-image, build-proc-image]
@@ -102,22 +108,24 @@ tasks:
   debug-exec:
     cmds:
       - |
+        commitHash=$(git rev-parse --short HEAD)
         ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-exec") | .repositoryUri')
         docker run -e PWNCTL_USE_LOCAL_INTEGRATIONS=true -e PWNCTL_INSTALL_PATH=/mnt/efs \
                    -e PWNCTL_Logging__FilePath=/mnt/efs -e PWNCTL_Logging__MinLevel=Information \
                    -e PWNCTL_TaskQueue__VisibilityTimeout=1200 -e PWNCTL_OutputQueue__VisibilityTimeout=1200 \
-                   -v "$(pwd)"/deployment:/mnt/efs -t ${ecrUri}:latest
+                   -v "$(pwd)"/deployment:/mnt/efs -t ${ecrUri}:$commitHash
 
   debug-proc:
     cmds:
       - |
+        commitHash=$(git rev-parse --short HEAD)
         mkdir -p deployment/seed/
         cp ./src/core/pwnctl.infra/Persistence/seed/*.yml deployment/seed/
         ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-proc") | .repositoryUri')
         docker run -e PWNCTL_USE_LOCAL_INTEGRATIONS=true -e PWNCTL_INSTALL_PATH=/mnt/efs \
                    -e PWNCTL_Logging__FilePath=/mnt/efs -e PWNCTL_Logging__MinLevel=Information \
                    -e PWNCTL_TaskQueue__VisibilityTimeout=1200 -e PWNCTL_OutputQueue__VisibilityTimeout=1200 \
-                   -v "$(pwd)"/deployment:/mnt/efs -t ${ecrUri}:latest
+                   -v "$(pwd)"/deployment:/mnt/efs -t ${ecrUri}:$commitHash
 
   get-exec-logs:
     cmds:
