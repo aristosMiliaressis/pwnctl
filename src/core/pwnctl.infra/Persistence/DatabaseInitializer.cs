@@ -93,7 +93,7 @@ namespace pwnctl.infra.Persistence
                     throw new ConfigValidationException(taskFile, "File not found");
                 }
 
-                var passed = ConfigValidator.TryValidateTaskDefinitions(taskFile, out string errorMessage);
+                var passed = ConfigValidator.TryValidateTaskDefinitions(taskFile, out string? errorMessage);
                 if (!passed)
                 {
                     throw new ConfigValidationException(taskFile, errorMessage);
@@ -131,7 +131,7 @@ namespace pwnctl.infra.Persistence
                     throw new ConfigValidationException(notificationFile, "File not found");
                 }
 
-                var passed = ConfigValidator.TryValidateNotificationRules(notificationFile, out string errorMessage);
+                var passed = ConfigValidator.TryValidateNotificationRules(notificationFile, out string? errorMessage);
                 if (!passed)
                 {
                     throw new ConfigValidationException(notificationFile, errorMessage);

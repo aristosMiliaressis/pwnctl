@@ -1,0 +1,8 @@
+Profile: "cache_only"
+
+TaskDefinitions:
+  - Name: cache_prober
+    CommandTemplate: cache-prober.sh {{Url}}
+    Filter: HttpEndpoint.Path == "/"
+    Subject: HttpEndpoint
+    CheckNotificationRules: true

@@ -33,10 +33,18 @@ namespace pwnctl.proc
         {
             await PwnInfraContext.NotificationSender.SendAsync($"{nameof(OutputProcessorService)}:{EnvironmentVariables.IMAGE_HASH} started.", NotificationTopic.Status);
 
-            if (int.TryParse(Environment.GetEnvironmentVariable("PWNCTL_Operation"), out int opId))
+            try
             {
-                await _initializer.InitializeAsync(opId);
-                _hostApplicationLifetime.StopApplication();
+                if (int.TryParse(Environment.GetEnvironmentVariable("PWNCTL_Operation"), out int opId))
+                {
+                    await _initializer.InitializeAsync(opId);
+                    _hostApplicationLifetime.StopApplication();
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                PwnInfraContext.Logger.Exception(ex);
                 return;
             }
 

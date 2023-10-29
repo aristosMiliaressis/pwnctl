@@ -4,20 +4,11 @@ namespace pwnctl.infra.DependencyInjection;
 
 using pwnctl.domain.Interfaces;
 using pwnctl.app;
-using pwnctl.infra.Commands;
 using pwnctl.infra.Configuration;
-using pwnctl.infra.Notifications;
-using pwnctl.infra.Queueing;
-using pwnctl.app.Queueing.Interfaces;
 using pwnctl.infra.Repositories;
 using pwnctl.infra.Serialization;
 using pwnctl.infra.Logging;
-using pwnctl.app.Notifications.Interfaces;
 using pwnctl.infra.Persistence;
-using Microsoft.AspNetCore.Identity;
-using pwnctl.app.Common.Interfaces;
-using pwnctl.app.Tasks.Interfaces;
-using pwnctl.app.Users.Entities;
 
 public static class PwnInfraContextInitializer
 {
@@ -29,7 +20,6 @@ public static class PwnInfraContextInitializer
             var logger = PwnLoggerFactory.Create(config);
 
             PublicSuffixRepository.Instance = new FsPublicSuffixRepository();
-            CloudServiceRepository.Instance = new FsCloudServiceRepository();
 
             var serializer = new AppJsonSerializer();
             var evaluator = new CSharpFilterEvaluator();

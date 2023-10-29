@@ -599,7 +599,6 @@ public sealed class Tests
         Assert.Empty(xx.Tasks);
 
 
-        // TODO: test TaskDefinition.MatchOutOfScope
         // TODO: test NotificationRule.CheckOutOfScope
     }
 

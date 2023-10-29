@@ -8,7 +8,7 @@ public static class PwnConfigFactory
     public static AppConfig Create()
     {
         IConfigurationBuilder builder = new ConfigurationBuilder()
-                                    .SetBasePath(EnvironmentVariables.INSTALL_PATH is null 
+                                    .SetBasePath(EnvironmentVariables.INSTALL_PATH == "" 
                                             ? $"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}/.config/pwnctl" 
                                             : Path.GetFullPath(EnvironmentVariables.INSTALL_PATH))
                                     .AddIniFile("config.ini", optional: true, reloadOnChange: true);

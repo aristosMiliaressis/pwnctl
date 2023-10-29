@@ -21,13 +21,16 @@ public class EventBridgeScheduler
         var subnets = await ec2Client.DescribeSubnetsAsync();
 
         var cluster = await ecsClient.ListClustersAsync(new());
+        var clusterArn = cluster.ClusterArns.First();
 
         var taskDefinition = await ecsClient.ListTaskDefinitionsAsync(new Amazon.ECS.Model.ListTaskDefinitionsRequest
         {
-            FamilyPrefix = "pwnctl"
+            FamilyPrefix = "pwnctl-proc"
         });
+        var taskDefinitionArn = taskDefinition.TaskDefinitionArns.First();
 
         var roles = await iamClient.ListRolesAsync();
+        var roleArn = roles.Roles.First(r => r.RoleName == "event_publisher").Arn;
 
         // if no schedule provided, schedule immediatly (i.e in 2 minutes)
         var schedule = op.Schedule is null
@@ -48,12 +51,12 @@ public class EventBridgeScheduler
                 new Target
                 {
                     Id = $"{op.Name.Value}_target",
-                    Arn = cluster.ClusterArns.First(),
-                    RoleArn = roles.Roles.First(r => r.RoleName == "ecs_events").Arn,
+                    Arn = clusterArn,
+                    RoleArn = roleArn,
                     EcsParameters = new EcsParameters
                     {
                         TaskCount = 1,
-                        TaskDefinitionArn = taskDefinition.TaskDefinitionArns.First(),
+                        TaskDefinitionArn = taskDefinitionArn,
                         LaunchType = Amazon.CloudWatchEvents.LaunchType.FARGATE,
                         NetworkConfiguration = new()
                         {

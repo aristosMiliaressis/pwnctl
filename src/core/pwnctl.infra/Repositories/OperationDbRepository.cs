@@ -16,6 +16,9 @@ public class OperationDbRepository : OperationRepository
                                 .ThenInclude(p => p.TaskProfiles)
                                 .ThenInclude(p => p.TaskProfile)
                                 .ThenInclude(p => p.TaskDefinitions)
+                            .Include(o => o.Scope)
+                                .ThenInclude(s => s.Definitions)
+                                .ThenInclude(s => s.Definition)
                             .FirstOrDefaultAsync(o => o.Id == id);
     }
 

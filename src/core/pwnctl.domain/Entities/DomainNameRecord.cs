@@ -80,7 +80,7 @@ public sealed class DomainNameRecord : Asset
         return spf.Split("ip")
                 .Skip(1)
                 .Select(p => string.Join(":", p.Split(":").Skip(1)).Trim().Split(" ")[0])
-                .Where(ip => IPAddress.TryParse(ip, out IPAddress _))
+                .Where(ip => IPAddress.TryParse(ip, out IPAddress? _))
                 .Select(ip => new NetworkHost(IPAddress.Parse(ip)))
                 .ToList();
     }
