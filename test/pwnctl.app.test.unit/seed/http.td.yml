@@ -24,5 +24,4 @@ TaskDefinitions:
   - Name: second_order_takeover
     CommandTemplate: nuclei -t /opt/nuclei-templates/cname_takeovers
     Subject: HttpEndpoint
-    Filter: CloudServiceRepository.Instance.IsCloudService(HttpEndpoint)
     MatchOutOfScope: true

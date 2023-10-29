@@ -40,16 +40,6 @@ public sealed class Tests
     }
 
     [Fact]
-    public void CloudServiceRepository_Tests()
-    {
-        var ep1 = new HttpEndpoint("https", new NetworkSocket(new DomainName("example.com"), 443), "/");
-        var ep2 = new HttpEndpoint("https", new NetworkSocket(new DomainName("example.s3.amazonaws.com"), 443), "/");
-
-        Assert.False(CloudServiceRepository.Instance.IsCloudService(ep1));
-        Assert.True(CloudServiceRepository.Instance.IsCloudService(ep2));
-    }
-
-    [Fact]
     public void DomainEntity_Tests()
     {
         Assert.Equal("example", new DomainName("example.com.").Word);
