@@ -149,5 +149,4 @@ TaskDefinitions:
   - Name: vhost_scan
     CommandTemplate: vhost-scan.sh {{Url}}
     Subject: HttpEndpoint
-    Filter: false && HttpEndpoint.Path=="/" && HttpEndpoint.Socket.DomainNameId == null
-    StdinQuery: SELECT "Name" FROM "asset_records" JOIN "domain_names" ON "DomainId" WHERE "DomainId" != null AND "Domain"."InScope" == true
+    Filter: false && HttpEndpoint.Path=="/"

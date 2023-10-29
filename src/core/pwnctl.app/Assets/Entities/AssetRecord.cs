@@ -108,22 +108,22 @@ public sealed class AssetRecord : Entity<Guid>
             if (property is not null)
             {
                 if (property.GetValue(this) == default)
-                    property.SetValue(this, t.Value.ToString());
+                    property.SetValue(this, t.Value);
                 return;
             }
 
-            if (string.IsNullOrEmpty(t.Value.ToString()))
+            if (string.IsNullOrEmpty(t.Value))
                 return;
 
             var existingTag = Tags.FirstOrDefault(eT => eT.Name == t.Key.ToLower());
             if (existingTag is not null)
             {
                 if (updateExisting)
-                    existingTag.Value = t.Value.ToString();
+                    existingTag.Value = t.Value;
                 return;
             }
 
-            var tag = new Tag(this, t.Key, t.Value.ToString());
+            var tag = new Tag(this, t.Key, t.Value);
             Tags.Add(tag);
         });
     }

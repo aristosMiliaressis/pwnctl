@@ -7,11 +7,6 @@ using CommandLine;
 using Microsoft.Extensions.FileSystemGlobbing;
 using pwnctl.app;
 using pwnctl.cli.Interfaces;
-using pwnctl.dto.Mediator;
-using pwnctl.dto.Operations.Commands;
-using pwnctl.dto.Scope.Commands;
-using pwnctl.dto.Tasks.Commands;
-using pwnctl.infra.Configuration;
 using pwnctl.infra.Configuration.Validation;
 using pwnctl.infra.Configuration.Validation.Exceptions;
 
@@ -43,7 +38,6 @@ namespace pwnctl.cli.ModeHandlers
                     {
                         throw new ConfigValidationException(taskFile, errorMessage);
                     }
-
                 }
 
                 matcher = new();
