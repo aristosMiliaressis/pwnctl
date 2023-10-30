@@ -1,7 +1,5 @@
 ﻿namespace pwnctl.domain.Entities;
 
-using pwnctl.domain.BaseClasses;
-using pwnctl.kernel.BaseClasses;
 using pwnctl.kernel.BaseClasses;
 using pwnctl.kernel.Attributes;
 

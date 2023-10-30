@@ -3,10 +3,10 @@ namespace pwnctl.kernel.BaseClasses;
 public readonly struct Result<T, E> 
 {
     private readonly bool _success;
-    public readonly T Value;
-    public readonly E Error;
+    public readonly T? Value;
+    public readonly E? Error;
 
-    private Result(T v, E e, bool success)
+    private Result(T? v, E? e, bool success)
     {
         Value = v;
         Error = e;
@@ -17,19 +17,19 @@ public readonly struct Result<T, E>
 
     public static Result<T, E> Ok(T v)
     {
-        return new(v, default(E), true);
+        return new(v, default, true);
     }
 
     public static Result<T, E> Err(E e)
     {
-        return new(default(T), e, false);
+        return new(default, e, false);
     }
 
-    public static implicit operator Result<T, E>(T v) => new(v, default(E), true);
-    public static implicit operator Result<T, E>(E e) => new(default(T), e, false);
+    public static implicit operator Result<T, E>(T v) => new(v, default, true);
+    public static implicit operator Result<T, E>(E e) => new(default, e, false);
 
     public R Match<R>(
-            Func<T, R> success,
-            Func<E, R> failure) =>
+            Func<T?, R> success,
+            Func<E?, R> failure) =>
         _success ? success(Value) : failure(Error);
 }

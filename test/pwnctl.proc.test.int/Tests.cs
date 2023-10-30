@@ -97,7 +97,7 @@ public sealed class Tests
         var context = new PwnctlDbContext();
 
         var op = context.Operations.FirstOrDefault();
-        if (op == null)
+        if (op is null)
         {
             op = EntityFactory.CreateOperation();
         }
@@ -134,7 +134,7 @@ public sealed class Tests
 
         // populate db / TaskId
         var op = context.Operations.FirstOrDefault();
-        if (op == null)
+        if (op is null)
         {
             op = EntityFactory.CreateOperation();
         }

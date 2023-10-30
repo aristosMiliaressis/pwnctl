@@ -14,8 +14,8 @@ namespace pwnctl.infra.Repositories
     {
         private PwnctlDbContext _context;
         
-        private static Func<PwnctlDbContext, int, Task<TaskRecord>> FindRecordQuery
-                                = EF.CompileAsyncQuery<PwnctlDbContext, int, TaskRecord>(
+        private static Func<PwnctlDbContext, int, Task<TaskRecord?>> FindRecordQuery
+                                = EF.CompileAsyncQuery<PwnctlDbContext, int, TaskRecord?>(
                         (context, id) => context.TaskRecords
                                     .Include(r => r.Definition)
                                     .Include(r => r.Record)
@@ -58,7 +58,7 @@ namespace pwnctl.infra.Repositories
                                 .ToListAsync();
         }
 
-        public async Task<TaskRecord> FindAsync(int taskId)
+        public async Task<TaskRecord?> FindAsync(int taskId)
         {
             return await FindRecordQuery(_context, taskId);
         }

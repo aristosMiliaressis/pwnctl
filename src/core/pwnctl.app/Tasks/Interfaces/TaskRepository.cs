@@ -7,7 +7,7 @@ public interface TaskRepository
 {
     Task<IEnumerable<TaskRecord>> ListAsync(int pageIdx);
 
-    Task<TaskRecord> FindAsync(int taskId);
+    Task<TaskRecord?> FindAsync(int taskId);
     TaskRecord Find(AssetRecord asset, TaskDefinition definition);
 
     Task AddAsync(TaskRecord task);

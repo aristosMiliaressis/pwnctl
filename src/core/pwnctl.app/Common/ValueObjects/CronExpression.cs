@@ -5,7 +5,7 @@ namespace pwnctl.app.Common.ValueObjects;
 
 public sealed record CronExpression
 {
-    public string Value { get; }
+    public string? Value { get; }
 
     public CronExpression(string? value)
     {

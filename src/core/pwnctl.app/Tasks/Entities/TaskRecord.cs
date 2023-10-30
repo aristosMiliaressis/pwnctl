@@ -52,7 +52,7 @@ public sealed class TaskRecord : Entity<int>
         return true;
     }
 
-    public bool Finished(int exitCode, string stderr)
+    public bool Finished(int exitCode, string? stderr)
     {
         if (State != TaskState.RUNNING)
             return false;

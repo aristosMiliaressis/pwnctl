@@ -5,7 +5,7 @@ using pwnctl.app.Scope.Entities;
 public class ScopeRequestModel
 {
     public string Name { get; set; }
-    public string Description { get; set; }
+    public string? Description { get; set; }
     public IEnumerable<ScopeDefinitionRequestModel> ScopeDefinitions { get; set; }
 
     public ScopeRequestModel() { }

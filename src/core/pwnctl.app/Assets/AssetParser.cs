@@ -18,8 +18,8 @@ public static class AssetParser
         {
             // TODO: clean this up
             Type resultType = typeof(Result<,>).MakeGenericType(tryParseMethod.ReturnType.GenericTypeArguments[0], typeof(string));
-            PropertyInfo Result_IsOk_Property = resultType.GetProperty("IsOk");
-            FieldInfo Result_Value_Property = resultType.GetField("Value");
+            PropertyInfo? Result_IsOk_Property = resultType.GetProperty("IsOk");
+            FieldInfo? Result_Value_Property = resultType.GetField("Value");
 
             try
             {
@@ -38,7 +38,7 @@ public static class AssetParser
         return "Can't parse asset " + assetText;
     }
 
-    private static readonly IEnumerable<MethodInfo?> _tryParseMethod = Assembly.GetAssembly(typeof(Asset))
+    private static readonly IEnumerable<MethodInfo> _tryParseMethod = (IEnumerable<MethodInfo>)Assembly.GetAssembly(typeof(Asset))
                 !.GetTypes()
                 .Where(t => !t.IsAbstract && typeof(Asset).IsAssignableFrom(t))
                 .Select(t => t.GetMethod("TryParse"));

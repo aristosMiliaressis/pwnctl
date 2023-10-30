@@ -9,7 +9,7 @@ public class OperationDbRepository : OperationRepository
 {
     private static PwnctlDbContext _context = new();
 
-    public async Task<Operation> FindAsync(int id)
+    public async Task<Operation?> FindAsync(int id)
     {
         return await _context.Operations
                             .Include(o => o.Policy)

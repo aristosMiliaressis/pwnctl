@@ -34,7 +34,7 @@ public sealed class Email : Asset
                     : assetText;
 
             // for some reason MailKit parses IPv4 as valid email address so if it is ip return false
-            if (IPAddress.TryParse(assetText, out IPAddress _) || NetworkRange.TryParse(assetText).IsOk)
+            if (IPAddress.TryParse(assetText, out IPAddress? _) || NetworkRange.TryParse(assetText).IsOk)
                 return $"{assetText} is not a {nameof(Email)}";
 
             if (!MailboxAddress.TryParse(assetText, out MailboxAddress address))
