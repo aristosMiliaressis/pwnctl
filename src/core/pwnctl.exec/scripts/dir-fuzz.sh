@@ -17,7 +17,7 @@ do
     cat $list
 done | sort -u > $temp_wordlist
 
-ffuf -s -o $temp_outfile -of json -se -fp -acp -acs advanced,waf,blacklist,wildcard,route-handler -ar -mc all -fc 404,429,503 \
+ffuf -maxtime 9000 -s -o $temp_outfile -of json -se -fp -acp -acs advanced,waf,blacklist,wildcard,route-handler -ar -mc all -fc 404,429,503 \
     -recursion -recursion-status 301,302,303,307,308,401,403,405,500,501 -H "User-Agent: $(uagen)" -w $temp_wordlist -u ${url}FUZZ &>/dev/null
 
 cat $temp_outfile \

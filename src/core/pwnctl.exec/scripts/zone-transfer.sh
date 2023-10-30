@@ -3,7 +3,7 @@
 domain=$1
 temp=`mktemp`
 
-timeout -k 10 600 dnsrecon -t axfr -d $domain > $temp
+dnsrecon -t axfr -d $domain > $temp
 
 extract_records() {
     echo '{"Asset":"'$domain'", "Tags":{"zone_transfer":"true"}}'

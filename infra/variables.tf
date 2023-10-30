@@ -44,5 +44,5 @@ variable "task_timeout" {
   description = "The max amount of seconds a task execution may take before timing out."
   type        = number
 
-  default     = 7200
+  default     = 10800
 }
