@@ -16,6 +16,30 @@ resource "aws_iam_role" "ecs_service" {
   })
 }
 
+data "aws_iam_policy_document" "scalein_protection" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "ecs:UpdateTaskProtection"
+    ]
+
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_policy" "scalein_protection" {
+  name        = "scalein-protection"
+  path        = "/"
+  description = "IAM policy for ECS Scale in Protection"
+  policy      = data.aws_iam_policy_document.scalein_protection.json
+}
+
+resource "aws_iam_role_policy_attachment" "grant_ecs_scalein_protection_access" {
+  role       = aws_iam_role.ecs_service.name
+  policy_arn = aws_iam_policy.scalein_protection.arn
+}
+
 data "aws_iam_policy_document" "sqs_readwrite" {
   statement {
     effect = "Allow"
@@ -39,7 +63,6 @@ resource "aws_iam_policy" "sqs_readwrite" {
   description = "IAM policy for sqs Read/Write access"
   policy      = data.aws_iam_policy_document.sqs_readwrite.json
 }
-
 
 resource "aws_iam_role_policy_attachment" "grant_ecs_sqs_readwrite_access" {
   role       = aws_iam_role.ecs_service.name

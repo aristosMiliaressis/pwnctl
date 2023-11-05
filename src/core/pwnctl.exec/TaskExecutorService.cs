@@ -1,20 +1,17 @@
-using pwnctl.app;
-using pwnctl.app.Queueing.DTO;
-using pwnctl.app.Queueing.Interfaces;
-using pwnctl.app.Tasks.Enums;
-using pwnctl.app.Notifications.Enums;
-using pwnctl.infra.Commands;
-using pwnctl.infra.Queueing;
-using pwnctl.infra.Repositories;
-using System.Text;
-using pwnctl.infra.Configuration;
-using pwnctl.app.Tasks.Exceptions;
 
-namespace pwnctl.exec
-{
+    using pwnctl.app;
+    using pwnctl.app.Queueing.DTO;
+    using pwnctl.app.Tasks.Enums;
+    using pwnctl.app.Notifications.Enums;
+    using pwnctl.infra.Repositories;
+    using pwnctl.infra.Persistence;
+    using System.Text;
+    using pwnctl.infra.Configuration;
+
     public sealed class TaskExecutorService : BackgroundService
     {
         private readonly IHostApplicationLifetime _hostApplicationLifetime;
+        private static readonly QueryRunner _queryRunner = new();
         private static readonly TaskDbRepository _taskRepo = new();
         private static System.Timers.Timer _timer = new();
 
@@ -29,7 +26,7 @@ namespace pwnctl.exec
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-        await PwnInfraContext.NotificationSender.SendAsync($"{nameof(TaskExecutorService)}:{EnvironmentVariables.COMMIT_HASH} started.", NotificationTopic.Status);
+            await PwnInfraContext.NotificationSender.SendAsync($"{nameof(TaskExecutorService)}:{EnvironmentVariables.COMMIT_HASH} started.", NotificationTopic.Status);
 
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -44,24 +41,41 @@ namespace pwnctl.exec
                 finally
                 {
                     _timer.Dispose();
+
+                    // disable scale in protection to allow scale in events
+                    await ScaleInProtection.DisnableAsync();
                 }
             }
         }
 
         private async Task ExecutePendingTaskAsync(CancellationToken stoppingToken)
         {
-            var taskDTO = await PwnInfraContext.TaskQueueService.ReceiveAsync<PendingTaskDTO>(stoppingToken);
-            if (taskDTO is null)
+            PendingTaskDTO taskDTO = null;
+            try 
             {
-                PwnInfraContext.Logger.Information("no work found");
-                Thread.Sleep(5000);
+                taskDTO = await PwnInfraContext.TaskQueueService.ReceiveAsync<PendingTaskDTO>(stoppingToken);
+                if (taskDTO is null)
+                {
+                    PwnInfraContext.Logger.Information("no work found");
+                    Thread.Sleep(5000);
+                    return;
+                }
+            } 
+            catch (TaskCanceledException)
+            {
+                // scale in event caught
+                PwnInfraContext.Logger.Warning("Scale in event caught");
+                _hostApplicationLifetime.StopApplication();
                 return;
             }
+            
+            // setup scale in protection to prevent scale in events while the task is running
+            await ScaleInProtection.EnableAsync();
 
             // create a linked token that cancels the task when the max task timeout
             // passes or when a SIGTERM is received due to a scale in event
             var cts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
-            cts.CancelAfter(PwnInfraContext.Config.Worker.MaxTaskTimeout * 1000);
+            cts.CancelAfter((PwnInfraContext.Config.Worker.MaxTaskTimeout - 2) * 1000);
 
             // Change the message visibility if the visibility window is exheeded
             // this allows us to keep a smaller visibility window without effecting
