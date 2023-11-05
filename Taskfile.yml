@@ -15,7 +15,7 @@ tasks:
     cmds:
       - |
         rm -rf test/pwnctl.proc.test.int/bin
-        export PWNCTL_IMAGE_HASH=$(git rev-parse --short HEAD)
+        export PWNCTL_COMMIT_HASH=$(git rev-parse HEAD)
         export ECR_REGISTRY_URI=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-proc") | .repositoryUri')
         dotnet test --filter "FullyQualifiedName~pwnctl.proc"
 
@@ -23,7 +23,7 @@ tasks:
     cmds:
     - |
       rm -rf test/pwnctl.exec.test.int/bin
-      export PWNCTL_IMAGE_HASH=$(git rev-parse --short HEAD)
+      export PWNCTL_COMMIT_HASH=$(git rev-parse HEAD)
       export ECR_REGISTRY_URI=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-exec") | .repositoryUri')
       dotnet test --filter "FullyQualifiedName~pwnctl.exec"
 

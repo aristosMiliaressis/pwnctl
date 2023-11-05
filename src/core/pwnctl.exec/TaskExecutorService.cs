@@ -29,7 +29,7 @@ namespace pwnctl.exec
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            await PwnInfraContext.NotificationSender.SendAsync($"{nameof(TaskExecutorService)}:{EnvironmentVariables.IMAGE_HASH} started.", NotificationTopic.Status);
+        await PwnInfraContext.NotificationSender.SendAsync($"{nameof(TaskExecutorService)}:{EnvironmentVariables.COMMIT_HASH} started.", NotificationTopic.Status);
 
             while (!stoppingToken.IsCancellationRequested)
             {

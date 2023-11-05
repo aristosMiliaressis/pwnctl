@@ -25,7 +25,7 @@ namespace pwnctl.infra.Persistence
                 .WithNamingConvention(PascalCaseNamingConvention.Instance)
                 .Build();
 
-        public static async Task InitializeAsync(UserManager<User> userManger)
+        public static async Task InitializeAsync(UserManager<User>? userManger)
         {
             PwnctlDbContext context = new();
 

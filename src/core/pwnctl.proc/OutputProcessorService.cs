@@ -31,7 +31,7 @@ namespace pwnctl.proc
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            await PwnInfraContext.NotificationSender.SendAsync($"{nameof(OutputProcessorService)}:{EnvironmentVariables.IMAGE_HASH} started.", NotificationTopic.Status);
+            await PwnInfraContext.NotificationSender.SendAsync($"{nameof(OutputProcessorService)}:{EnvironmentVariables.COMMIT_HASH} started.", NotificationTopic.Status);
 
             try
             {

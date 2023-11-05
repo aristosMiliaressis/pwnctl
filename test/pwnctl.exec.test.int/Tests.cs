@@ -52,7 +52,7 @@ public sealed class Tests
                     .Build();
     
     private static ContainerBuilder _pwnctlContainerBuilder = new ContainerBuilder()
-                    .WithImage($"{Environment.GetEnvironmentVariable("ECR_REGISTRY_URI")}:untested_{EnvironmentVariables.IMAGE_HASH}")
+                    .WithImage($"{Environment.GetEnvironmentVariable("ECR_REGISTRY_URI")}:untested_{EnvironmentVariables.COMMIT_HASH}")
                     .WithNetwork(_pwnctlNetwork)
                     .WithBindMount(_hostBasePath, "/mnt/efs", AccessMode.ReadWrite)
                     .WithBindMount($"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}/.aws/", "/root/.aws/")
@@ -65,10 +65,10 @@ public sealed class Tests
                     .WithEnvironment("PWNCTL_Db__Password", "password")
                     .WithEnvironment("PWNCTL_TaskQueue__Name", "task-dev.fifo")
                     .WithEnvironment("PWNCTL_TaskQueue__VisibilityTimeout", "1200")
-                    .WithEnvironment("PWNCTL_OutputQueue__Name", "output-dev.fifo"); 
+                    .WithEnvironment("PWNCTL_OutputQueue__Name", "output-dev.fifo");
 
     public Tests()
-    {       
+    {
         // setup mount directory
         Directory.CreateDirectory($"{_hostBasePath}/seed");
         foreach (var file in Directory.GetFiles("../../../../../src/core/pwnctl.infra/Persistence/seed"))

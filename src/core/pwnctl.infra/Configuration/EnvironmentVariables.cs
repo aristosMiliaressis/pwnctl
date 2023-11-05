@@ -3,7 +3,7 @@ namespace pwnctl.infra.Configuration;
 public static class EnvironmentVariables
 {
     public static string HOSTNAME => Environment.GetEnvironmentVariable("HOSTNAME") ?? "";
-    public static string IMAGE_HASH => Environment.GetEnvironmentVariable("PWNCTL_IMAGE_HASH")?.Split(":")?.Last()?.Substring(0,12) ?? string.Empty;
+    public static string COMMIT_HASH => Environment.GetEnvironmentVariable("PWNCTL_COMMIT_HASH")?.Split(":")?.Last()?.Substring(0,7) ?? string.Empty;
     
     public static string INSTALL_PATH => Environment.GetEnvironmentVariable("PWNCTL_INSTALL_PATH") ?? "";
   
