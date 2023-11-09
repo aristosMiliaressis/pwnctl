@@ -30,9 +30,6 @@ public sealed class TaskDefinition : Entity<int>
 
     public bool Matches(AssetRecord record, bool minitoring = false)
     {
-        if (Subject.Value != record.Asset.GetType().Name)
-            return false;
-
         if (minitoring)
         {
             TaskRecord? lastOccurence = record.Tasks.Where(t => t.Definition.Name == Name)

@@ -72,13 +72,22 @@ public class OperationInitializer
 
     public async Task GenerateScheduledTasksAsync(Operation op, AssetRecord record, IEnumerable<TaskDefinition> taskDefinitions)
     {
-        foreach (var def in taskDefinitions.Where(def => def.Matches(record, minitoring: op.Type == OperationType.Monitor)))
+        foreach (var defGroup in taskDefinitions.GroupBy(t => t.Filter))
         {
-            var task = new TaskRecord(op, def, record);
+            if (!defGroup.First().Matches(record, minitoring: op.Type == OperationType.Monitor))
+                continue;
 
-            await PwnInfraContext.TaskRepository.AddAsync(task);
+            foreach (var def in defGroup)
+            {
+                if (def.Subject.Value != record.Asset.GetType().Name)
+                    continue;
 
-            await PwnInfraContext.TaskQueueService.EnqueueAsync<PendingTaskDTO>(new PendingTaskDTO(task));
+                var task = new TaskRecord(op, def, record);
+
+                await PwnInfraContext.TaskRepository.AddAsync(task);
+
+                await PwnInfraContext.TaskQueueService.EnqueueAsync<PendingTaskDTO>(new PendingTaskDTO(task));
+            }
         }
     }
 }
