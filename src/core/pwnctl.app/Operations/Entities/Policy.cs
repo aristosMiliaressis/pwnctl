@@ -20,7 +20,7 @@ public sealed class Policy : Entity<int>
     public List<TaskDefinition> GetAllowedTasks()
     {
         List<TaskDefinition> allowedTasks = new();
-        var blacklist = Blacklist?.Split(",") ?? new string[0];
+        var blacklist = Blacklist?.Split(",").Select(t => t.Trim()) ?? new string[0];
 
         foreach (var definition in TaskProfiles.SelectMany(p => p.TaskProfile.TaskDefinitions))
         {
