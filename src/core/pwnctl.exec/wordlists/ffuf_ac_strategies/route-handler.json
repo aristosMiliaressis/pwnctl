@@ -8,8 +8,13 @@
 	"jsp":["asgfdsgdfsgdfs.jsp","sdfgsdfgds.jsp"],
 	"jsf":["asgfdsgdfsgdfs.jsf","sdfgsdfgds.jsf"],
 	"cfm":["asgfdsgdfsgdfs.cfm","sdfgsdfgds.cfm"],
+	"zip": ["asgfdsgdfsgdfs.zip", "sdfgsdfgds.zip"],
+	"bak": ["asgfdsgdfsgdfs.bak", "sdfgsdfgds.bak"],
+	"log": ["asgfdsgdfsgdfs.log", "sdfgsdfgds.log"],
+	"tilda": ["asgfdsgdfsgdfs.log~", "sdfgsdfgds.log~"],
 	"ini":["asgfdsgdfsgdfs.ini","sdfgsdfgds.ini"],
-	"config":["asgfdsgdfsgdfs.config","sdfgsdfgds.config"],
-	"zip":["asgfdsgdfsgdfs.zip","sdfgsdfgds.zip"],
+	"config": ["asgfdsgdfsgdfs.config", "sdfgsdfgds.config"],
+	"conf": ["asgfdsgdfsgdfs.conf", "sdfgsdfgds.conf"],
+	"cfg": ["asgfdsgdfsgdfs.cfg", "sdfgsdfgds.cfg"],
 	"css":["asgfdsgdfsgdfs.css","sdfgsdfgds.css"]
 }
