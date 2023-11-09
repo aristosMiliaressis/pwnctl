@@ -16,6 +16,8 @@ public sealed class DiscordNotificationSender : NotificationSender
 
     public async Task SendAsync(string message, NotificationTopic topic)
     {
+        PwnInfraContext.Logger.Information("Notification: " + message);
+
         await PwnInfraContext.CommandExecutor.ExecuteAsync($"echo {message} | /root/go/bin/notify -bulk -provider discord -id {topic.ToString().ToLower()}");
     }
 }

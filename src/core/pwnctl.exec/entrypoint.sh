@@ -1,12 +1,20 @@
 #!/bin/bash
 
+if test -f "/mnt/efs/provider-config.yaml";
+then
+    mkdir -p $HOME/.config/notify/
+    cp "/mnt/efs/provider-config.yaml" $HOME/.config/notify/provider-config.yaml
+fi
+
 if test -f "/mnt/efs/amass.ini";
 then
+    mkdir -p /etc/amass/
     cp "/mnt/efs/amass.ini" /etc/amass/config.ini
 fi
 
 if test -f "/mnt/efs/waymore.yml";
 then
+    mkdir -p /opt/tools/waymore/
     cp "/mnt/efs/waymore.yml" /opt/tools/waymore/config.yml
 fi
 

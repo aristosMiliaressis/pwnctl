@@ -9,8 +9,6 @@ public class BashCommandExecutor : CommandExecutor
 {
     public async Task<(int, StringBuilder, StringBuilder)> ExecuteAsync(string command, StringBuilder? stdin = null, CancellationToken token = default)
     {
-        PwnInfraContext.Logger.Debug("Running: " + command);
-        
         StringBuilder stdout = new();
         StringBuilder stderr = new();
 

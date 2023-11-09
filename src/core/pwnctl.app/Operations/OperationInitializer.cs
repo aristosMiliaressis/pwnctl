@@ -23,34 +23,51 @@ public class OperationInitializer
 
     public async Task<bool> TryInitializeAsync(int opId)
     {
-
-        op.InitiatedAt = SystemTime.UtcNow();
-        op.State = OperationState.Ongoing;
-        await _opRepo.SaveAsync(op);
-
-        var taskDefinitions = op.Policy.TaskProfiles
-                                    .SelectMany(p => p.TaskProfile.TaskDefinitions);
-        
-        if (op.Type == OperationType.Monitor)
-            taskDefinitions = taskDefinitions.Where(def => def.MonitorRules.Schedule is not null);
-
-        int page = 0;
-        while (true)
+        try
         {
-            var records = await PwnInfraContext.AssetRepository.ListInScopeAsync(op.ScopeId, taskDefinitions.Select(t => t.Subject).Distinct().ToArray(), page);
-
-            foreach (var record in records)
+            var op = await _opRepo.FindAsync(opId);
+            if (op is null)
             {
-                await GenerateScheduledTasksAsync(op, record, taskDefinitions);
+                PwnInfraContext.Logger.Warning($"Operation id #{opId} was not found.");
+                return false;
             }
 
-            if (records.Count != PwnInfraContext.Config.Api.BatchSize)
-                break;
+            op.InitiatedAt = SystemTime.UtcNow();
+            op.State = OperationState.Ongoing;
+            await _opRepo.SaveAsync(op);
 
-            page++;
+            var taskDefinitions = op.Policy.TaskProfiles
+                                        .SelectMany(p => p.TaskProfile.TaskDefinitions);
+
+            if (op.Type == OperationType.Monitor)
+                taskDefinitions = taskDefinitions.Where(def => def.MonitorRules.Schedule is not null);
+
+            int page = 0;
+            while (true)
+            {
+                var records = await PwnInfraContext.AssetRepository.ListInScopeAsync(op.ScopeId, taskDefinitions.Select(t => t.Subject).Distinct().ToArray(), page);
+
+                foreach (var record in records)
+                {
+                    await GenerateScheduledTasksAsync(op, record, taskDefinitions);
+                }
+
+                if (records.Count != PwnInfraContext.Config.Api.BatchSize)
+                    break;
+
+                page++;
+            }
+
+            await _opRepo.SaveAsync(op);
+        }
+        catch (Exception ex)
+        {
+            PwnInfraContext.Logger.Warning($"Operation id #{opId} failed to initialize.");
+            PwnInfraContext.Logger.Exception(ex);
+            return false;
         }
 
-        await _opRepo.SaveAsync(op);
+        return true;
     }
 
     public async Task GenerateScheduledTasksAsync(Operation op, AssetRecord record, IEnumerable<TaskDefinition> taskDefinitions)
