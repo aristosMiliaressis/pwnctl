@@ -1,6 +1,7 @@
 
 resource "aws_ecr_repository" "exec" {
   name                 = "pwnctl-exec"
+  force_delete         = true
 
   tags = {
     Description = "Task executor image repository."
@@ -32,6 +33,7 @@ EOF
 
 resource "aws_ecr_repository" "proc" {
   name                 = "pwnctl-proc"
+  force_delete         = true
 
   tags = {
     Description = "output processor image repository."

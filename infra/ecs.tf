@@ -284,7 +284,7 @@ resource "aws_ecs_task_definition" "proc" {
       "name": "pwnctl",
       "image": "${docker_registry_image.proc.name}",
       "essential": true,
-      "stopTimeout": 120,
+      "stopTimeout": 30,
       "environment": [
         {
           "name": "PWNCTL_COMMIT_HASH",
@@ -438,9 +438,24 @@ resource "aws_cloudwatch_metric_alarm" "output_queue_depth" {
     }
   }
 
+   metric_query {
+    id          = "inFlightTaskMessages"
+
+    metric {
+      metric_name = "ApproximateNumberOfMessagesNotVisible"
+      namespace   = "AWS/SQS"
+      period      = 60
+      stat        = "Maximum"
+
+      dimensions = {
+        QueueName = module.sqs.main_queue.name
+      }
+    }
+  }
+
   metric_query {
     id          = "allMessages"
-    expression  = "visibleOutputMessages + inFlightOutputMessages"
+    expression  = "visibleOutputMessages + inFlightOutputMessages + inFlightTaskMessages"
     return_data = "true"
   }
 
