@@ -70,13 +70,22 @@ namespace pwnctl.infra.Repositories
             return _context.FirstFromLambda<TaskRecord>(lambda);
         }
 
-        public async Task UpdateAsync(TaskRecord task)
+        public async Task<bool> TryUpdateAsync(TaskRecord task)
         {
-            _context.Entry(task).State = EntityState.Modified;
+            try 
+            {
+                _context.Entry(task).State = EntityState.Modified;
 
-            await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
 
-            _context.Entry(task).DetachReferenceGraph();
+                _context.Entry(task).DetachReferenceGraph();
+                return true;
+            }
+            catch (Exception ex) 
+            {
+                PwnInfraContext.Logger.Exception(ex);
+                return false;
+            }
         }
 
         public async Task AddAsync(TaskRecord task)

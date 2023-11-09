@@ -627,7 +627,7 @@ public sealed class Tests
         await context.SaveChangesAsync();
 
         // Schedule - no previous occurence - added
-        await initializer.InitializeAsync(op.Id);
+        await initializer.TryInitializeAsync(op.Id);
 
         // PreCondition tests
         Assert.True(context.TaskRecords.Include(t => t.Definition).Any(t => t.Definition.Name == ShortName.Create("sub_enum")));
@@ -637,12 +637,12 @@ public sealed class Tests
 
         //  Schedule - previous occurance passed schedule - added
         SystemTime.SetDateTime(DateTime.UtcNow.AddDays(2));
-        await initializer.InitializeAsync(op.Id);
+        await initializer.TryInitializeAsync(op.Id);
 
         Assert.Equal(2, context.TaskRecords.Include(t => t.Definition).Count(t => t.Definition.Name == ShortName.Create("sub_enum")));
 
         //  Schedule - previous occurance not passed schedule - not added
-        await initializer.InitializeAsync(op.Id);
+        await initializer.TryInitializeAsync(op.Id);
 
         Assert.Equal(2, context.TaskRecords.Include(t => t.Definition).Count(t => t.Definition.Name == ShortName.Create("sub_enum")));
 
@@ -715,12 +715,12 @@ public sealed class Tests
         var task = EntityFactory.TaskRecord;
 
         task.Started();
-        await taskRepo.UpdateAsync(task);
+        await taskRepo.TryUpdateAsync(task);
 
         (int exitCode, StringBuilder stdout, StringBuilder stderr) = await executor.ExecuteAsync("echo example.com");
 
         task.Finished(exitCode, stderr.ToString());
-        await taskRepo.UpdateAsync(task);
+        await taskRepo.TryUpdateAsync(task);
 
         foreach (var line in stdout.ToString().Split("\n").Where(l => !string.IsNullOrEmpty(l)))
         {

@@ -21,9 +21,8 @@ public class OperationInitializer
         _opRepo = opRepo;
     }
 
-    public async Task InitializeAsync(int opId)
+    public async Task<bool> TryInitializeAsync(int opId)
     {
-        var op = await _opRepo.FindAsync(opId);
 
         op.InitiatedAt = SystemTime.UtcNow();
         op.State = OperationState.Ongoing;

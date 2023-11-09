@@ -5,6 +5,31 @@ namespace pwnctl.infra.Persistence
 {
     public sealed class QueryRunner
     {
+        public async Task<(bool, string)> TryRunAsync(string sql)
+        {
+            try
+            {
+                using (var connection = new NpgsqlConnection(PwnctlDbContext.ConnectionString))
+                {
+                    var command = new NpgsqlCommand(sql, connection);
+
+                    await connection.OpenAsync();
+                    NpgsqlDataReader reader = await command.ExecuteReaderAsync();
+                    var rows = Serialize(reader);
+                    var json = PwnInfraContext.Serializer.Serialize(rows);
+                    await reader.CloseAsync();
+
+                    return (true, json);
+                }
+            }
+            catch (Exception ex)
+            {
+                PwnInfraContext.Logger.Warning($"Failed to execute query: {sql}");
+                PwnInfraContext.Logger.Exception(ex);
+                return (false, "");
+            }
+        }
+
         public async Task<string> RunAsync(string sql)
         {
             using (var connection = new NpgsqlConnection(PwnctlDbContext.ConnectionString))
