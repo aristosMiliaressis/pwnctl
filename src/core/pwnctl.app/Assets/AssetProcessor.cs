@@ -134,15 +134,30 @@ public sealed class AssetProcessor
     {
         var allowedTasks = operation.Policy.GetAllowedTasks();
 
-        foreach (var definition in allowedTasks.Where(def => (record.InScope || def.MatchOutOfScope) && def.Matches(record)))
+        foreach (var defGroup in allowedTasks.GroupBy(t => t.Filter))
         {
-            // only queue tasks once per definition/asset pair
-            var task = PwnInfraContext.TaskRepository.Find(record, definition);
-            if (task is not null)
+            if (!record.InScope && !defGroup.Any(def => def.MatchOutOfScope))
                 continue;
 
-            task = new TaskRecord(operation, definition, record);
-            record.Tasks.Add(task);
+            if (!defGroup.First().Matches(record))
+                continue;
+
+            foreach (var def in defGroup)
+            {
+                if (def.Subject.Value != record.Asset.GetType().Name)
+                    continue;
+
+                if (!record.InScope && !def.MatchOutOfScope)
+                    continue;
+
+                // only queue tasks once per definition/asset pair
+                var task = PwnInfraContext.TaskRepository.Find(record, def);
+                if (task is not null)
+                    continue;
+
+                task = new TaskRecord(operation, def, record);
+                record.Tasks.Add(task);
+            }
         }
     }
 
