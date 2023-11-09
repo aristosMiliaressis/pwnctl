@@ -16,7 +16,7 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Queries
         {
             AssetDbRepository repository = new();
 
-            var parameters = await repository.ListParametersAsync(query.Page);
+            var parameters = await repository.ListHttpParametersAsync(query.Page);
 
             var viewModel = new HttpParameterListViewModel(parameters);
 

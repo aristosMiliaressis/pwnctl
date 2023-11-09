@@ -180,7 +180,7 @@ namespace pwnctl.infra.Repositories
             }
         }
 
-        public async Task<IEnumerable<AssetRecord>> ListHostsAsync(int pageIdx)
+        public async Task<IEnumerable<AssetRecord>> ListNetworkHostsAsync(int pageIdx, CancellationToken token = default)
         {
             return await _context.AssetRecords
                             .Include(e => e.FoundByTask)
@@ -191,10 +191,10 @@ namespace pwnctl.infra.Repositories
                             .Skip(pageIdx*PwnInfraContext.Config.Api.BatchSize)
                             .Take(PwnInfraContext.Config.Api.BatchSize)
                             .AsNoTracking()
-                            .ToListAsync();
+                            .ToListAsync(token);
         }
 
-        public async Task<IEnumerable<AssetRecord>> ListDomainsAsync(int pageIdx)
+        public async Task<IEnumerable<AssetRecord>> ListDomainNamesAsync(int pageIdx, CancellationToken token = default)
         {
             return await _context.AssetRecords
                             .Include(e => e.FoundByTask)
@@ -205,10 +205,10 @@ namespace pwnctl.infra.Repositories
                             .Skip(pageIdx * PwnInfraContext.Config.Api.BatchSize)
                             .Take(PwnInfraContext.Config.Api.BatchSize)
                             .AsNoTracking()
-                            .ToListAsync();
+                            .ToListAsync(token);
         }
 
-        public async Task<IEnumerable<AssetRecord>> ListDNSRecordsAsync(int pageIdx)
+        public async Task<IEnumerable<AssetRecord>> ListDomainNameRecordsAsync(int pageIdx, CancellationToken token = default)
         {
             return await _context.AssetRecords
                             .Include(e => e.FoundByTask)
@@ -219,10 +219,10 @@ namespace pwnctl.infra.Repositories
                             .Skip(pageIdx * PwnInfraContext.Config.Api.BatchSize)
                             .Take(PwnInfraContext.Config.Api.BatchSize)
                             .AsNoTracking()
-                            .ToListAsync();
+                            .ToListAsync(token);
         }
 
-        public async Task<IEnumerable<AssetRecord>> ListEndpointsAsync(int pageIdx)
+        public async Task<IEnumerable<AssetRecord>> ListHttpEndpointsAsync(int pageIdx, CancellationToken token = default)
         {
             return await _context.AssetRecords
                             .Include(e => e.FoundByTask)
@@ -233,10 +233,10 @@ namespace pwnctl.infra.Repositories
                             .Skip(pageIdx * PwnInfraContext.Config.Api.BatchSize)
                             .Take(PwnInfraContext.Config.Api.BatchSize)
                             .AsNoTracking()
-                            .ToListAsync();
+                            .ToListAsync(token);
         }
 
-        public async Task<IEnumerable<AssetRecord>> ListNetRangesAsync(int pageIdx)
+        public async Task<IEnumerable<AssetRecord>> ListNetworkRangesAsync(int pageIdx, CancellationToken token = default)
         {
             return await _context.AssetRecords
                             .Include(e => e.FoundByTask)
@@ -247,10 +247,10 @@ namespace pwnctl.infra.Repositories
                             .Skip(pageIdx * PwnInfraContext.Config.Api.BatchSize)
                             .Take(PwnInfraContext.Config.Api.BatchSize)
                             .AsNoTracking()
-                            .ToListAsync();
+                            .ToListAsync(token);
         }
 
-        public async Task<IEnumerable<AssetRecord>> ListParametersAsync(int pageIdx)
+        public async Task<IEnumerable<AssetRecord>> ListHttpParametersAsync(int pageIdx, CancellationToken token = default)
         {
             return await _context.AssetRecords
                             .Include(e => e.FoundByTask)
@@ -261,10 +261,10 @@ namespace pwnctl.infra.Repositories
                             .Skip(pageIdx * PwnInfraContext.Config.Api.BatchSize)
                             .Take(PwnInfraContext.Config.Api.BatchSize)
                             .AsNoTracking()
-                            .ToListAsync();
+                            .ToListAsync(token);
         }
 
-        public async Task<IEnumerable<AssetRecord>> ListServicesAsync(int pageIdx)
+        public async Task<IEnumerable<AssetRecord>> ListNetworkSocketsAsync(int pageIdx, CancellationToken token = default)
         {
             return await _context.AssetRecords
                             .Include(e => e.FoundByTask)
@@ -275,10 +275,10 @@ namespace pwnctl.infra.Repositories
                             .Skip(pageIdx * PwnInfraContext.Config.Api.BatchSize)
                             .Take(PwnInfraContext.Config.Api.BatchSize)
                             .AsNoTracking()
-                            .ToListAsync();
+                            .ToListAsync(token);
         }
 
-        public async Task<IEnumerable<AssetRecord>> ListEmailsAsync(int pageIdx)
+        public async Task<IEnumerable<AssetRecord>> ListEmailsAsync(int pageIdx, CancellationToken token = default)
         {
             return await _context.AssetRecords
                             .Include(e => e.FoundByTask)
@@ -289,7 +289,7 @@ namespace pwnctl.infra.Repositories
                             .Skip(pageIdx * PwnInfraContext.Config.Api.BatchSize)
                             .Take(PwnInfraContext.Config.Api.BatchSize)
                             .AsNoTracking()
-                            .ToListAsync();
+                            .ToListAsync(token);
         }
     }
 

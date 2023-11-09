@@ -22,7 +22,7 @@ namespace pwnctl.infra.Queueing
         /// pushes a task to the pending queue.
         /// </summary>
         /// <param name="task"></param>
-        public async Task EnqueueAsync<TMessage>(TMessage task, CancellationToken token = default)
+        public async Task EnqueueAsync<TMessage>(TMessage task)
             where TMessage : QueueMessage
         {
             var json = PwnInfraContext.Serializer.Serialize(task);
@@ -30,7 +30,7 @@ namespace pwnctl.infra.Queueing
             await _executor.ExecuteAsync($"echo '{json}' >> {_queuePath}");
         }
 
-        public async Task<TMessage?> ReceiveAsync<TMessage>(CancellationToken token = default)
+        public async Task<TMessage> ReceiveAsync<TMessage>(CancellationToken token = default)
             where TMessage : QueueMessage
         {
             (_, StringBuilder stdout, _) = await _executor.ExecuteAsync($"if read line <{_queuePath}; then echo $line; tmp=\"$(tail -n +2 {_queuePath})\"; echo \"$tmp\" > {_queuePath}; fi");
@@ -46,12 +46,12 @@ namespace pwnctl.infra.Queueing
             return Task.CompletedTask;
         }
 
-        public Task ChangeMessageVisibilityAsync(QueueMessage task, int visibilityTimeout, CancellationToken token = default)
+        public Task ChangeMessageVisibilityAsync(QueueMessage task, int visibilityTimeout)
         {
             return Task.CompletedTask;
         }
 
-        public Task Purge<TMessage>(CancellationToken token = default)
+        public Task Purge<TMessage>()
         {
             return Task.CompletedTask;
         }

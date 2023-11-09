@@ -16,7 +16,7 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Queries
         {
             AssetDbRepository repository = new();
 
-            var services = await repository.ListServicesAsync(query.Page);
+            var services = await repository.ListNetworkSocketsAsync(query.Page);
 
             var viewModel = new NetworkSocketListViewModel(services);
 

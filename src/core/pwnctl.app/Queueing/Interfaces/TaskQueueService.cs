@@ -6,12 +6,12 @@ public interface TaskQueueService
     /// pushes a task to the pending queue.
     /// </summary>
     /// <param name="task"></param>
-    Task EnqueueAsync<TMessage>(TMessage msg, CancellationToken token = default) where TMessage : QueueMessage;
+    Task EnqueueAsync<TMessage>(TMessage msg) where TMessage : QueueMessage;
     Task<TMessage?> ReceiveAsync<TMessage>(CancellationToken token = default) where TMessage : QueueMessage;
 
     Task DequeueAsync(QueueMessage msg);
-    Task ChangeMessageVisibilityAsync(QueueMessage msg, int visibilityTimeout, CancellationToken token = default);
+    Task ChangeMessageVisibilityAsync(QueueMessage msg, int visibilityTimeout);
 
-    Task Purge<TMessage>(CancellationToken token = default);
+    Task Purge<TMessage>();
 }
 

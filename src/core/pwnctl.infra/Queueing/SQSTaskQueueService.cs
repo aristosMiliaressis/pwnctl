@@ -35,7 +35,7 @@ namespace pwnctl.infra.Queueing
         /// pushes a task to the pending queue.
         /// </summary>
         /// <param name="command"></param>
-        public async Task EnqueueAsync<TMessage>(TMessage message, CancellationToken token = default)
+        public async Task EnqueueAsync<TMessage>(TMessage message)
             where TMessage : QueueMessage
         {
             PwnInfraContext.Logger.Debug("Enqueue["+typeof(TMessage).Name +"]: "+message.Metadata["MessageGroupId"]);
@@ -49,7 +49,7 @@ namespace pwnctl.infra.Queueing
                     MessageBody = PwnInfraContext.Serializer.Serialize(message)
                 };
 
-                var response = await _sqsClient.SendMessageAsync(request, token);
+                var response = await _sqsClient.SendMessageAsync(request);
                 if (response.HttpStatusCode != HttpStatusCode.OK)
                 {
                     PwnInfraContext.Logger.Warning(PwnInfraContext.Serializer.Serialize(response));
@@ -62,7 +62,7 @@ namespace pwnctl.infra.Queueing
             }
         }
 
-        public async Task<TMessage?> ReceiveAsync<TMessage>(CancellationToken token = default)
+        public async Task<TMessage> ReceiveAsync<TMessage>(CancellationToken token = default)
             where TMessage : QueueMessage
         {
             try
@@ -94,6 +94,10 @@ namespace pwnctl.infra.Queueing
                     return task;
                 }).FirstOrDefault();
             }
+            catch (OperationCanceledException)
+            {
+                return default(TMessage);
+            }
             catch (Exception ex)
             {
                 PwnInfraContext.Logger.Exception(ex);
@@ -107,7 +111,7 @@ namespace pwnctl.infra.Queueing
 
             try
             {
-                var response = await _sqsClient.DeleteMessageAsync(this[message.GetType().Name], message.Metadata[nameof(Message.ReceiptHandle)], CancellationToken.None);
+                var response = await _sqsClient.DeleteMessageAsync(this[message.GetType().Name], message.Metadata[nameof(Message.ReceiptHandle)]);
                 if (response.HttpStatusCode != HttpStatusCode.OK)
                 {
                     PwnInfraContext.Logger.Warning(PwnInfraContext.Serializer.Serialize(response));
@@ -120,7 +124,7 @@ namespace pwnctl.infra.Queueing
             }
         }
 
-        public async Task ChangeMessageVisibilityAsync(QueueMessage message, int visibilityTimeout, CancellationToken token = default)
+        public async Task ChangeMessageVisibilityAsync(QueueMessage message, int visibilityTimeout)
         {
             PwnInfraContext.Logger.Debug("ChangeMessageVisibilityAsync[" + message.GetType().Name + "]: " + message.TaskId +" "+visibilityTimeout);
 
@@ -133,7 +137,7 @@ namespace pwnctl.infra.Queueing
                     VisibilityTimeout = visibilityTimeout
                 };
 
-                var response = await _sqsClient.ChangeMessageVisibilityAsync(request, token);
+                var response = await _sqsClient.ChangeMessageVisibilityAsync(request);
                 if (response.HttpStatusCode != HttpStatusCode.OK)
                 {
                     PwnInfraContext.Logger.Warning(PwnInfraContext.Serializer.Serialize(response));
@@ -146,11 +150,11 @@ namespace pwnctl.infra.Queueing
             }
         }
 
-        public async Task Purge<TMessage>(CancellationToken token = default)
+        public async Task Purge<TMessage>()
         {
             var queueUrl = this[typeof(TMessage).Name];
 
-            var response = await _sqsClient.PurgeQueueAsync(queueUrl, token);
+            var response = await _sqsClient.PurgeQueueAsync(queueUrl);
             if (response.HttpStatusCode != HttpStatusCode.OK)
             {
                 PwnInfraContext.Logger.Warning(PwnInfraContext.Serializer.Serialize(response));

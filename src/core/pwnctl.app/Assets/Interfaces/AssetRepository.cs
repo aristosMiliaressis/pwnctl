@@ -14,11 +14,11 @@ public interface AssetRepository
 
     Task<List<AssetRecord>> ListInScopeAsync(int scopeId, AssetClass[] assetClasses, int pageIdx, CancellationToken token = default);
 
-    Task<IEnumerable<AssetRecord>> ListHostsAsync(int pageIdx);
-    Task<IEnumerable<AssetRecord>> ListEndpointsAsync(int pageIdx);
-    Task<IEnumerable<AssetRecord>> ListServicesAsync(int pageIdx);
-    Task<IEnumerable<AssetRecord>> ListNetRangesAsync(int pageIdx);
-    Task<IEnumerable<AssetRecord>> ListDomainsAsync(int pageIdx);
-    Task<IEnumerable<AssetRecord>> ListDNSRecordsAsync(int pageIdx);
-    Task<IEnumerable<AssetRecord>> ListEmailsAsync(int pageIdx);
+    Task<IEnumerable<AssetRecord>> ListNetworkHostsAsync(int pageIdx, CancellationToken token = default);
+    Task<IEnumerable<AssetRecord>> ListHttpEndpointsAsync(int pageIdx, CancellationToken token = default);
+    Task<IEnumerable<AssetRecord>> ListNetworkSocketsAsync(int pageIdx, CancellationToken token = default);
+    Task<IEnumerable<AssetRecord>> ListNetworkRangesAsync(int pageIdx, CancellationToken token = default);
+    Task<IEnumerable<AssetRecord>> ListDomainNamesAsync(int pageIdx, CancellationToken token = default);
+    Task<IEnumerable<AssetRecord>> ListDomainNameRecordsAsync(int pageIdx, CancellationToken token = default);
+    Task<IEnumerable<AssetRecord>> ListEmailsAsync(int pageIdx, CancellationToken token = default);
 }

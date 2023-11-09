@@ -16,16 +16,12 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Queries
         {
             AssetDbRepository repository = new();
             
-            PwnInfraContext.Logger.Warning("HERE");
-            var endpoints = await repository.ListEndpointsAsync(query.Page);
-            PwnInfraContext.Logger.Warning("HERE2");
+            var endpoints = await repository.ListHttpEndpointsAsync(query.Page);
 
             var viewModel = new HttpEndpointListViewModel(endpoints);
-            PwnInfraContext.Logger.Warning("HERE3");
 
             viewModel.Page = query.Page;
             viewModel.TotalPages = new PwnctlDbContext().HttpEndpoints.Count() / PwnInfraContext.Config.Api.BatchSize;
-            PwnInfraContext.Logger.Warning("HERE4");
 
             return MediatedResponse<HttpEndpointListViewModel>.Success(viewModel);
         }
