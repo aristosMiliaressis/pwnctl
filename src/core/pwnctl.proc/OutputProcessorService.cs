@@ -9,32 +9,28 @@ namespace pwnctl.proc
 {
     public sealed class OutputProcessorService : LifetimeService
     {
-        private static readonly AssetProcessor _processor = new();
-        private static readonly OperationInitializer _initializer = new(new OperationDbRepository());
+        private readonly AssetProcessor _processor = new();
+        private readonly OperationInitializer _initializer = new(new OperationDbRepository());
 
-        public OutputProcessorService(IHostApplicationLifetime svcLifetime)
-            : base(svcLifetime)
-        {
-        }
+        public OutputProcessorService(IHostApplicationLifetime svcLifetime) : base(svcLifetime) { }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             if (int.TryParse(Environment.GetEnvironmentVariable("PWNCTL_Operation"), out int opId))
             {
                 await _initializer.TryInitializeAsync(opId);
+                return;
             }
-            else
+
+            while (!stoppingToken.IsCancellationRequested)
             {
-                while (!stoppingToken.IsCancellationRequested)
+                try
                 {
-                    try
-                    {
-                        await ProcessOutputBatchAsync(stoppingToken);
-                    }
-                    catch (Exception ex)
-                    {
-                        PwnInfraContext.Logger.Exception(ex);
-                    }
+                    await ProcessOutputBatchAsync(stoppingToken);
+                }
+                catch (Exception ex)
+                {
+                    PwnInfraContext.Logger.Exception(ex);
                 }
             }
         }
@@ -56,12 +52,6 @@ namespace pwnctl.proc
             {
                 return;
             }
-
-            // Change the message visibility if the visibility window is exheeded
-            using var timer = new System.Timers.Timer((PwnInfraContext.Config.TaskQueue.VisibilityTimeout - 90) * 1000);
-            timer.Elapsed += async (_, _) =>
-                await PwnInfraContext.TaskQueueService.ChangeMessageVisibilityAsync(batchDTO, PwnInfraContext.Config.TaskQueue.VisibilityTimeout);
-            timer.Start();
 
             PwnInfraContext.Logger.Information($"Received output batch #{batchDTO.TaskId} with {batchDTO.Lines.Count} lines.");
 

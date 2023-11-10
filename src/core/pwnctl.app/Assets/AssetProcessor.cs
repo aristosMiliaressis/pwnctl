@@ -134,7 +134,7 @@ public sealed class AssetProcessor
     {
         var allowedTasks = operation.Policy.GetAllowedTasks();
 
-        foreach (var defGroup in allowedTasks.GroupBy(t => t.Filter))
+        foreach (var defGroup in allowedTasks.Where(t => t.Subject.Value == record.Asset.GetType().Name).GroupBy(t => t.Filter))
         {
             if (!record.InScope && !defGroup.Any(def => def.MatchOutOfScope))
                 continue;
@@ -144,9 +144,6 @@ public sealed class AssetProcessor
 
             foreach (var def in defGroup)
             {
-                if (def.Subject.Value != record.Asset.GetType().Name)
-                    continue;
-
                 if (!record.InScope && !def.MatchOutOfScope)
                     continue;
 

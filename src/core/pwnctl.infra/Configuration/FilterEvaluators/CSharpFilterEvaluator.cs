@@ -10,28 +10,41 @@ using pwnctl.app.Tagging.Entities;
 
 public class CSharpFilterEvaluator : FilterEvaluator
 {
+    private static Dictionary<string, (object, MethodInfo)> _cache = new();
+
     /// <summary>
     /// constructs and evaluates a CSharpScript expression by prefixing the `script` parameter
     /// with a lambda parameter expression `(X, Tags) => ` where X is the name of the concrete type of parameter `asset`
     /// </summary>
-    public bool Evaluate(string? filter, AssetRecord record)
+    public bool Evaluate(string filter, AssetRecord record)
     {
         if (string.IsNullOrEmpty(filter))
             return true;
 
+        var key = record.Asset.GetType().Name + ":" + filter;
+
+        (object filterExpr, MethodInfo invokeMethod) = (null, null);
         try
         {
-            var funcType = typeof(Func<,,>).MakeGenericType(record.Asset.GetType(), typeof(AssetRecord), typeof(bool));
-            var evalMethod = _evaluateAsync.MakeGenericMethod(funcType);
-
-            var evalTask = evalMethod.Invoke(null, new object[]
+            if (!_cache.ContainsKey(key))
             {
-                "("+record.Asset.GetType().Name+", Tags) => " + filter,
-                _scriptOptions, null, null, CancellationToken.None
-            });
+                var funcType = typeof(Func<,,>).MakeGenericType(record.Asset.GetType(), typeof(AssetRecord), typeof(bool));
+                var evalMethod = _evaluateAsync.MakeGenericMethod(funcType);
 
-            var filterExpr = typeof(Task<>).MakeGenericType(funcType).GetProperty("Result").GetValue(evalTask);
-            var invokeMethod = funcType.GetMethod(nameof(Func<Asset>.Invoke));
+                var evalTask = evalMethod.Invoke(null, new object[]
+                {
+                    "("+record.Asset.GetType().Name+", Tags) => " + filter,
+                    _scriptOptions, null, null, CancellationToken.None
+                });
+
+                filterExpr = typeof(Task<>).MakeGenericType(funcType).GetProperty("Result").GetValue(evalTask);
+                invokeMethod = funcType.GetMethod(nameof(Func<Asset>.Invoke));
+
+                _cache[key] = (filterExpr, invokeMethod);
+            }
+
+            (filterExpr, invokeMethod) = _cache[key];
+
             return (bool)invokeMethod.Invoke(filterExpr, new object[] { record.Asset, record });
         }
         finally
@@ -41,7 +54,7 @@ public class CSharpFilterEvaluator : FilterEvaluator
         }
     }
 
-    public bool Evaluate(string? filter, Dictionary<string, object> args)
+    public bool Evaluate(string filter, Dictionary<string, object> args)
     {
         if (string.IsNullOrEmpty(filter))
             return true;

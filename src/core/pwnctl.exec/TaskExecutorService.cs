@@ -31,7 +31,6 @@ public sealed class TaskExecutorService : LifetimeService
             {
                 PwnInfraContext.Logger.Exception(ex);
 
-                _protectionState = false;
                 if (_protectionState)
                 {
                     // disable scale in protection to allow scale in events
