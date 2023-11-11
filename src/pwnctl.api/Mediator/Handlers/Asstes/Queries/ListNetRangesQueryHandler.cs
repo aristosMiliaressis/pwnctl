@@ -16,7 +16,7 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Queries
         {
             AssetDbRepository repository = new();
 
-            var netRanges = await repository.ListNetRangesAsync(query.Page);
+            var netRanges = await repository.ListNetworkRangesAsync(query.Page);
 
             var viewModel = new NetworkRangeListViewModel(netRanges);
 

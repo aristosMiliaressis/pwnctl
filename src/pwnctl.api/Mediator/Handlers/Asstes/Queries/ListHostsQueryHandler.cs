@@ -16,7 +16,7 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Queries
         {
             AssetDbRepository repository = new();
 
-            var hosts = await repository.ListHostsAsync(query.Page);
+            var hosts = await repository.ListNetworkHostsAsync(query.Page);
 
             var viewModel = new NetworkHostListViewModel(hosts);
 

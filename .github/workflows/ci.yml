@@ -101,16 +101,6 @@ jobs:
         id: vars
         run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
-      - name: Build exec image
-        uses: docker/build-push-action@v4
-        with:
-          tags: ${{ steps.login-ecr.outputs.registry }}/pwnctl-exec:untested_${{ steps.vars.outputs.sha_short }}
-          push: true
-          context: src/core/
-          file: src/core/pwnctl.exec/Dockerfile
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-      
       - name: Build proc image
         uses: docker/build-push-action@v4
         with:
@@ -120,6 +110,16 @@ jobs:
           file: src/core/pwnctl.proc/Dockerfile
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      # - name: Build exec image
+      #   uses: docker/build-push-action@v4
+      #   with:
+      #     tags: ${{ steps.login-ecr.outputs.registry }}/pwnctl-exec:untested_${{ steps.vars.outputs.sha_short }}
+      #     push: true
+      #     context: src/core/
+      #     file: src/core/pwnctl.exec/Dockerfile
+      #     cache-from: type=gha
+      #     cache-to: type=gha,mode=max
 
   # test-images:
   #   needs: build-images
@@ -194,8 +194,8 @@ jobs:
       - name: Retag proc image from untested to latest
         run: docker buildx imagetools create -t ${{ steps.login-ecr.outputs.registry }}/pwnctl-proc:${{ steps.vars.outputs.sha_short }} ${{ steps.login-ecr.outputs.registry }}/pwnctl-proc:untested_${{ steps.vars.outputs.sha_short }}
 
-      - name: Pull untested exec image
-        run: docker pull ${{ steps.login-ecr.outputs.registry }}/pwnctl-exec:untested_${{ steps.vars.outputs.sha_short }}
+      # - name: Pull untested exec image
+      #   run: docker pull ${{ steps.login-ecr.outputs.registry }}/pwnctl-exec:untested_${{ steps.vars.outputs.sha_short }}
 
-      - name: Retag exec image from untested to latest
-        run: docker buildx imagetools create -t ${{ steps.login-ecr.outputs.registry }}/pwnctl-exec:${{ steps.vars.outputs.sha_short }} ${{ steps.login-ecr.outputs.registry }}/pwnctl-exec:untested_${{ steps.vars.outputs.sha_short }}
+      # - name: Retag exec image from untested to latest
+      #   run: docker buildx imagetools create -t ${{ steps.login-ecr.outputs.registry }}/pwnctl-exec:${{ steps.vars.outputs.sha_short }} ${{ steps.login-ecr.outputs.registry }}/pwnctl-exec:untested_${{ steps.vars.outputs.sha_short }}

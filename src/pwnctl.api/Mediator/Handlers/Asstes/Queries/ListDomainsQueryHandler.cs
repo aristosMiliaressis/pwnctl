@@ -16,7 +16,7 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Queries
         {
             AssetDbRepository repository = new();
 
-            var domains = await repository.ListDomainsAsync(query.Page);
+            var domains = await repository.ListDomainNamesAsync(query.Page);
 
             var viewModel = new DomainNameListViewModel(domains);
 
