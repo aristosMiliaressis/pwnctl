@@ -23,10 +23,10 @@ resource "aws_lambda_function" "this" {
   source_code_hash = data.archive_file.this.output_base64sha256
   runtime = "dotnet6"
   timeout = 300
-  memory_size = 6144
+  memory_size = 3008
 
   vpc_config {
-    subnet_ids         = [for k, v in aws_subnet.private : aws_subnet.private[k].id]
+    subnet_ids         = [for k, v in aws_subnet.public : aws_subnet.public[k].id]
     security_group_ids = [aws_security_group.allow_https_from_internet.id]
   }
 
@@ -74,7 +74,7 @@ resource "aws_security_group" "allow_https_from_internet" {
 
   depends_on = [
     aws_vpc.main,
-    aws_subnet.private
+    aws_subnet.public
   ]
 }
 
