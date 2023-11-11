@@ -127,11 +127,9 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
 
                 await _assetRepository.SaveAsync(record);
 
-                foreach (var task in record.Tasks)
-                {
-                    task.Definition = allowedTasks.First(t => t.Id == task.DefinitionId);
-                    await _taskQueueService.EnqueueAsync(new PendingTaskDTO(task));
-                }
+                record.Tasks.ForEach(task => task.Definition = allowedTasks.First(t => t.Id == task.DefinitionId));
+
+                await _taskQueueService.EnqueueBatchAsync(record.Tasks.Select(t => new PendingTaskDTO(t)));
             }
         }
     }

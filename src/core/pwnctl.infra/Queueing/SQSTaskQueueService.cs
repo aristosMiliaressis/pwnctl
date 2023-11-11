@@ -62,6 +62,36 @@ namespace pwnctl.infra.Queueing
             }
         }
 
+        public async Task EnqueueBatchAsync<TMessage>(IEnumerable<TMessage> msgs)
+            where TMessage : QueueMessage
+        {
+            try
+            {
+                for (var i = 0; i < msgs.Count(); i += 10)
+                {
+                    var batch = msgs.Skip(i * 10).Take(10);
+
+                    var request = new SendMessageBatchRequest(this[typeof(TMessage).Name], batch.Select(msg =>
+                    new SendMessageBatchRequestEntry
+                    {
+                        MessageGroupId = msg.Metadata["MessageGroupId"],
+                        MessageBody = PwnInfraContext.Serializer.Serialize(msg)
+                    }).ToList());
+
+                    var response = await _sqsClient.SendMessageBatchAsync(request);
+                    if (response.HttpStatusCode != HttpStatusCode.OK || response.Failed.Any())
+                    {
+                        PwnInfraContext.Logger.Warning(PwnInfraContext.Serializer.Serialize(response));
+                        PwnInfraContext.Logger.Warning("HttpStatusCode: " + response.HttpStatusCode);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                PwnInfraContext.Logger.Exception(ex);
+            }
+        }
+
         public async Task<TMessage> ReceiveAsync<TMessage>(CancellationToken token = default)
             where TMessage : QueueMessage
         {

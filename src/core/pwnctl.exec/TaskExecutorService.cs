@@ -181,7 +181,7 @@ public sealed class TaskExecutorService : LifetimeService
         PwnInfraContext.Logger.Information($"Task: {taskDTO.TaskId} produced {lines.Count()} lines");
 
         var batches = OutputBatchDTO.FromLines(lines, task.Id);
-        foreach (var batch in batches)
-            await PwnInfraContext.TaskQueueService.EnqueueAsync(batch);
+        
+        await PwnInfraContext.TaskQueueService.EnqueueBatchAsync(batches);
     }
 }

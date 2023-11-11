@@ -122,12 +122,9 @@ public sealed class AssetProcessor
 
         var allowedTasks = foundByTask.Operation.Policy.GetAllowedTasks();
 
-        await Parallel.ForEachAsync(newTasks,
-        async (task, token) =>
-        {
-            task.Definition = allowedTasks.First(t => t.Id == task.DefinitionId);
-            await PwnInfraContext.TaskQueueService.EnqueueAsync(new PendingTaskDTO(task));
-        });
+        newTasks.ToList().ForEach(task => task.Definition = allowedTasks.First(t => t.Id == task.DefinitionId));
+
+        await PwnInfraContext.TaskQueueService.EnqueueBatchAsync(newTasks.Select(t => new PendingTaskDTO(t)));
     }
 
     private void GenerateCrawlingTasks(Operation operation, AssetRecord record)

@@ -30,6 +30,15 @@ namespace pwnctl.infra.Queueing
             await _executor.ExecuteAsync($"echo '{json}' >> {_queuePath}");
         }
 
+        public async Task EnqueueBatchAsync<TMessage>(IEnumerable<TMessage> tasks)
+            where TMessage : QueueMessage
+        {
+            foreach (var task in tasks)
+            {
+                await EnqueueAsync(task);
+            }
+        }
+
         public async Task<TMessage> ReceiveAsync<TMessage>(CancellationToken token = default)
             where TMessage : QueueMessage
         {
