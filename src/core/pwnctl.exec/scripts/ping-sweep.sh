@@ -6,7 +6,7 @@ cidr=$1
 params=()
 [[ $cidr =~ .*":".* ]] && params+=(-6)
 
-sudo nmap -n -sn -PO -PS -PE $cidr -vv "${params[@]}" 2>/dev/null \
+nmap -n -sn -PO -PS -PE $cidr -vv "${params[@]}" 2>/dev/null \
     | grep 'Host is up' -B 1 \
     | tr '\n' ' ' \
     | sed 's/Nmap scan report/\nNmap scan report/g' \

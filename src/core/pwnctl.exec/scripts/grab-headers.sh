@@ -9,6 +9,7 @@ headers=(
     'Location'
     'Content-Security-Policy'
     'X-Frame-Options'
+    'Referrer-Policy'
     'Via'
     'X-Served-By'
     'X-Served-From'
@@ -18,9 +19,9 @@ headers=(
     'X-Cache-Info'
 )
 
-params=$(for header in ${headers[@]}; do echo -n "-rH $header"; done)
+params=$(for header in ${headers[@]}; do echo -n "-rH $header "; done)
 
 echo $url \
     | urgo -H "User-Agent: $(uagen)" -title -favicon -sC ${params[@]} \
-    | jq '.ResponseHeasers += {"Title": .Title, "Status": .StatusCode, "FaviconHash": .FaviconHash}' \
+    | jq '.ResponseHeasers += {"Title": .Title, "Status": .StatusCode|tostring, "FaviconHash": .FaviconHash}' \
     | jq -c '{asset:.Url, tags:.ResponseHeasers}'

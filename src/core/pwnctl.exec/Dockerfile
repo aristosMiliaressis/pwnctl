@@ -13,12 +13,10 @@ RUN go install github.com/tomnomnom/anew@latest
 RUN curl https://raw.githubusercontent.com/aristosMiliaressis/wordlist_builder/master/wordlist_builder.sh | bash -s -- /opt/wordlists/
 RUN go install github.com/tomnomnom/unfurl@latest
 RUN go install github.com/projectdiscovery/tlsx/cmd/tlsx@latest
-RUN go install github.com/projectdiscovery/dnsx/cmd/dnsx@latest
 RUN go install github.com/projectdiscovery/httpx/cmd/httpx@latest
 RUN go install github.com/projectdiscovery/katana/cmd/katana@latest
 RUN go install github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
 RUN go install github.com/projectdiscovery/cdncheck/cmd/cdncheck@latest
-RUN go install github.com/projectdiscovery/asnmap/cmd/asnmap@latest
 RUN go install github.com/projectdiscovery/mapcidr/cmd/mapcidr@latest
 #RUN go install github.com/projectdiscovery/naabu/v2/cmd/naabu@latest
 #RUN go install github.com/ffuf/ffuf@latest
@@ -27,7 +25,6 @@ RUN go install github.com/hakluke/hakrawler@latest
 RUN go install github.com/d3mondev/puredns/v2@latest
 RUN go install github.com/aristosMiliaressis/urgo@latest
 RUN go install github.com/rverton/webanalyze/cmd/webanalyze@latest
-RUN go install github.com/sw33tLie/sns@latest
 RUN go install github.com/sensepost/gowitness@latest
 RUN go install github.com/zmap/zdns@latest
 RUN go install github.com/owasp-amass/amass/v3/...@master
@@ -39,20 +36,22 @@ RUN go install github.com/projectdiscovery/notify/cmd/notify@latest
 RUN go install github.com/aristosMiliaressis/mdwfuzzer@latest
 
 WORKDIR /tmp
-RUN git clone https://github.com/aristosMiliaressis/ffuf.git && go build -C ffuf && mv ffuf/ffuf /root/go/bin
+RUN git clone https://github.com/aristosMiliaressis/ffuf.git && go build -C ffuf && mv ffuf/ffuf $GOPATH/bin
 RUN git clone https://github.com/blechschmidt/massdns.git \
-    && cd massdns && make && cp bin/massdns  /root/go/bin/
+    && cd massdns && make && cp bin/massdns $GOPATH/bin/
 
 # Installing private tools
 RUN mkdir -p /opt/wordlists/dns/
 RUN mkdir -p -m 0700 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
 RUN --mount=type=ssh \
-    git clone git@github.com:aristosMiliaressis/vhost-brute.git && cd vhost-brute && go build cmd/vhost-brute/vhost-brute.go && cp vhost-brute /root/go/bin
+    git clone git@github.com:aristosMiliaressis/vhost-brute.git && make -C vhost-brute install
 RUN --mount=type=ssh \
-    git clone git@github.com:aristosMiliaressis/cache-prober.git && cd cache-prober && make build && cp main /root/go/bin/cache-prober
+    git clone git@github.com:aristosMiliaressis/cors-scanner.git && make -C cors-scanner install
+RUN --mount=type=ssh \
+    git clone git@github.com:aristosMiliaressis/cache-prober.git && make -C cache-prober install
 RUN --mount=type=ssh \
     git clone -b pwnctl git@github.com:aristosMiliaressis/sub-enum.git \
-    && cp sub-enum/wordlists/* /opt/wordlists/dns/ && cp sub-enum/sub-enum.sh /root/go/bin/
+    && cp sub-enum/wordlists/* /opt/wordlists/dns/ && cp sub-enum/sub-enum.sh $GOPATH/bin/
 
 FROM golang:1.20.2-alpine as nuclei-templates
 
@@ -103,13 +102,15 @@ RUN curl -sSL https://dot.net/v1/dotnet-install.sh \
     && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet
 
 # Setting up java
-RUN apt-get update && apt-get install -y openjdk-8-jdk
+RUN apt-get update && apt-get install -y openjdk-17-jre
 
 # Setting up python
 RUN apt-get update \
     && apt-get install -y python3 \
     python3-pip \
     python3-setuptools
+RUN python3 -m pip install --upgrade pip
+RUN cp /usr/bin/python3 /usr/bin/python
 
 # Setting up xvfb for headless browsing
 WORKDIR /opt/chromium
@@ -129,9 +130,6 @@ WORKDIR /opt/tools
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y jq whois dnsutils ldnsutils less
 
-RUN python3 -m pip install --upgrade pip
-RUN cp /usr/bin/python3 /usr/bin/python
-
 RUN pip3 install useragent-picker-cli && uagen
 RUN pip3 install s3scanner
 RUN pip3 install emailfinder
@@ -142,16 +140,11 @@ RUN python3 -m pip install -e git+https://github.com/xnl-h4ck3r/waymore#egg=waym
     && ln /opt/tools/src/waymore/waymore.py /usr/local/bin/waymore && chmod +x /usr/local/bin/waymore
 RUN python3 -m pip install -e git+https://github.com/brandonscholet/python-Wappalyzer.git#egg=python-Wappalyzer
 RUN python3 -m pip install -e git+https://github.com/brandonscholet/wappybird.git#egg=wappybird \
-    && pip3 install click validators \
-    && ln /opt/tools/src/wappybird/wappybird/main.py /usr/local/bin/wappy && chmod +x /usr/local/bin/wappy
-RUN git clone -b 1.1.4 https://github.com/darkoperator/dnsrecon.git \
-    && cd dnsrecon && pip install -r requirements.txt && python3 setup.py install
+    && pip3 install click validators
 RUN git clone https://github.com/cramppet/regulator \
     && pip3 install -r regulator/requirements.txt
-RUN git clone https://github.com/s0md3v/Corsy.git \
-    && pip3 install -r Corsy/requirements.txt \
-    && chmod +x Corsy/corsy.py \
-    && ln -s /opt/tools/Corsy/corsy.py /usr/local/bin
+RUN git clone https://github.com/punk-security/dnsReaper.git && cd dnsReaper \
+    && pip3 install -r requirements.txt
 RUN curl -LOJ https://github.com/RustScan/RustScan/releases/download/2.0.1/rustscan_2.0.1_amd64.deb \
     && dpkg -i rustscan_2.0.1_amd64.deb && rm rustscan_2.0.1_amd64.deb
 RUN curl https://github.com/mgdm/htmlq/releases/download/v0.4.0/htmlq-x86_64-linux.tar.gz -L -o htmlq-x86_64-linux.tar.gz \
@@ -160,11 +153,8 @@ RUN curl https://github.com/mgdm/htmlq/releases/download/v0.4.0/htmlq-x86_64-lin
 RUN mkdir -p /opt/toos/ShortNameScanner && cd /opt/toos/ShortNameScanner \
     && curl -OJ https://raw.githubusercontent.com/irsdl/IIS-ShortName-Scanner/master/release/iis_shortname_scanner.jar \
     && curl -OJ https://raw.githubusercontent.com/irsdl/IIS-ShortName-Scanner/master/release/config.xml
-RUN git clone https://github.com/punk-security/dnsReaper.git && cd dnsReaper \
-    && pip3 install -r requirements.txt
 
 COPY --from=tool-build /root/go/bin/ /usr/local/bin/
-COPY --from=tool-build /opt/wordlists/ /opt/wordlists/
 COPY --from=tool-build /opt/wordlists/ /opt/wordlists/
 COPY --from=nuclei-templates /opt/nuclei_templates/ /opt/nuclei_templates/
 COPY --from=worker-build /publish/exec /opt/pwnctl-exec

@@ -2,6 +2,9 @@
 
 ip=$1
 
-os=$(nmap -Pn -O $ip | grep Running | cut -d ':' -f 2-)
+params=()
+[[ $ip =~ .*":".* ]] && params+=(-6)
+
+os=$(nmap -Pn "${params[@]}" -O $ip | grep Running | cut -d ':' -f 2-)
 
 [[ ! -z $os ]] && echo '{"Asset":"'$ip'","Tags":{"os":"'$os'"}}'

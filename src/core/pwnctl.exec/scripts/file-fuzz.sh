@@ -18,7 +18,7 @@ do
 done | sort -u > $temp_wordlist
 
 timeout -v -k 30s 150m ffuf -maxtime 9000 -s -o $temp_outfile -of json -se -fp -acp -acs waf,blacklist,wildcard,route-handler \
-    -ar -mc all -fc 404,429,503 -recursion -recursion-status 301,302,303,307,308,401,403,405,500,501 -H "User-Agent: $(uagen)" -w $temp_wordlist -u ${url}FUZZ >/dev/null
+    -ar -mc 200 -recursion -recursion-status 301,302,303,307,308,401,403,405,500,501 -H "User-Agent: $(uagen)" -w $temp_wordlist -u ${url}FUZZ >/dev/null
 
 cat $temp_outfile \
     | jq -c '.results[] | {asset: ("%%BASE_URL%%"+.input.FUZZ), tags:{status:.status|tostring,location:.redirectlocation}}' \
