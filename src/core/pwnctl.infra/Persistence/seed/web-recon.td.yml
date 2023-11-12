@@ -37,7 +37,7 @@ TaskDefinitions:
 
   - Name: zone_trasfer
     CommandTemplate: zone-transfer.sh {{Key}}
-    Subject: DomainName
+    Subject: DomainNameRecord
     Filter: DomainNameRecord.Type == DnsRecordType.SOA
     CheckNotificationRules: true
 

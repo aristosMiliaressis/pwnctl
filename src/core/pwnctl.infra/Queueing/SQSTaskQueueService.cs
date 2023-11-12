@@ -74,6 +74,7 @@ namespace pwnctl.infra.Queueing
                     var request = new SendMessageBatchRequest(this[typeof(TMessage).Name], batch.Select(msg =>
                     new SendMessageBatchRequestEntry
                     {
+                        Id = msg.Metadata["MessageGroupId"],
                         MessageGroupId = msg.Metadata["MessageGroupId"],
                         MessageBody = PwnInfraContext.Serializer.Serialize(msg)
                     }).ToList());
