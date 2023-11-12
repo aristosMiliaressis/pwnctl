@@ -64,7 +64,8 @@ public sealed class Tests
                     .WithEnvironment("PWNCTL_Db__Password", "password")
                     .WithEnvironment("PWNCTL_TaskQueue__Name", "task-dev.fifo")
                     .WithEnvironment("PWNCTL_TaskQueue__VisibilityTimeout", "1200")
-                    .WithEnvironment("PWNCTL_OutputQueue__Name", "output-dev.fifo");
+                    .WithEnvironment("PWNCTL_OutputQueue__Name", "output-dev.fifo")
+                    .WithEnvironment("PWNCTL_Worker__MaxTaskTimeout", "7200");
 
     public Tests()
     {

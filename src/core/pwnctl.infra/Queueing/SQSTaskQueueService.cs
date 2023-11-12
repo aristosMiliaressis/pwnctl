@@ -71,6 +71,9 @@ namespace pwnctl.infra.Queueing
                 {
                     var batch = msgs.Skip(i * 10).Take(10);
 
+                    if (!batch.Any())
+                        continue;
+
                     var request = new SendMessageBatchRequest(this[typeof(TMessage).Name], batch.Select(msg =>
                     new SendMessageBatchRequestEntry
                     {

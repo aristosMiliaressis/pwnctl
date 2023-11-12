@@ -1,4 +1,4 @@
-namespace pwnctl.app.Assets;
+﻿namespace pwnctl.app.Assets;
 
 using System.Threading.Tasks;
 using pwnctl.domain.BaseClasses;
