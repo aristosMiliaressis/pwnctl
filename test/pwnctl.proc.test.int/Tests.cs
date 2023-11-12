@@ -46,11 +46,10 @@ public sealed class Tests
                     .Build();
     
     private static ContainerBuilder _pwnctlContainerBuilder = new ContainerBuilder()
-                    .WithImage($"{Environment.GetEnvironmentVariable("ECR_REGISTRY_URI")}:untested_{EnvironmentVariables.COMMIT_HASH}")
+                    .WithImage($"{Environment.GetEnvironmentVariable("UNTESTED_IMAGE")}")
                     .WithNetwork(_pwnctlNetwork)
                     .WithBindMount(_hostBasePath, "/mnt/efs", AccessMode.ReadWrite)
                     .WithBindMount($"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}/.aws/", "/root/.aws/")
-                    .WithEnvironment("PWNCTL_Logging__FilePath", "/mnt/efs")
                     .WithEnvironment("PWNCTL_Logging__MinLevel", "Debug")
                     .WithEnvironment("PWNCTL_INSTALL_PATH", "/mnt/efs")
                     .WithEnvironment("PWNCTL_Db__Host", $"{_databaseHostname}:5432")
@@ -99,7 +98,7 @@ public sealed class Tests
         var op = context.Operations.FirstOrDefault();
         if (op is null)
         {
-            op = EntityFactory.CreateOperation();
+            op = EntityFactory.CreateMonitorOperation();
         }
 
         CancellationTokenSource _cts = new(TimeSpan.FromMinutes(10));
@@ -112,12 +111,16 @@ public sealed class Tests
 
         Thread.Sleep(20000);
 
+        var logs = await pwnctlContainer.GetLogsAsync(default, DateTime.Now);
+        Console.WriteLine("STDOUT>>>  " + logs.Stdout);
+        Console.WriteLine("STDERR>>>  " + logs.Stderr);
 
         var def = context.TaskDefinitions.First(d => d.Name == ShortName.Create("domain_resolution"));
         var task = context.TaskRecords.Include(t => t.Definition).First(t => t.Definition.Name == ShortName.Create("domain_resolution"));
         Assert.NotEqual(DateTime.MinValue, task?.QueuedAt);
         Assert.Equal(TaskState.QUEUED, task?.State);
 
+        context = new PwnctlDbContext();
         op = context.Operations.Find(op.Id);
 
         Assert.NotEqual(DateTime.MinValue, op?.InitiatedAt);
@@ -133,11 +136,7 @@ public sealed class Tests
         await taskQueue.Purge<OutputBatchDTO>();
 
         // populate db / TaskId
-        var op = context.Operations.FirstOrDefault();
-        if (op is null)
-        {
-            op = EntityFactory.CreateOperation();
-        }
+        var op = EntityFactory.CreateCrawlOperation();
 
         var domain = new DomainName("starlink.com");
         var asset = new AssetRecord(domain);
@@ -166,18 +165,20 @@ public sealed class Tests
 
         CancellationTokenSource _cts = new(TimeSpan.FromMinutes(10));
 
-        var pwnctlContainer = _pwnctlContainerBuilder
-                    .WithEnvironment("PWNCTL_Operation", op.Id.ToString())
-                    .Build();
+        var pwnctlContainer = _pwnctlContainerBuilder.Build();
 
         await pwnctlContainer.StartAsync(_cts.Token).ConfigureAwait(false);
 
         Thread.Sleep(20000);
 
+        var logs = await pwnctlContainer.GetLogsAsync(default, DateTime.Now);
+        Console.WriteLine("STDOUT>>>  " + logs.Stdout);
+        Console.WriteLine("STDERR>>>  " + logs.Stderr);
+
         context = new PwnctlDbContext();
         var host = context.NetworkHosts.First(h => h.IP == "1.2.3.4");
         var tasks = context.TaskRecords.Where(t => t.RecordId == host.Id).ToList();
-        Assert.Equal(3, tasks.Count());
+        Assert.Equal(5, tasks.Count());
         Assert.True(tasks.All(t => t.State == TaskState.QUEUED));
         // check that task queue was populated
     }

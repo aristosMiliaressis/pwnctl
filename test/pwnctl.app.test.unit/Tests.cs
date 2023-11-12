@@ -1,6 +1,5 @@
 namespace pwnctl.app.test.unit;
 
-using pwnctl.domain.BaseClasses;
 using pwnctl.domain.Entities;
 using pwnctl.domain.Enums;
 using pwnctl.app.Assets;
@@ -10,8 +9,6 @@ using pwnctl.app.Common.ValueObjects;
 using pwnctl.app.Common.Interfaces;
 using pwnctl.app.Queueing.Interfaces;
 using pwnctl.app.Notifications.Interfaces;
-using pwnctl.app.Tasks.Interfaces;
-using pwnctl.infra;
 using pwnctl.infra.Commands;
 using pwnctl.infra.DependencyInjection;
 using pwnctl.infra.Persistence;
@@ -27,10 +24,10 @@ using System;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Collections.Generic;
-using pwnctl.app.Operations.Entities;
-using pwnctl.app.Operations.Enums;
-using pwnctl.app.Operations;
 using pwnctl.kernel;
+using pwnctl.app.Operations.Entities;
+using pwnctl.app.Operations;
+using pwnctl.app.Operations.Enums;
 
 public sealed class Tests
 {

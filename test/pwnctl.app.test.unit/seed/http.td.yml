@@ -19,6 +19,7 @@ TaskDefinitions:
 
   - Name: sqlmap
     CommandTemplate: sqlmap {{Url}}
+    Filter: HttpEndpoint.Socket.NetworkHostId == null
     Subject: HttpEndpoint
 
   - Name: second_order_takeover

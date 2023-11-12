@@ -46,7 +46,6 @@ public sealed class AppConfig
     public sealed class LogSettings
     {
         public string MinLevel { get; set; } = "Debug";
-        public string LogGroup { get; set; }
         public string FilePath { get; set; }
     }
 }

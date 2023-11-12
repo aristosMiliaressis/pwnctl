@@ -1,4 +1,4 @@
-﻿namespace pwnctl.app.Assets;
+namespace pwnctl.app.Assets;
 
 using System.Threading.Tasks;
 using pwnctl.domain.BaseClasses;
@@ -90,6 +90,7 @@ public sealed class AssetProcessor
         var oldTags = record.Tags.ToDictionary(t => t.Name, t => t.Value);
         record.MergeTags(tags, updateExisting: foundByTask.Operation.Type == OperationType.Monitor);
 
+        bool scopeChanged = false;
         if (!record.InScope)
         {
             record = await PwnInfraContext.AssetRepository.UpdateRecordReferences(record, asset);
@@ -97,10 +98,13 @@ public sealed class AssetProcessor
             var scope = foundByTask.Operation.Scope.Definitions.FirstOrDefault(scope => scope.Definition.Matches(record.Asset)
                                                                         || scope.Definition.Matches(asset));
             if (scope is not null)
+            {
+                scopeChanged = true;
                 record.SetScopeId(scope.Definition.Id);
+            }
         }
 
-        if (record.Id == default || record.Tags.Any(t => t.Id == default) || foundByTask.Operation.Type == OperationType.Monitor)
+        if (scopeChanged || record.Id == default || record.Tags.Any(t => t.Id == default) || foundByTask.Operation.Type == OperationType.Monitor)
         {
             if (foundByTask.Definition.CheckNotificationRules)
             {

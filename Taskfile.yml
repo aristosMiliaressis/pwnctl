@@ -12,19 +12,19 @@ tasks:
       - dotnet test --filter "FullyQualifiedName~test.unit"
 
   test-proc:
+    deps: [build-proc-image]
     cmds:
       - |
         rm -rf test/pwnctl.proc.test.int/bin
-        export PWNCTL_COMMIT_HASH=$(git rev-parse HEAD)
-        export ECR_REGISTRY_URI=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-proc") | .repositoryUri')
+        export UNTESTED_IMAGE=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-proc") | .repositoryUri'):untested_$(git rev-parse --short HEAD)
         dotnet test --filter "FullyQualifiedName~pwnctl.proc"
 
   test-exec:
+    deps: [build-exec-image]
     cmds:
     - |
       rm -rf test/pwnctl.exec.test.int/bin
-      export PWNCTL_COMMIT_HASH=$(git rev-parse HEAD)
-      export ECR_REGISTRY_URI=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-exec") | .repositoryUri')
+      export UNTESTED_IMAGE=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-exec") | .repositoryUri'):untested_$(git rev-parse --short HEAD)
       dotnet test --filter "FullyQualifiedName~pwnctl.exec"
 
   build-api:

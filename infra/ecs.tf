@@ -94,10 +94,6 @@ resource "aws_ecs_task_definition" "exec" {
           "value": "Information"
         },
         {
-          "name": "PWNCTL_Logging__LogGroup",
-          "value": "${aws_cloudwatch_log_group.exec.name}"
-        },
-        {
           "name": "PWNCTL_Db__Name",
           "value": "${var.rds_postgres_databasename}"
         },
@@ -309,10 +305,6 @@ resource "aws_ecs_task_definition" "proc" {
         {
           "name": "PWNCTL_Logging__MinLevel",
           "value": "Information"
-        },
-        {
-          "name": "PWNCTL_Logging__LogGroup",
-          "value": "${aws_cloudwatch_log_group.proc.name}"
         },
         {
           "name": "PWNCTL_Db__Name",

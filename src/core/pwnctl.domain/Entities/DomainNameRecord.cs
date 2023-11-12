@@ -17,11 +17,12 @@ public sealed class DomainNameRecord : Asset
     [EqualityComponent]
     public string Value { get; init; }
 
-    public Guid? HostId { get; private init; }
     public Guid? DomainId { get; private init; }
+    public Guid? HostId { get; private init; }
 
-    public NetworkHost? NetworkHost { get; private init; }
     public DomainName? DomainName { get; private init; }
+    public NetworkHost? NetworkHost { get; private init; }
+
 
     public List<NetworkHost> SPFHosts { get; private set; }
 

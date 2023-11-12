@@ -4,6 +4,7 @@ using pwnctl.domain.BaseClasses;
 using pwnctl.app.Notifications.Entities;
 using pwnctl.app.Notifications.Interfaces;
 using pwnctl.app.Notifications.Enums;
+using pwnctl.app;
 
 public sealed class StubNotificationSender : NotificationSender
 {
@@ -14,6 +15,8 @@ public sealed class StubNotificationSender : NotificationSender
 
     public Task SendAsync(string message, NotificationTopic topic)
     {
+        PwnInfraContext.Logger.Information("Notification: " + message);
+
         return Task.CompletedTask;
     }
 }

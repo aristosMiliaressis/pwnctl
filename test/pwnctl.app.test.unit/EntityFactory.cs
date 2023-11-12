@@ -32,7 +32,7 @@ namespace pwnctl.app.test.unit
                 {
                     new ScopeDefinitionAggregate(aggregate, new ScopeDefinition(ScopeType.DomainRegex, "(^tesla\\.com$|.*\\.tesla\\.com$)")),
                     new ScopeDefinitionAggregate(aggregate, new ScopeDefinition(ScopeType.UrlRegex, "(.*:\\/\\/tsl\\.com\\/app\\/.*$)")),
-                    new ScopeDefinitionAggregate(aggregate, new ScopeDefinition(Scope.Enums.ScopeType.CIDR, "172.16.17.0/24"))
+                    new ScopeDefinitionAggregate(aggregate, new ScopeDefinition(ScopeType.CIDR, "172.16.17.0/24"))
                 };
 
                 context.Add(aggregate);

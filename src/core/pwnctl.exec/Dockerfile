@@ -130,9 +130,9 @@ WORKDIR /opt/tools
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y jq whois dnsutils ldnsutils less
 
-RUN pip3 install useragent-picker-cli && uagen
-RUN pip3 install s3scanner
-RUN pip3 install emailfinder
+RUN python3 -m pip install useragent-picker-cli && uagen
+RUN python3 -m pip install s3scanner
+RUN python3 -m pip install emailfinder
 RUN python3 -m pip install -e git+https://github.com/EnableSecurity/wafw00f#egg=wafw00f
 RUN python3 -m pip install -e git+https://github.com/initstring/cloud_enum#egg=cloud_enum
 RUN python3 -m pip install -e git+https://github.com/xnl-h4ck3r/urless#egg=urless
@@ -140,11 +140,11 @@ RUN python3 -m pip install -e git+https://github.com/xnl-h4ck3r/waymore#egg=waym
     && ln /opt/tools/src/waymore/waymore.py /usr/local/bin/waymore && chmod +x /usr/local/bin/waymore
 RUN python3 -m pip install -e git+https://github.com/brandonscholet/python-Wappalyzer.git#egg=python-Wappalyzer
 RUN python3 -m pip install -e git+https://github.com/brandonscholet/wappybird.git#egg=wappybird \
-    && pip3 install click validators
+    && python3 -m pip install click validators
 RUN git clone https://github.com/cramppet/regulator \
-    && pip3 install -r regulator/requirements.txt
+    && python3 -m pip install -r regulator/requirements.txt
 RUN git clone https://github.com/punk-security/dnsReaper.git && cd dnsReaper \
-    && pip3 install -r requirements.txt
+    && python3 -m pip install -r requirements.txt
 RUN curl -LOJ https://github.com/RustScan/RustScan/releases/download/2.0.1/rustscan_2.0.1_amd64.deb \
     && dpkg -i rustscan_2.0.1_amd64.deb && rm rustscan_2.0.1_amd64.deb
 RUN curl https://github.com/mgdm/htmlq/releases/download/v0.4.0/htmlq-x86_64-linux.tar.gz -L -o htmlq-x86_64-linux.tar.gz \

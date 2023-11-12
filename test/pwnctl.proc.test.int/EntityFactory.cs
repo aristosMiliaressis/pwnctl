@@ -13,11 +13,11 @@ namespace pwnctl.proc.test.integration
 {
     public static class EntityFactory
     {
-        public static Operation CreateOperation()
+        public static Operation CreateMonitorOperation()
         {
             PwnctlDbContext context = new();
 
-            var scope = new ScopeAggregate("test_scope2", "");
+            var scope = new ScopeAggregate("tesla_scope", "");
             scope.Definitions = new List<ScopeDefinitionAggregate>
                 {
                     new ScopeDefinitionAggregate(scope, new ScopeDefinition(ScopeType.DomainRegex, "(^tesla\\.com$|.*\\.tesla\\.com$)")),
@@ -26,7 +26,31 @@ namespace pwnctl.proc.test.integration
                 };
             var taskProfiles = context.TaskProfiles.Include(p => p.TaskDefinitions).ToList();
             var policy = new Policy(taskProfiles);
-            var op = new Operation("test2", OperationType.Monitor, policy, scope);
+            var op = new Operation("monitor_tesla", OperationType.Monitor, policy, scope);
+            context.Add(op);
+            context.SaveChanges();
+            var domain = new DomainName("tesla.com");
+            var record = new AssetRecord(domain);
+            record.SetScopeId(scope.Definitions.First().Definition.Id);
+            context.Add(record);
+            context.SaveChanges();
+
+            return op;
+        }
+
+        public static Operation CreateCrawlOperation()
+        {
+            PwnctlDbContext context = new();
+
+            var scope = new ScopeAggregate("starlink_scope", "");
+            scope.Definitions = new List<ScopeDefinitionAggregate>
+                {
+                    new ScopeDefinitionAggregate(scope, new ScopeDefinition(ScopeType.DomainRegex, "(^starlink\\.com$|.*\\.starlink\\.com$)")),
+                    new ScopeDefinitionAggregate(scope, new ScopeDefinition(ScopeType.CIDR, "172.16.17.0/24"))
+                };
+            var taskProfiles = context.TaskProfiles.Include(p => p.TaskDefinitions).ToList();
+            var policy = new Policy(taskProfiles);
+            var op = new Operation("crawl_tesla", OperationType.Crawl, policy, scope);
             context.Add(op);
             context.SaveChanges();
             var domain = new DomainName("tesla.com");
