@@ -1,6 +1,9 @@
 #!/bin/bash
 
 url=$1
+
+! $(skiphost -u $url | jq -r .looks_good) && echo "skipped host" 1>&2 && exit 0
+
 katana_tmp=`mktemp`
 temp=`mktemp`
 trap "rm $katana_tmp $temp" EXIT

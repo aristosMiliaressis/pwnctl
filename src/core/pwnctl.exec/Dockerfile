@@ -10,7 +10,6 @@ ENV GOPATH "/root/go"
 ENV PATH "$PATH:$GOPATH/bin:$GOROOT/bin"
 
 RUN go install github.com/tomnomnom/anew@latest
-RUN curl https://raw.githubusercontent.com/aristosMiliaressis/wordlist_builder/master/wordlist_builder.sh | bash -s -- /opt/wordlists/
 RUN go install github.com/tomnomnom/unfurl@latest
 RUN go install github.com/projectdiscovery/tlsx/cmd/tlsx@latest
 RUN go install github.com/projectdiscovery/httpx/cmd/httpx@latest
@@ -24,6 +23,7 @@ RUN go install github.com/lc/gau/v2/cmd/gau@latest
 RUN go install github.com/hakluke/hakrawler@latest
 RUN go install github.com/d3mondev/puredns/v2@latest
 RUN go install github.com/aristosMiliaressis/urgo@latest
+RUN go install github.com/aristosMiliaressis/skiphost@latest
 RUN go install github.com/rverton/webanalyze/cmd/webanalyze@latest
 RUN go install github.com/sensepost/gowitness@latest
 RUN go install github.com/zmap/zdns@latest
@@ -109,7 +109,6 @@ RUN apt-get update \
     && apt-get install -y python3 \
     python3-pip \
     python3-setuptools
-RUN python3 -m pip install --upgrade pip
 RUN cp /usr/bin/python3 /usr/bin/python
 
 # Setting up xvfb for headless browsing
@@ -133,7 +132,7 @@ RUN apt-get update \
 RUN python3 -m pip install useragent-picker-cli && uagen
 RUN python3 -m pip install s3scanner
 RUN python3 -m pip install emailfinder
-RUN python3 -m pip install -e git+https://github.com/EnableSecurity/wafw00f#egg=wafw00f
+RUN python3 -m pip install wafw00f==v2.2.0
 RUN python3 -m pip install -e git+https://github.com/initstring/cloud_enum#egg=cloud_enum
 RUN python3 -m pip install -e git+https://github.com/xnl-h4ck3r/urless#egg=urless
 RUN python3 -m pip install -e git+https://github.com/xnl-h4ck3r/waymore#egg=waymore \
@@ -153,6 +152,8 @@ RUN curl https://github.com/mgdm/htmlq/releases/download/v0.4.0/htmlq-x86_64-lin
 RUN mkdir -p /opt/toos/ShortNameScanner && cd /opt/toos/ShortNameScanner \
     && curl -OJ https://raw.githubusercontent.com/irsdl/IIS-ShortName-Scanner/master/release/iis_shortname_scanner.jar \
     && curl -OJ https://raw.githubusercontent.com/irsdl/IIS-ShortName-Scanner/master/release/config.xml
+
+RUN curl https://raw.githubusercontent.com/aristosMiliaressis/wordlist_builder/master/wordlist_builder.sh | bash -s -- /opt/wordlists/
 
 COPY --from=tool-build /root/go/bin/ /usr/local/bin/
 COPY --from=tool-build /opt/wordlists/ /opt/wordlists/

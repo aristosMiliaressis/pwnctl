@@ -49,15 +49,9 @@ namespace pwnctl.infra.Persistence
         {
             PwnctlDbContext context = new();
 
-            if (!context.TaskDefinitions.Any())
-            {
-                await SeedTaskDefinitionsAsync(context);
-            }
+            await SeedTaskDefinitionsAsync(context);
 
-            if (!context.NotificationRules.Any())
-            {
-                await SeedNotificationRulesAsync(context);
-            }
+            await SeedNotificationRulesAsync(context);
         }
 
         private static async Task SeedAdminUser(UserManager<User> userManger)
@@ -105,15 +99,13 @@ namespace pwnctl.infra.Persistence
                 var definitions = file.TaskDefinitions.Select(d => d.ToEntity()).ToList();
 
                 var profile = context.TaskProfiles.FirstOrDefault(p => p.Name == ShortName.Create(file.Profile));
-                if (profile is null)
+                if (profile is not null)
                 {
-                    profile = new TaskProfile(file.Profile, definitions);
-                    context.Add(profile);
                     continue;
                 }
 
-                profile.TaskDefinitions.AddRange(definitions);
-                context.Update(profile);
+                profile = new TaskProfile(file.Profile, definitions);
+                context.Add(profile);
 
                 await context.SaveChangesAsync();
             }

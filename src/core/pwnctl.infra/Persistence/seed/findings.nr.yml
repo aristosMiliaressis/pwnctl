@@ -65,17 +65,17 @@
 
 - Name: nuclei_domain
   Subject: DomainName
-  Filter: Tags.Tags.Any(tag => tag.Name.StartsWith("nuclei-") && (tag.Value.Contains("severity\":\"crit") || tag.Value.Contains("severity\":\"high") || tag.Value.Contains("severity\":\"medium") || tag.Value.Contains("severity\":\"low")))
+  Filter: Tags.Tags.Any(tag => tag.Name.StartsWith("nuclei-") && (tag.Value.Contains("severity\":\"crit") || tag.Value.Contains("severity\":\"high")))
   Topic: misconfigs
 
 - Name: nuclei_net
   Subject: NetworkSocket
-  Filter: Tags.Tags.Any(tag => tag.Name.StartsWith("nuclei-") && (tag.Value.Contains("severity\":\"crit") || tag.Value.Contains("severity\":\"high") || tag.Value.Contains("severity\":\"medium") || tag.Value.Contains("severity\":\"low")))
+  Filter: Tags.Tags.Any(tag => tag.Name.StartsWith("nuclei-") && (tag.Value.Contains("severity\":\"crit") || tag.Value.Contains("severity\":\"high")))
   Topic: misconfigs
 
 - Name: nuclei_http
   Subject: HttpEndpoint
-  Filter: Tags.Tags.Any(tag => tag.Name.StartsWith("nuclei-") && (tag.Value.Contains("severity\":\"crit") || tag.Value.Contains("severity\":\"high") || tag.Value.Contains("severity\":\"medium") || tag.Value.Contains("severity\":\"low")))
+  Filter: Tags.Tags.Any(tag => tag.Name.StartsWith("nuclei-") && (tag.Value.Contains("severity\":\"crit") || tag.Value.Contains("severity\":\"high")))
   Topic: misconfigs
 
 - Name: cache_prober
