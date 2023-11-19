@@ -37,8 +37,8 @@ resource "aws_lambda_function" "this" {
 
   environment {
       variables = {
-          PWNCTL_TaskQueue__Name = module.sqs.main_queue.name,
-          PWNCTL_TaskQueue__VisibilityTimeout = tostring(module.sqs.sqs_visibility_timeout),
+          PWNCTL_LongLivedTaskQueue__Name = module.sqs.longlived_tasks_queue.name,
+          PWNCTL_ShortLivedTaskQueue__Name = module.sqs.shortlived_tasks_queue.name,
           PWNCTL_Logging__MinLevel = "Debug"
           PWNCTL_Api__AccessTimeoutMinutes = tostring(var.access_timeout_minutes)
           PWNCTL_Api__RefreshTimeoutHours = tostring(var.refresh_timeout_hours)

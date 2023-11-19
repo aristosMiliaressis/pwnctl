@@ -11,21 +11,15 @@ ENV PATH "$PATH:$GOPATH/bin:$GOROOT/bin"
 
 RUN go install github.com/tomnomnom/anew@latest
 RUN go install github.com/tomnomnom/unfurl@latest
-RUN go install github.com/projectdiscovery/tlsx/cmd/tlsx@latest
-RUN go install github.com/projectdiscovery/httpx/cmd/httpx@latest
 RUN go install github.com/projectdiscovery/katana/cmd/katana@latest
 RUN go install github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
-RUN go install github.com/projectdiscovery/cdncheck/cmd/cdncheck@latest
 RUN go install github.com/projectdiscovery/mapcidr/cmd/mapcidr@latest
 #RUN go install github.com/projectdiscovery/naabu/v2/cmd/naabu@latest
 #RUN go install github.com/ffuf/ffuf@latest
 RUN go install github.com/lc/gau/v2/cmd/gau@latest
 RUN go install github.com/hakluke/hakrawler@latest
 RUN go install github.com/d3mondev/puredns/v2@latest
-RUN go install github.com/aristosMiliaressis/urgo@latest
 RUN go install github.com/aristosMiliaressis/skiphost@latest
-RUN go install github.com/rverton/webanalyze/cmd/webanalyze@latest
-RUN go install github.com/sensepost/gowitness@latest
 RUN go install github.com/zmap/zdns@latest
 RUN go install github.com/owasp-amass/amass/v3/...@master
 RUN go install github.com/tomnomnom/assetfinder@latest
@@ -45,8 +39,6 @@ RUN mkdir -p /opt/wordlists/dns/
 RUN mkdir -p -m 0700 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
 RUN --mount=type=ssh \
     git clone git@github.com:aristosMiliaressis/vhost-brute.git && make -C vhost-brute install
-RUN --mount=type=ssh \
-    git clone git@github.com:aristosMiliaressis/cors-scanner.git && make -C cors-scanner install
 RUN --mount=type=ssh \
     git clone git@github.com:aristosMiliaressis/cache-prober.git && make -C cache-prober install
 RUN --mount=type=ssh \
@@ -75,12 +67,12 @@ COPY ["/pwnctl.app/pwnctl.app.csproj", "/src/pwnctl.app/"]
 RUN dotnet restore "/src/pwnctl.app/pwnctl.app.csproj"
 COPY ["/pwnctl.infra/pwnctl.infra.csproj", "/src/pwnctl.infra/"]
 RUN dotnet restore "/src/pwnctl.infra/pwnctl.infra.csproj"
-COPY ["/pwnctl.exec/pwnctl.exec.csproj", "/src/pwnctl.exec/"]
-RUN dotnet restore "/src/pwnctl.exec/pwnctl.exec.csproj"
+COPY ["/pwnctl.exec/longlived/pwnctl.exec.longlived.csproj", "/src/pwnctl.exec/longlived/"]
+RUN dotnet restore "/src/pwnctl.exec/longlived/pwnctl.exec.longlived.csproj"
 
 COPY . src/
 
-RUN dotnet publish "/src/pwnctl.exec/pwnctl.exec.csproj" -c Release -o /publish/exec
+RUN dotnet publish "/src/pwnctl.exec/longlived/pwnctl.exec.longlived.csproj" -c Release -o /publish/exec
 
 
 FROM ubuntu AS release
@@ -120,35 +112,25 @@ RUN apt-get update \
     libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 \
     libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 \
     libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 \
-    ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils curl wget nmap git
+    ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils curl nmap git
 
 # Installing tools
 RUN mkdir /opt/tools
 WORKDIR /opt/tools
 
 RUN apt-get update \
-    && DEBIAN_FRONTEND=noninteractive apt-get install -y jq whois dnsutils ldnsutils less
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y jq whois dnsutils less
 
 RUN python3 -m pip install useragent-picker-cli && uagen
-RUN python3 -m pip install s3scanner
-RUN python3 -m pip install emailfinder
-RUN python3 -m pip install wafw00f==v2.2.0
 RUN python3 -m pip install -e git+https://github.com/initstring/cloud_enum#egg=cloud_enum
 RUN python3 -m pip install -e git+https://github.com/xnl-h4ck3r/urless#egg=urless
 RUN python3 -m pip install -e git+https://github.com/xnl-h4ck3r/waymore#egg=waymore \
     && ln /opt/tools/src/waymore/waymore.py /usr/local/bin/waymore && chmod +x /usr/local/bin/waymore
-RUN python3 -m pip install -e git+https://github.com/brandonscholet/python-Wappalyzer.git#egg=python-Wappalyzer
-RUN python3 -m pip install -e git+https://github.com/brandonscholet/wappybird.git#egg=wappybird \
-    && python3 -m pip install click validators
 RUN git clone https://github.com/cramppet/regulator \
     && python3 -m pip install -r regulator/requirements.txt
-RUN git clone https://github.com/punk-security/dnsReaper.git && cd dnsReaper \
-    && python3 -m pip install -r requirements.txt
+RUN git clone https://github.com/defparam/smuggler.git
 RUN curl -LOJ https://github.com/RustScan/RustScan/releases/download/2.0.1/rustscan_2.0.1_amd64.deb \
     && dpkg -i rustscan_2.0.1_amd64.deb && rm rustscan_2.0.1_amd64.deb
-RUN curl https://github.com/mgdm/htmlq/releases/download/v0.4.0/htmlq-x86_64-linux.tar.gz -L -o htmlq-x86_64-linux.tar.gz \
-    && tar xzf htmlq-x86_64-linux.tar.gz \
-    && rm htmlq-x86_64-linux.tar.gz && mv htmlq /usr/local/bin
 RUN mkdir -p /opt/toos/ShortNameScanner && cd /opt/toos/ShortNameScanner \
     && curl -OJ https://raw.githubusercontent.com/irsdl/IIS-ShortName-Scanner/master/release/iis_shortname_scanner.jar \
     && curl -OJ https://raw.githubusercontent.com/irsdl/IIS-ShortName-Scanner/master/release/config.xml
@@ -162,7 +144,7 @@ COPY --from=worker-build /publish/exec /opt/pwnctl-exec
 COPY pwnctl.exec/wordlists/ /opt/wordlists/
 COPY pwnctl.exec/nuclei_templates/ /opt/nuclei_templates/
 COPY pwnctl.exec/scripts/* /opt/scripts/
-COPY pwnctl.exec/entrypoint.sh /opt/pwnctl-exec/entrypoint.sh
+COPY pwnctl.exec/longlived/entrypoint.sh /opt/pwnctl-exec/entrypoint.sh
 
 RUN chmod -R +x /opt/scripts \
     && mv /opt/scripts/* /usr/local/bin/ \

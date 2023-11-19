@@ -2,7 +2,7 @@ version: '3'
 
 tasks:
   simple-setup:
-    deps: [install-deps, setup-ci, build-exec-image, push-exec-image, build-proc-image, push-proc-image, deploy, install-cli]
+    deps: [install-deps, build-all, push-exec-short-image, push-exec-long-image, push-proc-image, deploy, install-cli, setup-ci]
 
   test:
     deps: [test-core, test-exec, test-proc]
@@ -20,11 +20,11 @@ tasks:
         dotnet test --filter "FullyQualifiedName~pwnctl.proc"
 
   test-exec:
-    deps: [build-exec-image]
+    deps: [build-exec-long-image]
     cmds:
     - |
       rm -rf test/pwnctl.exec.test.int/bin
-      export UNTESTED_IMAGE=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-exec") | .repositoryUri'):untested_$(git rev-parse --short HEAD)
+      export UNTESTED_IMAGE=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-exec-long") | .repositoryUri'):untested_$(git rev-parse --short HEAD)
       dotnet test --filter "FullyQualifiedName~pwnctl.exec"
 
   build-api:
@@ -35,22 +35,40 @@ tasks:
     cmds:
       - dotnet publish src/pwnctl.cli/pwnctl.cli.csproj -c Release
 
-  build-exec-image:
+  build-exec-short-image:
     cmds:
       - |
         commitHash=$(git rev-parse --short HEAD)
-        ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-exec") | .repositoryUri')
-        docker buildx build --ssh default=$SSH_AUTH_SOCK src/core/ -f src/core/pwnctl.exec/Dockerfile -t ${ecrUri}:$commitHash
+        ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-exec-short") | .repositoryUri')
+        docker buildx build --ssh default=$SSH_AUTH_SOCK src/core/ -f src/core/pwnctl.exec/shortlived/Dockerfile -t ${ecrUri}:$commitHash
         docker tag ${ecrUri}:$commitHash ${ecrUri}:untested_$commitHash
 
-  push-exec-image:
+  build-exec-long-image:
+    cmds:
+      - |
+        commitHash=$(git rev-parse --short HEAD)
+        ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-exec-long") | .repositoryUri')
+        docker buildx build --ssh default=$SSH_AUTH_SOCK src/core/ -f src/core/pwnctl.exec/longlived/Dockerfile -t ${ecrUri}:$commitHash
+        docker tag ${ecrUri}:$commitHash ${ecrUri}:untested_$commitHash
+
+  push-exec-short-image:
     cmds:
       - |
         commitHash=$(git rev-parse --short HEAD)
         region=$(aws configure get region)
-        ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-exec") | .repositoryUri')
+        ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-exec-short") | .repositoryUri')
         aws ecr get-login-password --region $region \
-          | docker login --username AWS --password-stdin $ecrUri
+          | docker login --username AWS --password-stdin ${ecrUri}
+        docker push ${ecrUri}:$commitHash
+
+  push-exec-long-image:
+    cmds:
+      - |
+        commitHash=$(git rev-parse --short HEAD)
+        region=$(aws configure get region)
+        ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-exec-long") | .repositoryUri')
+        aws ecr get-login-password --region $region \
+          | docker login --username AWS --password-stdin ${ecrUri}
         docker push ${ecrUri}:$commitHash
 
   build-proc-image:
@@ -72,7 +90,7 @@ tasks:
         docker push ${ecrUri}:$commitHash
 
   build-all:
-    deps: [build-cli, build-api, build-exec-image, build-proc-image]
+    deps: [build-cli, build-api, build-exec-short-image, build-exec-long-image, build-proc-image]
 
   install-cli:
     deps: [build-cli]
@@ -105,11 +123,21 @@ tasks:
     cmds:
       - terraform -chdir=infra/modules/ci destroy
 
-  debug-exec:
+  debug-exec-long:
     cmds:
       - |
         commitHash=$(git rev-parse --short HEAD)
-        ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-exec") | .repositoryUri')
+        ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-exec-long") | .repositoryUri')
+        docker run -e PWNCTL_USE_LOCAL_INTEGRATIONS=true -e PWNCTL_INSTALL_PATH=/mnt/efs \
+                   -e PWNCTL_Logging__FilePath=/mnt/efs -e PWNCTL_Logging__MinLevel=Information \
+                   -e PWNCTL_TaskQueue__VisibilityTimeout=1200 -e PWNCTL_OutputQueue__VisibilityTimeout=1200 \
+                   -v "$(pwd)"/deployment:/mnt/efs -t ${ecrUri}:$commitHash
+
+  debug-exec-short:
+    cmds:
+      - |
+        commitHash=$(git rev-parse --short HEAD)
+        ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-exec-short") | .repositoryUri')
         docker run -e PWNCTL_USE_LOCAL_INTEGRATIONS=true -e PWNCTL_INSTALL_PATH=/mnt/efs \
                    -e PWNCTL_Logging__FilePath=/mnt/efs -e PWNCTL_Logging__MinLevel=Information \
                    -e PWNCTL_TaskQueue__VisibilityTimeout=1200 -e PWNCTL_OutputQueue__VisibilityTimeout=1200 \

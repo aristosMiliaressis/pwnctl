@@ -10,7 +10,7 @@ using pwnctl.app.Notifications.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddHostedService<TaskExecutorService>();
+builder.Services.AddHostedService<LongLivedTaskExecutor>();
 
 PwnInfraContextInitializer.Setup();
 PwnInfraContextInitializer.Register<TaskQueueService, SQSTaskQueueService>();

@@ -132,8 +132,17 @@ namespace pwnctl.infra.Persistence
                 var taskText = File.ReadAllText(notificationFile);
                 var notificationRules = _deserializer.Deserialize<List<NotificationRuleDTO>>(taskText);
 
-                context.NotificationRules.AddRange(notificationRules.Select(r => r.ToEntity()));
-                await context.SaveChangesAsync();
+                foreach (var rule in notificationRules)
+                {
+                    var notificationRule = context.NotificationRules.FirstOrDefault(p => p.Name == ShortName.Create(rule.Name));
+                    if (notificationRule is not null)
+                    {
+                        continue;
+                    }
+
+                    context.NotificationRules.Add(rule.ToEntity());
+                    await context.SaveChangesAsync();
+                }
             }
         }
     }

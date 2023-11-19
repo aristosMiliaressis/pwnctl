@@ -16,9 +16,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\pwnctl.infra\pwnctl.infra.csproj" />
-    <ProjectReference Include="..\pwnctl.app\pwnctl.app.csproj" />
-    <ProjectReference Include="..\pwnctl.kernel\pwnctl.kernel.csproj" />
+    <ProjectReference Include="..\..\pwnctl.infra\pwnctl.infra.csproj" />
+    <ProjectReference Include="..\..\pwnctl.app\pwnctl.app.csproj" />
+    <ProjectReference Include="..\..\pwnctl.kernel\pwnctl.kernel.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -129,7 +129,9 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
 
                 record.Tasks.ForEach(task => task.Definition = allowedTasks.First(t => t.Id == task.DefinitionId));
 
-                await _taskQueueService.EnqueueBatchAsync(record.Tasks.Select(t => new PendingTaskDTO(t)));
+                await _taskQueueService.EnqueueBatchAsync(record.Tasks.Where(t => t.Definition.ShortLived).Select(t => new ShortLivedTaskDTO(t)));
+
+                await _taskQueueService.EnqueueBatchAsync(record.Tasks.Where(t => !t.Definition.ShortLived).Select(t => new LongLivedTaskDTO(t)));
             }
         }
     }

@@ -1,63 +1,55 @@
-namespace pwnctl.exec;
+namespace pwnctl.exec.shortlived;
 
 using pwnctl.app;
 using pwnctl.app.Queueing.DTO;
 using pwnctl.app.Tasks.Enums;
 using pwnctl.infra.Repositories;
 using pwnctl.infra.Persistence;
-using System.Text;
 using pwnctl.infra;
+using System.Text;
 
-public sealed class TaskExecutorService : LifetimeService
+public sealed class ShortLivedTaskExecutor : LifetimeService
 {
     private static readonly QueryRunner _queryRunner = new();
     private static readonly TaskDbRepository _taskRepo = new();
-    private static bool _protectionState = false;
 
-    public TaskExecutorService(IHostApplicationLifetime svcLifetime)
+    public ShortLivedTaskExecutor(IHostApplicationLifetime svcLifetime)
         : base(svcLifetime)
     {
+        
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        while (!stoppingToken.IsCancellationRequested)
+        using var cts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
+
+        AppDomain.CurrentDomain.ProcessExit += (_, _) =>
+        {
+            cts.Cancel();
+        };
+
+        while (!cts.Token.IsCancellationRequested)
         {
             try
             {
-                await ExecutePendingTaskAsync(stoppingToken);
+                await ExecutePendingTaskAsync(cts.Token);
             } 
             catch (Exception ex)
             {
                 PwnInfraContext.Logger.Exception(ex);
-
-                if (_protectionState)
-                {
-                    // disable scale in protection to allow scale in events
-                    await ScaleInProtection.DisableAsync();
-                    _protectionState = false;
-                }
             }
         }
     }
 
     private async Task ExecutePendingTaskAsync(CancellationToken stoppingToken)
     {
-        PendingTaskDTO taskDTO = null;
+        ShortLivedTaskDTO taskDTO = null;
         try 
         {
-            taskDTO = await PwnInfraContext.TaskQueueService.ReceiveAsync<PendingTaskDTO>(stoppingToken);
+            taskDTO = await PwnInfraContext.TaskQueueService.ReceiveAsync<ShortLivedTaskDTO>(stoppingToken);
             if (taskDTO is null)
             {
                 PwnInfraContext.Logger.Information("task queue is empty, sleeping for 5 secs.");
-
-                if (_protectionState) 
-                {
-                    // disable scale in protection to allow scale in events while waiting for task.
-                    await ScaleInProtection.DisableAsync();
-                    _protectionState = false;
-                }
-
                 await StopAsync(stoppingToken);
                 return;
             }
@@ -66,26 +58,6 @@ public sealed class TaskExecutorService : LifetimeService
         {
             return;
         }
-
-        if (!_protectionState)
-        {
-            // setup scale in protection to prevent scale in events while the task is running
-            await ScaleInProtection.EnableAsync();
-            _protectionState = true;
-        }
-
-        // create a linked token that cancels the task when max 
-        // task timeout is exheeded or if a scale in event occures
-        using var cts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
-        cts.CancelAfter((PwnInfraContext.Config.Worker.MaxTaskTimeout - 2) * 1000);
-
-        // Change the message visibility if the visibility window is exheeded
-        // this allows us to keep a smaller visibility window without effecting
-        // the max task timeout.
-        using var timer = new System.Timers.Timer((PwnInfraContext.Config.TaskQueue.VisibilityTimeout - 90) * 1000);
-        timer.Elapsed += async (_, _) =>
-            await PwnInfraContext.TaskQueueService.ChangeMessageVisibilityAsync(taskDTO, PwnInfraContext.Config.TaskQueue.VisibilityTimeout);
-        timer.Start();
 
         var task = await _taskRepo.FindAsync(taskDTO.TaskId);
         if (task is null)
@@ -142,7 +114,7 @@ public sealed class TaskExecutorService : LifetimeService
         {
             PwnInfraContext.Logger.Information("Running: " + task.Command);
 
-            (exitCode, stdout, stderr) = await PwnInfraContext.CommandExecutor.ExecuteAsync(task.Command, stdin, token: cts.Token);
+            (exitCode, stdout, stderr) = await PwnInfraContext.CommandExecutor.ExecuteAsync(task.Command, stdin);
 
             task.Finished(exitCode, stderr.ToString());
         }
@@ -172,7 +144,6 @@ public sealed class TaskExecutorService : LifetimeService
         }
 
         await PwnInfraContext.TaskQueueService.DequeueAsync(taskDTO);
-        timer.Stop();
 
         var lines = stdout.ToString()
                         .Split("\n")

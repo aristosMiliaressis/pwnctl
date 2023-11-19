@@ -56,9 +56,11 @@ public sealed class Tests
                     .WithEnvironment("PWNCTL_Db__Name", "postgres")
                     .WithEnvironment("PWNCTL_Db__Username", "postgres")
                     .WithEnvironment("PWNCTL_Db__Password", "password")
-                    .WithEnvironment("PWNCTL_TaskQueue__Name", "task-dev.fifo")
-                    .WithEnvironment("PWNCTL_TaskQueue__VisibilityTimeout", "1200")
-                    .WithEnvironment("PWNCTL_OutputQueue__Name", "output-dev.fifo")
+                    .WithEnvironment("PWNCTL_LongLivedTaskQueue__Name", "dev-task-longlived.fifo")
+                    .WithEnvironment("PWNCTL_LongLivedTaskQueue__VisibilityTimeout", "1200")
+                    .WithEnvironment("PWNCTL_ShortLivedTaskQueue__Name", "dev-task-shortlived.fifo")
+                    .WithEnvironment("PWNCTL_ShortLivedTaskQueue__VisibilityTimeout", "1200")
+                    .WithEnvironment("PWNCTL_OutputQueue__Name", "dev-output.fifo")
                     .WithEnvironment("PWNCTL_OutputQueue__VisibilityTimeout", "1200");
 
     public Tests()
@@ -80,8 +82,9 @@ public sealed class Tests
         Environment.SetEnvironmentVariable("PWNCTL_Db__Name", "postgres");
         Environment.SetEnvironmentVariable("PWNCTL_Db__Username", "postgres");
         Environment.SetEnvironmentVariable("PWNCTL_Db__Password", "password");
-        Environment.SetEnvironmentVariable("PWNCTL_TaskQueue__Name", "task-dev.fifo");
-        Environment.SetEnvironmentVariable("PWNCTL_OutputQueue__Name", "output-dev.fifo");
+        Environment.SetEnvironmentVariable("PWNCTL_LongLivedTaskQueue__Name", "dev-task-longlived.fifo");
+        Environment.SetEnvironmentVariable("PWNCTL_ShortLivedTaskQueue__Name", "dev-task-shortlived.fifo");
+        Environment.SetEnvironmentVariable("PWNCTL_OutputQueue__Name", "dev-output.fifo");
         PwnInfraContextInitializer.Setup();
 
         // migrate & seed database

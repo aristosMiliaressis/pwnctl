@@ -10,5 +10,6 @@ TaskDefinitions:
     CommandTemplate: s3-scan.sh {{Name}}
     Subject: DomainName
     Filter: DomainName.Name.Contains("amazonaws.com") && DomainName.Name.Contains("s3")
+    ShortLived: true
     MatchOutOfScope: true
     CheckNotificationRules: true

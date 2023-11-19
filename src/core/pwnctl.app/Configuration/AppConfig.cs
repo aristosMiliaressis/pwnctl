@@ -4,7 +4,8 @@ public sealed class AppConfig
 {
     public DbSettings Db { get; set; } = new DbSettings();
     public WorkerSettings Worker { get; set; } = new WorkerSettings();
-    public QueueSettings TaskQueue { get; set; } = new QueueSettings();
+    public QueueSettings LongLivedTaskQueue { get; set; } = new QueueSettings();
+    public QueueSettings ShortLivedTaskQueue { get; set; } = new QueueSettings();
     public QueueSettings OutputQueue { get; set; } = new QueueSettings();
     public LogSettings Logging { get; set; } = new LogSettings();
     public AwsSettings Aws { get; set; } = new AwsSettings();

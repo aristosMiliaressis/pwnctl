@@ -15,6 +15,7 @@ public sealed class TaskDefinition : Entity<int>
     public string? StdinQuery { get; init; }
     public bool CheckNotificationRules { get; init; }
     public bool MatchOutOfScope { get; init; }
+    public bool ShortLived { get; set; }
 
     public TaskProfile Profile { get; private init; }
     public int ProfileId { get; private init; }

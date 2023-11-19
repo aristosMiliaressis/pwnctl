@@ -2,8 +2,6 @@
 
 using System.Threading.Tasks;
 using pwnctl.domain.BaseClasses;
-using pwnctl.app.Assets.Interfaces;
-using pwnctl.app.Queueing.Interfaces;
 using pwnctl.app.Tasks.Entities;
 using pwnctl.app.Notifications.Entities;
 using pwnctl.app.Assets.Entities;
@@ -11,14 +9,10 @@ using pwnctl.app.Assets.DTO;
 using pwnctl.app.Queueing.DTO;
 using pwnctl.app.Operations.Entities;
 using pwnctl.app.Tagging;
-using pwnctl.app.Tasks.Enums;
-using pwnctl.app.Tasks.Interfaces;
 using pwnctl.app.Operations.Enums;
 using pwnctl.app.Notifications.Enums;
 using pwnctl.kernel;
 using pwnctl.kernel.BaseClasses;
-using pwnctl.app.Notifications.Interfaces;
-using System.Collections.Concurrent;
 
 public sealed class AssetProcessor
 {
@@ -128,7 +122,9 @@ public sealed class AssetProcessor
 
         newTasks.ToList().ForEach(task => task.Definition = allowedTasks.First(t => t.Id == task.DefinitionId));
 
-        await PwnInfraContext.TaskQueueService.EnqueueBatchAsync(newTasks.Select(t => new PendingTaskDTO(t)));
+        await PwnInfraContext.TaskQueueService.EnqueueBatchAsync(newTasks.Where(t => t.Definition.ShortLived).Select(t => new ShortLivedTaskDTO(t)));
+
+        await PwnInfraContext.TaskQueueService.EnqueueBatchAsync(newTasks.Where(t => !t.Definition.ShortLived).Select(t => new LongLivedTaskDTO(t)));
     }
 
     private void GenerateCrawlingTasks(Operation operation, AssetRecord record)

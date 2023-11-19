@@ -4,7 +4,7 @@ using pwnctl.app.Tasks.Entities;
 
 namespace pwnctl.app.Queueing.DTO;
 
-public sealed class PendingTaskDTO : QueueMessage
+public sealed class LongLivedTaskDTO : QueueMessage
 {
     public int TaskId { get; set; }
     public string Command { get; set; }
@@ -12,9 +12,9 @@ public sealed class PendingTaskDTO : QueueMessage
     [JsonIgnore]
     public Dictionary<string, string> Metadata { get; set; } = new();
 
-    public PendingTaskDTO() { }
+    public LongLivedTaskDTO() { }
 
-    public PendingTaskDTO(TaskRecord record)
+    public LongLivedTaskDTO(TaskRecord record)
     {
         TaskId = record.Id;
         Command = record.Command;

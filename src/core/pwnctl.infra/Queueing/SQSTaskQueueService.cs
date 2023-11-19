@@ -14,20 +14,24 @@ namespace pwnctl.infra.Queueing
     {
         private readonly AmazonSQSClient _sqsClient  = new();
         private Dictionary<string,string> _queueUrls = new();
-        private string this[string messageType]
+        private string this[Type messageType]
         {
             get
             {
-                if (!_queueUrls.ContainsKey(messageType))
+                if (!_queueUrls.ContainsKey(messageType.Name))
                 {
-                    var queueName = messageType == nameof(PendingTaskDTO)
-                                ? PwnInfraContext.Config.TaskQueue.Name
-                                : PwnInfraContext.Config.OutputQueue.Name;
+                    var queueName = messageType.Name switch
+                    {
+                        nameof(LongLivedTaskDTO) => PwnInfraContext.Config.LongLivedTaskQueue.Name,
+                        nameof(ShortLivedTaskDTO) => PwnInfraContext.Config.ShortLivedTaskQueue.Name,
+                        nameof(OutputBatchDTO) => PwnInfraContext.Config.OutputQueue.Name,
+                        _ => throw new NotSupportedException($"Message queue for type {messageType} not supported.")
+                    };
 
-                    _queueUrls[messageType] = _sqsClient.GetQueueUrlAsync(queueName).Result.QueueUrl;
+                    _queueUrls[messageType.Name] = _sqsClient.GetQueueUrlAsync(queueName).Result.QueueUrl;
                 }
 
-                return _queueUrls[messageType];
+                return _queueUrls[messageType.Name];
             }
         }
 
@@ -45,7 +49,7 @@ namespace pwnctl.infra.Queueing
                 var request = new SendMessageRequest
                 {
                     MessageGroupId = message.Metadata["MessageGroupId"],
-                    QueueUrl = this[typeof(TMessage).Name],
+                    QueueUrl = this[typeof(TMessage)],
                     MessageBody = PwnInfraContext.Serializer.Serialize(message)
                 };
 
@@ -74,7 +78,7 @@ namespace pwnctl.infra.Queueing
                     if (!batch.Any())
                         continue;
 
-                    var request = new SendMessageBatchRequest(this[typeof(TMessage).Name], batch.Select(msg =>
+                    var request = new SendMessageBatchRequest(this[typeof(TMessage)], batch.Select(msg =>
                     new SendMessageBatchRequestEntry
                     {
                         Id = msg.Metadata["MessageGroupId"],
@@ -103,7 +107,7 @@ namespace pwnctl.infra.Queueing
             {
                 var receiveRequest = new ReceiveMessageRequest
                 {
-                    QueueUrl = this[typeof(TMessage).Name],
+                    QueueUrl = this[typeof(TMessage)],
                     MaxNumberOfMessages = 1
                 };
 
@@ -145,7 +149,7 @@ namespace pwnctl.infra.Queueing
 
             try
             {
-                var response = await _sqsClient.DeleteMessageAsync(this[message.GetType().Name], message.Metadata[nameof(Message.ReceiptHandle)]);
+                var response = await _sqsClient.DeleteMessageAsync(this[message.GetType()], message.Metadata[nameof(Message.ReceiptHandle)]);
                 if (response.HttpStatusCode != HttpStatusCode.OK)
                 {
                     PwnInfraContext.Logger.Warning(PwnInfraContext.Serializer.Serialize(response));
@@ -166,7 +170,7 @@ namespace pwnctl.infra.Queueing
             {
                 var request = new ChangeMessageVisibilityRequest
                 {
-                    QueueUrl = this[message.GetType().Name],
+                    QueueUrl = this[message.GetType()],
                     ReceiptHandle = message.Metadata[nameof(Message.ReceiptHandle)],
                     VisibilityTimeout = visibilityTimeout
                 };
@@ -186,7 +190,7 @@ namespace pwnctl.infra.Queueing
 
         public async Task Purge<TMessage>()
         {
-            var queueUrl = this[typeof(TMessage).Name];
+            var queueUrl = this[typeof(TMessage)];
 
             var response = await _sqsClient.PurgeQueueAsync(queueUrl);
             if (response.HttpStatusCode != HttpStatusCode.OK)

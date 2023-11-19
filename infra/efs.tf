@@ -1,3 +1,10 @@
+variable "efs_mount_point" {
+  description = "The EFS mount point path."
+  type        = string
+
+  default     = "/mnt/efs"
+}
+
 resource "aws_efs_file_system" "this" {
   tags = {
     Description = "PwnCtl Elastic File System."

@@ -1,26 +1,58 @@
 
-resource "aws_ecr_repository" "exec" {
-  name                 = "pwnctl-exec"
+resource "aws_ecr_repository" "exec_long" {
+  name                 = "pwnctl-exec-long"
   force_delete         = true
 
   tags = {
-    Description = "Task executor image repository."
+    Description = "Task long lived executor image repository."
   }
 }
 
-resource "aws_ecr_lifecycle_policy" "exec" {
-  repository = aws_ecr_repository.exec.name
+resource "aws_ecr_lifecycle_policy" "exec_long" {
+  repository = aws_ecr_repository.exec_long.name
 
   policy = <<EOF
 {
   "rules": [
     {
       "rulePriority": 1,
-      "description": "Keep last 10 images",
+      "description": "Keep last 5 images",
       "selection": {
         "tagStatus": "any",
         "countType": "imageCountMoreThan",
-        "countNumber": 10
+        "countNumber": 5
+      },
+      "action": {
+        "type": "expire"
+      }
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_ecr_repository" "exec_short" {
+  name                 = "pwnctl-exec-short"
+  force_delete         = true
+
+  tags = {
+    Description = "Task short lived executor image repository."
+  }
+}
+
+resource "aws_ecr_lifecycle_policy" "exec_short" {
+  repository = aws_ecr_repository.exec_short.name
+
+  policy = <<EOF
+{
+  "rules": [
+    {
+      "rulePriority": 1,
+      "description": "Keep last 5 images",
+      "selection": {
+        "tagStatus": "any",
+        "countType": "imageCountMoreThan",
+        "countNumber": 5
       },
       "action": {
         "type": "expire"
@@ -48,11 +80,11 @@ resource "aws_ecr_lifecycle_policy" "proc" {
   "rules": [
     {
       "rulePriority": 1,
-      "description": "Keep last 10 images",
+      "description": "Keep last 5 images",
       "selection": {
         "tagStatus": "any",
         "countType": "imageCountMoreThan",
-        "countNumber": 10
+        "countNumber": 5
       },
       "action": {
         "type": "expire"

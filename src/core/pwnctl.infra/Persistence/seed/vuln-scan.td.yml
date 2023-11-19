@@ -6,6 +6,7 @@ TaskDefinitions:
     Subject: DomainName
     Filter: Tags["rcode"] != "NOERROR"
     CheckNotificationRules: true
+    ShortLived: true
 
   - Name: nuclei_official
     CommandTemplate: nuclei.sh {{Name}} -s low,medium,high,critical -t /opt/nuclei_templates/official

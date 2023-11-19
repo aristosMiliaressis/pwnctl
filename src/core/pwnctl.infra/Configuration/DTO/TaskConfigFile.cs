@@ -15,7 +15,8 @@ public class TaskDefinitionDTO
     public string? Filter { get; init; }
     public bool MatchOutOfScope { get; init; }
     public bool CheckNotificationRules { get; set; }
-    
+    public bool ShortLived { get; set; }
+
     public MonitorRulesDTO MonitorRules { get; set; }
 
     public TaskDefinition ToEntity()
@@ -29,6 +30,7 @@ public class TaskDefinitionDTO
             StdinQuery = StdinQuery,
             MatchOutOfScope = MatchOutOfScope,
             CheckNotificationRules = CheckNotificationRules,
+            ShortLived = ShortLived,
         };
 
         definition.MonitorRules = new MonitorRules

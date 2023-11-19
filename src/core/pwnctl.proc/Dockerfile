@@ -16,8 +16,7 @@ RUN apt-get update \
     nano \
     openssl \
     sudo \
-    unzip \
-    wget
+    unzip
 
 # Setting up .NET runtime
 RUN apt-get update \

@@ -20,29 +20,53 @@ variable "refresh_timeout_hours" {
   default = 720
 }
 
-variable "ecs_cluster" {
+variable "exec_instance_count" {
+  description = "The maximum number of concurrent exec instances."
+
   default = {
-    name = "pwnctl_cluster"
+    longlived  = 16
+    shortlived = 16
   }
 }
 
-variable "ecs_service" {
+variable "exec_step_interval" {
+   description = "exec service queue depth scaling interval."
+
   default = {
-    min_capacity = 0
-    max_capacity = 30
+    longlived  = 4
+    shortlived = 10
   }
 }
 
-variable "efs_mount_point" {
-  description = "EFS Mount Point."
-  type        = string
+variable "exec_step_size" {
+  description = "exec service scaling step size."
 
-  default     = "/mnt/efs"
+  default = {
+    longlived  = 1
+    shortlived = 1
+  }
 }
 
 variable "task_timeout" {
   description = "The max amount of seconds a task execution may take before timing out."
   type        = number
 
-  default     = 10800
+  default     = 10800 # 3 hours
+}
+
+variable "message_retention_seconds" {
+  description = "SQS message retention in seconds."
+  type        = number
+
+  default     = 1209600 # 14 days
+}
+
+variable "message_visibility_timeout" {
+  description = "SQS message visibility timeout in seconds."
+
+  default = {
+    shortlived = 180
+    longlived  = 900
+    output     = 450
+  }
 }

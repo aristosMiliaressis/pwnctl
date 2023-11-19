@@ -13,9 +13,17 @@ variable "message_retention_seconds" {
   type        = number
 }
 
-variable "sqs_visibility_timeout" {
-  description = "SQS Visibility Timeout"
+variable "shortlived_visibility_timeout" {
+  description = "SQS ShortLived queue visibility timeout"
   type        = number
+}
 
-  default     = 1200
+variable "longlived_visibility_timeout" {
+  description = "SQS LongLived queue visibility timeout"
+  type        = number
+}
+
+variable "output_visibility_timeout" {
+  description = "SQS output queue visibility timeout"
+  type        = number
 }

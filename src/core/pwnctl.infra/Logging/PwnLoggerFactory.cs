@@ -9,8 +9,8 @@ using pwnctl.app.Logging.Interfaces;
 
 public static class PwnLoggerFactory
 {
-    private static string _fileOutputTemplate = $"[{{Timestamp:yyyy-MM-dd HH:mm:ss.fff}} {EnvironmentVariables.HOSTNAME} {{Level:u3}}] {{Message:lj}}\n";
-    private static string _consoleOutputTemplate = "[{Level:u3}] {Message:lj}\n";
+    private static string _fileOutputTemplate = $"[{{Timestamp:yyyy-MM-dd HH:mm:ss.fff}} {EnvironmentVariables.COMMIT_HASH} {EnvironmentVariables.HOSTNAME} {{Level:u3}}] {{Message:lj}}\n";
+    private static string _consoleOutputTemplate = EnvironmentVariables.COMMIT_HASH + " [{Level:u3}] {Message:lj}\n";
 
     public static AppLogger DefaultLogger = new PwnLogger(new LoggerConfiguration()
                 .MinimumLevel.Is(LogEventLevel.Information)

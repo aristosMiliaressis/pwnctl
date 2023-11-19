@@ -16,14 +16,14 @@ public abstract class LifetimeService : BackgroundService
 
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
-        await PwnInfraContext.NotificationSender.SendAsync($"{GetType().Name}:{EnvironmentVariables.COMMIT_HASH} started.", NotificationTopic.Status);
+        await PwnInfraContext.NotificationSender.SendAsync($"{GetType().Name} started.", NotificationTopic.Status);
 
         await base.StartAsync(cancellationToken);
     }
 
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
-        await PwnInfraContext.NotificationSender.SendAsync($"{GetType().Name}:{EnvironmentVariables.COMMIT_HASH} caught scale in event, exiting gracefully.", NotificationTopic.Status);
+        await PwnInfraContext.NotificationSender.SendAsync($"{GetType().Name} caught scale in event, exiting gracefully.", NotificationTopic.Status);
         
         await base.StopAsync(cancellationToken);
 

@@ -16,10 +16,12 @@ TaskDefinitions:
   - Name: asn_lookup
     CommandTemplate: asn-lookup.sh {{IP}}
     Subject: NetworkHost
+    ShortLived: true
 
   - Name: reverse_dns_lookup
     CommandTemplate: dig +short -x {{IP}}
     Subject: NetworkHost
+    ShortLived: true
 
   - Name: tcp_scan
     CommandTemplate: tcp-scan.sh {{IP}}
@@ -29,10 +31,12 @@ TaskDefinitions:
   - Name: tls_probe
     CommandTemplate: tls-probe.sh {{Address}}
     Subject: NetworkSocket
+    ShortLived: true
 
   - Name: http_probe
     CommandTemplate: http-probe.sh {{Address}}
     Subject: NetworkSocket
+    ShortLived: true
 
   - Name: udp_scan
     CommandTemplate: udp-scan.sh {{IP}}

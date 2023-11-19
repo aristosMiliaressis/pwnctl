@@ -1,5 +1,4 @@
 #!/bin/bash
-set -euo pipefail 
 
 url=$1
 webanalyze_out=`mktemp`
@@ -15,7 +14,7 @@ then
     webanalyze -update 2>/dev/null
 fi
 
-webanalyze -crawl 3 -search -host $url -output json > $webanalyze_out 2>/dev/null
+webanalyze -apps technologies.json -crawl 3 -search -host $url -output json > $webanalyze_out
 
 tags=$(cat $webanalyze_out | jq -r -c '.matches[] | "\"\(.app.category_names[0])\": \"\(.app_name)\""' | sort -u | tr '\n' ',' | head -c -1)
 
@@ -33,4 +32,4 @@ tags=$(cat $wappalyzer_out \
 
 echo '{"Asset":"'$url'","Tags":{'$tags'}}' > $wappalyzer_out
 
-jq -s '.[0] * .[1]' $webanalyze_out $wappalyzer_out
+jq -c -s '.[0] * .[1]' $webanalyze_out $wappalyzer_out

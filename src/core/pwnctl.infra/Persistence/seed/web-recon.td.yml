@@ -9,10 +9,12 @@ TaskDefinitions:
       Schedule: 0 0 * * *
       PostCondition: newTags["rcode"] != oldTags["rcode"]
       NotificationTemplate: domain {{Name}} changed rcode from {{oldTags["rcode"]}} to {{newTags["rcode"]}}
+    ShortLived: true
 
   - Name: httpx
     CommandTemplate: echo {{Name}} | httpx -silent -csp-probe
     Subject: DomainName
+    ShortLived: true
 
   - Name: sub_enum
     CommandTemplate: sub-enum.sh {{Name}} -d -m 110
@@ -24,27 +26,32 @@ TaskDefinitions:
   - Name: dns_record_enum
     CommandTemplate: dns-record-enum.sh {{Name}} {{ZoneDepth}}
     Subject: DomainName
+    ShortLived: true
 
   - Name: email_finder
     CommandTemplate: email-finder.sh {{Name}}
     Subject: DomainName
     Filter: DomainName.ZoneDepth == 1
+    ShortLived: true
 
   - Name: reverse_whois
     CommandTemplate: reverse-whois.sh {{Address}}
     Subject: Email
     MatchOutOfScope: true
+    ShortLived: true
 
   - Name: zone_trasfer
     CommandTemplate: zone-transfer.sh {{Key}}
     Subject: DomainNameRecord
     Filter: DomainNameRecord.Type == DnsRecordType.SOA
     CheckNotificationRules: true
+    ShortLived: true
 
   - Name: zone_walking
     CommandTemplate: ldns-walk {{Key}} | tail -n +2 | cut -d ' ' -f 1
     Filter: DomainNameRecord.Type == DnsRecordType.NSEC
     Subject: DomainNameRecord
+    ShortLived: true
 
   - Name: grab_headers
     CommandTemplate: grab-headers.sh {{Url}}
@@ -55,16 +62,13 @@ TaskDefinitions:
       PreCondition: new List<string>{ "401", "403", "404", "500", "501", "502", "503", "504" }.Contains(Tags["Status"])
       PostCondition: newTags["Status"] != oldTags["Status"]
       NotificationTemplate: Endpoint {{Url}} changed status code from {{oldTags["Status"]}} to {{newTags["Status"]}}
+    ShortLived: true
 
   - Name: wappalyzer
     CommandTemplate: wappalyzer.sh {{Url}}
     Filter: HttpEndpoint.Path == "/" && HttpEndpoint.Socket.DomainNameId != null
     Subject: HttpEndpoint
-
-  - Name: webanalyze
-    CommandTemplate: webanalyze.sh {{Url}}
-    Filter: HttpEndpoint.Path == "/" && HttpEndpoint.Socket.DomainNameId != null
-    Subject: HttpEndpoint
+    ShortLived: true
 
   - Name: get_all_urls
     CommandTemplate: get-all-urls.sh {{Name}}
@@ -80,17 +84,20 @@ TaskDefinitions:
     CommandTemplate: screenshot.sh {{Url}}
     Filter: HttpEndpoint.Path == "/" && HttpEndpoint.Socket.DomainNameId != null
     Subject: HttpEndpoint
+    ShortLived: true
 
   - Name: wafw00f
     CommandTemplate: wafw00f.sh {{Url}}
     Filter: HttpEndpoint.Path == "/" && HttpEndpoint.Socket.DomainNameId != null
     Subject: HttpEndpoint
+    ShortLived: true
 
   - Name: cors_scanner
     CommandTemplate: cors-scanner.sh {{Url}}
     Subject: HttpEndpoint
     Filter: HttpEndpoint.Path == "/" && HttpEndpoint.Socket.DomainNameId != null
     CheckNotificationRules: true
+    ShortLived: true
 
   - Name: swagger_discovery
     CommandTemplate: swagger-discovery.sh {{Url}}

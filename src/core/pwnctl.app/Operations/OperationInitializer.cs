@@ -72,16 +72,19 @@ public class OperationInitializer
 
     public async Task GenerateScheduledTasksAsync(Operation op, AssetRecord record, IEnumerable<TaskDefinition> taskDefinitions)
     {
-        List<PendingTaskDTO> pendingTasks = new();
+        List<LongLivedTaskDTO> longLivedTasks = new();
+        List<ShortLivedTaskDTO> shortLivedTasks = new();
         foreach (var def in taskDefinitions.Where(def => def.Matches(record, minitoring: op.Type == OperationType.Monitor)))
         {
             var task = new TaskRecord(op, def, record);
 
             await PwnInfraContext.TaskRepository.AddAsync(task);
 
-            pendingTasks.Add(new PendingTaskDTO(task));
+            if (def.ShortLived) shortLivedTasks.Add(new ShortLivedTaskDTO(task));
+            else longLivedTasks.Add(new LongLivedTaskDTO(task));
         }
 
-        await PwnInfraContext.TaskQueueService.EnqueueBatchAsync(pendingTasks);
+        await PwnInfraContext.TaskQueueService.EnqueueBatchAsync(longLivedTasks);
+        await PwnInfraContext.TaskQueueService.EnqueueBatchAsync(shortLivedTasks);
     }
 }
