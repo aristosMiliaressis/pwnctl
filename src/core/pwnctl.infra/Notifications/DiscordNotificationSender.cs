@@ -18,6 +18,6 @@ public sealed class DiscordNotificationSender : NotificationSender
     {
         PwnInfraContext.Logger.Information("Notification: " + message);
 
-        await PwnInfraContext.CommandExecutor.ExecuteAsync($"echo {message} | /root/go/bin/notify -bulk -provider discord -id {topic.ToString().ToLower()}");
+        await PwnInfraContext.CommandExecutor.ExecuteAsync($"echo {message} | notify -bulk -provider discord -id {topic.ToString().ToLower()}");
     }
 }
