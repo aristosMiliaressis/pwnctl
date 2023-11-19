@@ -82,3 +82,8 @@
   Subject: HttpEndpoint
   Filter: Tags.Tags.Any(tag => tag.Name.StartsWith("cache-prober-"))
   Topic: misconfigs
+
+- Name: h1_smuggling
+  Subject: HttpEndpoint
+  Filter: Tags.Tags.Any(tag => tag.Name == "h1_smuggling")
+  Topic: misconfigs

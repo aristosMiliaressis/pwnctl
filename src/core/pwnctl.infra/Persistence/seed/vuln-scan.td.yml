@@ -18,3 +18,9 @@ TaskDefinitions:
     Filter: HttpEndpoint.Path == "/" && HttpEndpoint.Socket.DomainNameId != null
     Subject: HttpEndpoint
     CheckNotificationRules: true
+
+  - Name: smuggler
+    CommandTemplate: smuggler.sh {{Url}}
+    Filter: HttpEndpoint.Path == "/"
+    Subject: HttpEndpoint
+    CheckNotificationRules: true
