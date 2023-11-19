@@ -7,8 +7,8 @@ transferSuccedded=false
 
 nameservers=$(dig +short $domain NS)
 for srv in ${nameservers}; do 
-    dig +nottlid @$srv $domain AXFR | tee -a $temp | grep -q 'Transfer failed'
-    [ $? -eq 1 ] && transferSuccedded=true
+    dig +nottlid @$srv $domain AXFR | tee -a $temp | grep -q 'XFR size'
+    [ $? -eq 0 ] && transferSuccedded=true
 done
 
 cat $temp | sort -u | tr '\t' ' ' | grep ' IN '
