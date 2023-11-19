@@ -21,18 +21,11 @@ public sealed class ShortLivedTaskExecutor : LifetimeService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        using var cts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
-
-        AppDomain.CurrentDomain.ProcessExit += (_, _) =>
-        {
-            cts.Cancel();
-        };
-
-        while (!cts.Token.IsCancellationRequested)
+        while (!stoppingToken.IsCancellationRequested)
         {
             try
             {
-                await ExecutePendingTaskAsync(cts.Token);
+                await ExecutePendingTaskAsync(stoppingToken);
             } 
             catch (Exception ex)
             {
