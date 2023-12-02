@@ -65,7 +65,7 @@ public class ScopeDefinition : Entity<int>
     {
         return asset switch
         {
-            HttpEndpoint ep => new Regex(Pattern).Matches(ep.Url).Count > 0,
+            HttpEndpoint ep => new Regex(Pattern).Matches(ep.ToString()).Count > 0,
             HttpParameter param => Matches(param.Endpoint),
             _ => false
         };

@@ -4,6 +4,7 @@ using pwnctl.kernel.Attributes;
 using pwnctl.kernel.BaseClasses;
 using pwnctl.domain.BaseClasses;
 using pwnctl.domain.Enums;
+using System.Text.RegularExpressions;
 
 public sealed class HttpEndpoint : Asset
 {
@@ -15,6 +16,8 @@ public sealed class HttpEndpoint : Asset
     public Guid? ParentEndpointId { get; private init; }
     public HttpEndpoint? ParentEndpoint { get; private set; }
     public List<HttpParameter> HttpParameters { get; private set; }
+    
+    public bool IsIpBased => new Regex(@"^https?://[\d]{1,3}(\.[\d]{1,3}){3}").Match(Url).Success;
 
     public string Scheme { get; init; }
     public string Path { get; init; }

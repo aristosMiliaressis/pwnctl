@@ -153,8 +153,3 @@ TaskDefinitions:
     CommandTemplate: mdwfuzzer.sh {{Url}}
     Filter: HttpEndpoint.Path=="/"
     Subject: HttpEndpoint
-
-  - Name: vhost_scan
-    CommandTemplate: vhost-scan.sh {{Url}}
-    Subject: HttpEndpoint
-    Filter: false && HttpEndpoint.Path=="/"
