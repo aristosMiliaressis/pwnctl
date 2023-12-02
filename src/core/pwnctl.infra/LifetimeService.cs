@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Hosting;
 using pwnctl.app;
 using pwnctl.app.Notifications.Enums;
-using pwnctl.infra.Configuration;
 
 namespace pwnctl.infra;
 

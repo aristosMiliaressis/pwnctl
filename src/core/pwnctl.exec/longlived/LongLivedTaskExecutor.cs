@@ -25,7 +25,9 @@ public sealed class LongLivedTaskExecutor : LifetimeService
         {
             try
             {
-                await ExecutePendingTaskAsync(stoppingToken);
+                bool exit = await ExecutePendingTaskAsync(stoppingToken);
+                if (exit)
+                    break;
             } 
             catch (Exception ex)
             {
@@ -41,7 +43,7 @@ public sealed class LongLivedTaskExecutor : LifetimeService
         }
     }
 
-    private async Task ExecutePendingTaskAsync(CancellationToken stoppingToken)
+    private async Task<bool> ExecutePendingTaskAsync(CancellationToken stoppingToken)
     {
         LongLivedTaskDTO taskDTO = null;
         try 
@@ -49,7 +51,7 @@ public sealed class LongLivedTaskExecutor : LifetimeService
             taskDTO = await PwnInfraContext.TaskQueueService.ReceiveAsync<LongLivedTaskDTO>(stoppingToken);
             if (taskDTO is null)
             {
-                PwnInfraContext.Logger.Information("task queue is empty, sleeping for 5 secs.");
+                PwnInfraContext.Logger.Information("task queue is empty, exiting.");
 
                 if (_protectionState) 
                 {
@@ -58,13 +60,12 @@ public sealed class LongLivedTaskExecutor : LifetimeService
                     _protectionState = false;
                 }
 
-                await StopAsync(stoppingToken);
-                return;
+                return true;
             }
         } 
         catch (OperationCanceledException)
         {
-            return;
+            return false;
         }
 
         if (!_protectionState)
@@ -74,15 +75,10 @@ public sealed class LongLivedTaskExecutor : LifetimeService
             _protectionState = true;
         }
 
-        // create a linked token that cancels the task when max 
-        // task timeout is exheeded or if a scale in event occures
-        using var cts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
-        cts.CancelAfter((PwnInfraContext.Config.Worker.MaxTaskTimeout - 2) * 1000);
-
         // Change the message visibility if the visibility window is exheeded
         // this allows us to keep a smaller visibility window without effecting
         // the max task timeout.
-        using var timer = new System.Timers.Timer((PwnInfraContext.Config.LongLivedTaskQueue.VisibilityTimeout - 90) * 1000);
+        using var timer = new System.Timers.Timer((PwnInfraContext.Config.LongLivedTaskQueue.VisibilityTimeout - 30) * 1000);
         timer.Elapsed += async (_, _) =>
             await PwnInfraContext.TaskQueueService.ChangeMessageVisibilityAsync(taskDTO, PwnInfraContext.Config.LongLivedTaskQueue.VisibilityTimeout);
         timer.Start();
@@ -94,7 +90,7 @@ public sealed class LongLivedTaskExecutor : LifetimeService
 
             await PwnInfraContext.TaskQueueService.DequeueAsync(taskDTO);
 
-            return;
+            return false;
         }
 
         bool succeeded = task.Started();
@@ -105,7 +101,7 @@ public sealed class LongLivedTaskExecutor : LifetimeService
             // probably a deduplication issue, remove from queue and move on
             await PwnInfraContext.TaskQueueService.DequeueAsync(taskDTO);
 
-            return;
+            return false;
         }
 
         succeeded = await _taskRepo.TryUpdateAsync(task);
@@ -130,11 +126,16 @@ public sealed class LongLivedTaskExecutor : LifetimeService
 
                 await PwnInfraContext.TaskQueueService.DequeueAsync(taskDTO);
 
-                return;
+                return false;
             }
 
             stdin = new(json);
         }
+
+        // create a linked token that cancels the task when max 
+        // task timeout is exheeded or if a scale in event occures
+        using var cts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
+        cts.CancelAfter((PwnInfraContext.Config.Worker.MaxTaskTimeout) * 1000);
 
         int exitCode = 0;
         StringBuilder stdout = null, stderr = null;
@@ -162,7 +163,7 @@ public sealed class LongLivedTaskExecutor : LifetimeService
             // the task will be put in the dead letter queue
             await PwnInfraContext.TaskQueueService.ChangeMessageVisibilityAsync(taskDTO, 0);
 
-            return;          
+            return false;
         }
 
         succeeded = await _taskRepo.TryUpdateAsync(task);
@@ -183,5 +184,7 @@ public sealed class LongLivedTaskExecutor : LifetimeService
         var batches = OutputBatchDTO.FromLines(lines, task.Id);
         
         await PwnInfraContext.TaskQueueService.EnqueueBatchAsync(batches);
+
+        return false;
     }
 }

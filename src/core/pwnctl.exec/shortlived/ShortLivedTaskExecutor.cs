@@ -25,7 +25,9 @@ public sealed class ShortLivedTaskExecutor : LifetimeService
         {
             try
             {
-                await ExecutePendingTaskAsync(stoppingToken);
+                bool exit = await ExecutePendingTaskAsync(stoppingToken);
+                if (exit)
+                    break;
             } 
             catch (Exception ex)
             {
@@ -34,7 +36,7 @@ public sealed class ShortLivedTaskExecutor : LifetimeService
         }
     }
 
-    private async Task ExecutePendingTaskAsync(CancellationToken stoppingToken)
+    private async Task<bool> ExecutePendingTaskAsync(CancellationToken stoppingToken)
     {
         ShortLivedTaskDTO taskDTO = null;
         try 
@@ -42,14 +44,13 @@ public sealed class ShortLivedTaskExecutor : LifetimeService
             taskDTO = await PwnInfraContext.TaskQueueService.ReceiveAsync<ShortLivedTaskDTO>(stoppingToken);
             if (taskDTO is null)
             {
-                PwnInfraContext.Logger.Information("task queue is empty, sleeping for 5 secs.");
-                await StopAsync(stoppingToken);
-                return;
+                PwnInfraContext.Logger.Information("task queue is empty, exiting.");
+                return true;
             }
         } 
         catch (OperationCanceledException)
         {
-            return;
+            return false;
         }
 
         var task = await _taskRepo.FindAsync(taskDTO.TaskId);
@@ -59,7 +60,7 @@ public sealed class ShortLivedTaskExecutor : LifetimeService
 
             await PwnInfraContext.TaskQueueService.DequeueAsync(taskDTO);
 
-            return;
+            return false;
         }
 
         bool succeeded = task.Started();
@@ -70,7 +71,7 @@ public sealed class ShortLivedTaskExecutor : LifetimeService
             // probably a deduplication issue, remove from queue and move on
             await PwnInfraContext.TaskQueueService.DequeueAsync(taskDTO);
 
-            return;
+            return false;
         }
 
         succeeded = await _taskRepo.TryUpdateAsync(task);
@@ -95,11 +96,16 @@ public sealed class ShortLivedTaskExecutor : LifetimeService
 
                 await PwnInfraContext.TaskQueueService.DequeueAsync(taskDTO);
 
-                return;
+                return false;
             }
 
             stdin = new(json);
         }
+
+        // create a linked token that cancels the task when max 
+        // task timeout is exheeded or if a scale in event occures
+        using var cts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
+        cts.CancelAfter((PwnInfraContext.Config.Worker.MaxTaskTimeout - 30) * 1000);
 
         int exitCode = 0;
         StringBuilder stdout = null, stderr = null;
@@ -107,7 +113,7 @@ public sealed class ShortLivedTaskExecutor : LifetimeService
         {
             PwnInfraContext.Logger.Information("Running: " + task.Command);
 
-            (exitCode, stdout, stderr) = await PwnInfraContext.CommandExecutor.ExecuteAsync(task.Command, stdin);
+            (exitCode, stdout, stderr) = await PwnInfraContext.CommandExecutor.ExecuteAsync(task.Command, stdin, cts.Token);
 
             task.Finished(exitCode, stderr.ToString());
         }
@@ -127,7 +133,7 @@ public sealed class ShortLivedTaskExecutor : LifetimeService
             // the task will be put in the dead letter queue
             await PwnInfraContext.TaskQueueService.ChangeMessageVisibilityAsync(taskDTO, 0);
 
-            return;          
+            return false;
         }
 
         succeeded = await _taskRepo.TryUpdateAsync(task);
@@ -147,5 +153,7 @@ public sealed class ShortLivedTaskExecutor : LifetimeService
         var batches = OutputBatchDTO.FromLines(lines, task.Id);
         
         await PwnInfraContext.TaskQueueService.EnqueueBatchAsync(batches);
+
+        return false;
     }
 }

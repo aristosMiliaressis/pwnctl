@@ -29,7 +29,7 @@ resource "aws_ecs_task_definition" "exec_short" {
         },
         {
           "name": "PWNCTL_Worker__MaxTaskTimeout",
-          "value": "${var.task_timeout}"
+          "value": "${module.sqs.shortlived_visibility_timeout}"
         },
         {
           "name": "PWNCTL_ShortLivedTaskQueue__Name",
@@ -252,7 +252,7 @@ resource "aws_ecs_task_definition" "proc" {
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   cpu                      = 1024
-  memory                   = 4096
+  memory                   = 3072
   execution_role_arn = aws_iam_role.ecs_service.arn
   task_role_arn = aws_iam_role.ecs_service.arn
 

@@ -14,7 +14,7 @@ public static class ScaleInProtection
         var request = new 
         {
             ProtectionEnabled = true,
-            ExpiresInMinutes = PwnInfraContext.Config.Worker.MaxTaskTimeout / 60
+            ExpiresInMinutes = 2880
         };
 
         PwnInfraContext.Logger.Information("Enabling Scale-in Protection");
