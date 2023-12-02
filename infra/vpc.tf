@@ -3,7 +3,7 @@ resource "aws_vpc" "main" {
     Name = "PwnCtl VPC"
   }
 
-  cidr_block = "10.10.0.0/16"
+  cidr_block           = "10.10.0.0/16"
   enable_dns_hostnames = true
 }
 
@@ -32,7 +32,7 @@ resource "aws_subnet" "public" {
   }
 
   availability_zone = "${data.external.aws_region.result.region}${each.key}"
-  cidr_block = each.value
+  cidr_block        = each.value
 }
 
 resource "aws_subnet" "private" {
@@ -48,7 +48,7 @@ resource "aws_subnet" "private" {
   }
 
   availability_zone = "${data.external.aws_region.result.region}${each.key}"
-  cidr_block = each.value
+  cidr_block        = each.value
 }
 
 resource "aws_route_table" "public" {
@@ -75,14 +75,14 @@ resource "aws_route_table" "private" {
 resource "aws_route_table_association" "public" {
   for_each = aws_subnet.public
 
-  subnet_id = each.value.id
+  subnet_id      = each.value.id
   route_table_id = aws_route_table.public.id
 }
 
 resource "aws_route_table_association" "private" {
   for_each = aws_subnet.private
 
-  subnet_id = each.value.id
+  subnet_id      = each.value.id
   route_table_id = aws_route_table.private.id
 }
 
@@ -90,19 +90,19 @@ data "aws_network_interface" "a" {
   filter {
     name = "subnet-id"
 
-    values = [ aws_subnet.public["a"].id ]
+    values = [aws_subnet.public["a"].id]
   }
 
   filter {
     name = "group-id"
 
-    values = [ aws_security_group.allow_https_from_internet.id ]
+    values = [aws_security_group.allow_https_from_internet.id]
   }
 
   filter {
     name = "interface-type"
 
-    values = [ "lambda" ]
+    values = ["lambda"]
   }
 
   depends_on = [aws_lambda_function.this]
@@ -112,30 +112,30 @@ data "aws_network_interface" "b" {
   filter {
     name = "subnet-id"
 
-    values = [ aws_subnet.public["b"].id ]
+    values = [aws_subnet.public["b"].id]
   }
 
   filter {
     name = "group-id"
 
-    values = [ aws_security_group.allow_https_from_internet.id ]
+    values = [aws_security_group.allow_https_from_internet.id]
   }
 
   filter {
     name = "interface-type"
 
-    values = [ "lambda" ]
+    values = ["lambda"]
   }
 
   depends_on = [aws_lambda_function.this]
 }
 
 resource "aws_eip" "a" {
-  domain = "vpc"
-  network_interface  = data.aws_network_interface.a.id
+  domain            = "vpc"
+  network_interface = data.aws_network_interface.a.id
 }
 
 resource "aws_eip" "b" {
-  domain = "vpc"
-  network_interface  = data.aws_network_interface.b.id
+  domain            = "vpc"
+  network_interface = data.aws_network_interface.b.id
 }

@@ -22,7 +22,7 @@ resource "aws_cloudwatch_metric_alarm" "longlived_tasks_queue_depth" {
   insufficient_data_actions = []
 
   metric_query {
-    id          = "visibleMessages"
+    id = "visibleMessages"
 
     metric {
       metric_name = "ApproximateNumberOfMessagesVisible"
@@ -37,7 +37,7 @@ resource "aws_cloudwatch_metric_alarm" "longlived_tasks_queue_depth" {
   }
 
   metric_query {
-    id          = "inFlightMessages"
+    id = "inFlightMessages"
 
     metric {
       metric_name = "ApproximateNumberOfMessagesNotVisible"
@@ -69,7 +69,7 @@ resource "aws_cloudwatch_metric_alarm" "shortlived_tasks_queue_depth" {
   insufficient_data_actions = []
 
   metric_query {
-    id          = "visibleMessages"
+    id = "visibleMessages"
 
     metric {
       metric_name = "ApproximateNumberOfMessagesVisible"
@@ -84,7 +84,7 @@ resource "aws_cloudwatch_metric_alarm" "shortlived_tasks_queue_depth" {
   }
 
   metric_query {
-    id          = "inFlightMessages"
+    id = "inFlightMessages"
 
     metric {
       metric_name = "ApproximateNumberOfMessagesNotVisible"
@@ -111,12 +111,12 @@ resource "aws_cloudwatch_metric_alarm" "shortlived_tasks_queue_depth" {
 resource "aws_cloudwatch_metric_alarm" "output_queue_depth" {
   alarm_name                = "output-queue-depth"
   comparison_operator       = "GreaterThanOrEqualToThreshold"
-  threshold = 0
-  evaluation_periods        = 1 
+  threshold                 = 0
+  evaluation_periods        = 1
   insufficient_data_actions = []
 
   metric_query {
-    id          = "visibleOutputMessages"
+    id = "visibleOutputMessages"
 
     metric {
       metric_name = "ApproximateNumberOfMessagesVisible"
@@ -131,7 +131,7 @@ resource "aws_cloudwatch_metric_alarm" "output_queue_depth" {
   }
 
   metric_query {
-    id          = "inFlightOutputMessages"
+    id = "inFlightOutputMessages"
 
     metric {
       metric_name = "ApproximateNumberOfMessagesNotVisible"
@@ -145,8 +145,8 @@ resource "aws_cloudwatch_metric_alarm" "output_queue_depth" {
     }
   }
 
-   metric_query {
-    id          = "inFlightLongLivedTaskMessages"
+  metric_query {
+    id = "inFlightLongLivedTaskMessages"
 
     metric {
       metric_name = "ApproximateNumberOfMessagesNotVisible"
@@ -161,7 +161,7 @@ resource "aws_cloudwatch_metric_alarm" "output_queue_depth" {
   }
 
   metric_query {
-    id          = "inFlightShortLivedTaskMessages"
+    id = "inFlightShortLivedTaskMessages"
 
     metric {
       metric_name = "ApproximateNumberOfMessagesNotVisible"

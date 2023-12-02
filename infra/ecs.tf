@@ -8,8 +8,8 @@ resource "aws_ecs_task_definition" "exec_short" {
   network_mode             = "awsvpc"
   cpu                      = 256
   memory                   = 1024
-  execution_role_arn = aws_iam_role.ecs_service.arn
-  task_role_arn = aws_iam_role.ecs_service.arn
+  execution_role_arn       = aws_iam_role.ecs_service.arn
+  task_role_arn            = aws_iam_role.ecs_service.arn
 
   depends_on = [
     aws_db_instance.this
@@ -83,15 +83,15 @@ resource "aws_ecs_task_definition" "exec_short" {
   DEFINITION
 
   volume {
-    name      = "pwnctl-fs"
+    name = "pwnctl-fs"
     efs_volume_configuration {
-        file_system_id = aws_efs_file_system.this.id
-        root_directory = "/"
-        transit_encryption = "ENABLED"
-        authorization_config {
-            iam = "ENABLED"
-            access_point_id = aws_efs_access_point.this.id
-        }
+      file_system_id     = aws_efs_file_system.this.id
+      root_directory     = "/"
+      transit_encryption = "ENABLED"
+      authorization_config {
+        iam             = "ENABLED"
+        access_point_id = aws_efs_access_point.this.id
+      }
     }
   }
 }
@@ -101,24 +101,24 @@ resource "aws_ecs_service" "exec_short" {
   cluster         = aws_ecs_cluster.this.id
   task_definition = aws_ecs_task_definition.exec_short.arn
   desired_count   = 0
-  depends_on      = [
+  depends_on = [
     aws_ecs_cluster.this,
     aws_ecs_task_definition.exec_short,
     aws_iam_role.ecs_service
   ]
 
   network_configuration {
-    subnets = [for k, v in aws_subnet.public : aws_subnet.public[k].id]
+    subnets          = [for k, v in aws_subnet.public : aws_subnet.public[k].id]
     assign_public_ip = "true"
   }
 
   capacity_provider_strategy {
     capacity_provider = "FARGATE_SPOT"
-    weight = 1
+    weight            = 1
   }
 
   lifecycle {
-    ignore_changes = [ desired_count ]
+    ignore_changes = [desired_count]
   }
 }
 
@@ -128,8 +128,8 @@ resource "aws_ecs_task_definition" "exec_long" {
   network_mode             = "awsvpc"
   cpu                      = 512
   memory                   = 2048
-  execution_role_arn = aws_iam_role.ecs_service.arn
-  task_role_arn = aws_iam_role.ecs_service.arn
+  execution_role_arn       = aws_iam_role.ecs_service.arn
+  task_role_arn            = aws_iam_role.ecs_service.arn
 
   depends_on = [
     aws_db_instance.this
@@ -207,15 +207,15 @@ resource "aws_ecs_task_definition" "exec_long" {
   DEFINITION
 
   volume {
-    name      = "pwnctl-fs"
+    name = "pwnctl-fs"
     efs_volume_configuration {
-        file_system_id = aws_efs_file_system.this.id
-        root_directory = "/"
-        transit_encryption = "ENABLED"
-        authorization_config {
-            iam = "ENABLED"
-            access_point_id = aws_efs_access_point.this.id
-        }
+      file_system_id     = aws_efs_file_system.this.id
+      root_directory     = "/"
+      transit_encryption = "ENABLED"
+      authorization_config {
+        iam             = "ENABLED"
+        access_point_id = aws_efs_access_point.this.id
+      }
     }
   }
 }
@@ -225,24 +225,24 @@ resource "aws_ecs_service" "exec_long" {
   cluster         = aws_ecs_cluster.this.id
   task_definition = aws_ecs_task_definition.exec_long.arn
   desired_count   = 0
-  depends_on      = [
+  depends_on = [
     aws_ecs_cluster.this,
     aws_ecs_task_definition.exec_long,
     aws_iam_role.ecs_service
   ]
 
   network_configuration {
-    subnets = [for k, v in aws_subnet.public : aws_subnet.public[k].id]
+    subnets          = [for k, v in aws_subnet.public : aws_subnet.public[k].id]
     assign_public_ip = "true"
   }
 
   capacity_provider_strategy {
     capacity_provider = "FARGATE"
-    weight = 1
+    weight            = 1
   }
 
   lifecycle {
-    ignore_changes = [ desired_count ]
+    ignore_changes = [desired_count]
   }
 }
 
@@ -253,8 +253,8 @@ resource "aws_ecs_task_definition" "proc" {
   network_mode             = "awsvpc"
   cpu                      = 1024
   memory                   = 3072
-  execution_role_arn = aws_iam_role.ecs_service.arn
-  task_role_arn = aws_iam_role.ecs_service.arn
+  execution_role_arn       = aws_iam_role.ecs_service.arn
+  task_role_arn            = aws_iam_role.ecs_service.arn
 
   depends_on = [
     aws_db_instance.this,
@@ -329,15 +329,15 @@ resource "aws_ecs_task_definition" "proc" {
   DEFINITION
 
   volume {
-    name      = "pwnctl-fs"
+    name = "pwnctl-fs"
     efs_volume_configuration {
-        file_system_id = aws_efs_file_system.this.id
-        root_directory = "/"
-        transit_encryption = "ENABLED"
-        authorization_config {
-            iam = "ENABLED"
-            access_point_id = aws_efs_access_point.this.id
-        }
+      file_system_id     = aws_efs_file_system.this.id
+      root_directory     = "/"
+      transit_encryption = "ENABLED"
+      authorization_config {
+        iam             = "ENABLED"
+        access_point_id = aws_efs_access_point.this.id
+      }
     }
   }
 }
@@ -347,23 +347,23 @@ resource "aws_ecs_service" "proc" {
   cluster         = aws_ecs_cluster.this.id
   task_definition = aws_ecs_task_definition.proc.arn
   desired_count   = 0
-  depends_on      = [
+  depends_on = [
     aws_ecs_cluster.this,
     aws_ecs_task_definition.proc,
     aws_iam_role.ecs_service
   ]
 
   network_configuration {
-    subnets = [for k, v in aws_subnet.public : aws_subnet.public[k].id]
+    subnets          = [for k, v in aws_subnet.public : aws_subnet.public[k].id]
     assign_public_ip = "true"
   }
 
   capacity_provider_strategy {
     capacity_provider = "FARGATE"
-    weight = 1
+    weight            = 1
   }
 
   lifecycle {
-    ignore_changes = [ desired_count ]
+    ignore_changes = [desired_count]
   }
 }

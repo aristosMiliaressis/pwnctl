@@ -8,13 +8,13 @@ variable "rds_postgres_databasename" {
 variable "rds_postgres_username" {
   description = "The database username."
   type        = string
-  
+
   default = "pwnadmin"
 }
 
 resource "aws_db_subnet_group" "this" {
   name       = "main"
-  subnet_ids  = [for k, v in aws_subnet.private : aws_subnet.private[k].id]
+  subnet_ids = [for k, v in aws_subnet.private : aws_subnet.private[k].id]
 
   tags = {
     Name = "PwnCtl db subnet group"
@@ -27,11 +27,11 @@ resource "aws_security_group" "allow_postgres" {
   vpc_id      = aws_vpc.main.id
 
   ingress {
-    description      = "Allow ingress Postgres traffic from VPC"
-    from_port        = 5432
-    to_port          = 5432
-    protocol         = "tcp"
-    cidr_blocks      = [aws_vpc.main.cidr_block]
+    description = "Allow ingress Postgres traffic from VPC"
+    from_port   = 5432
+    to_port     = 5432
+    protocol    = "tcp"
+    cidr_blocks = [aws_vpc.main.cidr_block]
   }
 
   egress {
@@ -48,7 +48,7 @@ resource "aws_security_group" "allow_postgres" {
 }
 
 resource "aws_db_parameter_group" "this" {
-  name = "pg-params"
+  name   = "pg-params"
   family = "postgres15"
 
   parameter {
@@ -58,15 +58,15 @@ resource "aws_db_parameter_group" "this" {
 }
 
 resource "aws_db_instance" "this" {
-  allocated_storage    = 10
-  engine               = "postgres"
-  engine_version       = "15"
-  instance_class       = "db.t3.micro"
+  allocated_storage      = 10
+  engine                 = "postgres"
+  engine_version         = "15"
+  instance_class         = "db.t3.micro"
   db_name                = var.rds_postgres_databasename
   username               = var.rds_postgres_username
   password               = aws_secretsmanager_secret_version.db_password.secret_string
-  parameter_group_name = aws_db_parameter_group.this.name
-  skip_final_snapshot  = true
+  parameter_group_name   = aws_db_parameter_group.this.name
+  skip_final_snapshot    = true
   vpc_security_group_ids = [aws_security_group.allow_postgres.id]
   db_subnet_group_name   = aws_db_subnet_group.this.id
 

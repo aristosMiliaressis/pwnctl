@@ -27,22 +27,22 @@ resource "aws_appautoscaling_policy" "exec_long" {
 
     step_adjustment {
       metric_interval_upper_bound = 1
-      scaling_adjustment = 0
+      scaling_adjustment          = 0
     }
 
     dynamic "step_adjustment" {
-      for_each = toset([for i in range(0, var.exec_instance_count.longlived/var.exec_step_size.longlived, 1) : i])
+      for_each = toset([for i in range(0, var.exec_instance_count.longlived / var.exec_step_size.longlived, 1) : i])
 
       content {
         metric_interval_lower_bound = var.exec_step_interval.longlived * step_adjustment.value + 1
         metric_interval_upper_bound = var.exec_step_interval.longlived * (step_adjustment.value + 1) + 1
-        scaling_adjustment = (step_adjustment.value+1) * var.exec_step_size.longlived + (var.exec_instance_count.longlived%var.exec_step_size.longlived)
+        scaling_adjustment          = (step_adjustment.value + 1) * var.exec_step_size.longlived + (var.exec_instance_count.longlived % var.exec_step_size.longlived)
       }
     }
 
     step_adjustment {
-      metric_interval_lower_bound = var.exec_step_interval.longlived * (var.exec_instance_count.longlived/var.exec_step_size.longlived) + 1
-      scaling_adjustment = var.exec_instance_count.longlived
+      metric_interval_lower_bound = var.exec_step_interval.longlived * (var.exec_instance_count.longlived / var.exec_step_size.longlived) + 1
+      scaling_adjustment          = var.exec_instance_count.longlived
     }
   }
 }
@@ -60,22 +60,22 @@ resource "aws_appautoscaling_policy" "exec_short" {
 
     step_adjustment {
       metric_interval_upper_bound = 1
-      scaling_adjustment = 0
+      scaling_adjustment          = 0
     }
 
     dynamic "step_adjustment" {
-      for_each = toset([for i in range(0, var.exec_instance_count.shortlived/var.exec_step_size.shortlived, 1) : i])
+      for_each = toset([for i in range(0, var.exec_instance_count.shortlived / var.exec_step_size.shortlived, 1) : i])
 
       content {
         metric_interval_lower_bound = var.exec_step_interval.shortlived * step_adjustment.value + 1
         metric_interval_upper_bound = var.exec_step_interval.shortlived * (step_adjustment.value + 1) + 1
-        scaling_adjustment = (step_adjustment.value+1) * var.exec_step_size.shortlived + (var.exec_instance_count.shortlived%var.exec_step_size.shortlived)
+        scaling_adjustment          = (step_adjustment.value + 1) * var.exec_step_size.shortlived + (var.exec_instance_count.shortlived % var.exec_step_size.shortlived)
       }
     }
 
     step_adjustment {
-      metric_interval_lower_bound = var.exec_step_interval.shortlived * (var.exec_instance_count.shortlived/var.exec_step_size.shortlived) + 1
-      scaling_adjustment = var.exec_instance_count.shortlived
+      metric_interval_lower_bound = var.exec_step_interval.shortlived * (var.exec_instance_count.shortlived / var.exec_step_size.shortlived) + 1
+      scaling_adjustment          = var.exec_instance_count.shortlived
     }
   }
 }
@@ -101,12 +101,12 @@ resource "aws_appautoscaling_policy" "proc" {
 
     step_adjustment {
       metric_interval_upper_bound = 1
-      scaling_adjustment = 0
+      scaling_adjustment          = 0
     }
 
     step_adjustment {
       metric_interval_lower_bound = 1
-      scaling_adjustment = 1
+      scaling_adjustment          = 1
     }
   }
 }

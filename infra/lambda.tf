@@ -1,6 +1,6 @@
 data "archive_file" "this" {
-  type = "zip"
-  source_dir = "../src/pwnctl.api/bin/Release/net6.0/"
+  type        = "zip"
+  source_dir  = "../src/pwnctl.api/bin/Release/net6.0/"
   output_path = "../src/pwnctl.api/bin/lambda.zip"
 }
 
@@ -16,14 +16,14 @@ resource "aws_lambda_function" "this" {
     aws_iam_role.lambda
   ]
 
-  filename = "../src/pwnctl.api/bin/lambda.zip"
-  function_name = "pwnctl_api"
-  role = aws_iam_role.lambda.arn
-  handler = "pwnctl.api"
+  filename         = "../src/pwnctl.api/bin/lambda.zip"
+  function_name    = "pwnctl_api"
+  role             = aws_iam_role.lambda.arn
+  handler          = "pwnctl.api"
   source_code_hash = data.archive_file.this.output_base64sha256
-  runtime = "dotnet6"
-  timeout = 300
-  memory_size = 3008
+  runtime          = "dotnet6"
+  timeout          = 300
+  memory_size      = 3008
 
   vpc_config {
     subnet_ids         = [for k, v in aws_subnet.public : aws_subnet.public[k].id]
@@ -31,22 +31,22 @@ resource "aws_lambda_function" "this" {
   }
 
   file_system_config {
-    arn = aws_efs_access_point.this.arn
+    arn              = aws_efs_access_point.this.arn
     local_mount_path = var.efs_mount_point
   }
 
   environment {
-      variables = {
-          PWNCTL_LongLivedTaskQueue__Name = module.sqs.longlived_tasks_queue.name,
-          PWNCTL_ShortLivedTaskQueue__Name = module.sqs.shortlived_tasks_queue.name,
-          PWNCTL_Logging__MinLevel = "Debug"
-          PWNCTL_Api__AccessTimeoutMinutes = tostring(var.access_timeout_minutes)
-          PWNCTL_Api__RefreshTimeoutHours = tostring(var.refresh_timeout_hours)
-          PWNCTL_Db__Name = var.rds_postgres_databasename
-          PWNCTL_Db__Username = var.rds_postgres_username
-          PWNCTL_Db__Host = aws_db_instance.this.endpoint
-          PWNCTL_INSTALL_PATH = var.efs_mount_point
-      }
+    variables = {
+      PWNCTL_LongLivedTaskQueue__Name  = module.sqs.longlived_tasks_queue.name,
+      PWNCTL_ShortLivedTaskQueue__Name = module.sqs.shortlived_tasks_queue.name,
+      PWNCTL_Logging__MinLevel         = "Debug"
+      PWNCTL_Api__AccessTimeoutMinutes = tostring(var.access_timeout_minutes)
+      PWNCTL_Api__RefreshTimeoutHours  = tostring(var.refresh_timeout_hours)
+      PWNCTL_Db__Name                  = var.rds_postgres_databasename
+      PWNCTL_Db__Username              = var.rds_postgres_username
+      PWNCTL_Db__Host                  = aws_db_instance.this.endpoint
+      PWNCTL_INSTALL_PATH              = var.efs_mount_point
+    }
   }
 }
 

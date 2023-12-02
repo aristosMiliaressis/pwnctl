@@ -30,7 +30,7 @@ variable "exec_instance_count" {
 }
 
 variable "exec_step_interval" {
-   description = "exec service queue depth scaling interval."
+  description = "exec service queue depth scaling interval."
 
   default = {
     longlived  = 8
@@ -51,14 +51,14 @@ variable "task_timeout" {
   description = "The max amount of seconds a task execution may take before timing out."
   type        = number
 
-  default     = 10800 # 3 hours
+  default = 10800 # 3 hours
 }
 
 variable "message_retention_seconds" {
   description = "SQS message retention in seconds."
   type        = number
 
-  default     = 1209600 # 14 days
+  default = 1209600 # 14 days
 }
 
 variable "message_visibility_timeout" {

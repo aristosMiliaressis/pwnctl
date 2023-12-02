@@ -2,7 +2,7 @@ variable "efs_mount_point" {
   description = "The EFS mount point path."
   type        = string
 
-  default     = "/mnt/efs"
+  default = "/mnt/efs"
 }
 
 resource "aws_efs_file_system" "this" {
@@ -15,9 +15,9 @@ resource "aws_efs_mount_target" "this" {
   for_each = aws_subnet.public
 
   file_system_id = aws_efs_file_system.this.id
-  subnet_id      = each.value.id 
+  subnet_id      = each.value.id
 
-  security_groups = [ aws_security_group.allow_nfs.id ]
+  security_groups = [aws_security_group.allow_nfs.id]
 }
 
 resource "aws_efs_access_point" "this" {
@@ -44,11 +44,11 @@ resource "aws_security_group" "allow_nfs" {
   vpc_id      = aws_vpc.main.id
 
   ingress {
-    description      = "Allow ingress NFS traffic from VPC"
-    from_port        = 2049
-    to_port          = 2049
-    protocol         = "tcp"
-    cidr_blocks      = [aws_vpc.main.cidr_block]
+    description = "Allow ingress NFS traffic from VPC"
+    from_port   = 2049
+    to_port     = 2049
+    protocol    = "tcp"
+    cidr_blocks = [aws_vpc.main.cidr_block]
   }
 
   egress {

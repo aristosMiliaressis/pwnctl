@@ -27,11 +27,11 @@ data "external" "commit_hash" {
 
 provider "aws" {
   profile = var.profile
-  region = data.external.aws_region.result.region
+  region  = data.external.aws_region.result.region
 
   default_tags {
     tags = {
-      Name     = "pwnctl"
+      Name = "pwnctl"
     }
   }
 }

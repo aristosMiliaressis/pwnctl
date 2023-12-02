@@ -11,13 +11,13 @@ resource "aws_secretsmanager_secret" "db_password" {
 }
 
 resource "aws_secretsmanager_secret_version" "db_password" {
-  secret_id = aws_secretsmanager_secret.db_password.id
+  secret_id     = aws_secretsmanager_secret.db_password.id
   secret_string = random_password.db.result
 }
 
 resource "random_password" "admin" {
-  length           = 16
-  special          = false
+  length  = 16
+  special = false
 }
 
 resource "aws_secretsmanager_secret" "admin_password" {
@@ -31,14 +31,14 @@ resource "aws_secretsmanager_secret" "admin_password" {
 }
 
 resource "aws_secretsmanager_secret_version" "admin_password" {
-  secret_id = aws_secretsmanager_secret.admin_password.id
+  secret_id     = aws_secretsmanager_secret.admin_password.id
   secret_string = random_password.admin.result
 }
 
 
 resource "random_password" "hmac_secret" {
-  length           = 32
-  special          = false
+  length  = 32
+  special = false
 }
 
 resource "aws_secretsmanager_secret" "hmac_secret" {
@@ -48,6 +48,6 @@ resource "aws_secretsmanager_secret" "hmac_secret" {
 }
 
 resource "aws_secretsmanager_secret_version" "hmac_secret" {
-  secret_id = aws_secretsmanager_secret.hmac_secret.id
+  secret_id     = aws_secretsmanager_secret.hmac_secret.id
   secret_string = random_password.hmac_secret.result
 }
