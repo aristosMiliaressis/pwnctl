@@ -5,12 +5,13 @@ using pwnctl.app.Common.Interfaces;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using System.Reflection;
+using System.Collections.Concurrent;
 using pwnctl.app.Assets.Entities;
 using pwnctl.app.Tagging.Entities;
 
 public class CSharpFilterEvaluator : FilterEvaluator
 {
-    private static Dictionary<string, (object, MethodInfo)> _cache = new();
+    private static ConcurrentDictionary<string, (object, MethodInfo)> _cache = new();
 
     /// <summary>
     /// constructs and evaluates a CSharpScript expression by prefixing the `script` parameter
