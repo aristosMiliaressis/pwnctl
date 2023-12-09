@@ -13,6 +13,7 @@ using pwnctl.infra.Commands;
 using pwnctl.infra.DependencyInjection;
 using pwnctl.infra.Persistence;
 using pwnctl.infra.Repositories;
+using pwnctl.infra.Scheduling;
 using pwnctl.infra.Queueing;
 using pwnctl.infra.Notifications;
 
@@ -601,12 +602,12 @@ public sealed class Tests
     }
 
     [Fact]
-    public async Task OperationInitializer_Tests()
+    public async Task OperationManager_Tests()
     {
         PwnctlDbContext context = new();
         AssetProcessor proc = new();
         AssetDbRepository assetRepo = new();
-        OperationInitializer initializer = new(new OperationDbRepository());
+        OperationManager opManager = new(new OperationDbRepository(), new EventBridgeClient());
 
         var op = new Operation("monitor_op", OperationType.Monitor, EntityFactory.Policy, EntityFactory.ScopeAggregate);
 
@@ -624,7 +625,7 @@ public sealed class Tests
         await context.SaveChangesAsync();
 
         // Schedule - no previous occurence - added
-        await initializer.TryInitializeAsync(op.Id);
+        await opManager.TryHandleAsync(op.Id);
 
         // PreCondition tests
         Assert.True(context.TaskRecords.Include(t => t.Definition).Any(t => t.Definition.Name == ShortName.Create("sub_enum")));
@@ -634,12 +635,12 @@ public sealed class Tests
 
         //  Schedule - previous occurance passed schedule - added
         SystemTime.SetDateTime(DateTime.UtcNow.AddDays(2));
-        await initializer.TryInitializeAsync(op.Id);
+        await opManager.TryHandleAsync(op.Id);
 
         Assert.Equal(2, context.TaskRecords.Include(t => t.Definition).Count(t => t.Definition.Name == ShortName.Create("sub_enum")));
 
         //  Schedule - previous occurance not passed schedule - not added
-        await initializer.TryInitializeAsync(op.Id);
+        await opManager.TryHandleAsync(op.Id);
 
         Assert.Equal(2, context.TaskRecords.Include(t => t.Definition).Count(t => t.Definition.Name == ShortName.Create("sub_enum")));
 

@@ -4,15 +4,17 @@ using System.Text.Json.Serialization;
 using pwnctl.app.Scope.Entities;
 using pwnctl.app.Operations.Enums;
 using pwnctl.kernel.BaseClasses;
+using pwnctl.kernel;
 using pwnctl.app.Common.ValueObjects;
 
 public class Operation : Entity<int>
 {
     public ShortName Name { get; private init; }
     public OperationType Type { get; private init; }
-    public OperationState State { get; set; }
+    public OperationState State { get; private set; }
     public CronExpression? Schedule { get; set; }
-    public DateTime InitiatedAt { get; set; }
+    public DateTime InitiatedAt { get; private set; }
+    public DateTime FinishedAt { get; private set; }
 
     [JsonIgnore]
     public int PolicyId { get; private init; }
@@ -29,5 +31,24 @@ public class Operation : Entity<int>
         Type = type;
         Policy = policy;
         Scope = scope;
+        State = OperationState.Pending;
+    }
+
+    public void Initialize() 
+    {
+        State = OperationState.Ongoing;
+        InitiatedAt = SystemTime.UtcNow();
+    }
+
+    public void Terminate() 
+    {
+        State = OperationState.Completed;
+        FinishedAt = SystemTime.UtcNow();
+    }
+
+    public void Cancel() 
+    {
+        State = OperationState.Cancelled;
+        FinishedAt = SystemTime.UtcNow();
     }
 }

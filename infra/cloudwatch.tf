@@ -184,3 +184,127 @@ resource "aws_cloudwatch_metric_alarm" "output_queue_depth" {
   alarm_description = "This metric monitors unprocessed batches in the output queue."
   alarm_actions     = [aws_appautoscaling_policy.proc.arn]
 }
+
+resource "aws_cloudwatch_metric_alarm" "all_queue_messages" {
+  alarm_name                = "all-queue-messages"
+  comparison_operator       = "GreaterThanOrEqualToThreshold"
+  threshold                 = 0
+  evaluation_periods        = 1
+  insufficient_data_actions = []
+
+  metric_query {
+    id = "visibleOutputMessages"
+
+    metric {
+      metric_name = "ApproximateNumberOfMessagesVisible"
+      namespace   = "AWS/SQS"
+      period      = 60
+      stat        = "Maximum"
+
+      dimensions = {
+        QueueName = module.sqs.output_queue.name
+      }
+    }
+  }
+
+  metric_query {
+    id = "inFlightOutputMessages"
+
+    metric {
+      metric_name = "ApproximateNumberOfMessagesNotVisible"
+      namespace   = "AWS/SQS"
+      period      = 60
+      stat        = "Maximum"
+
+      dimensions = {
+        QueueName = module.sqs.output_queue.name
+      }
+    }
+  }
+
+  metric_query {
+    id = "visibleLongLivedTaskMessages"
+
+    metric {
+      metric_name = "ApproximateNumberOfMessagesVisible"
+      namespace   = "AWS/SQS"
+      period      = 60
+      stat        = "Maximum"
+
+      dimensions = {
+        QueueName = module.sqs.longlived_tasks_queue.name
+      }
+    }
+  }
+
+  metric_query {
+    id = "visibleShortLivedTaskMessages"
+
+    metric {
+      metric_name = "ApproximateNumberOfMessagesVisible"
+      namespace   = "AWS/SQS"
+      period      = 60
+      stat        = "Maximum"
+
+      dimensions = {
+        QueueName = module.sqs.shortlived_tasks_queue.name
+      }
+    }
+  }
+
+  metric_query {
+    id = "inFlightLongLivedTaskMessages"
+
+    metric {
+      metric_name = "ApproximateNumberOfMessagesNotVisible"
+      namespace   = "AWS/SQS"
+      period      = 60
+      stat        = "Maximum"
+
+      dimensions = {
+        QueueName = module.sqs.longlived_tasks_queue.name
+      }
+    }
+  }
+
+  metric_query {
+    id = "inFlightShortLivedTaskMessages"
+
+    metric {
+      metric_name = "ApproximateNumberOfMessagesNotVisible"
+      namespace   = "AWS/SQS"
+      period      = 60
+      stat        = "Maximum"
+
+      dimensions = {
+        QueueName = module.sqs.shortlived_tasks_queue.name
+      }
+    }
+  }
+
+  metric_query {
+    id          = "allMessages"
+    expression  = "visibleOutputMessages + inFlightOutputMessages + visibleLongLivedTaskMessages + inFlightLongLivedTaskMessages + visibleShortLivedTaskMessages + inFlightShortLivedTaskMessages"
+    return_data = "true"
+  }
+
+  alarm_description = "This metric monitors all unprocessed messages."
+}
+
+resource "aws_cloudwatch_event_rule" "all_tasks_completed" {
+  name        = "all-tasks-completed"
+  description = ""
+
+  event_pattern = <<PATTERN
+{
+  "source": ["aws.cloudwatch"],
+  "detail-type": ["CloudWatch Alarm State Change"],
+  "detail": {
+    "alarmName": ["all-queue-messages"],
+    "state": {
+      "value": ["ALARM"]
+    }
+  }
+}
+PATTERN
+}

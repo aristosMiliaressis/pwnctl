@@ -3,6 +3,7 @@ using pwnctl.app.Assets;
 using pwnctl.app.Queueing.DTO;
 using pwnctl.infra;
 using pwnctl.infra.Repositories;
+using pwnctl.infra.Scheduling;
 using pwnctl.app.Operations;
 
 namespace pwnctl.proc
@@ -10,7 +11,7 @@ namespace pwnctl.proc
     public sealed class OutputProcessorService : LifetimeService
     {
         private readonly AssetProcessor _processor = new();
-        private readonly OperationInitializer _initializer = new(new OperationDbRepository());
+        private readonly OperationManager _opManager = new(new OperationDbRepository(), new EventBridgeClient());
 
         public OutputProcessorService(IHostApplicationLifetime svcLifetime) : base(svcLifetime) { }
 
@@ -18,7 +19,7 @@ namespace pwnctl.proc
         {
             if (int.TryParse(Environment.GetEnvironmentVariable("PWNCTL_Operation"), out int opId))
             {
-                await _initializer.TryInitializeAsync(opId);
+                await _opManager.TryHandleAsync(opId);
                 return;
             }
 

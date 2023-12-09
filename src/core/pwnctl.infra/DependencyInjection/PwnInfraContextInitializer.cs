@@ -6,6 +6,7 @@ using pwnctl.domain.Interfaces;
 using pwnctl.app;
 using pwnctl.infra.Configuration;
 using pwnctl.infra.Repositories;
+using pwnctl.infra.Scheduling;
 using pwnctl.infra.Serialization;
 using pwnctl.infra.Logging;
 using pwnctl.infra.Persistence;
@@ -28,8 +29,9 @@ public static class PwnInfraContextInitializer
             var assetRepo = new AssetDbRepository(context);
             var taskRepo = new TaskDbRepository(context);
             var notificationRepo = new NotificationDbRepository(context);
+            var eventBridgeClient = new EventBridgeClient();
 
-            PwnInfraContext.Setup(config, logger, serializer, evaluator, assetRepo, taskRepo, notificationRepo);
+            PwnInfraContext.Setup(config, logger, serializer, evaluator, assetRepo, taskRepo, notificationRepo, eventBridgeClient);
         }
         catch (Exception ex)
         {

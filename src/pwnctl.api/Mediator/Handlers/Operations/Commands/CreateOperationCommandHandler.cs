@@ -29,7 +29,7 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
     public sealed class CreateOperationCommandHandler : IRequestHandler<CreateOperationCommand, MediatedResponse>
     {
         private readonly PwnctlDbContext _context = new();
-        private readonly EventBridgeScheduler _scheduler = new();
+        private readonly EventBridgeClient _client = new();
         private readonly AssetRepository _assetRepository;
         private readonly TaskRepository _taskRepository;
         private readonly TaskQueueService _taskQueueService;
@@ -77,13 +77,8 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
             var op = new Operation(command.Name, command.Type, policy, scopeAggregate);
             if (command.CronSchedule is not null)
                 op.Schedule = CronExpression.Create(command.CronSchedule);
-            else
-                op.InitiatedAt = SystemTime.UtcNow();
 
             _context.Operations.Add(op);
-            if (command.Type == OperationType.Crawl)
-                op.State = OperationState.Ongoing;
-
             await _context.SaveChangesAsync();
 
             if (command.Type == OperationType.Crawl)
@@ -92,7 +87,7 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
             }
             else if (command.Type == OperationType.Scan || command.CronSchedule is not null)
             {
-                await _scheduler.ScheduleOperation(op);
+                await _client.Schedule(op);
             }
 
             return MediatedResponse.Success();
@@ -100,6 +95,9 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
 
         private async Task StartCrawlOperation(Operation op, IEnumerable<string> input)
         {
+            op.Initialize();
+            await _context.SaveChangesAsync();
+
             foreach (var assetText in input.Where(a => !string.IsNullOrEmpty(a)))
             {
                 Result<Asset, string> result = AssetParser.Parse(assetText);
@@ -133,6 +131,8 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
 
                 await _taskQueueService.EnqueueBatchAsync(record.Tasks.Where(t => !t.Definition.ShortLived).Select(t => new LongLivedTaskDTO(t)));
             }
+
+            _client.Subscribe(op);
         }
     }
 }

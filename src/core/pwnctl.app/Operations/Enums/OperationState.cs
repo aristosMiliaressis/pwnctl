@@ -2,8 +2,9 @@ namespace pwnctl.app.Operations.Enums;
 
 public enum OperationState
 {
-    Scheduled,
+    Pending,
     Ongoing,
-    Finished,
-    Stopped
+    Paused,
+    Cancelled,
+    Completed
 }

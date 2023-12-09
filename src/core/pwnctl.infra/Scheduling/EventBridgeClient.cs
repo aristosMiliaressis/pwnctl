@@ -5,13 +5,14 @@ using Amazon.ECS;
 using Amazon.IdentityManagement;
 using pwnctl.app;
 using pwnctl.app.Operations.Entities;
+using pwnctl.app.Operations.Interfaces;
 using pwnctl.kernel;
 
 namespace pwnctl.infra.Scheduling;
 
-public class EventBridgeScheduler
+public class EventBridgeClient : OperationStateSubscriptionService
 {
-    public async Task ScheduleOperation(Operation op)
+    public async Task Schedule(Operation op)
     {
         var client = new AmazonCloudWatchEventsClient();
         var ecsClient = new AmazonECSClient();
@@ -78,7 +79,7 @@ public class EventBridgeScheduler
         respone.FailedEntries.ForEach(fail => PwnInfraContext.Logger.Error($"{fail.ErrorCode}:{fail.ErrorMessage}"));
     }
 
-    public async Task DisableScheduledOperation(Operation op)
+    public async Task DisableSchedule(Operation op)
     {
         var client = new AmazonCloudWatchEventsClient();
 
@@ -99,5 +100,73 @@ public class EventBridgeScheduler
         {
             PwnInfraContext.Logger.Exception(ex);
         }
+    }
+
+    public async Task Subscribe(Operation op) 
+    {
+        var client = new AmazonCloudWatchEventsClient();
+        var ecsClient = new AmazonECSClient();
+        var ec2Client = new AmazonEC2Client();
+        var iamClient = new AmazonIdentityManagementServiceClient();
+
+        var subnets = await ec2Client.DescribeSubnetsAsync();
+
+        var cluster = await ecsClient.ListClustersAsync(new());
+        var clusterArn = cluster.ClusterArns.First();
+
+        var taskDefinition = await ecsClient.ListTaskDefinitionsAsync(new Amazon.ECS.Model.ListTaskDefinitionsRequest
+        {
+            FamilyPrefix = "pwnctl-proc"
+        });
+        var taskDefinitionArn = taskDefinition.TaskDefinitionArns.First();
+
+        var roles = await iamClient.ListRolesAsync();
+        var roleArn = roles.Roles.First(r => r.RoleName == "event_publisher").Arn;
+
+        var respone = await client.PutTargetsAsync(new PutTargetsRequest
+        {
+            Rule = "all-tasks-completed",
+            Targets = new List<Target>
+            {
+                new Target
+                {
+                    Id = $"{op.Name.Value}_target",
+                    Arn = clusterArn,
+                    RoleArn = roleArn,
+                    EcsParameters = new EcsParameters
+                    {
+                        TaskCount = 1,
+                        TaskDefinitionArn = taskDefinitionArn,
+                        LaunchType = Amazon.CloudWatchEvents.LaunchType.FARGATE,
+                        NetworkConfiguration = new()
+                        {
+                            AwsvpcConfiguration = new()
+                            {
+                                AssignPublicIp = Amazon.CloudWatchEvents.AssignPublicIp.ENABLED,
+                                Subnets = subnets.Subnets
+                                                .Where(s => s.Tags.Any(t => t.Key == "Name" && t.Value.Contains("Public")))
+                                                .Select(n => n.SubnetId)
+                                                .ToList()
+                            }
+                        }
+                    },
+                    Input = $$$"""{"containerOverrides":[{"name":"pwnctl","environment":[{"name":"PWNCTL_Operation","value":"{{{op.Id}}}"}]}]}"""
+                }
+            }
+        });
+
+        respone.FailedEntries.ForEach(fail => PwnInfraContext.Logger.Error($"{fail.ErrorCode}:{fail.ErrorMessage}"));
+    }
+
+    public async Task Unsubscribe(Operation op) 
+    {
+        var client = new AmazonCloudWatchEventsClient();
+
+        var respone = await client.RemoveTargetsAsync(new RemoveTargetsRequest 
+        {
+            Rule = "all-tasks-completed"
+        });
+
+        respone.FailedEntries.ForEach(fail => PwnInfraContext.Logger.Error($"{fail.ErrorCode}:{fail.ErrorMessage}"));
     }
 }

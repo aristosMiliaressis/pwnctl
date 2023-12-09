@@ -105,8 +105,7 @@ public sealed class AssetProcessor
                 await CheckNotificationRulesAsync(record);
             }
 
-            if (foundByTask.Operation.Type == OperationType.Crawl
-                && foundByTask.Operation.State != OperationState.Stopped)
+            if (foundByTask.Operation.Type == OperationType.Crawl)
             {
                 GenerateCrawlingTasks(foundByTask.Operation, record);
             }

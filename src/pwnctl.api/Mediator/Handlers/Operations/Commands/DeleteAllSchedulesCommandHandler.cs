@@ -11,7 +11,7 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
     public sealed class DeleteAllSchedulesCommandHandler : IRequestHandler<DeleteAllSchedulesCommand, MediatedResponse>
     {
         private readonly PwnctlDbContext _context = new();
-        private readonly EventBridgeScheduler _scheduler = new();
+        private readonly EventBridgeClient _client = new();
 
         public async Task<MediatedResponse> Handle(DeleteAllSchedulesCommand command, CancellationToken cancellationToken)
         {
@@ -19,7 +19,8 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
 
             foreach (var op in ops)
             {
-                await _scheduler.DisableScheduledOperation(op);
+                await _client.DisableSchedule(op);
+                await _client.Unsubscribe(op);
             }
 
             return MediatedResponse.Success();
