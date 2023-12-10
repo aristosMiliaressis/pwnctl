@@ -3,5 +3,21 @@
 		"dockerfile": "Dockerfile",
 		"context": ".."
 	},
+	
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-azuretools.vscode-docker",
+				"ms-dotnettools.csharp",
+				"leo-labs.dotnet",
+				"KishoreIthadi.dotnet-core-essentials",
+				"4ops.terraform",
+				"betajob.modulestf",
+				"mhutchie.git-graph",
+				"usernamehw.errorlens"
+			]
+		}
+	},
+
 	"postCreateCommand": "dotnet restore"
 }
