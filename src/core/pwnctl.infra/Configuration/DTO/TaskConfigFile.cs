@@ -4,7 +4,7 @@ using pwnctl.domain.ValueObjects;
 
 namespace pwnctl.infra.Configuration;
 
-public readonly record struct TaskConfigFile(string Profile, List<TaskDefinitionDTO> TaskDefinitions);
+public readonly record struct TaskConfigFile(string Profile, int Phase, List<TaskDefinitionDTO> TaskDefinitions);
 
 public class TaskDefinitionDTO
 {

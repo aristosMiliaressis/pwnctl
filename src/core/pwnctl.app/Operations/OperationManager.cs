@@ -15,11 +15,13 @@ namespace pwnctl.app.Operations;
 public class OperationManager
 {
     private readonly OperationRepository _opRepo;
+    private readonly TaskRepository _taskRepo;
     private readonly OperationStateSubscriptionService _subscriptionService;
 
-    public OperationManager(OperationRepository opRepo, OperationStateSubscriptionService subscriptionService)
+    public OperationManager(OperationRepository opRepo, TaskRepository taskRepo, OperationStateSubscriptionService subscriptionService)
     {
         _opRepo = opRepo;
+        _taskRepo = taskRepo;
         _subscriptionService = subscriptionService;
     }
 
@@ -40,7 +42,18 @@ public class OperationManager
                 return true;
             }
 
-            await TerminateAsync(op);
+            var lastPhase = op.Policy.TaskProfiles
+                            .Where(p => p.TaskProfile.Phase > op.CurrentPhase)
+                            .OrderBy(p => p.TaskProfile.Phase)
+                            .Last().TaskProfile.Phase;
+            
+            if (lastPhase == op.CurrentPhase)
+            {
+                await TerminateAsync(op);
+                return true;
+            }
+
+            await TransitionPhaseAsync(op);
         }
         catch (Exception ex)
         {
@@ -70,7 +83,7 @@ public class OperationManager
 
             foreach (var record in records)
             {
-                await generateScheduledTasksAsync(op, record, taskDefinitions);
+                await generateTasksAsync(op, record, taskDefinitions);
             }
 
             if (records.Count != PwnInfraContext.Config.Api.BatchSize)
@@ -98,7 +111,22 @@ public class OperationManager
         await _opRepo.SaveAsync(op);
     }
 
-    private async Task generateScheduledTasksAsync(Operation op, AssetRecord record, IEnumerable<TaskDefinition> taskDefinitions)
+    public async Task TransitionPhaseAsync(Operation op)
+    {
+        op.TransitionPhase();
+
+        var tasks = await _taskRepo.ListPhaseTasksAsync(op.Id, op.CurrentPhase);
+
+        var longLivedTasks = tasks.Where(t => !t.Definition.ShortLived).Select(t => new LongLivedTaskDTO(t));
+        var shortLivedTasks = tasks.Where(t => t.Definition.ShortLived).Select(t => new ShortLivedTaskDTO(t));
+
+        await PwnInfraContext.TaskQueueService.EnqueueBatchAsync(longLivedTasks);
+        await PwnInfraContext.TaskQueueService.EnqueueBatchAsync(shortLivedTasks);
+
+        await _opRepo.SaveAsync(op);
+    }
+
+    private async Task generateTasksAsync(Operation op, AssetRecord record, IEnumerable<TaskDefinition> taskDefinitions)
     {
         List<LongLivedTaskDTO> longLivedTasks = new();
         List<ShortLivedTaskDTO> shortLivedTasks = new();
@@ -107,6 +135,8 @@ public class OperationManager
             var task = new TaskRecord(op, def, record);
 
             await PwnInfraContext.TaskRepository.AddAsync(task);
+            if (op.Type == OperationType.Scan && task.Definition.Profile.Phase > op.CurrentPhase)
+                continue;
 
             if (def.ShortLived) shortLivedTasks.Add(new ShortLivedTaskDTO(task));
             else longLivedTasks.Add(new LongLivedTaskDTO(task));

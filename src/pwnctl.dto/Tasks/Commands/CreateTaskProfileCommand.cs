@@ -12,5 +12,6 @@ public sealed class CreateTaskProfileCommand : TaskProfileRequestModel, Mediated
 public class TaskProfileRequestModel
 {
     public string Profile { get; init; }
+    public int Phase { get; init; }
     public List<TaskDefinitionDTO> TaskDefinitions { get; set; }
 }

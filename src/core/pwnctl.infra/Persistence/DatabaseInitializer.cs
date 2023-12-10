@@ -104,7 +104,7 @@ namespace pwnctl.infra.Persistence
                     continue;
                 }
 
-                profile = new TaskProfile(file.Profile, definitions);
+                profile = new TaskProfile(file.Profile, file.Phase, definitions);
                 context.Add(profile);
 
                 await context.SaveChangesAsync();

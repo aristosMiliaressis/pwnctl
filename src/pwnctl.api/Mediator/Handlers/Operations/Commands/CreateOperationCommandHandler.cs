@@ -127,9 +127,11 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
 
                 record.Tasks.ForEach(task => task.Definition = allowedTasks.First(t => t.Id == task.DefinitionId));
 
-                await _taskQueueService.EnqueueBatchAsync(record.Tasks.Where(t => t.Definition.ShortLived).Select(t => new ShortLivedTaskDTO(t)));
+                var newTasks = record.Tasks.Where(t => t.Definition.Profile.Phase <= op.CurrentPhase);
 
-                await _taskQueueService.EnqueueBatchAsync(record.Tasks.Where(t => !t.Definition.ShortLived).Select(t => new LongLivedTaskDTO(t)));
+                await _taskQueueService.EnqueueBatchAsync(newTasks.Where(t => t.Definition.ShortLived).Select(t => new ShortLivedTaskDTO(t)));
+
+                await _taskQueueService.EnqueueBatchAsync(newTasks.Where(t => !t.Definition.ShortLived).Select(t => new LongLivedTaskDTO(t)));
             }
 
             _client.Subscribe(op);

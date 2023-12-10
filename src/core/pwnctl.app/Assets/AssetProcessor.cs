@@ -121,6 +121,8 @@ public sealed class AssetProcessor
 
         newTasks.ToList().ForEach(task => task.Definition = allowedTasks.First(t => t.Id == task.DefinitionId));
 
+        newTasks = newTasks.Where(t => t.Definition.Profile.Phase <= foundByTask.Operation.CurrentPhase);
+
         await PwnInfraContext.TaskQueueService.EnqueueBatchAsync(newTasks.Where(t => t.Definition.ShortLived).Select(t => new ShortLivedTaskDTO(t)));
 
         await PwnInfraContext.TaskQueueService.EnqueueBatchAsync(newTasks.Where(t => !t.Definition.ShortLived).Select(t => new LongLivedTaskDTO(t)));

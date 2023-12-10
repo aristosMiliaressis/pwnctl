@@ -15,6 +15,7 @@ public class Operation : Entity<int>
     public CronExpression? Schedule { get; set; }
     public DateTime InitiatedAt { get; private set; }
     public DateTime FinishedAt { get; private set; }
+    public int CurrentPhase { get; private set; }
 
     [JsonIgnore]
     public int PolicyId { get; private init; }
@@ -32,6 +33,7 @@ public class Operation : Entity<int>
         Policy = policy;
         Scope = scope;
         State = OperationState.Pending;
+        CurrentPhase = policy.TaskProfiles.OrderBy(p => p.TaskProfile.Phase).First().TaskProfile.Phase;
     }
 
     public void Initialize() 
@@ -50,5 +52,15 @@ public class Operation : Entity<int>
     {
         State = OperationState.Cancelled;
         FinishedAt = SystemTime.UtcNow();
+    }
+
+    public void TransitionPhase() 
+    {
+        var nextPhase = Policy.TaskProfiles
+                            .Where(p => p.TaskProfile.Phase > CurrentPhase)
+                            .OrderBy(p => p.TaskProfile.Phase)
+                            .FirstOrDefault().TaskProfile.Phase;
+
+        CurrentPhase = nextPhase;
     }
 }

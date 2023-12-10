@@ -18,7 +18,7 @@ namespace pwnctl.api.Mediator.Handlers.Tasks.Commands
             if (profile is not null)
                 return MediatedResponse.Error("Task Profile {0} already exists.", command.Profile);
 
-            profile = new TaskProfile(command.Profile, new());
+            profile = new TaskProfile(command.Profile, command.Phase, new());
 
             foreach (var def in command.TaskDefinitions)
             {

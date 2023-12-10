@@ -11,7 +11,9 @@ namespace pwnctl.proc
     public sealed class OutputProcessorService : LifetimeService
     {
         private readonly AssetProcessor _processor = new();
-        private readonly OperationManager _opManager = new(new OperationDbRepository(), new EventBridgeClient());
+        private readonly OperationManager _opManager = new(new OperationDbRepository(), 
+                                                        new TaskDbRepository(),
+                                                        new EventBridgeClient());
 
         public OutputProcessorService(IHostApplicationLifetime svcLifetime) : base(svcLifetime) { }
 

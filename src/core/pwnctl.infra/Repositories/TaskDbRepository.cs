@@ -58,6 +58,17 @@ namespace pwnctl.infra.Repositories
                                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<TaskRecord>> ListPhaseTasksAsync(int opId, int phase)
+        {
+            return await _context.TaskRecords
+                                .Include(p => p.Definition)
+                                    .ThenInclude(p => p.Profile)
+                                .Include(p => p.Record)
+                                .Where(t => t.OperationId == opId && t.Definition.Profile.Phase == phase)
+                                .AsNoTracking()
+                                .ToListAsync();
+        }
+
         public async Task<TaskRecord> FindAsync(int taskId)
         {
             return await FindRecordQuery(_context, taskId);
