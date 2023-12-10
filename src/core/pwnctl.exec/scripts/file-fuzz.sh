@@ -25,7 +25,7 @@ timeout -v -k 30s 150m ffuf -maxtime 9000 -s -o $temp_outfile -of json -se -fp -
 
 cat $temp_outfile \
     | jq -c '.results[] | {asset: ("%%BASE_URL%%"+.input.FUZZ), tags:{status:.status|tostring,location:.redirectlocation}}' \
-    | sed "s/%%BASE_URL%%/$(echo $url | sed 's/\//\\\//g')/g" \
-    | while read line; do word=$(echo $line | jq -r .asset | sed "s/$(echo $url | sed 's/\//\\\//g')//"); \
+    | sed "s/%%BASE_URL%%/$(echo $url | 's,/,\\/,g')/g" \
+    | while read line; do word=$(echo $line | jq -r .asset | sed "s/$(echo $url | 's,/,\\/,g')//"); \
         for list in "$@"; do grep -q -E "^$word\$" $list && echo $line | jq -c ".tags.source = \"$list\""; done; done
 

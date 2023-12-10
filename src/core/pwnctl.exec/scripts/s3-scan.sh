@@ -4,9 +4,9 @@ url=$1
 
 if [[ "$url" == *"://s3."* ]]; 
 then 
-    bucketName=$(echo $url | sed -E 's/http.?:\/\///g' | cut -d '/' -f 2)
+    bucketName=$(echo $url | sed -E 's,https?://,,g' | cut -d '/' -f 2)
 else
-    bucketName=$(echo $url | sed -E 's/http.?:\/\///g' | sed 's/\.s3\..*//g')
+    bucketName=$(echo $url | sed -E 's,https?://,,g' | sed 's/\.s3\..*//g')
 fi
 
 resp=$(curl -L -k -s $url) 

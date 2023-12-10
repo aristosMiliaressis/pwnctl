@@ -5,7 +5,7 @@ temp=`mktemp`
 
 if [[ $url == *"tcp://"* ]]
 then
-    url=$(echo $url | sed 's/^tcp:\/\///')
+    url=$(echo $url | sed 's,^tcp://,,')
     echo | openssl s_client -connect $url -brief &>/dev/null
     if [[ $? -eq 0 ]]
     then

@@ -2,4 +2,4 @@
 
 svc=$1
 
-echo $svc | sed 's/.*:\/\///g'| httpx -silent -csp-probe
+echo $svc | sed 's,.*://,,g'| httpx -silent -csp-probe

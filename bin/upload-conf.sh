@@ -7,23 +7,30 @@ adminPassword=$(aws secretsmanager get-secret-value --secret-id /aws/secret/pwnc
 accessToken=$(curl -s -d '{"username":"admin","password":"'$adminPassword'"}' -H 'Content-Type: application/json' "${functionUrl}auth/grant" | jq -r .accessToken)
 
 uploadDirectory() {
-     srcDir=$1
-     dstDir=""
-     if [ $# -gt 1 ];
-     then
-          dstDir=$2;
-          echo "Creating $dstDir"
-          curl -X PUT -H "Authorization: Bearer $accessToken" ${functionUrl}fs/create?path=$dstDir 2>/dev/null
-     fi
+     localDir=$1
+     remoteDir="/"
+     [[ $# -eq 2 ]] && remoteDir=$2
 
-     for file in $srcDir/*;
+     for file in ${localDir}${remoteDir}*;
      do
           if [ -f $file ];
           then
+               file=$(echo $file | sed "s,$localDir,," | sed 's,//,/,')
                echo "Uploading $file"
-               curl -X PUT ${functionUrl}fs/upload?path=$dstDir${file#"$srcDir"} \
-                    -H 'Content-Type: text/plain' --data-binary @$file -H "Authorization: Bearer $accessToken"
+               curl -X PUT ${functionUrl}fs/upload?path=${file#"$localDir"} \
+                    -H 'Content-Type: text/plain' --data-binary @$localDir/$file -H "Authorization: Bearer $accessToken"
           fi
+     done
+
+     for directory in ${localDir}${remoteDir}/*/;
+     do
+          if [[ ! -d "$directory" ]]; then continue; fi
+
+          directory=$(echo $directory | sed "s,$localDir,," | sed 's,//,/,')
+          echo "Creating $directory"
+          curl -X PUT -H "Authorization: Bearer $accessToken" ${functionUrl}fs/create?path=$directory 2>/dev/null
+
+          uploadDirectory $localDir $directory
      done
 }
 

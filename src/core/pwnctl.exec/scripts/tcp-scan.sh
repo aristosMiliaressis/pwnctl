@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ip=$1
-temp=`mktemp | sed 's/\/tmp\///g'`;
+temp=`mktemp | sed 's,/tmp/,,g'`;
 touch $temp
 
 rustscan -r 1-65535 -a $ip -- -sSV --script-args http.useragent="Mozilla/9.1" -oG $temp >/dev/null;
