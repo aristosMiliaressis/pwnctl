@@ -15,12 +15,15 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
 
         public async Task<MediatedResponse> Handle(DeleteAllSchedulesCommand command, CancellationToken cancellationToken)
         {
-            var ops = await _context.Operations.Where(a => a.Type != OperationType.Crawl).ToListAsync();
+            var ops = await _context.Operations.ToListAsync();
 
             foreach (var op in ops)
             {
-                await _client.DisableSchedule(op);
-                await _client.Unsubscribe(op);
+                if (op.Schedule is not null)
+                    await _client.DisableSchedule(op);
+
+                if (op.Type != OperationType.Monitor)
+                    await _client.Unsubscribe(op);
             }
 
             return MediatedResponse.Success();

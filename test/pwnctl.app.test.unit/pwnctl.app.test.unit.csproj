@@ -30,12 +30,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="*.dat">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="*.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="seed\*.*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

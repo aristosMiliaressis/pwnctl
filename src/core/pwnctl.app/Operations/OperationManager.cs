@@ -42,12 +42,12 @@ public class OperationManager
                 return true;
             }
 
-            var lastPhase = op.Policy.TaskProfiles
+            var nextPhase = op.Policy.TaskProfiles
                             .Where(p => p.TaskProfile.Phase > op.CurrentPhase)
                             .OrderBy(p => p.TaskProfile.Phase)
-                            .Last().TaskProfile.Phase;
+                            .LastOrDefault();
             
-            if (lastPhase == op.CurrentPhase)
+            if (nextPhase == null)
             {
                 await TerminateAsync(op);
                 return true;

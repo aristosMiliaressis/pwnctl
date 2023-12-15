@@ -27,13 +27,4 @@
     <ProjectReference Include="..\..\src\core\pwnctl.infra\pwnctl.infra.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Include="*.dat">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="*.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
 </Project>

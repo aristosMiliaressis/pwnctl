@@ -2,10 +2,8 @@
 
 using pwnctl.kernel.Attributes;
 using pwnctl.kernel.BaseClasses;
-using pwnctl.kernel.Extensions;
 using pwnctl.domain.BaseClasses;
-using pwnctl.domain.Interfaces;
-using System.Text.RegularExpressions;
+using Nager.PublicSuffix;
 
 public sealed class DomainName : Asset
 {
@@ -14,7 +12,7 @@ public sealed class DomainName : Asset
     public int ZoneDepth { get; private init; }
     public DomainName? ParentDomain { get; private set; }
     public Guid? ParentDomainId { get; private init; }
-    public string Word => Name.Replace("."+PublicSuffixRepository.Instance.GetSuffix(Name)!.Value, "")
+    public string Word => Name.Replace("." + _domainParser.Parse(Name).TLD, "")
                                 .Split(".")
                                 .Last();
 
@@ -27,8 +25,7 @@ public sealed class DomainName : Asset
 
         Name = domain;
 
-        var suffix = PublicSuffixRepository.Instance.GetSuffix(Name);
-        ZoneDepth = Name.Substring(0, Name.Length - suffix!.Value.Value.Length - 1)
+        ZoneDepth = Name.Substring(0, Name.Length - _domainParser.Parse(Name).TLD.Length - 1)
                     .Split(".")
                     .Count();
     }
@@ -46,8 +43,7 @@ public sealed class DomainName : Asset
             // support FQDN notation ending with a dot.
             assetText = assetText.EndsWith(".") ? assetText.Substring(0, assetText.Length - 1) : assetText;
 
-            var match = _matcher.Matches(assetText);
-            if (match.Count != 1)
+            if (!_domainParser.IsValidDomain(assetText))
                 return $"{assetText} is not a {nameof(DomainName)}";
 
             var domain = new DomainName(assetText);
@@ -78,15 +74,15 @@ public sealed class DomainName : Asset
 
     public string? GetRegistrationDomain()
     {
-        var suffix = PublicSuffixRepository.Instance.GetSuffix(Name);
-        if (suffix is null)
+        var tld = _domainParser.Parse(Name).TLD;
+        if (tld is null)
             return null;
-
+        
         return Name
-                .Substring(0, Name.Length - suffix.Value.Value.Length - 1)
+                .Substring(0, Name.Length - tld.Length - 1)
                 .Split(".")
-                .Last() + "." + suffix.Value;
+                .Last() + "." + tld;
     }
 
-    private static readonly Regex _matcher = new Regex(@"^(?=.{0,253}$)(([a-z0-9_][a-z0-9_-]{0,61}[a-z0-9_]|[a-z0-9_])\.)+((?=.*[^0-9])([a-z0-9][a-z0-9-]{0,61}[a-z0-9]|[a-z0-9]))$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    private static DomainParser _domainParser = new DomainParser(new WebTldRuleProvider());
 }

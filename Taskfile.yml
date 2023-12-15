@@ -100,7 +100,6 @@ tasks:
       - mkdir -p ~/.config/pwnctl/
       - chown $USER ~/.config/pwnctl/
       - mv src/pwnctl.cli/bin/Release/net7.0/linux-x64/publish/config.ini ~/.config/pwnctl/
-      - ./src/core/pwnctl.exec/scripts/get-psl.sh ~/.config/pwnctl/
       - cp -r ./src/core/pwnctl.infra/Persistence/seed ~/.config/pwnctl
 
   setup-ci:

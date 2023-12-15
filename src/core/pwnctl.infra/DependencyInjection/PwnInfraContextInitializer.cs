@@ -2,7 +2,6 @@ using System;
 
 namespace pwnctl.infra.DependencyInjection;
 
-using pwnctl.domain.Interfaces;
 using pwnctl.app;
 using pwnctl.infra.Configuration;
 using pwnctl.infra.Repositories;
@@ -19,8 +18,6 @@ public static class PwnInfraContextInitializer
         {
             var config = PwnConfigFactory.Create();
             var logger = PwnLoggerFactory.Create(config);
-
-            PublicSuffixRepository.Instance = new FsPublicSuffixRepository();
 
             var serializer = new AppJsonSerializer();
             var evaluator = new CSharpFilterEvaluator();

@@ -607,20 +607,24 @@ public sealed class Tests
         PwnctlDbContext context = new();
         AssetProcessor proc = new();
         AssetDbRepository assetRepo = new();
-        OperationManager opManager = new(new OperationDbRepository(), new EventBridgeClient());
+        OperationManager opManager = new(new OperationDbRepository(), new TaskDbRepository(), new EventBridgeClient());
 
         var op = new Operation("monitor_op", OperationType.Monitor, EntityFactory.Policy, EntityFactory.ScopeAggregate);
 
         var domain = new DomainName("deep.sub.tesla.com");
         var record = new AssetRecord(domain);
-        var parentDomain = new DomainName("tesla.com");
-        var record2 = new AssetRecord(parentDomain);
+        var domain2 = new DomainName("sub.tesla.com");
+        var record2 = new AssetRecord(domain2);
+        var domain3 = new DomainName("tesla.com");
+        var record3 = new AssetRecord(domain3);
         record.SetScopeId(EntityFactory.ScopeAggregate.Definitions.First().DefinitionId);
-        record2.SetScopeId(EntityFactory.ScopeAggregate.Definitions.Last().DefinitionId);
+        record2.SetScopeId(EntityFactory.ScopeAggregate.Definitions.First().DefinitionId);
+        record3.SetScopeId(EntityFactory.ScopeAggregate.Definitions.First().DefinitionId);
         context.Entry(op.Scope).State = EntityState.Unchanged;
         context.Entry(op.Policy).State = EntityState.Unchanged;
         context.Add(record);
         context.Add(record2);
+        context.Add(record3);
         context.Add(op);
         await context.SaveChangesAsync();
 
@@ -645,20 +649,20 @@ public sealed class Tests
         Assert.Equal(2, context.TaskRecords.Include(t => t.Definition).Count(t => t.Definition.Name == ShortName.Create("sub_enum")));
 
         // PostCondition & NotificationTemplate tests
-        record2.MergeTags(new Dictionary<string, string> { { "rcode", "NXDOMAIN"} }, true);
-        await assetRepo.SaveAsync(record2);
+        record3.MergeTags(new Dictionary<string, string> { { "rcode", "NXDOMAIN"} }, true);
+        await assetRepo.SaveAsync(record3);
 
         var task = context.TaskRecords
                             .Include(t => t.Definition)
                             .Include(t => t.Record)
                             .First(t => t.Definition.Name == ShortName.Create("domain_resolution")
-                                   && t.Record.DomainName.Name == parentDomain.Name);
+                                   && t.Record.DomainName.Name == domain3.Name);
 
-        await proc.TryProcessAsync($$$"""{"Asset":"{{{parentDomain.Name}}}","tags":{"rcode":"SERVFAIL"}}""", task.Id);
+        await proc.TryProcessAsync($$$"""{"Asset":"{{{domain3.Name}}}","tags":{"rcode":"SERVFAIL"}}""", task.Id);
 
         // check #1 rcode tag got updated
         var rcodeTag = context.Tags
-                            .First(t => t.RecordId == record2.Id && t.Name == "rcode");
+                            .First(t => t.RecordId == record3.Id && t.Name == "rcode");
         Assert.Equal("SERVFAIL", rcodeTag.Value);
 
         context = new();
@@ -671,18 +675,18 @@ public sealed class Tests
                                 .ThenInclude(r => r.Tags)
                             .Include(n => n.Task)
                                 .ThenInclude(t => t.Definition)
-                            .First(n => n.TaskId == task.Id && n.Record.DomainName.Name == parentDomain.Name);
+                            .First(n => n.TaskId == task.Id && n.Record.DomainName.Name == domain3.Name);
         Assert.Equal(task.Id, notification.TaskId.Value);
-        Assert.Equal(record2.Id, notification.RecordId);
+        Assert.Equal(record3.Id, notification.RecordId);
 
         // check #3 NotificationTemplate
         notification.Task = task;
         Assert.Equal("domain tesla.com changed rcode from NXDOMAIN to SERVFAIL", notification.GetText());
 
         // check #4 new asset notification
-        await proc.TryProcessAsync($$$"""{"Asset":"new.{{{parentDomain.Name}}}","tags":{"rcode":"SERVFAIL"}}""", task.Id);
+        await proc.TryProcessAsync($$$"""{"Asset":"new.{{{domain3.Name}}}","tags":{"rcode":"SERVFAIL"}}""", task.Id);
 
-        var newDomain = context.DomainNames.First(d => d.Name == "new."+parentDomain.Name);
+        var newDomain = context.DomainNames.First(d => d.Name == "new."+ domain3.Name);
 
         notification = context.Notifications.FirstOrDefault(n => n.TaskId == task.Id && n.RecordId == newDomain.Id);
         Assert.NotNull(notification);
@@ -690,7 +694,7 @@ public sealed class Tests
         // check #5 notificationRule.Template test
         var notificationRule = context.NotificationRules.First(n => n.Name == ShortName.Create("mdwfuzzer"));
 
-        await proc.TryProcessAsync($$$"""{"Asset":"https://{{{parentDomain.Name}}}/","tags":{"mdwfuzzer_check":"uri-override-header"}}""", EntityFactory.TaskRecord.Id);
+        await proc.TryProcessAsync($$$"""{"Asset":"https://{{{domain3.Name}}}/","tags":{"mdwfuzzer_check":"uri-override-header"}}""", EntityFactory.TaskRecord.Id);
         var endpoint = context.HttpEndpoints.First(e => e.Url == "https://tesla.com/");
         notification = context.Notifications
                                 .Include(n => n.Rule)

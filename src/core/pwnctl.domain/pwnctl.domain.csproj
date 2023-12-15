@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <PackageReference Include="MimeKitLite" Version="3.4.1" />
+    <PackageReference Include="Nager.PublicSuffix" Version="2.4.0" />
   </ItemGroup>
 
 </Project>

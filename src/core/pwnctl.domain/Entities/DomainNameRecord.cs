@@ -35,7 +35,7 @@ public sealed class DomainNameRecord : Asset
 
         var result = DomainName.TryParse(key);
         if (!result.IsOk)
-            throw new Exception("unparssable dns record key");
+            throw new Exception($"unparssable dns record key {key}");
 
         DomainName = result.Value;
         Key = DomainName.Name;

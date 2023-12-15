@@ -2,7 +2,6 @@ namespace pwnctl.domain.test.unit;
 
 using System;
 using pwnctl.domain.Entities;
-using pwnctl.domain.Interfaces;
 using pwnctl.infra.DependencyInjection;
 using pwnctl.infra.Commands;
 using pwnctl.infra.Queueing;
@@ -26,26 +25,19 @@ public sealed class Tests
     }
 
     [Fact]
-    public void PublicSuffixRepository_Tests()
-    {
-        var exampleDomain = new DomainName("xyz.example.com");
-
-        Assert.Equal("example.com", exampleDomain.GetRegistrationDomain());
-        Assert.Equal("com", PublicSuffixRepository.Instance.GetSuffix(exampleDomain.Name).Value.Value);
-
-        var exampleSubDomain = new DomainName("sub.example.azurewebsites.net");
-
-        Assert.Equal("example.azurewebsites.net", exampleSubDomain.GetRegistrationDomain());
-        Assert.Equal("azurewebsites.net", PublicSuffixRepository.Instance.GetSuffix(exampleSubDomain.Name).Value.Value);
-    }
-
-    [Fact]
     public void DomainEntity_Tests()
     {
-        Assert.Equal("example", new DomainName("example.com.").Word);
-        Assert.Equal("example2", new DomainName("example2.azurewebsites.net").Word);
+        var domain1 = new DomainName("example.com.");
+        var domain2 = new DomainName("deep.sub.example2.azurewebsites.net");
+        Assert.Equal("example.com", domain1.Name);
+        Assert.Equal("example", domain1.Word);
+        Assert.Equal(1, domain1.ZoneDepth);
+        Assert.Equal("deep.sub.example2.azurewebsites.net", domain2.Name);
+        Assert.Equal("example2", domain2.Word);
+        Assert.Equal(3, domain2.ZoneDepth);
 
-        Assert.Equal("example2.azurewebsites.net", new DomainName("sub.example2.azurewebsites.net").GetRegistrationDomain());
+        Assert.Equal("example.com", domain1.GetRegistrationDomain());
+        Assert.Equal("example2.azurewebsites.net", domain2.GetRegistrationDomain());
 
         Assert.True(NetworkRange.RoutesTo("1.3.3.7", "1.3.3.0/24"));
         Assert.False(NetworkRange.RoutesTo("1.3.3.7", "1.3.4.0/24"));

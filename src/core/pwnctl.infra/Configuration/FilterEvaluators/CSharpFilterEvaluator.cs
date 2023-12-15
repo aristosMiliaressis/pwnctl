@@ -89,8 +89,7 @@ public class CSharpFilterEvaluator : FilterEvaluator
                                             .AddReferences(Assembly.GetAssembly(typeof(System.Linq.Enumerable)))
                                             .AddReferences(Assembly.GetAssembly(typeof(System.Collections.Generic.IEnumerable<>)))
                                             .WithImports("System.Collections.Generic", "System.Linq",
-                                                        "pwnctl.domain.Enums",
-                                                        "pwnctl.domain.Interfaces");
+                                                        "pwnctl.domain.Enums");
     private static MethodInfo _evaluateAsync = typeof(CSharpScript).GetMethods(BindingFlags.Public | BindingFlags.Static)
                                             .First(m => m.Name == nameof(CSharpScript.EvaluateAsync)
                                                         && m.IsGenericMethod == true);
