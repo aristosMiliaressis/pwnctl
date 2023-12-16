@@ -1,9 +1,6 @@
 version: '3'
 
 tasks:
-  simple-setup:
-    deps: [install-deps, build-all, push-exec-short-image, push-exec-long-image, push-proc-image, deploy, install-cli, setup-ci]
-
   test:
     deps: [test-core, test-exec, test-proc]
 
@@ -146,8 +143,7 @@ tasks:
     cmds:
       - |
         commitHash=$(git rev-parse --short HEAD)
-        mkdir -p deployment/seed/
-        cp ./src/core/pwnctl.infra/Persistence/seed/*.yml deployment/seed/
+        cp -R ./src/core/pwnctl.infra/Persistence/seed deployment/
         ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-proc") | .repositoryUri')
         docker run -e PWNCTL_USE_LOCAL_INTEGRATIONS=true -e PWNCTL_INSTALL_PATH=/mnt/efs \
                    -e PWNCTL_Logging__FilePath=/mnt/efs -e PWNCTL_Logging__MinLevel=Information \
@@ -167,7 +163,3 @@ tasks:
       - |
         functionName=$(aws lambda list-functions | jq -r '.Functions[] | select( .FunctionName | startswith("pwnctl_api") ) | .FunctionName')
         awslogs get -s 1440m -G --timestamp /aws/lambda/$functionName
-
-  install-deps:
-    cmds:
-      - ./bin/install-deps.sh
