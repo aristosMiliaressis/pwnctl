@@ -26,16 +26,16 @@ public sealed class DomainNameRecord : Asset
 
     public List<NetworkHost> SPFHosts { get; private set; }
 
-    public DomainNameRecord() {}
-    
-    public DomainNameRecord(DnsRecordType type, string key, string value)
+    private DomainNameRecord() {}
+
+    internal DomainNameRecord(DnsRecordType type, string key, string value)
     {
         Type = type;
         Value = value;
 
         var result = DomainName.TryParse(key);
         if (!result.IsOk)
-            throw new Exception($"unparssable dns record key {key}");
+            throw new Exception(result.Error);
 
         DomainName = result.Value;
         Key = DomainName.Name;
@@ -52,27 +52,39 @@ public sealed class DomainNameRecord : Asset
     {
         try
         {
-            assetText = assetText.Replace("\t", " ");
-            var parts = assetText.Split(" ").Where(p => !string.IsNullOrWhiteSpace(p)).ToArray();
+            assetText = assetText.Trim().Replace("\t", " ");
+            
+            var parts = assetText.Split(" ");
+            if (parts.Length < 4)
+                return $"{assetText} is not a {nameof(DomainNameRecord)}, too few parts";
 
-            if (parts.Length >= 4 && parts[1] == "IN"
-                && Enum.GetNames(typeof(DnsRecordType)).Contains(parts[2]))
+            var key = parts[0];
+            assetText = assetText.Substring(key.Length).Trim();
+            parts = assetText.Split(" ");
+            if (parts[0] != "IN")
+                return $"{assetText} is not a {nameof(DomainNameRecord)}, missing 'IN' keyword";
+
+            assetText = assetText.Substring(parts[0].Length).Trim();
+            parts = assetText.Split(" ");
+            if (!Enum.TryParse(parts[0], out DnsRecordType type))
             {
-                var record = new DomainNameRecord(Enum.Parse<DnsRecordType>(parts[2]), parts[0], string.Join(" ", parts.Skip(3)));
-
-                if (record.Type == DnsRecordType.TXT && record.Value.Contains("spf"))
-                {
-                    record.SPFHosts = DomainNameRecord.ParseSPFString(record.Value);
-                }
-
-                return record;
+                return $"{assetText} is not a {nameof(DomainNameRecord)}, invalid record type '{parts[0]}'";
             }
 
-            return $"{assetText} is not a {nameof(DomainNameRecord)}";
+            var value = assetText.Substring(parts[0].Length).Trim();
+
+            var record = new DomainNameRecord(type, key, value);
+
+            if (record.Type == DnsRecordType.TXT && record.Value.Contains("spf"))
+            {
+                record.SPFHosts = ParseSPFString(record.Value);
+            }
+
+            return record;
         }
-        catch
+        catch (Exception ex)
         {
-            return $"{assetText} is not a {nameof(DomainNameRecord)}";
+            return $"{assetText} is not a {nameof(DomainNameRecord)}, {ex.Message}";
         }
     }
 

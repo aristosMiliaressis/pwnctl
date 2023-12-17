@@ -29,7 +29,7 @@ namespace pwnctl.proc.test.integration
             var op = new Operation("monitor_tesla", OperationType.Monitor, policy, scope);
             context.Add(op);
             context.SaveChanges();
-            var domain = new DomainName("tesla.com");
+            var domain = DomainName.TryParse("tesla.com").Value;
             var record = new AssetRecord(domain);
             record.SetScopeId(scope.Definitions.First().Definition.Id);
             context.Add(record);
@@ -53,7 +53,7 @@ namespace pwnctl.proc.test.integration
             var op = new Operation("crawl_tesla", OperationType.Crawl, policy, scope);
             context.Add(op);
             context.SaveChanges();
-            var domain = new DomainName("tesla.com");
+            var domain = DomainName.TryParse("tesla.com").Value;
             var record = new AssetRecord(domain);
             record.SetScopeId(scope.Definitions.First().Definition.Id);
             context.Add(record);

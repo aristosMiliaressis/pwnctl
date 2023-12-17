@@ -22,12 +22,12 @@ namespace pwnctl.cli.ModeHandlers
 
         private static Dictionary<string, Type> ResourceMap = new()
         {
-            { "hosts", typeof(ListHostsQuery) },
-            { "endpoints", typeof(ListEndpointsQuery) },
-            { "domains", typeof(ListDomainsQuery) },
-            { "services", typeof(ListServicesQuery) },
-            { "netranges", typeof(ListNetRangesQuery) },
-            { "dnsrecords", typeof(ListDnsRecordsQuery) },
+            { "hosts", typeof(ListNetworkHostsQuery) },
+            { "endpoints", typeof(ListHttpEndpointsQuery) },
+            { "domains", typeof(ListDomainNamesQuery) },
+            { "services", typeof(ListNetworkSocketsQuery) },
+            { "netranges", typeof(ListNetworkRangesQuery) },
+            { "dnsrecords", typeof(ListDomainNameRecordsQuery) },
             { "emails", typeof(ListEmailsQuery) },
             { "ops", typeof(ListOperationsQuery) },
             { "scope", typeof(ListScopeAggregatesQuery) },

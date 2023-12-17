@@ -19,9 +19,9 @@ public sealed class HttpParameter : Asset
 
     public string? Value { get; private init; }
 
-    public HttpParameter() {}
-    
-    public HttpParameter(HttpEndpoint endpoint, string name, ParamType type, string? value)
+    private HttpParameter() {}
+
+    internal HttpParameter(HttpEndpoint endpoint, string name, ParamType type, string? value)
     {
         Endpoint = endpoint;
         Url = endpoint.ToString();

@@ -10,9 +10,9 @@ using pwnctl.dto.Assets.Models;
 
 namespace pwnctl.api.Mediator.Handlers.Targets.Queries
 {
-    public sealed class ListDomainsQueryHandler : IRequestHandler<ListDomainsQuery, MediatedResponse<DomainNameListViewModel>>
+    public sealed class ListDomainsQueryHandler : IRequestHandler<ListDomainNamesQuery, MediatedResponse<DomainNameListViewModel>>
     {
-        public async Task<MediatedResponse<DomainNameListViewModel>> Handle(ListDomainsQuery query, CancellationToken cancellationToken)
+        public async Task<MediatedResponse<DomainNameListViewModel>> Handle(ListDomainNamesQuery query, CancellationToken cancellationToken)
         {
             AssetDbRepository repository = new();
 

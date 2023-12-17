@@ -53,9 +53,6 @@ public sealed class AssetRecord : Entity<Guid>
     public HttpParameter? HttpParameter { get; private init; }
     public Guid? HttpParameterId { get; private init; }
 
-    // public HttpHost? HttpHost { get; private init; }
-    // public Guid? HttpHostId { get; private init; }
-
     // constructs immutable domain layer 
     // reference graph from assets TextNotation
     // preventing the need to JOIN tables

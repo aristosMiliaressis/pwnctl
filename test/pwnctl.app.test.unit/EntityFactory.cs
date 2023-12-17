@@ -105,7 +105,7 @@ namespace pwnctl.app.test.unit
 
                 
 
-                var assetRecord = new AssetRecord(new DomainName("dummy.com"));
+                var assetRecord = new AssetRecord(DomainName.TryParse("dummy.com").Value);
 
                 var task = new TaskRecord(Operation, Policy.TaskProfiles.SelectMany(p => p.TaskProfile.TaskDefinitions).First(t => t.Name == ShortName.Create("shortname_scanner")), assetRecord);
                 context = new();

@@ -3,7 +3,7 @@ namespace pwnctl.dto.Assets.Queries;
 using pwnctl.dto.Assets.Models;
 using pwnctl.dto.Mediator;
 
-public sealed class ListParametersQuery : MediatedRequest<HttpParameterListViewModel>, PaginatedRequest
+public sealed class ListHttpParametersQuery : MediatedRequest<HttpParameterListViewModel>, PaginatedRequest
 {
     public static string Route => "/assets/params/";
     public static HttpMethod Verb => HttpMethod.Get;

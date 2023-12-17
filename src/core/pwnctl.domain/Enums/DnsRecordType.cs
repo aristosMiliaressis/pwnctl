@@ -48,5 +48,8 @@ public enum DnsRecordType
     TXT,
     URI,
     WKS,
-    ZONEMD
+    ZONEMD,
+
+    // VHost pseudo record
+    VHOST = 100
 }

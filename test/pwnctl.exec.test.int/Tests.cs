@@ -112,7 +112,7 @@ public sealed class Tests
         await taskQueue.Purge<ShortLivedTaskDTO>();
 
         var op = EntityFactory.CreateOperation();
-        var domain = new DomainName("tesla.com");
+        var domain = DomainName.TryParse("tesla.com").Value;
         var asset = new AssetRecord(domain);
 
         var subEnum = context.TaskDefinitions.First(d => d.Name == ShortName.Create("sub_enum"));

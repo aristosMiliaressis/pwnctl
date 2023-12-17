@@ -10,15 +10,15 @@ public sealed class DomainName : Asset
     [EqualityComponent]
     public string Name { get; init; }
     public int ZoneDepth { get; private init; }
-    public DomainName? ParentDomain { get; private set; }
+    public DomainName? ParentDomain { get; set; }
     public Guid? ParentDomainId { get; private init; }
     public string Word => Name.Replace("." + _domainParser.Parse(Name).TLD, "")
                                 .Split(".")
                                 .Last();
 
-    public DomainName() {}
+    private DomainName() {}
 
-    public DomainName(string domain)
+    internal DomainName(string domain)
     {
         // support FQDN notation ending with a dot.
         domain = domain.EndsWith(".") ? domain.Substring(0, domain.Length - 1) : domain;
@@ -38,18 +38,18 @@ public sealed class DomainName : Asset
                 || assetText.Contains("/")
                 || assetText.Contains("*")
                 || assetText.Contains("@"))
-                return $"{assetText} is not a {nameof(DomainName)}";
+                return $"{assetText} is not a {nameof(DomainName)}, charset";
 
             // support FQDN notation ending with a dot.
             assetText = assetText.EndsWith(".") ? assetText.Substring(0, assetText.Length - 1) : assetText;
 
             if (!_domainParser.IsValidDomain(assetText))
-                return $"{assetText} is not a {nameof(DomainName)}";
+                return $"{assetText} is not a {nameof(DomainName)}, validation";
 
             var domain = new DomainName(assetText);
             var regDomain = domain.GetRegistrationDomain();
             if (regDomain is null)
-                return $"{assetText} is not a {nameof(DomainName)}";
+                return $"{assetText} is not a {nameof(DomainName)}, registration domain";
 
             var tmp = domain;
             var registrationDomain = new DomainName(regDomain);

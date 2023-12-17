@@ -3,13 +3,8 @@ namespace pwnctl.domain.test.unit;
 using System;
 using pwnctl.domain.Entities;
 using pwnctl.infra.DependencyInjection;
-using pwnctl.infra.Commands;
 using pwnctl.infra.Queueing;
-using pwnctl.infra.Notifications;
-using pwnctl.app.Common.Interfaces;
 using pwnctl.app.Queueing.Interfaces;
-using pwnctl.app.Notifications.Interfaces;
-using pwnctl.app.Tasks.Interfaces;
 using Xunit;
 
 public sealed class Tests
@@ -27,8 +22,8 @@ public sealed class Tests
     [Fact]
     public void DomainEntity_Tests()
     {
-        var domain1 = new DomainName("example.com.");
-        var domain2 = new DomainName("deep.sub.example2.azurewebsites.net");
+        var domain1 = DomainName.TryParse("example.com").Value;
+        var domain2 = DomainName.TryParse("deep.sub.example2.azurewebsites.net").Value;
         Assert.Equal("example.com", domain1.Name);
         Assert.Equal("example", domain1.Word);
         Assert.Equal(1, domain1.ZoneDepth);

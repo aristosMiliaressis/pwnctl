@@ -45,7 +45,6 @@ namespace pwnctl.infra.Persistence
         public DbSet<NetworkSocket> NetworkSockets { get; set; }
         public DbSet<DomainName> DomainNames { get; set; }
         public DbSet<DomainNameRecord> DomainNameRecords { get; set; }
-        public DbSet<HttpHost> HttpHosts { get; set; }
         public DbSet<HttpEndpoint> HttpEndpoints { get; set; }
         public DbSet<HttpParameter> HttpParameters { get; set; }
         public DbSet<Email> Emails { get; set; }

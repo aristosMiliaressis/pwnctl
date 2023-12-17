@@ -10,9 +10,9 @@ using pwnctl.dto.Assets.Models;
 
 namespace pwnctl.api.Mediator.Handlers.Targets.Queries
 {
-    public sealed class ListHostsQueryHandler : IRequestHandler<ListHostsQuery, MediatedResponse<NetworkHostListViewModel>>
+    public sealed class ListHostsQueryHandler : IRequestHandler<ListNetworkHostsQuery, MediatedResponse<NetworkHostListViewModel>>
     {
-        public async Task<MediatedResponse<NetworkHostListViewModel>> Handle(ListHostsQuery query, CancellationToken cancellationToken)
+        public async Task<MediatedResponse<NetworkHostListViewModel>> Handle(ListNetworkHostsQuery query, CancellationToken cancellationToken)
         {
             AssetDbRepository repository = new();
 
@@ -21,7 +21,7 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Queries
             var viewModel = new NetworkHostListViewModel(hosts);
 
             viewModel.Page = query.Page;
-            viewModel.TotalPages = new PwnctlDbContext().HttpHosts.Count() / PwnInfraContext.Config.Api.BatchSize;
+            viewModel.TotalPages = new PwnctlDbContext().NetworkHosts.Count() / PwnInfraContext.Config.Api.BatchSize;
 
             return MediatedResponse<NetworkHostListViewModel>.Success(viewModel);
         }

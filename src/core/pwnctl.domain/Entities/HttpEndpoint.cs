@@ -22,9 +22,9 @@ public sealed class HttpEndpoint : Asset
     public string Scheme { get; init; }
     public string Path { get; init; }
 
-    public HttpEndpoint() {}
+    private HttpEndpoint() {}
 
-    public HttpEndpoint(string scheme, NetworkSocket address, string path)
+    internal HttpEndpoint(string scheme, NetworkSocket address, string path)
     {
         Scheme = scheme;
         Socket = address;

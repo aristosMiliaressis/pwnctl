@@ -13,9 +13,9 @@ public sealed class Email : Asset
     public DomainName DomainName { get; private init; }
     public Guid DomainId { get; private init; }
 
-    public Email() { }
+    private Email() { }
 
-    public Email(DomainName domain, string address)
+    internal Email(DomainName domain, string address)
     {
         Address = address;
         DomainName = domain;

@@ -38,7 +38,6 @@ public class ScopeDefinition : Entity<int>
             NetworkHost host => NetworkRange.RoutesTo(host.IP, Pattern),
             NetworkSocket srv => srv.NetworkHost is not null && Matches(srv.NetworkHost),
             DomainNameRecord record => record.NetworkHost is not null && Matches(record.NetworkHost),
-            //HttpHost vh => Matches(vh.Socket),
             HttpEndpoint ep => Matches(ep.Socket),
             HttpParameter param => Matches(param?.Endpoint),
             _ => false
@@ -54,7 +53,6 @@ public class ScopeDefinition : Entity<int>
             Email email => Matches(email.DomainName),
             NetworkHost host => host.AARecords.Any(r => Matches(r.DomainName)),
             NetworkSocket srv => srv.NetworkHost is not null && Matches(srv.NetworkHost) || srv.DomainName is not null && Matches(srv.DomainName),
-            //HttpHost vh => Matches(vh.Socket),
             HttpEndpoint ep => Matches(ep.Socket),
             HttpParameter param => Matches(param.Endpoint),
             _ => false

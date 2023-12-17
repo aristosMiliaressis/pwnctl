@@ -14,9 +14,9 @@ public sealed class NetworkHost : Asset
 
     public List<DomainNameRecord> AARecords { get; internal set; } = new List<DomainNameRecord>();
     
-    public NetworkHost() {}
+    private NetworkHost() {}
 
-    public NetworkHost(IPAddress address)
+    internal NetworkHost(IPAddress address)
     {
         IP = address.ToString();
         Version = address.AddressFamily;

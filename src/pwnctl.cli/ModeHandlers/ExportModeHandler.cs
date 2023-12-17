@@ -31,25 +31,25 @@ namespace pwnctl.cli.ModeHandlers
                     throw new Exception($"Unable to create export directory {opt.ExportPath}", ex);
                 }
 
-                var netRanges = await PwnctlApiClient.Default.Send(new ListNetRangesQuery());
+                var netRanges = await PwnctlApiClient.Default.Send(new ListNetworkRangesQuery());
                 WriteToFile(Path.Combine(opt.ExportPath, "network_ranges.json"), netRanges.Rows);
 
-                var hosts = await PwnctlApiClient.Default.Send(new ListHostsQuery());
+                var hosts = await PwnctlApiClient.Default.Send(new ListNetworkHostsQuery());
                 WriteToFile(Path.Combine(opt.ExportPath, "network_hosts.json"), hosts.Rows);
 
-                var services = await PwnctlApiClient.Default.Send(new ListServicesQuery());
+                var services = await PwnctlApiClient.Default.Send(new ListNetworkSocketsQuery());
                 WriteToFile(Path.Combine(opt.ExportPath, "network_services.json"), services.Rows);
 
-                var domains = await PwnctlApiClient.Default.Send(new ListDomainsQuery());
+                var domains = await PwnctlApiClient.Default.Send(new ListDomainNamesQuery());
                 WriteToFile(Path.Combine(opt.ExportPath, "domain_names.json"), domains.Rows);
 
-                var records = await PwnctlApiClient.Default.Send(new ListDnsRecordsQuery());
+                var records = await PwnctlApiClient.Default.Send(new ListDomainNameRecordsQuery());
                 WriteToFile(Path.Combine(opt.ExportPath, "domain_name_records.json"), records.Rows);
 
                 var emails = await PwnctlApiClient.Default.Send(new ListEmailsQuery());
                 WriteToFile(Path.Combine(opt.ExportPath, "emails.json"), emails.Rows);
 
-                var parameters = await PwnctlApiClient.Default.Send(new ListParametersQuery());
+                var parameters = await PwnctlApiClient.Default.Send(new ListHttpParametersQuery());
                 WriteToFile(Path.Combine(opt.ExportPath, "http_parameters.json"), parameters.Rows);
 
                 var tasks = await PwnctlApiClient.Default.Send(new ListTaskRecordsQuery());
@@ -58,7 +58,7 @@ namespace pwnctl.cli.ModeHandlers
                     File.AppendAllText(Path.Combine(opt.ExportPath, "task_records.json"), PwnInfraContext.Serializer.Serialize(task) + "\n");
                 }
 
-                var endpoints = await PwnctlApiClient.Default.Send(new ListEndpointsQuery());
+                var endpoints = await PwnctlApiClient.Default.Send(new ListHttpEndpointsQuery());
                 WriteToFile(Path.Combine(opt.ExportPath, "http_endpoints.json"), endpoints.Rows);
             });
         }

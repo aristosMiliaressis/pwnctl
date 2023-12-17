@@ -14,9 +14,9 @@ public sealed class NetworkRange : Asset
 
     public string CIDR => FirstAddress+"/"+NetPrefixBits;
 
-    public NetworkRange() {}
+    private NetworkRange() {}
     
-    public NetworkRange(IPAddress firstAddress, ushort netPrefix)
+    internal NetworkRange(IPAddress firstAddress, ushort netPrefix)
     {
         FirstAddress = firstAddress.ToString();
         NetPrefixBits = netPrefix;

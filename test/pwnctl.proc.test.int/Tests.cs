@@ -141,7 +141,7 @@ public sealed class Tests
         // populate db / TaskId
         var op = EntityFactory.CreateCrawlOperation();
 
-        var domain = new DomainName("starlink.com");
+        var domain = DomainName.TryParse("starlink.com").Value;
         var asset = new AssetRecord(domain);
 
         var subEnum = context.TaskDefinitions.First(d => d.Name == ShortName.Create("sub_enum"));

@@ -19,14 +19,14 @@ public static class ConfigValidator
 {
     private static Dictionary<AssetClass, Asset> _sampleAssets = new Dictionary<AssetClass, Asset>
     {
-        { AssetClass.Create(nameof(DomainName)), new DomainName("example.com") },
-        { AssetClass.Create(nameof(HttpEndpoint)), new HttpEndpoint("http", new NetworkSocket(new DomainName("example.com"), 80), "/") },
-        { AssetClass.Create(nameof(NetworkHost)), new NetworkHost(IPAddress.Parse("1.3.3.7")) },
-        { AssetClass.Create(nameof(NetworkRange)), new NetworkRange(IPAddress.Parse("1.3.3.0"), 24) },
-        { AssetClass.Create(nameof(NetworkSocket)), new NetworkSocket(new DomainName("example.com"), 443) },
-        { AssetClass.Create(nameof(DomainNameRecord)), new DomainNameRecord(DnsRecordType.A, "example.com", "1.3.3.7") },
-        { AssetClass.Create(nameof(Email)), new Email(new DomainName("example.com"), "mail@example.com") },
-        { AssetClass.Create(nameof(HttpParameter)), new HttpParameter() },
+        { AssetClass.Create(nameof(DomainName)), DomainName.TryParse("example.com").Value },
+        { AssetClass.Create(nameof(HttpEndpoint)), HttpEndpoint.TryParse("http://example.com:80/").Value },
+        { AssetClass.Create(nameof(NetworkHost)), NetworkHost.TryParse("1.3.3.7").Value },
+        { AssetClass.Create(nameof(NetworkRange)), NetworkRange.TryParse("1.3.3.0/24").Value },
+        { AssetClass.Create(nameof(NetworkSocket)), NetworkSocket.TryParse("example.com:443").Value },
+        { AssetClass.Create(nameof(DomainNameRecord)), DomainNameRecord.TryParse("example.com IN A 1.3.3.7").Value },
+        { AssetClass.Create(nameof(Email)), Email.TryParse("mail@example.com").Value },
+        { AssetClass.Create(nameof(HttpParameter)), HttpParameter.TryParse("http://1.3.3.7?x=y").Value },
     };
 
     private static IDeserializer _deserializer = new DeserializerBuilder()

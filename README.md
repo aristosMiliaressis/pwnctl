@@ -33,7 +33,6 @@ task output is processed line by line, each line is classified into one of the f
 | DomainNameRecord | example.com A 1.3.3.7                            |
 | Email            | johndoe@example.com                              |
 | HttpEndpoint     | https://example.com/api                          |
-| HttpHost         | 1.3.3.7:443  example.com                         |
 | HttpParameter    | https://example.com/api?token=                   |
 | NetworkHost      | 1.3.3.7, FD00:DEAD:BEEF:64:35::2                 |
 | NetworkRange     | 12.34.45.0/24, 2001:db8::/48                     |

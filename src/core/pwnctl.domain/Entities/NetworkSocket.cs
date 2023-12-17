@@ -19,9 +19,9 @@ public sealed class NetworkSocket : Asset
     public Guid? DomainNameId { get; private init; }
     public DomainName? DomainName { get; init; }
 
-    public NetworkSocket() { }
+    private NetworkSocket() { }
 
-    public NetworkSocket(DomainName domain, ushort port, TransportProtocol l4Proto = TransportProtocol.TCP)
+    internal NetworkSocket(DomainName domain, ushort port, TransportProtocol l4Proto = TransportProtocol.TCP)
     {
         DomainName = domain;
         TransportProtocol = l4Proto;
