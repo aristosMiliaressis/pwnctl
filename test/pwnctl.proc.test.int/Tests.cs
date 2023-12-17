@@ -67,7 +67,7 @@ public sealed class Tests
     {
         // setup mount directory
         Directory.CreateDirectory($"{_hostBasePath}/seed");
-        foreach (var file in Directory.GetFiles("../../../../../src/core/pwnctl.infra/Persistence/seed"))
+        foreach (var file in Directory.GetFiles("../../../../../src/pwnctl.api/App_Data/seed"))
             File.Copy(file, Path.Combine($"{_hostBasePath}/seed/", Path.GetFileName(file)), true);
 
         // setup docker network

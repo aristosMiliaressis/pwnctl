@@ -97,7 +97,6 @@ tasks:
       - mkdir -p ~/.config/pwnctl/
       - chown $USER ~/.config/pwnctl/
       - mv src/pwnctl.cli/bin/Release/net7.0/linux-x64/publish/config.ini ~/.config/pwnctl/
-      - cp -r ./src/core/pwnctl.infra/Persistence/seed ~/.config/pwnctl
 
   setup-ci:
     cmds:
@@ -143,7 +142,6 @@ tasks:
     cmds:
       - |
         commitHash=$(git rev-parse --short HEAD)
-        cp -R ./src/core/pwnctl.infra/Persistence/seed deployment/
         ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-proc") | .repositoryUri')
         docker run -e PWNCTL_USE_LOCAL_INTEGRATIONS=true -e PWNCTL_INSTALL_PATH=/mnt/efs \
                    -e PWNCTL_Logging__FilePath=/mnt/efs -e PWNCTL_Logging__MinLevel=Information \

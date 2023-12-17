@@ -80,7 +80,7 @@ namespace pwnctl.infra.Persistence
             Matcher matcher = new();
             matcher.AddInclude("*.td.yml");
 
-            foreach (string taskFile in matcher.GetResultsInFullPath(Path.Combine(EnvironmentVariables.INSTALL_PATH, "seed/")))
+            foreach (string taskFile in matcher.GetResultsInFullPath(Path.Combine(Directory.GetCurrentDirectory(), "seed/")))
             {
                 if (!File.Exists(taskFile))
                 {
@@ -116,7 +116,7 @@ namespace pwnctl.infra.Persistence
             Matcher matcher = new();
             matcher.AddInclude("*.nr.yml");
 
-            foreach (string notificationFile in matcher.GetResultsInFullPath(Path.Combine(EnvironmentVariables.INSTALL_PATH, "seed/")))
+            foreach (string notificationFile in matcher.GetResultsInFullPath(Path.Combine(Directory.GetCurrentDirectory(), "seed/")))
             {
                 if (!File.Exists(notificationFile))
                 {

@@ -1,3 +1,5 @@
+using System.Reflection;
+
 namespace pwnctl.infra.Configuration;
 
 public static class EnvironmentVariables
@@ -11,4 +13,9 @@ public static class EnvironmentVariables
     public static bool IN_VPC => Environment.GetEnvironmentVariable("PWNCTL_IN_VPC")?.Equals("true") ?? false;
 
     public static bool USE_LOCAL_INTEGRATIONS => Environment.GetEnvironmentVariable("PWNCTL_USE_LOCAL_INTEGRATIONS")?.Equals("true") ?? false;
+}
+
+public static class AssemblyHelper
+{
+    public static readonly string AssemblyNamespace = Assembly.GetExecutingAssembly().FullName.Split(",")[0];
 }

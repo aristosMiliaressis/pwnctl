@@ -23,6 +23,11 @@ TaskDefinitions:
     MonitorRules:
       Schedule: 0 0 * * *
 
+  - Name: sub_wildcard_finder
+    CommandTemplate: sub-wildcard-finder.sh {{Name}}
+    Filter: Tags["wildcard"] == "true"
+    Subject: DomainName
+
   - Name: dns_record_enum
     CommandTemplate: dns-record-enum.sh {{Name}} {{ZoneDepth}}
     Subject: DomainName

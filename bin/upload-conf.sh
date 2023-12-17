@@ -34,7 +34,6 @@ uploadDirectory() {
      done
 }
 
-cp -R ./src/core/pwnctl.infra/Persistence/seed deployment/
 curl -s https://raw.githubusercontent.com/trickest/resolvers/main/resolvers.txt > deployment/resolvers.txt
 curl -s https://raw.githubusercontent.com/trickest/resolvers/main/resolvers-trusted.txt | tr -d '[\t ]' > deployment/trusted-resolvers.txt
 

@@ -1,4 +1,5 @@
 Profile: "post_web_recon"
+Phase: 2
 
 TaskDefinitions:
   - Name: vhost_scan

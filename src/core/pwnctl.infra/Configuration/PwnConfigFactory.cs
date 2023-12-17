@@ -7,11 +7,13 @@ public static class PwnConfigFactory
 {
     public static AppConfig Create()
     {
-        IConfigurationBuilder builder = new ConfigurationBuilder()
-                                    .SetBasePath(EnvironmentVariables.INSTALL_PATH == "" 
-                                            ? $"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}/.config/pwnctl" 
-                                            : Path.GetFullPath(EnvironmentVariables.INSTALL_PATH))
-                                    .AddIniFile("config.ini", optional: true, reloadOnChange: true);
+        IConfigurationBuilder builder = new ConfigurationBuilder();
+
+        if (AssemblyHelper.AssemblyNamespace == "pwnctl.cli")
+        {
+            builder = builder.SetBasePath($"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}/.config/pwnctl")
+                            .AddIniFile("config.ini", optional: true, reloadOnChange: true);
+        }
 
         if (!EnvironmentVariables.USE_LOCAL_INTEGRATIONS)
         {
