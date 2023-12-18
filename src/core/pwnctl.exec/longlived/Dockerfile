@@ -43,7 +43,9 @@ RUN --mount=type=ssh \
     git clone git@github.com:aristosMiliaressis/cache-prober.git && make -C cache-prober install
 RUN --mount=type=ssh \
     git clone -b pwnctl git@github.com:aristosMiliaressis/sub-enum.git \
-    && cp sub-enum/wordlists/* /opt/wordlists/dns/ && cp sub-enum/sub-enum.sh $GOPATH/bin/
+    && cp sub-enum/wordlists/* /opt/wordlists/dns/ && cp sub-enum/sub-enum.sh $GOPATH/bin/ \
+    && cp sub-enum/sub-wildcard-finder.sh $GOPATH/bin/
+RUN curl https://wordlists-cdn.assetnote.io/data/manual/best-dns-wordlist.txt -o /opt/wordlists/dns/subdomains-3m.txt
 
 FROM golang:1.20.2-alpine as nuclei-templates
 

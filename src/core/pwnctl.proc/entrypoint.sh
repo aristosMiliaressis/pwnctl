@@ -1,9 +1,9 @@
 #!/bin/bash
 
-if test -f "/mnt/efs/provider-config.yaml";
+if test -f "$PWNCTL_FS_MOUNT_POINT/provider-config.yaml";
 then
     mkdir -p $HOME/.config/notify/
-    cp "/mnt/efs/provider-config.yaml" $HOME/.config/notify/provider-config.yaml
+    cp "$PWNCTL_FS_MOUNT_POINT/provider-config.yaml" $HOME/.config/notify/provider-config.yaml
 fi
 
 exec /opt/pwnctl-proc/processor

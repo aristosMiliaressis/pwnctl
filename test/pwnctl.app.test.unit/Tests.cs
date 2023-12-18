@@ -35,12 +35,10 @@ public sealed class Tests
     public Tests()
     {
         Environment.SetEnvironmentVariable("PWNCTL_USE_LOCAL_INTEGRATIONS", "true");
-        Environment.SetEnvironmentVariable("PWNCTL_INSTALL_PATH", ".");
         Environment.SetEnvironmentVariable("PWNCTL_Logging__MinLevel", "Warning");
 
         PwnInfraContextInitializer.Setup();
         DatabaseInitializer.InitializeAsync(null).Wait();
-        DatabaseInitializer.SeedAsync().Wait();
         PwnInfraContextInitializer.Register<TaskQueueService, FakeTaskQueueService>();
         PwnInfraContextInitializer.Register<NotificationSender, StubNotificationSender>();
         PwnInfraContextInitializer.Register<CommandExecutor, BashCommandExecutor>();

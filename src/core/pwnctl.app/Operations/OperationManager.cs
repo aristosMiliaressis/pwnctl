@@ -1,22 +1,19 @@
 using pwnctl.app.Assets.Entities;
-using pwnctl.app.Assets.Interfaces;
-using pwnctl.app.Common;
 using pwnctl.app.Operations.Entities;
 using pwnctl.app.Operations.Enums;
 using pwnctl.app.Operations.Interfaces;
 using pwnctl.app.Queueing.DTO;
-using pwnctl.app.Queueing.Interfaces;
+using pwnctl.app.Notifications.Enums;
 using pwnctl.app.Tasks.Entities;
 using pwnctl.app.Tasks.Interfaces;
-using pwnctl.kernel;
 
 namespace pwnctl.app.Operations;
 
 public class OperationManager
 {
+    private readonly OperationStateSubscriptionService _subscriptionService;
     private readonly OperationRepository _opRepo;
     private readonly TaskRepository _taskRepo;
-    private readonly OperationStateSubscriptionService _subscriptionService;
 
     public OperationManager(OperationRepository opRepo, TaskRepository taskRepo, OperationStateSubscriptionService subscriptionService)
     {
@@ -98,6 +95,8 @@ public class OperationManager
         {
             await _subscriptionService.Subscribe(op);
         }
+
+        await PwnInfraContext.NotificationSender.SendAsync($"Initialized {op.Type} op {op.Name.Value} #{op.Id}", NotificationTopic.Status);
     }
 
     public async Task TerminateAsync(Operation op)
@@ -109,6 +108,8 @@ public class OperationManager
 
         op.Terminate();
         await _opRepo.SaveAsync(op);
+
+        await PwnInfraContext.NotificationSender.SendAsync($"Terminated {op.Type} op {op.Name.Value} #{op.Id}", NotificationTopic.Status);
     }
 
     public async Task TransitionPhaseAsync(Operation op)
@@ -124,6 +125,8 @@ public class OperationManager
         await PwnInfraContext.TaskQueueService.EnqueueBatchAsync(shortLivedTasks);
 
         await _opRepo.SaveAsync(op);
+
+        await PwnInfraContext.NotificationSender.SendAsync($"Transitionated op {op.Name.Value} #{op.Id} to phase {op.CurrentPhase}", NotificationTopic.Status);
     }
 
     private async Task generateTasksAsync(Operation op, AssetRecord record, IEnumerable<TaskDefinition> taskDefinitions)

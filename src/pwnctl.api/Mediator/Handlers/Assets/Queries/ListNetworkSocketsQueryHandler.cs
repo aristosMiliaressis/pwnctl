@@ -10,7 +10,7 @@ using pwnctl.dto.Assets.Models;
 
 namespace pwnctl.api.Mediator.Handlers.Targets.Queries
 {
-    public sealed class ListServicesQueryHandler : IRequestHandler<ListNetworkSocketsQuery, MediatedResponse<NetworkSocketListViewModel>>
+    public sealed class ListNetworkSocketsQueryHandler : IRequestHandler<ListNetworkSocketsQuery, MediatedResponse<NetworkSocketListViewModel>>
     {
         public async Task<MediatedResponse<NetworkSocketListViewModel>> Handle(ListNetworkSocketsQuery query, CancellationToken cancellationToken)
         {

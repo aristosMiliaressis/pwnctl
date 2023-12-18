@@ -21,23 +21,16 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Diagnostics.Tracing;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Diagnostics.Contracts;
-using System.ComponentModel.Design.Serialization;
 using DotNet.Testcontainers.Builders;
-using DotNet.Testcontainers.Configurations;
 using DotNet.Testcontainers.Networks;
 using Testcontainers.PostgreSql;
-using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 public sealed class Tests
 {
-    private static readonly string _hostBasePath = EnvironmentVariables.IN_GHA
-                ? "/home/runner/work/pwnctl/pwnctl/test/pwnctl.exec.test.int/deployment"
-                : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "deployment");
+    private static readonly string _hostBasePath = EnvironmentVariables.IS_GHA
+                ? "/home/runner/work/pwnctl/pwnctl/test/pwnctl.exec.test.int/App_Data"
+                : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data");
 
     private static INetwork _pwnctlNetwork = new NetworkBuilder().Build();
     private static string _databaseHostname = $"postgres_{Guid.NewGuid()}";
@@ -54,9 +47,7 @@ public sealed class Tests
     private static ContainerBuilder _pwnctlContainerBuilder = new ContainerBuilder()
                     .WithImage($"{Environment.GetEnvironmentVariable("UNTESTED_IMAGE")}")
                     .WithNetwork(_pwnctlNetwork)
-                    .WithBindMount(_hostBasePath, "/mnt/efs", AccessMode.ReadWrite)
                     .WithBindMount($"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}/.aws/", "/root/.aws/")
-                    .WithEnvironment("PWNCTL_INSTALL_PATH", "/mnt/efs")
                     .WithEnvironment("PWNCTL_Logging__MinLevel", "Debug")
                     .WithEnvironment("PWNCTL_Db__Host", $"{_databaseHostname}:5432")
                     .WithEnvironment("PWNCTL_Db__Name", "postgres")
@@ -83,7 +74,6 @@ public sealed class Tests
         _pwnctlDb.StartAsync().Wait();
 
         // setup ambiant configuration context
-        Environment.SetEnvironmentVariable("PWNCTL_INSTALL_PATH", _hostBasePath);
         Environment.SetEnvironmentVariable("PWNCTL_Db__Host", $"{_pwnctlDb.Hostname}:45432");
         Environment.SetEnvironmentVariable("PWNCTL_Db__Name", "postgres");
         Environment.SetEnvironmentVariable("PWNCTL_Db__Username", "postgres");
@@ -95,7 +85,6 @@ public sealed class Tests
 
         // migrate & seed database
         DatabaseInitializer.InitializeAsync(null).Wait();
-        DatabaseInitializer.SeedAsync().Wait();
         PwnInfraContextInitializer.Register<TaskQueueService, SQSTaskQueueService>();
         PwnInfraContextInitializer.Register<NotificationSender, StubNotificationSender>();
         PwnInfraContextInitializer.Register<CommandExecutor, StubCommandExecutor>();

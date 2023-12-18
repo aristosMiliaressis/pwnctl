@@ -7,7 +7,7 @@ public static class ZipArchiveExtensions
 {
     public static void AddFolderEntry(this ZipArchive archive, string path)
     {
-        var archivePath = path.Replace(EnvironmentVariables.INSTALL_PATH + "/", "");
+        var archivePath = path.Replace(EnvironmentVariables.FS_MOUNT_POINT, "");
         
         archive.CreateEntry(archivePath.EndsWith("/") ? archivePath : archivePath + "/");
 

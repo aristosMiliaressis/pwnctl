@@ -8,13 +8,13 @@ trap "rm $webanalyze_out $wappalyzer_out" EXIT
 
 if [[ ! -f technologies.json ]]
 then
-    webanalyze -update 2>/dev/null
+    webanalyze -silent -update
 elif [ $(((`date +%s` - `stat -L --format %Y technologies.json`))) -gt $((60*60*24)) ]
 then
-    webanalyze -update 2>/dev/null
+    webanalyze -silent -update
 fi
 
-webanalyze -apps technologies.json -crawl 3 -search -host $url -output json > $webanalyze_out
+webanalyze -silent -apps technologies.json -crawl 3 -search -host $url -output json > $webanalyze_out
 
 tags=$(cat $webanalyze_out | jq -r -c '.matches[] | "\"\(.app.category_names[0])\": \"\(.app_name)\""' | sort -u | tr '\n' ',' | head -c -1)
 

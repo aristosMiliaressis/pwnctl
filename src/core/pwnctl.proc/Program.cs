@@ -14,7 +14,7 @@ builder.Services.AddHostedService<OutputProcessorService>();
 
 PwnInfraContextInitializer.Setup();
 PwnInfraContextInitializer.Register<TaskQueueService, SQSTaskQueueService>();
-if (EnvironmentVariables.IN_VPC)
+if (EnvironmentVariables.IS_PROD)
 {
     PwnInfraContextInitializer.Register<NotificationSender, DiscordNotificationSender>();
     PwnInfraContextInitializer.Register<CommandExecutor, BashCommandExecutor>();

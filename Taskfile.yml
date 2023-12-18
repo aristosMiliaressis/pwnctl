@@ -123,7 +123,7 @@ tasks:
       - |
         commitHash=$(git rev-parse --short HEAD)
         ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-exec-long") | .repositoryUri')
-        docker run -e PWNCTL_USE_LOCAL_INTEGRATIONS=true -e PWNCTL_INSTALL_PATH=/mnt/efs \
+        docker run -e PWNCTL_USE_LOCAL_INTEGRATIONS=true \
                    -e PWNCTL_Logging__FilePath=/mnt/efs -e PWNCTL_Logging__MinLevel=Information \
                    -e PWNCTL_TaskQueue__VisibilityTimeout=1200 -e PWNCTL_OutputQueue__VisibilityTimeout=1200 \
                    -v "$(pwd)"/deployment:/mnt/efs -t ${ecrUri}:$commitHash
@@ -133,7 +133,7 @@ tasks:
       - |
         commitHash=$(git rev-parse --short HEAD)
         ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-exec-short") | .repositoryUri')
-        docker run -e PWNCTL_USE_LOCAL_INTEGRATIONS=true -e PWNCTL_INSTALL_PATH=/mnt/efs \
+        docker run -e PWNCTL_USE_LOCAL_INTEGRATIONS=true \
                    -e PWNCTL_Logging__FilePath=/mnt/efs -e PWNCTL_Logging__MinLevel=Information \
                    -e PWNCTL_TaskQueue__VisibilityTimeout=1200 -e PWNCTL_OutputQueue__VisibilityTimeout=1200 \
                    -v "$(pwd)"/deployment:/mnt/efs -t ${ecrUri}:$commitHash
@@ -143,7 +143,7 @@ tasks:
       - |
         commitHash=$(git rev-parse --short HEAD)
         ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-proc") | .repositoryUri')
-        docker run -e PWNCTL_USE_LOCAL_INTEGRATIONS=true -e PWNCTL_INSTALL_PATH=/mnt/efs \
+        docker run -e PWNCTL_USE_LOCAL_INTEGRATIONS=true \
                    -e PWNCTL_Logging__FilePath=/mnt/efs -e PWNCTL_Logging__MinLevel=Information \
                    -e PWNCTL_TaskQueue__VisibilityTimeout=1200 -e PWNCTL_OutputQueue__VisibilityTimeout=1200 \
                    -v "$(pwd)"/deployment:/mnt/efs -t ${ecrUri}:$commitHash

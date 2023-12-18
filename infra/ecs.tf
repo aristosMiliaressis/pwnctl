@@ -56,12 +56,12 @@ resource "aws_ecs_task_definition" "exec_short" {
           "value": "${aws_db_instance.this.endpoint}"
         },
         {
-          "name": "PWNCTL_INSTALL_PATH",
-          "value": "${var.efs_mount_point}"
+          "name": "PWNCTL_IS_PROD",
+          "value": "true"
         },
         {
-          "name": "PWNCTL_IN_VPC",
-          "value": "true"
+          "name": "PWNCTL_FS_MOUNT_POINT",
+          "value": "${var.efs_mount_point}"
         }
       ],
       "logConfiguration": {
@@ -180,12 +180,12 @@ resource "aws_ecs_task_definition" "exec_long" {
           "value": "${aws_db_instance.this.endpoint}"
         },
         {
-          "name": "PWNCTL_INSTALL_PATH",
-          "value": "${var.efs_mount_point}"
+          "name": "PWNCTL_IS_PROD",
+          "value": "true"
         },
         {
-          "name": "PWNCTL_IN_VPC",
-          "value": "true"
+          "name": "PWNCTL_FS_MOUNT_POINT",
+          "value": "${var.efs_mount_point}"
         }
       ],
       "logConfiguration": {
@@ -302,12 +302,12 @@ resource "aws_ecs_task_definition" "proc" {
           "value": "${aws_db_instance.this.endpoint}"
         },
         {
-          "name": "PWNCTL_INSTALL_PATH",
-          "value": "${var.efs_mount_point}"
+          "name": "PWNCTL_IS_PROD",
+          "value": "true"
         },
         {
-          "name": "PWNCTL_IN_VPC",
-          "value": "true"
+          "name": "PWNCTL_FS_MOUNT_POINT",
+          "value": "${var.efs_mount_point}"
         }
       ],
       "logConfiguration": {

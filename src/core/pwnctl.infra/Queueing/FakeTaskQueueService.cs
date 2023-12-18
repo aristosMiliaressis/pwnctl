@@ -9,7 +9,7 @@ namespace pwnctl.infra.Queueing
 {
     public sealed class FakeTaskQueueService : TaskQueueService
     {
-        private static readonly string _queuePath = Path.Combine(EnvironmentVariables.INSTALL_PATH, "queue");
+        private static readonly string _queuePath = Path.Combine(Directory.GetCurrentDirectory(), "queue");
         private static CommandExecutor _executor = new BashCommandExecutor();
 
         public FakeTaskQueueService()

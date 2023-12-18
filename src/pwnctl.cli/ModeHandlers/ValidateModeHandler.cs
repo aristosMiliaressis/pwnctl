@@ -21,42 +21,42 @@ namespace pwnctl.cli.ModeHandlers
 
         public Task Handle(string[] args)
         {
-            Parser.Default.ParseArguments<ValidateModeHandler>(args).WithParsed(opt => 
-            {
-                Matcher matcher = new();
-                matcher.AddInclude("*.td.yml");
+            // Parser.Default.ParseArguments<ValidateModeHandler>(args).WithParsed(opt => 
+            // {
+            //     Matcher matcher = new();
+            //     matcher.AddInclude("*.td.yml");
 
-                foreach (string taskFile in matcher.GetResultsInFullPath(opt.Path))
-                {
-                    if (!File.Exists(taskFile))
-                    {
-                        throw new ConfigValidationException(taskFile, "File not found");
-                    }
+            //     foreach (string taskFile in matcher.GetResultsInFullPath(opt.Path))
+            //     {
+            //         if (!File.Exists(taskFile))
+            //         {
+            //             throw new ConfigValidationException(taskFile, "File not found");
+            //         }
 
-                    var passed = ConfigValidator.TryValidateTaskDefinitions(taskFile, out string errorMessage);
-                    if (!passed)
-                    {
-                        throw new ConfigValidationException(taskFile, errorMessage);
-                    }
-                }
+            //         var passed = ConfigValidator.TryValidateTaskDefinitions(taskFile, out string errorMessage);
+            //         if (!passed)
+            //         {
+            //             throw new ConfigValidationException(taskFile, errorMessage);
+            //         }
+            //     }
 
-                matcher = new();
-                matcher.AddInclude("*.nr.yml");
+            //     matcher = new();
+            //     matcher.AddInclude("*.nr.yml");
 
-                foreach (string notificationFile in matcher.GetResultsInFullPath(opt.Path))
-                {
-                    if (!File.Exists(notificationFile))
-                    {
-                        throw new ConfigValidationException(notificationFile, "File not found");
-                    }
+            //     foreach (string notificationFile in matcher.GetResultsInFullPath(opt.Path))
+            //     {
+            //         if (!File.Exists(notificationFile))
+            //         {
+            //             throw new ConfigValidationException(notificationFile, "File not found");
+            //         }
 
-                    var passed = ConfigValidator.TryValidateNotificationRules(notificationFile, out string errorMessage);
-                    if (!passed)
-                    {
-                        throw new ConfigValidationException(notificationFile, errorMessage);
-                    }
-                }
-            });
+            //         var passed = ConfigValidator.TryValidateNotificationRules(notificationFile, out string errorMessage);
+            //         if (!passed)
+            //         {
+            //             throw new ConfigValidationException(notificationFile, errorMessage);
+            //         }
+            //     }
+            // });
 
             return Task.CompletedTask;
         }

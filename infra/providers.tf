@@ -21,10 +21,6 @@ data "external" "aws_region" {
   program = ["bash", "-c", "aws configure get region --profile ${var.profile} | jq --raw-input '. | { region: (.) }'"]
 }
 
-data "external" "commit_hash" {
-  program = ["bash", "-c", "git rev-parse --short HEAD | jq --raw-input '. | { sha: (.) }'"]
-}
-
 provider "aws" {
   profile = var.profile
   region  = data.external.aws_region.result.region

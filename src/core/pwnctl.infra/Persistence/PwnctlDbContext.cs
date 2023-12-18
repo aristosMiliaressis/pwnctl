@@ -73,7 +73,7 @@ namespace pwnctl.infra.Persistence
 
                 if (EnvironmentVariables.USE_LOCAL_INTEGRATIONS)
                 {
-                    optionsBuilder.UseSqlite("Data Source="+Path.Combine(EnvironmentVariables.INSTALL_PATH, "pwnctl.sqlite3"), x => x.MigrationsHistoryTable("__EFMigrationHistory"));
+                    optionsBuilder.UseSqlite("Data Source="+Path.Combine(Directory.GetCurrentDirectory(), "pwnctl.sqlite3"), x => x.MigrationsHistoryTable("__EFMigrationHistory"));
                     return;
                 }
 

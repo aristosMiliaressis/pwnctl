@@ -25,11 +25,12 @@ namespace pwnctl.cli.ModeHandlers
             Console.WriteLine($"Emais: {model.EmailCount}, InScope: {model.InScopeEmailCount}");
             Console.WriteLine($"Tags: {model.TagCount}");
             Console.WriteLine();
-            Console.WriteLine($"QUEUED: {model.QueuedTaskCount}, RUNNING: {model.RunningTaskCount}, FINISHED: {model.FinishedTaskCount}, FAILED: {model.FailedTaskCount}");
+            Console.WriteLine($"QUEUED: {model.QueuedTaskCount}, RUNNING: {model.RunningTaskCount}, FINISHED: {model.FinishedTaskCount}");
+            Console.WriteLine($"FAILED: {model.FailedTaskCount}, CANCELED: {model.CanceledTaskCount}, TIMED_OUT: {model.TimedOutTaskCount}");
             Console.WriteLine();
             foreach(var def in model.TaskDetails.OrderBy(t => t.Count))
             {
-                Console.WriteLine($"{def.Name.PadLeft(24)}: Queued {def.Count.ToString().PadLeft(4)} times, ran for {def.Duration.ToString("dd\\.hh\\:mm\\:ss")} and found {def.Findings.ToString().PadLeft(4)} unique assets.");
+                Console.WriteLine($"{def.Name,24}: Queued {def.Count,4} times, ran for {def.Duration:dd\\.hh\\:mm\\:ss} and found {def.Findings,4} unique assets.");
             }
 
             if (model.FirstTask is not null)

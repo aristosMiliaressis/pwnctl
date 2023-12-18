@@ -45,7 +45,7 @@ resource "aws_lambda_function" "this" {
       PWNCTL_Db__Name                  = var.rds_postgres_databasename
       PWNCTL_Db__Username              = var.rds_postgres_username
       PWNCTL_Db__Host                  = aws_db_instance.this.endpoint
-      PWNCTL_INSTALL_PATH              = var.efs_mount_point
+      PWNCTL_FS_MOUNT_POINT            = var.efs_mount_point
     }
   }
 }

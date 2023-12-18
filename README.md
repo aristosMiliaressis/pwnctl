@@ -135,8 +135,8 @@ TaskDefinitions:
     CommandTemplate: tls-probe.sh {{Address}}
     Subject: NetworkSocket
 
-  - Name: get_all_urls
-    CommandTemplate: get-all-urls.sh {{Url}}
+  - Name: waymore
+    CommandTemplate: waymore.sh {{Url}}
     Subject: HttpEndpoint
     Filter: HttpEndpoint.Path == "/"
 

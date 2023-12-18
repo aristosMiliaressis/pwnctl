@@ -135,7 +135,7 @@ public sealed class LongLivedTaskExecutor : LifetimeService
         // create a linked token that cancels the task when max 
         // task timeout is exheeded or if a scale in event occures
         using var cts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
-        cts.CancelAfter((PwnInfraContext.Config.Worker.MaxTaskTimeout) * 1000);
+        cts.CancelAfter(PwnInfraContext.Config.Worker.MaxTaskTimeout * 1000);
 
         int exitCode = 0;
         StringBuilder stdout = null, stderr = null;
@@ -149,9 +149,16 @@ public sealed class LongLivedTaskExecutor : LifetimeService
         }
         catch (Exception ex)
         {
-            PwnInfraContext.Logger.Exception(ex);
-
-            task.Failed();
+            if (ex is OperationCanceledException)
+            {
+                PwnInfraContext.Logger.Warning($"Task {task.Id} cancelled.");
+                task.Canceled();
+            }
+            else
+            {
+                PwnInfraContext.Logger.Exception(ex);
+                task.Failed();
+            }
 
             succeeded = await _taskRepo.TryUpdateAsync(task);
             if (!succeeded)

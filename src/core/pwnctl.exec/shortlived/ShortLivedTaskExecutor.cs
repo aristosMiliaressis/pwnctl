@@ -50,7 +50,7 @@ public sealed class ShortLivedTaskExecutor : LifetimeService
         } 
         catch (OperationCanceledException)
         {
-            return false;
+            return true;
         }
 
         var task = await _taskRepo.FindAsync(taskDTO.TaskId);
@@ -119,9 +119,16 @@ public sealed class ShortLivedTaskExecutor : LifetimeService
         }
         catch (Exception ex)
         {
-            PwnInfraContext.Logger.Exception(ex);
-
-            task.Failed();
+            if (ex is OperationCanceledException)
+            {
+                PwnInfraContext.Logger.Warning($"Task {task.Id} cancelled.");
+                task.Canceled();
+            }
+            else
+            {
+                PwnInfraContext.Logger.Exception(ex);
+                task.Failed();
+            }
 
             succeeded = await _taskRepo.TryUpdateAsync(task);
             if (!succeeded)
@@ -133,7 +140,7 @@ public sealed class ShortLivedTaskExecutor : LifetimeService
             // the task will be put in the dead letter queue
             await PwnInfraContext.TaskQueueService.ChangeMessageVisibilityAsync(taskDTO, 0);
 
-            return false;
+            return ex is OperationCanceledException;
         }
 
         succeeded = await _taskRepo.TryUpdateAsync(task);

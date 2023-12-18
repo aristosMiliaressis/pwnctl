@@ -74,6 +74,16 @@ public sealed class TaskRecord : Entity<int>
         return true;
     }
 
+    public bool Canceled()
+    {
+        if (State != TaskState.RUNNING)
+            return false;
+
+        State = TaskState.CANCELED;
+        FinishedAt = SystemTime.UtcNow();
+        return true;
+    }
+
     // Interpolate asset arguments into CommandTemplate
     [JsonIgnore]
     public string Command => Definition.CommandTemplate.Interpolate(Record.Asset);

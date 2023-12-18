@@ -10,7 +10,7 @@ using pwnctl.dto.Assets.Models;
 
 namespace pwnctl.api.Mediator.Handlers.Targets.Queries
 {
-    public sealed class ListEndpointsQueryHandler : IRequestHandler<ListHttpEndpointsQuery, MediatedResponse<HttpEndpointListViewModel>>
+    public sealed class ListHttpEndpointsQueryHandler : IRequestHandler<ListHttpEndpointsQuery, MediatedResponse<HttpEndpointListViewModel>>
     {
         public async Task<MediatedResponse<HttpEndpointListViewModel>> Handle(ListHttpEndpointsQuery query, CancellationToken cancellationToken)
         {

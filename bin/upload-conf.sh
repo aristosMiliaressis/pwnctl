@@ -38,5 +38,3 @@ curl -s https://raw.githubusercontent.com/trickest/resolvers/main/resolvers.txt 
 curl -s https://raw.githubusercontent.com/trickest/resolvers/main/resolvers-trusted.txt | tr -d '[\t ]' > deployment/trusted-resolvers.txt
 
 uploadDirectory ./deployment
-
-curl -X POST -H "Authorization: Bearer $accessToken" ${functionUrl}db/seed 2>/dev/null

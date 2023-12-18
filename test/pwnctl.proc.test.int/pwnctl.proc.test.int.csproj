@@ -31,13 +31,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="deployment/*">
+    <Content Include="App_Data/*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="deployment/*" />
+    <Resource Include="App_Data/*" />
   </ItemGroup>
 
 </Project>

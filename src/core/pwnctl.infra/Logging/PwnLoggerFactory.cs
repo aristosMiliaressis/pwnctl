@@ -14,10 +14,7 @@ public static class PwnLoggerFactory
 
     public static AppLogger DefaultLogger = new PwnLogger(new LoggerConfiguration()
                 .MinimumLevel.Is(LogEventLevel.Information)
-                .WriteTo.File(path: EnvironmentVariables.INSTALL_PATH == ""
-                                    ? $"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}/.config/pwnctl" 
-                                    : Path.GetFullPath(EnvironmentVariables.INSTALL_PATH),
-                                outputTemplate: _consoleOutputTemplate)
+                .WriteTo.File(path: ".", outputTemplate: _consoleOutputTemplate)
                 .CreateLogger());
 
     public static AppLogger Create(AppConfig config)

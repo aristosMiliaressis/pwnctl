@@ -5,5 +5,7 @@ public enum TaskState
     QUEUED,
     RUNNING,
     FINISHED,
-    FAILED
+    FAILED,
+    CANCELED,
+    TIMED_OUT,
 }

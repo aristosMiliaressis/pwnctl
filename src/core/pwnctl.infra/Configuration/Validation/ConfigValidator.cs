@@ -34,34 +34,21 @@ public static class ConfigValidator
                 .Build();
 
 
-    public static bool TryValidateTaskDefinitions(string fileName, out string? errorMessage)
+    public static bool TryValidateTaskDefinitions(TaskConfigFile file, out string? errorMessage)
     {
         errorMessage = null;
 
-        TaskConfigFile file;
-        IEnumerable<TaskDefinition> taskDefinitions;
-        try
-        {
-            var taskText = File.ReadAllText(fileName);
-            file = _deserializer.Deserialize<TaskConfigFile>(taskText);
-            taskDefinitions = file.TaskDefinitions.Select(d => d.ToEntity());
-        }
-        catch (Exception ex)
-        {
-            PwnInfraContext.Logger.Error(ex.ToRecursiveExInfo());
-            errorMessage = $"Deserialization of {fileName} failed";
-            return false;
-        }
+        IEnumerable<TaskDefinition> taskDefinitions = file.TaskDefinitions.Select(d => d.ToEntity());
 
         if (string.IsNullOrEmpty(file.Profile))
         {
-            errorMessage = $"Null or empty profile name";
+            errorMessage = "Null or empty profile name";
             return false;
         }
 
         if (!taskDefinitions.Any())
         {
-            errorMessage = $"At least one task definition is required";
+            errorMessage = "At least one task definition is required";
             return false;
         }
 
@@ -116,22 +103,11 @@ public static class ConfigValidator
         return true;
     }
 
-    public static bool TryValidateNotificationRules(string fileName, out string? errorMessage)
+    public static bool TryValidateNotificationRules(List<NotificationRuleDTO> notificationRuleDTOs, out string? errorMessage)
     {
         errorMessage = null;
 
-        IEnumerable<NotificationRule> notificationRules;
-        try
-        {
-            var ruleText = File.ReadAllText(fileName);
-            var notificationRuleDTOs = _deserializer.Deserialize<List<NotificationRuleDTO>>(ruleText);
-            notificationRules = notificationRuleDTOs.Select(r => r.ToEntity());
-        }
-        catch
-        {
-            errorMessage = $"Deserialization of {fileName} failed";
-            return false;
-        }
+        IEnumerable<NotificationRule> notificationRules = notificationRuleDTOs.Select(r => r.ToEntity());
 
         if (notificationRules.Select(d => d.Name).Distinct().Count() != notificationRules.Count())
         {

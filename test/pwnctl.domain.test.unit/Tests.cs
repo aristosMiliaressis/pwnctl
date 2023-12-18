@@ -12,7 +12,6 @@ public sealed class Tests
     public Tests()
     {
         Environment.SetEnvironmentVariable("PWNCTL_USE_LOCAL_INTEGRATIONS", "true");
-        Environment.SetEnvironmentVariable("PWNCTL_INSTALL_PATH", ".");
         Environment.SetEnvironmentVariable("PWNCTL_Logging__MinLevel", "Warning");
 
         PwnInfraContextInitializer.Setup();

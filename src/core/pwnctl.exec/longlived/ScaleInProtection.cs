@@ -17,12 +17,12 @@ public static class ScaleInProtection
             ExpiresInMinutes = 2880
         };
 
-        PwnInfraContext.Logger.Information("Enabling Scale-in Protection");
+        PwnInfraContext.Logger.Information("Enabling scale-in protection.");
         var response = await _httpClient.PutAsJsonAsync(Environment.GetEnvironmentVariable("ECS_AGENT_URI")+"/task-protection/v1/state", request);
         if(!response.IsSuccessStatusCode)
         {
             var responseBody = await response.Content.ReadAsStringAsync();
-            PwnInfraContext.Logger.Warning($"Failed to enable Scale-in Protection Response status {response.StatusCode}");
+            PwnInfraContext.Logger.Warning($"Failed to enable scale-in protection response status {response.StatusCode}.");
             PwnInfraContext.Logger.Warning(responseBody);
         }
     }
@@ -37,12 +37,12 @@ public static class ScaleInProtection
             ProtectionEnabled = false
         };
 
-        PwnInfraContext.Logger.Information("Disabling Scale-in Protection");
+        PwnInfraContext.Logger.Information("Disabling scale-in protection.");
         var response = await _httpClient.PutAsJsonAsync(Environment.GetEnvironmentVariable("ECS_AGENT_URI")+"/task-protection/v1/state", request);
         if (!response.IsSuccessStatusCode)
         {
             var responseBody = await response.Content.ReadAsStringAsync();
-            PwnInfraContext.Logger.Warning($"Failed to disable Scale-in Protection Response status {response.StatusCode}");
+            PwnInfraContext.Logger.Warning($"Failed to disable scale-in protection response status {response.StatusCode}.");
             PwnInfraContext.Logger.Warning(responseBody);
         }
     }

@@ -21,3 +21,10 @@ RUN unzip awscli-exe-linux-x86_64.zip \
     && rm awscli-exe-linux-x86_64.zip \
     && ./aws/install --update \
     && rm -rf ./aws
+
+RUN curl -OJ https://amazon-ecs-cli.s3.amazonaws.com/ecs-cli-linux-amd64-latest \
+    && chmod +x ecs-cli-linux-amd64-latest \
+    && mv ecs-cli-linux-amd64-latest /usr/local/bin/ecs-cli
+
+RUN curl -SL https://github.com/docker/compose/releases/download/v2.23.3/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
+
