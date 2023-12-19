@@ -9,7 +9,7 @@ keyword=$1
 
 # TODO download
 PSL='deployment/public_suffix_list.dat'
-RESOLVERS='/opt/wordlists/dns/trusted-resolvers.txt'
+RESOLVERS='/opt/wordlists/dns/resolvers-best.txt'
 
 cat $PSL \
 	| xargs -I {} printf "$keyword.{}\n" \

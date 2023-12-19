@@ -75,8 +75,8 @@ TaskDefinitions:
     Subject: HttpEndpoint
     ShortLived: true
 
-  - Name: get_all_urls
-    CommandTemplate: get-all-urls.sh {{Name}}
+  - Name: waymore
+    CommandTemplate: waymore.sh {{Name}}
     Subject: DomainName
     Filter: DomainName.ZoneDepth == 1
 
@@ -102,7 +102,6 @@ TaskDefinitions:
     Subject: HttpEndpoint
     Filter: HttpEndpoint.Path == "/" && HttpEndpoint.Socket.DomainNameId != null
     CheckNotificationRules: true
-    ShortLived: true
 
   - Name: swagger_discovery
     CommandTemplate: swagger-discovery.sh {{Url}}

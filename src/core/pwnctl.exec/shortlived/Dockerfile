@@ -26,12 +26,14 @@ WORKDIR /tmp
 RUN mkdir -p /opt/wordlists/dns/
 RUN mkdir -p -m 0700 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
 RUN --mount=type=ssh \
-    git clone git@github.com:aristosMiliaressis/cors-scanner.git && make -C cors-scanner install
+    git clone -b pwnctl git@github.com:aristosMiliaressis/sub-enum.git \
+    && cp sub-enum/wordlists/* /opt/wordlists/dns/
 
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS worker-build
 
 # building exec service
+WORKDIR /src
 COPY ["/pwnctl.kernel/pwnctl.kernel.csproj", "/src/pwnctl.kernel/"]
 RUN dotnet restore "/src/pwnctl.kernel/pwnctl.kernel.csproj"
 COPY ["/pwnctl.domain/pwnctl.domain.csproj", "/src/pwnctl.domain/"]
@@ -43,12 +45,15 @@ RUN dotnet restore "/src/pwnctl.infra/pwnctl.infra.csproj"
 COPY ["/pwnctl.exec/shortlived/pwnctl.exec.shortlived.csproj", "/src/pwnctl.exec/shortlived/"]
 RUN dotnet restore "/src/pwnctl.exec/shortlived/pwnctl.exec.shortlived.csproj"
 
-COPY . src/
+COPY . /src
 
-RUN dotnet publish "/src/pwnctl.exec/shortlived/pwnctl.exec.shortlived.csproj" -c Release -o /publish/exec
+RUN dotnet publish "/src/pwnctl.exec/shortlived/pwnctl.exec.shortlived.csproj" -c Release -o /src/publish
 
 
 FROM ubuntu AS release
+
+ARG COMMIT_HASH
+RUN echo "export PWNCTL_COMMIT_HASH=$COMMIT_HASH" >> /root/.profile
 
 # Setting up .NET runtime
 RUN apt-get update \
@@ -106,7 +111,7 @@ RUN curl https://github.com/mgdm/htmlq/releases/download/v0.4.0/htmlq-x86_64-lin
 
 COPY --from=tool-build /root/go/bin/ /usr/local/bin/
 COPY --from=tool-build /opt/wordlists/ /opt/wordlists/
-COPY --from=worker-build /publish/exec /opt/pwnctl-exec
+COPY --from=worker-build /src/publish /opt/pwnctl-exec
 COPY pwnctl.exec/wordlists/ /opt/wordlists/
 COPY pwnctl.exec/scripts/* /opt/scripts/
 COPY pwnctl.exec/shortlived/entrypoint.sh /opt/pwnctl-exec/entrypoint.sh

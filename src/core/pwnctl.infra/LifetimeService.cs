@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Hosting;
 using pwnctl.app;
+using pwnctl.infra.Configuration;
 using pwnctl.app.Notifications.Enums;
 
 namespace pwnctl.infra;
@@ -15,7 +16,7 @@ public abstract class LifetimeService : BackgroundService
 
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
-        await PwnInfraContext.NotificationSender.SendAsync($"{GetType().Name} started.", NotificationTopic.Status);
+        await PwnInfraContext.NotificationSender.SendAsync($"{GetType().Name}:{EnvironmentVariables.COMMIT_HASH} started.", NotificationTopic.Status);
 
         await base.StartAsync(cancellationToken);
     }

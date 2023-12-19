@@ -44,6 +44,7 @@ RUN curl -sSL https://dot.net/v1/dotnet-install.sh \
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 
 # building proc service
+WORKDIR /src
 COPY ["/pwnctl.kernel/pwnctl.kernel.csproj", "/src/pwnctl.kernel/"]
 RUN dotnet restore "/src/pwnctl.kernel/pwnctl.kernel.csproj"
 COPY ["/pwnctl.domain/pwnctl.domain.csproj", "/src/pwnctl.domain/"]
@@ -55,13 +56,16 @@ RUN dotnet restore "/src/pwnctl.infra/pwnctl.infra.csproj"
 COPY ["/pwnctl.proc/pwnctl.proc.csproj", "/src/pwnctl.proc/"]
 RUN dotnet restore "/src/pwnctl.proc/pwnctl.proc.csproj"
 
-COPY . src/
+COPY . /src
 
-RUN dotnet publish "/src/pwnctl.proc/pwnctl.proc.csproj" -c Release -o /publish/proc
+RUN dotnet publish "/src/pwnctl.proc/pwnctl.proc.csproj" -c Release -o /src/publish
 
 FROM base AS release
 
-COPY --from=build /publish/proc /opt/pwnctl-proc
+ARG COMMIT_HASH
+RUN echo "export PWNCTL_COMMIT_HASH=$COMMIT_HASH" >> /root/.profile
+
+COPY --from=build /src/publish /opt/pwnctl-proc
 COPY --from=tool-build /root/go/bin/ /usr/local/bin/
 
 COPY pwnctl.proc/entrypoint.sh /opt/pwnctl-proc/entrypoint.sh

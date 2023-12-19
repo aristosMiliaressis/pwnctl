@@ -2,7 +2,7 @@
 
 cidr=$1
 
-RESOLVERS_FILE='/opt/wordlists/dns/trusted-resolvers.txt'
+RESOLVERS_FILE='/opt/wordlists/dns/resolvers-best.txt'
 
 mapcidr -silent -cidr $cidr \
     | zdns PTR --name-servers @$RESOLVERS_FILE --result-verbosity short \

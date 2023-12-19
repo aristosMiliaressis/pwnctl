@@ -29,7 +29,7 @@ public sealed class FsController : ControllerBase
         var directoryListing = Directory.GetDirectories(filePath)
                                 .Concat(Directory.GetFiles(filePath));
 
-        return Ok(directoryListing.Select(f => f.Replace(EnvironmentVariables.FS_MOUNT_POINT, "")));
+        return Ok(directoryListing.Select(f => f.Replace(EnvironmentVariables.FS_MOUNT_POINT+path, "")));
     }
 
     [HttpGet("download")]

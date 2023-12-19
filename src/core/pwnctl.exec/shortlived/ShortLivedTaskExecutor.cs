@@ -34,6 +34,8 @@ public sealed class ShortLivedTaskExecutor : LifetimeService
                 PwnInfraContext.Logger.Exception(ex);
             }
         }
+
+        await StopAsync(stoppingToken);
     }
 
     private async Task<bool> ExecutePendingTaskAsync(CancellationToken stoppingToken)
@@ -111,7 +113,7 @@ public sealed class ShortLivedTaskExecutor : LifetimeService
         StringBuilder stdout = null, stderr = null;
         try
         {
-            PwnInfraContext.Logger.Information("Running: " + task.Command);
+            PwnInfraContext.Logger.Information($"Running task #{task.Id}: {task.Command}");
 
             (exitCode, stdout, stderr) = await PwnInfraContext.CommandExecutor.ExecuteAsync(task.Command, stdin, cts.Token);
 

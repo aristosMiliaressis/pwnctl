@@ -42,6 +42,8 @@ RUN --mount=type=ssh \
 RUN --mount=type=ssh \
     git clone git@github.com:aristosMiliaressis/cache-prober.git && make -C cache-prober install
 RUN --mount=type=ssh \
+    git clone git@github.com:aristosMiliaressis/cors-scanner.git && make -C cors-scanner install
+RUN --mount=type=ssh \
     git clone -b pwnctl git@github.com:aristosMiliaressis/sub-enum.git \
     && cp sub-enum/wordlists/* /opt/wordlists/dns/ && cp sub-enum/sub-enum.sh $GOPATH/bin/ \
     && cp sub-enum/sub-wildcard-finder.sh $GOPATH/bin/
@@ -61,6 +63,7 @@ RUN cent -t=20 -p=/opt/nuclei_templates/community
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS worker-build
 
 # building exec service
+WORKDIR /src
 COPY ["/pwnctl.kernel/pwnctl.kernel.csproj", "/src/pwnctl.kernel/"]
 RUN dotnet restore "/src/pwnctl.kernel/pwnctl.kernel.csproj"
 COPY ["/pwnctl.domain/pwnctl.domain.csproj", "/src/pwnctl.domain/"]
@@ -72,12 +75,14 @@ RUN dotnet restore "/src/pwnctl.infra/pwnctl.infra.csproj"
 COPY ["/pwnctl.exec/longlived/pwnctl.exec.longlived.csproj", "/src/pwnctl.exec/longlived/"]
 RUN dotnet restore "/src/pwnctl.exec/longlived/pwnctl.exec.longlived.csproj"
 
-COPY . src/
+COPY . /src
 
-RUN dotnet publish "/src/pwnctl.exec/longlived/pwnctl.exec.longlived.csproj" -c Release -o /publish/exec
-
+RUN dotnet publish "/src/pwnctl.exec/longlived/pwnctl.exec.longlived.csproj" -c Release -o /src/publish
 
 FROM ubuntu AS release
+
+ARG COMMIT_HASH
+RUN echo "export PWNCTL_COMMIT_HASH=$COMMIT_HASH" >> /root/.profile
 
 # Setting up .NET runtime
 RUN apt-get update \
@@ -121,7 +126,7 @@ RUN mkdir /opt/tools
 WORKDIR /opt/tools
 
 RUN apt-get update \
-    && DEBIAN_FRONTEND=noninteractive apt-get install -y jq whois dnsutils less
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y jq whois dnsutils less parallel
 
 RUN python3 -m pip install useragent-picker-cli && uagen
 RUN python3 -m pip install -e git+https://github.com/initstring/cloud_enum#egg=cloud_enum
@@ -142,7 +147,7 @@ RUN curl https://raw.githubusercontent.com/aristosMiliaressis/wordlist_builder/m
 COPY --from=tool-build /root/go/bin/ /usr/local/bin/
 COPY --from=tool-build /opt/wordlists/ /opt/wordlists/
 COPY --from=nuclei-templates /opt/nuclei_templates/ /opt/nuclei_templates/
-COPY --from=worker-build /publish/exec /opt/pwnctl-exec
+COPY --from=worker-build /src/publish /opt/pwnctl-exec
 COPY pwnctl.exec/wordlists/ /opt/wordlists/
 COPY pwnctl.exec/nuclei_templates/ /opt/nuclei_templates/
 COPY pwnctl.exec/scripts/* /opt/scripts/

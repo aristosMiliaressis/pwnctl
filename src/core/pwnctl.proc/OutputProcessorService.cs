@@ -22,6 +22,7 @@ namespace pwnctl.proc
             if (int.TryParse(Environment.GetEnvironmentVariable("PWNCTL_Operation"), out int opId))
             {
                 await _opManager.TryHandleAsync(opId);
+                await StopAsync(stoppingToken);
                 return;
             }
 

@@ -3,7 +3,7 @@
 domain=$1
 
 RECORD_TYPES=(NS MX TXT NSEC HTTPS SVCB HINFO)
-RESOLVERS_FILE='/opt/wordlists/dns/trusted-resolvers.txt'
+RESOLVERS_FILE='/opt/wordlists/dns/resolvers-best.txt'
 
 domainfile=$1
 

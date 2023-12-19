@@ -2,9 +2,9 @@ namespace pwnctl.infra.Configuration;
 
 public static class EnvironmentVariables
 {
-    public static string COMMIT_HASH => Environment.GetEnvironmentVariable("PWNCTL_COMMIT_HASH")?.Split(":")?.Last()?.Substring(0, 7) ?? string.Empty;
-
     public static string HOSTNAME => Environment.GetEnvironmentVariable("HOSTNAME") ?? "";
+    public static string COMMIT_HASH => Environment.GetEnvironmentVariable("PWNCTL_COMMIT_HASH") ?? "";
+
     public static string FS_MOUNT_POINT => Environment.GetEnvironmentVariable("PWNCTL_FS_MOUNT_POINT") ?? "";
 
     public static bool IS_GHA => Environment.GetEnvironmentVariable("GITHUB_ACTIONS")?.Equals("true") ?? false;

@@ -24,10 +24,6 @@ resource "aws_ecs_task_definition" "exec_short" {
       "stopTimeout": 120,
       "environment": [
         {
-          "name": "PWNCTL_COMMIT_HASH",
-          "value": "${docker_registry_image.exec_short.sha256_digest}"
-        },
-        {
           "name": "PWNCTL_Worker__MaxTaskTimeout",
           "value": "${module.sqs.shortlived_visibility_timeout}"
         },
@@ -143,10 +139,6 @@ resource "aws_ecs_task_definition" "exec_long" {
       "essential": true,
       "stopTimeout": 120,
       "environment": [
-        {
-          "name": "PWNCTL_COMMIT_HASH",
-          "value": "${docker_registry_image.exec_long.sha256_digest}"
-        },
         {
           "name": "PWNCTL_Worker__MaxTaskTimeout",
           "value": "${var.task_timeout}"
@@ -269,10 +261,6 @@ resource "aws_ecs_task_definition" "proc" {
       "essential": true,
       "stopTimeout": 30,
       "environment": [
-        {
-          "name": "PWNCTL_COMMIT_HASH",
-          "value": "${docker_registry_image.proc.sha256_digest}"
-        },
         {
           "name": "PWNCTL_LongLivedTaskQueue__Name",
           "value": "${module.sqs.longlived_tasks_queue.name}"
