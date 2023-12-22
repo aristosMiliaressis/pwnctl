@@ -188,7 +188,7 @@ resource "aws_cloudwatch_metric_alarm" "output_queue_depth" {
 resource "aws_cloudwatch_metric_alarm" "all_queue_messages" {
   alarm_name                = "all-queue-messages"
   comparison_operator       = "GreaterThanOrEqualToThreshold"
-  threshold                 = 0
+  threshold                 = 1
   evaluation_periods        = 1
   insufficient_data_actions = []
 
@@ -302,7 +302,7 @@ resource "aws_cloudwatch_event_rule" "all_tasks_completed" {
   "detail": {
     "alarmName": ["all-queue-messages"],
     "state": {
-      "value": ["ALARM"]
+      "value": ["OK"]
     }
   }
 }

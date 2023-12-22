@@ -162,11 +162,17 @@ public class EventBridgeClient : OperationStateSubscriptionService
     {
         var client = new AmazonCloudWatchEventsClient();
 
-        var respone = await client.RemoveTargetsAsync(new RemoveTargetsRequest 
+        var response = await client.ListTargetsByRuleAsync(new ListTargetsByRuleRequest
         {
-            Rule = "all-tasks-completed"
+            Rule = "all-tasks-completed",
+        });
+        
+        var removeResponse = await client.RemoveTargetsAsync(new RemoveTargetsRequest 
+        {
+            Rule = "all-tasks-completed",
+            Ids = response.Targets.Select(t => t.Id).ToList()
         });
 
-        respone.FailedEntries.ForEach(fail => PwnInfraContext.Logger.Error($"{fail.ErrorCode}:{fail.ErrorMessage}"));
+        removeResponse.FailedEntries.ForEach(fail => PwnInfraContext.Logger.Error($"{fail.ErrorCode}:{fail.ErrorMessage}"));
     }
 }

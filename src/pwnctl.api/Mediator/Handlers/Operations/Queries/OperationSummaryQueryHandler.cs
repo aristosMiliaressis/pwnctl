@@ -1,8 +1,5 @@
 using pwnctl.dto.Mediator;
-using pwnctl.dto.Db.Queries;
-using pwnctl.dto.Db.Models;
 using pwnctl.infra.Persistence;
-using pwnctl.app.Common;
 
 using Microsoft.EntityFrameworkCore;
 using MediatR;
@@ -10,16 +7,22 @@ using pwnctl.app;
 using pwnctl.app.Tasks.Enums;
 using pwnctl.domain.Entities;
 using pwnctl.domain.ValueObjects;
+using pwnctl.dto.Operations.Queries;
+using pwnctl.app.Common.ValueObjects;
+using pwnctl.dto.Operations.Models;
 
 namespace pwnctl.api.Mediator.Handlers.Targets.Commands
 {
-    public sealed class SummaryQueryHandler : IRequestHandler<SummaryQuery, MediatedResponse<SummaryViewModel>>
+    public sealed class OperationSummaryQueryHandler : IRequestHandler<OperationSummaryQuery, MediatedResponse<SummaryViewModel>>
     {
-        public async Task<MediatedResponse<SummaryViewModel>> Handle(SummaryQuery command, CancellationToken cancellationToken)
+        public async Task<MediatedResponse<SummaryViewModel>> Handle(OperationSummaryQuery command, CancellationToken cancellationToken)
         {
             var viewModel = new SummaryViewModel();
 
             PwnctlDbContext context = new();
+            var op = context.Operations.FirstOrDefault(o => o.Name == ShortName.Create(command.Name));
+            if (op == null)
+                return MediatedResponse<SummaryViewModel>.Error("Operation {0} not found.", command.Name);
 
             viewModel.NetworkRangeCount = await context.NetworkRanges.CountAsync();
             viewModel.HostCount = await context.NetworkHosts.CountAsync();
@@ -55,6 +58,7 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Commands
                 {
                     Name = def.First().Name.Value,
                     Count = await context.TaskRecords.Where(e => def.Select(d => d.Id).Contains(e.DefinitionId)).CountAsync(),
+                    RunCount = context.TaskRecords.Where(e => def.Select(d => d.Id).Contains(e.DefinitionId)).Sum(e => e.RunCount),
                     Findings = context.AssetRecords.Include(r => r.FoundByTask).Where(r => def.Select(d => d.Id).Contains(r.FoundByTask.DefinitionId)).Count()
                 };
 

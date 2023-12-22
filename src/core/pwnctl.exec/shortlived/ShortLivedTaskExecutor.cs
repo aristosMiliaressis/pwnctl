@@ -88,7 +88,7 @@ public sealed class ShortLivedTaskExecutor : LifetimeService
             var (succedded, json) = await _queryRunner.TryRunAsync(task.Definition.StdinQuery);
             if (!succedded)
             {
-                task.Failed();
+                task.Failed(null);
 
                 succeeded = await _taskRepo.TryUpdateAsync(task);
                 if (!succeeded)
@@ -110,7 +110,7 @@ public sealed class ShortLivedTaskExecutor : LifetimeService
         cts.CancelAfter((PwnInfraContext.Config.Worker.MaxTaskTimeout - 30) * 1000);
 
         int exitCode = 0;
-        StringBuilder stdout = null, stderr = null;
+        StringBuilder stdout = null, stderr = new();
         try
         {
             PwnInfraContext.Logger.Information($"Running task #{task.Id}: {task.Command}");
@@ -123,13 +123,21 @@ public sealed class ShortLivedTaskExecutor : LifetimeService
         {
             if (ex is OperationCanceledException)
             {
-                PwnInfraContext.Logger.Warning($"Task {task.Id} cancelled.");
-                task.Canceled();
+                if (stoppingToken.IsCancellationRequested)
+                {
+                    PwnInfraContext.Logger.Warning($"Task {task.Id} cancelled.");
+                    task.Canceled(stderr.ToString());
+                } 
+                else 
+                {
+                    PwnInfraContext.Logger.Warning($"Task {task.Id} timed out.");
+                    task.Timedout(stderr.ToString());
+                }  
             }
             else
             {
                 PwnInfraContext.Logger.Exception(ex);
-                task.Failed();
+                task.Failed(stderr.ToString());
             }
 
             succeeded = await _taskRepo.TryUpdateAsync(task);

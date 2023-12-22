@@ -1,7 +1,5 @@
 #!/bin/bash
 
-aws events remove-targets --rule all-tasks-completed --ids $(aws events list-targets-by-rule --rule all-tasks-completed | jq -r '.Targets[].Id')
-
 functionUrl=$(aws ssm get-parameter --name /pwnctl/Api/BaseUrl | jq -r .Parameter.Value)
 
 if [ ! -z $functionUrl ]

@@ -41,6 +41,8 @@ public sealed class LongLivedTaskExecutor : LifetimeService
                 }
             }
         }
+
+        await StopAsync(stoppingToken);
     }
 
     private async Task<bool> ExecutePendingTaskAsync(CancellationToken stoppingToken)
@@ -116,7 +118,7 @@ public sealed class LongLivedTaskExecutor : LifetimeService
             var (succedded, json) = await _queryRunner.TryRunAsync(task.Definition.StdinQuery);
             if (!succedded)
             {
-                task.Failed();
+                task.Failed(null);
 
                 succeeded = await _taskRepo.TryUpdateAsync(task);
                 if (!succeeded)
@@ -138,10 +140,10 @@ public sealed class LongLivedTaskExecutor : LifetimeService
         cts.CancelAfter(PwnInfraContext.Config.Worker.MaxTaskTimeout * 1000);
 
         int exitCode = 0;
-        StringBuilder stdout = null, stderr = null;
+        StringBuilder stdout = null, stderr = new();
         try
         {
-            PwnInfraContext.Logger.Information("Running: " + task.Command);
+            PwnInfraContext.Logger.Information($"Running task #{task.Id}: " + task.Command);
 
             (exitCode, stdout, stderr) = await PwnInfraContext.CommandExecutor.ExecuteAsync(task.Command, stdin, token: cts.Token);
 
@@ -151,13 +153,21 @@ public sealed class LongLivedTaskExecutor : LifetimeService
         {
             if (ex is OperationCanceledException)
             {
-                PwnInfraContext.Logger.Warning($"Task {task.Id} cancelled.");
-                task.Canceled();
+                if (stoppingToken.IsCancellationRequested)
+                {
+                    PwnInfraContext.Logger.Warning($"Task {task.Id} cancelled.");
+                    task.Canceled(stderr.ToString());
+                }
+                else
+                {
+                    PwnInfraContext.Logger.Warning($"Task {task.Id} timed out.");
+                    task.Timedout(stderr.ToString());
+                }
             }
             else
             {
                 PwnInfraContext.Logger.Exception(ex);
-                task.Failed();
+                task.Failed(stderr.ToString());
             }
 
             succeeded = await _taskRepo.TryUpdateAsync(task);

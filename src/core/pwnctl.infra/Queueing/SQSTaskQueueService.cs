@@ -1,4 +1,4 @@
-﻿using Amazon;
+using Amazon;
 using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
 using Amazon.SQS;
@@ -69,9 +69,11 @@ namespace pwnctl.infra.Queueing
         public async Task EnqueueBatchAsync<TMessage>(IEnumerable<TMessage> msgs)
             where TMessage : QueueMessage
         {
+            PwnInfraContext.Logger.Information($"Enqueuing batch of {msgs.Count()} {typeof(TMessage).Name} messages");
+            
             try
             {
-                for (var i = 0; i < msgs.Count(); i += 10)
+                for (var i = 0; i * 10 < msgs.Count(); i++)
                 {
                     var batch = msgs.Skip(i * 10).Take(10);
 

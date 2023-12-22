@@ -34,8 +34,10 @@ RUN git clone https://github.com/aristosMiliaressis/ffuf.git && go build -C ffuf
 RUN git clone https://github.com/blechschmidt/massdns.git \
     && cd massdns && make && cp bin/massdns $GOPATH/bin/
 
-# Installing private tools
 RUN mkdir -p /opt/wordlists/dns/
+RUN curl https://wordlists-cdn.assetnote.io/data/manual/best-dns-wordlist.txt -o /opt/wordlists/dns/subdomains-3m.txt
+
+# Installing private tools
 RUN mkdir -p -m 0700 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
 RUN --mount=type=ssh \
     git clone git@github.com:aristosMiliaressis/vhost-brute.git && make -C vhost-brute install
@@ -47,7 +49,6 @@ RUN --mount=type=ssh \
     git clone -b pwnctl git@github.com:aristosMiliaressis/sub-enum.git \
     && cp sub-enum/wordlists/* /opt/wordlists/dns/ && cp sub-enum/sub-enum.sh $GOPATH/bin/ \
     && cp sub-enum/sub-wildcard-finder.sh $GOPATH/bin/
-RUN curl https://wordlists-cdn.assetnote.io/data/manual/best-dns-wordlist.txt -o /opt/wordlists/dns/subdomains-3m.txt
 
 FROM golang:1.20.2-alpine as nuclei-templates
 
@@ -80,9 +81,6 @@ COPY . /src
 RUN dotnet publish "/src/pwnctl.exec/longlived/pwnctl.exec.longlived.csproj" -c Release -o /src/publish
 
 FROM ubuntu AS release
-
-ARG COMMIT_HASH
-RUN echo "export PWNCTL_COMMIT_HASH=$COMMIT_HASH" >> /root/.profile
 
 # Setting up .NET runtime
 RUN apt-get update \
@@ -126,13 +124,14 @@ RUN mkdir /opt/tools
 WORKDIR /opt/tools
 
 RUN apt-get update \
-    && DEBIAN_FRONTEND=noninteractive apt-get install -y jq whois dnsutils less parallel
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y jq whois dnsutils less parallel wget
 
 RUN python3 -m pip install useragent-picker-cli && uagen
 RUN python3 -m pip install -e git+https://github.com/initstring/cloud_enum#egg=cloud_enum
 RUN python3 -m pip install -e git+https://github.com/xnl-h4ck3r/urless#egg=urless
 RUN python3 -m pip install -e git+https://github.com/xnl-h4ck3r/waymore#egg=waymore \
-    && ln /opt/tools/src/waymore/waymore.py /usr/local/bin/waymore && chmod +x /usr/local/bin/waymore
+    && ln /opt/tools/src/waymore/waymore.py \
+    && chmod +x /opt/tools/src/waymore/waymore.py
 RUN git clone https://github.com/cramppet/regulator \
     && python3 -m pip install -r regulator/requirements.txt
 RUN git clone https://github.com/defparam/smuggler.git
@@ -142,9 +141,9 @@ RUN mkdir -p /opt/toos/ShortNameScanner && cd /opt/toos/ShortNameScanner \
     && curl -OJ https://raw.githubusercontent.com/irsdl/IIS-ShortName-Scanner/master/release/iis_shortname_scanner.jar \
     && curl -OJ https://raw.githubusercontent.com/irsdl/IIS-ShortName-Scanner/master/release/config.xml
 
+COPY --from=tool-build /root/go/bin/ /usr/local/bin/
 RUN curl https://raw.githubusercontent.com/aristosMiliaressis/wordlist_builder/master/wordlist_builder.sh | bash -s -- /opt/wordlists/
 
-COPY --from=tool-build /root/go/bin/ /usr/local/bin/
 COPY --from=tool-build /opt/wordlists/ /opt/wordlists/
 COPY --from=nuclei-templates /opt/nuclei_templates/ /opt/nuclei_templates/
 COPY --from=worker-build /src/publish /opt/pwnctl-exec
@@ -157,6 +156,9 @@ RUN chmod -R +x /opt/scripts \
     && mv /opt/scripts/* /usr/local/bin/ \
     && mkdir -p ~/.config/ffuf/autocalibration \
     && mv /opt/wordlists/ffuf_ac_strategies/* ~/.config/ffuf/autocalibration
+
+ARG COMMIT_HASH
+RUN echo "export PWNCTL_COMMIT_HASH=$COMMIT_HASH" >> /root/.profile
 
 RUN chmod +x /opt/pwnctl-exec/entrypoint.sh
 ENTRYPOINT ["/opt/pwnctl-exec/entrypoint.sh"]

@@ -52,9 +52,6 @@ RUN dotnet publish "/src/pwnctl.exec/shortlived/pwnctl.exec.shortlived.csproj" -
 
 FROM ubuntu AS release
 
-ARG COMMIT_HASH
-RUN echo "export PWNCTL_COMMIT_HASH=$COMMIT_HASH" >> /root/.profile
-
 # Setting up .NET runtime
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -118,6 +115,9 @@ COPY pwnctl.exec/shortlived/entrypoint.sh /opt/pwnctl-exec/entrypoint.sh
 
 RUN chmod -R +x /opt/scripts \
     && mv /opt/scripts/* /usr/local/bin/
+
+ARG COMMIT_HASH
+RUN echo "export PWNCTL_COMMIT_HASH=$COMMIT_HASH" >> /root/.profile
 
 RUN chmod +x /opt/pwnctl-exec/entrypoint.sh
 ENTRYPOINT ["/opt/pwnctl-exec/entrypoint.sh"]

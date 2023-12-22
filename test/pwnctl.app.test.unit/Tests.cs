@@ -29,6 +29,7 @@ using pwnctl.kernel;
 using pwnctl.app.Operations.Entities;
 using pwnctl.app.Operations;
 using pwnctl.app.Operations.Enums;
+using System.Reflection;
 
 public sealed class Tests
 {
@@ -38,7 +39,7 @@ public sealed class Tests
         Environment.SetEnvironmentVariable("PWNCTL_Logging__MinLevel", "Warning");
 
         PwnInfraContextInitializer.Setup();
-        DatabaseInitializer.InitializeAsync(null).Wait();
+        DatabaseInitializer.InitializeAsync(Assembly.GetExecutingAssembly(), null).Wait();
         PwnInfraContextInitializer.Register<TaskQueueService, FakeTaskQueueService>();
         PwnInfraContextInitializer.Register<NotificationSender, StubNotificationSender>();
         PwnInfraContextInitializer.Register<CommandExecutor, BashCommandExecutor>();

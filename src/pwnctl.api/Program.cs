@@ -19,6 +19,7 @@ using System.Text;
 using pwnctl.infra.Repositories;
 using pwnctl.app.Queueing.Interfaces;
 using pwnctl.infra.Queueing;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -92,7 +93,7 @@ var userManager = app.Services.GetService<UserManager<User>>();
 
 PwnInfraContextInitializer.Setup();
 
-await DatabaseInitializer.InitializeAsync(userManager);
+await DatabaseInitializer.InitializeAsync(Assembly.GetExecutingAssembly(), userManager);
 
 app.UseHttpsRedirection();
 

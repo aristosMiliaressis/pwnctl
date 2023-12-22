@@ -26,6 +26,7 @@ using System.Threading.Tasks;
 using System.ComponentModel.Design.Serialization;
 using Testcontainers.PostgreSql;
 using Xunit;
+using System.Reflection;
 
 public sealed class Tests
 {
@@ -85,7 +86,7 @@ public sealed class Tests
         PwnInfraContextInitializer.Setup();
 
         // migrate & seed database
-        DatabaseInitializer.InitializeAsync(null).Wait();
+        DatabaseInitializer.InitializeAsync(Assembly.GetExecutingAssembly(), null).Wait();
         PwnInfraContextInitializer.Register<TaskQueueService, SQSTaskQueueService>();
     }
 

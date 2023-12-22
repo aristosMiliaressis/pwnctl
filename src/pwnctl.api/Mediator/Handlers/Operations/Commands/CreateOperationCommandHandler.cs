@@ -134,7 +134,7 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
                 await _taskQueueService.EnqueueBatchAsync(newTasks.Where(t => !t.Definition.ShortLived).Select(t => new LongLivedTaskDTO(t)));
             }
 
-            _client.Subscribe(op);
+            await _client.Subscribe(op);
         }
     }
 }

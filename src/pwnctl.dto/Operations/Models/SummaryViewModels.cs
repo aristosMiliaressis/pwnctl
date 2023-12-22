@@ -1,4 +1,4 @@
-namespace pwnctl.dto.Db.Models;
+namespace pwnctl.dto.Operations.Models;
 
 public sealed class SummaryViewModel
 {
@@ -28,6 +28,8 @@ public sealed class SummaryViewModel
     public DateTime? FirstTask { get; set; }
     public DateTime? LastTask { get; set; }
     public DateTime? LastFinishedTask { get; set; }
+    public DateTime? InitializedAt { get; set; }
+    public DateTime? FinishedAt { get; set; }
 
     public List<TaskDefinitionDetails> TaskDetails { get; set; }
 
@@ -35,6 +37,7 @@ public sealed class SummaryViewModel
     {
         public string Name { get; set; }
         public int Count { get; set; }
+        public int RunCount { get; set; }
         public TimeSpan Duration { get; set; }
         public int Findings { get; set; }
     }

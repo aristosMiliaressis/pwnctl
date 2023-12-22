@@ -26,7 +26,7 @@ namespace pwnctl.infra.Persistence
                 .WithNamingConvention(PascalCaseNamingConvention.Instance)
                 .Build();
 
-        public static async Task InitializeAsync(UserManager<User>? userManger)
+        public static async Task InitializeAsync(Assembly callingAssembly = null, UserManager<User> userManger = null)
         {
             PwnctlDbContext context = new();
 
@@ -42,17 +42,18 @@ namespace pwnctl.infra.Persistence
 
             if (!context.NotificationRules.Any())
             {
-                string[] seedResources = Assembly.GetEntryAssembly().GetManifestResourceNames();
+                string[] seedResources = callingAssembly.GetManifestResourceNames();
 
                 foreach (string resourceName in seedResources)
                 {
+                    PwnInfraContext.Logger.Information($"Seeding {resourceName}");
                     if (resourceName.EndsWith(".td.yml"))
                     {
-                        await SeedTaskProfileAsync(context, resourceName);
+                        await SeedTaskProfileAsync(callingAssembly, context, resourceName);
                     }
                     else if (resourceName.EndsWith(".nr.yml"))
                     {
-                        await SeedNotificationRulesAsync(context, resourceName);
+                        await SeedNotificationRulesAsync(callingAssembly, context, resourceName);
                     }
                 }
             }
@@ -83,9 +84,9 @@ namespace pwnctl.infra.Persistence
             }
         }
 
-        private static async Task SeedTaskProfileAsync(PwnctlDbContext context, string resourceName)
+        private static async Task SeedTaskProfileAsync(Assembly callingAssembly, PwnctlDbContext context, string resourceName)
         {
-            Stream yamlStream = Assembly.GetEntryAssembly().GetManifestResourceStream(resourceName);
+            Stream yamlStream = callingAssembly.GetManifestResourceStream(resourceName);
             StreamReader reader = new StreamReader(yamlStream);
             string yamlText = reader.ReadToEnd();
 
@@ -99,7 +100,7 @@ namespace pwnctl.infra.Persistence
                 throw new ConfigValidationException(resourceName, $"Deserialization of {resourceName} failed", ex);
             }
 
-            var passed = ConfigValidator.TryValidateTaskDefinitions(file, out string? errorMessage);
+            var passed = ConfigValidator.TryValidateTaskDefinitions(file, out string errorMessage);
             if (!passed)
             {
                 throw new ConfigValidationException(resourceName, errorMessage);
@@ -119,9 +120,9 @@ namespace pwnctl.infra.Persistence
             await context.SaveChangesAsync();
         }
 
-        private static async Task SeedNotificationRulesAsync(PwnctlDbContext context, string resourceName)
+        private static async Task SeedNotificationRulesAsync(Assembly callingAssembly, PwnctlDbContext context, string resourceName)
         {
-            Stream yamlStream = Assembly.GetEntryAssembly().GetManifestResourceStream(resourceName);
+            Stream yamlStream = callingAssembly.GetManifestResourceStream(resourceName);
             StreamReader reader = new StreamReader(yamlStream);
             string yamlText = reader.ReadToEnd();
 
@@ -135,7 +136,7 @@ namespace pwnctl.infra.Persistence
                 throw new ConfigValidationException(resourceName, $"Deserialization of {resourceName} failed", ex);
             }
 
-            var passed = ConfigValidator.TryValidateNotificationRules(notificationRules, out string? errorMessage);
+            var passed = ConfigValidator.TryValidateNotificationRules(notificationRules, out string errorMessage);
             if (!passed)
             {
                 throw new ConfigValidationException(resourceName, errorMessage);

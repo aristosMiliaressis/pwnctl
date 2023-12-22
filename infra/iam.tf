@@ -100,6 +100,11 @@ resource "aws_iam_role_policy_attachment" "grant_ecs_sm_readwrite_access" {
   policy_arn = data.aws_iam_policy.sm_readwrite_access.arn
 }
 
+resource "aws_iam_role_policy_attachment" "grant_eventbridge_scheduler_access" {
+  role       = aws_iam_role.ecs_service.name
+  policy_arn = aws_iam_policy.eventbridge_scheduler.arn
+}
+
 # EventBridge Role
 data "aws_iam_policy_document" "event_publisher" {
   statement {
@@ -158,7 +163,8 @@ data "aws_iam_policy_document" "eventbridge_scheduler" {
       "events:PutTargets",
       "events:DeleteRule",
       "events:DeleteTargets",
-      "events:RemoveTargets"
+      "events:RemoveTargets",
+      "events:ListTargetsByRule"
     ]
 
     resources = ["*"]

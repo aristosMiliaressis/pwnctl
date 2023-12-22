@@ -6,4 +6,4 @@ TaskDefinitions:
     Subject: HttpEndpoint
     Filter: HttpEndpoint.Path == "/" && HttpEndpoint.IsIpBased
     CommandTemplate: vhost-scan.sh {{Url}}
-    StdinQuery: SELECT "TextNotation" FROM "asset_records" WHERE "InScope" = true AND "DomainNameId" != null
+    StdinQuery: SELECT "TextNotation" FROM "asset_records" WHERE "InScope" = true AND "DomainNameId" IS NOT NULL

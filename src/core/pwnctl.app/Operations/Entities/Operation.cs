@@ -59,7 +59,7 @@ public class Operation : Entity<int>
         var nextPhase = Policy.TaskProfiles
                             .Where(p => p.TaskProfile.Phase > CurrentPhase)
                             .OrderBy(p => p.TaskProfile.Phase)
-                            .FirstOrDefault().TaskProfile.Phase;
+                            .First().TaskProfile.Phase;
 
         CurrentPhase = nextPhase;
     }

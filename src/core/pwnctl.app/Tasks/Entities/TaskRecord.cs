@@ -64,23 +64,36 @@ public sealed class TaskRecord : Entity<int>
         return true;
     }
 
-    public bool Failed()
+    public bool Failed(string? stderr)
     {
         if (State != TaskState.RUNNING)
             return false;
 
         State = TaskState.FAILED;
         FinishedAt = SystemTime.UtcNow();
+        Stderr = stderr;
         return true;
     }
 
-    public bool Canceled()
+    public bool Canceled(string? stderr)
     {
         if (State != TaskState.RUNNING)
             return false;
 
         State = TaskState.CANCELED;
         FinishedAt = SystemTime.UtcNow();
+        Stderr = stderr;
+        return true;
+    }
+
+    public bool Timedout(string? stderr)
+    {
+        if (State != TaskState.RUNNING)
+            return false;
+
+        State = TaskState.TIMED_OUT;
+        FinishedAt = SystemTime.UtcNow();
+        Stderr = stderr;
         return true;
     }
 

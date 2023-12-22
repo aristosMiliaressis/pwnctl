@@ -14,6 +14,9 @@ public sealed class Policy : Entity<int>
 
     public Policy(IEnumerable<TaskProfile> profiles)
     {
+        if (!profiles.Any())
+            throw new Exception("At least one Task Profile is requied for every policy.");
+            
         TaskProfiles = profiles.Select(p => new PolicyTaskProfile { Policy = this, TaskProfile = p }).ToList();
     }
 
