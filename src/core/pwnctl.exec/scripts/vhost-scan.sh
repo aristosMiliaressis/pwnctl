@@ -1,4 +1,5 @@
 #!/bin/bash
+set -eux
 
 url=$1
 hostname_list=`mktemp`
@@ -8,7 +9,9 @@ trap "rm $output $hostname_list" EXIT
 while read line
 do
   echo "$line"
-done < "${1:-/dev/stdin}" | jq -r '.[].TextNotation' > $hostname_list
+done < /dev/stdin > $output
+
+cat $output | jq -r '.[].TextNotation' > $hostname_list
 
 vhost-brute -silent --only-unindexed -fc 502,503,504 -u $url -f $hostname_list > $output
 

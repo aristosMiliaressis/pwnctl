@@ -1,4 +1,5 @@
 #!/bin/bash
+set -eux
 
 domain=$1
 
@@ -21,10 +22,10 @@ do
     enum_records $record
 done
 
-dig +nottlid TXT _dmarc.$domain 2>/dev/null | tr '\t' ' ' | grep ' IN TXT '
-dig +nottlid TXT _mta-sts.$domain 2>/dev/null | tr '\t' ' ' | grep ' IN TXT '
+dig +nottlid TXT _dmarc.$domain 2>/dev/null | tr '\t' ' ' | grep ' IN TXT ' || echo -n
+dig +nottlid TXT _mta-sts.$domain 2>/dev/null | tr '\t' ' ' | grep ' IN TXT ' || echo -n
 
 if [[ $2 == "1" ]]
 then
-    cat /opt/wordlists/dns/srv-records.txt | xargs -I {} dig +nottlid SRV {}.$domain | tr '\t' ' ' | grep ' IN SRV '
+    cat /opt/wordlists/dns/srv-records.txt | xargs -I {} dig +nottlid SRV {}.$domain | tr '\t' ' ' | grep ' IN SRV ' || exit 0
 fi

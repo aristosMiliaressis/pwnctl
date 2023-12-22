@@ -1,7 +1,9 @@
 #!/bin/bash
+set -eux
 
 url=$1
 temp=`mktemp`
+trap "rm $temp" EXIT
 
 if [[ $url == *"tcp://"* ]]
 then
@@ -18,6 +20,4 @@ fi
 cd /opt/toos/ShortNameScanner/
 
 echo No | java -jar iis_shortname_scanner.jar 2 20 $url \
-        | grep -q 'Vulnerable!' && echo '{"Asset":"'$url'", "tags":{"shortname-misconfig":"true"}}'
-
-rm $temp
+        | grep -q 'Vulnerable!' && echo '{"Asset":"'$url'", "tags":{"shortname-misconfig":"true"}}' || exit 0

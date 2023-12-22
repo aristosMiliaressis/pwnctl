@@ -1,4 +1,5 @@
 #!/bin/bash
+set -ux 
 
 if [ $# -lt 2 ]
 then
@@ -20,7 +21,7 @@ do
     cat $list
 done | sort -u > $temp_wordlist
 
-timeout -v -k 30s 150m ffuf -maxtime 9000 -s -o $temp_outfile -of json -se -fp -acp -acs waf,blacklist,wildcard,route-handler \
+timeout --preserve-status -v -k 30s 150m ffuf -maxtime 9000 -s -o $temp_outfile -of json -se -fp -acp -acs waf,blacklist,wildcard,route-handler \
     -ar -mc 200,204,401,500,501 -recursion -recursion-status 301,302,303,307,308,401,403,405,500,501 -H "User-Agent: $(uagen)" -w $temp_wordlist -u ${url}FUZZ >/dev/null
 
 cat $temp_outfile \

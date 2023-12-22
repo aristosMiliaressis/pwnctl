@@ -1,5 +1,5 @@
 #!/bin/bash
-set -x
+set -eux
 
 url=$1
 domain=$(echo $url | unfurl domains)

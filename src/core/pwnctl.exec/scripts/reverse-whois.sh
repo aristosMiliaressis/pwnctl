@@ -1,4 +1,5 @@
 #!/bin/bash
+set -eux
 
 email=$1
 
@@ -7,4 +8,4 @@ curl -s "https://viewdns.info/reversewhois/?q=$email" \
 	| htmlq  table#null tr \
 	| tail -n +3 \
 	| htmlq -t td \
-	| grep -P '[\w-]+\.[\.\w-]+'
+	| grep -P '[\w-]+\.[\.\w-]+' || exit 0

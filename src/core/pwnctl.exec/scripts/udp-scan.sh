@@ -1,7 +1,9 @@
 #!/bin/bash
+set -eux
 
 ip=$1
 temp=`mktemp`;
+trap "rm $temp" EXIT
 
 params=()
 [[ $ip =~ .*":".* ]] && params+=(-6)
@@ -21,4 +23,4 @@ cat $temp \
 		echo '{"asset":"udp://'$ip:$port'","tags":{"Protocol":"'$protocol'", "Version":"'$version'"}}'; \
 	done
 
-rm $temp
+

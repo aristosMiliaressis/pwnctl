@@ -1,5 +1,5 @@
 #!/bin/bash
-set -x
+set -eux
 
 addr=$1
 
@@ -13,4 +13,4 @@ tls_enum() {
         | sed 's/"null"/""/g'
 }
 
-tlsx -silent -u $addr -tps | grep -q '[success]' && tls_enum
+tlsx -silent -u $addr -tps | grep -q '[success]' && tls_enum || exit 0

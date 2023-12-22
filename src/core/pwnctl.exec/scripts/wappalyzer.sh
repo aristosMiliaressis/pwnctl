@@ -1,4 +1,5 @@
 #!/bin/bash
+set -eux
 
 url=$1
 webanalyze_out=`mktemp`

@@ -1,4 +1,5 @@
 #!/bin/bash
+set -eux
 
 url=$1
 
@@ -10,8 +11,8 @@ else
 fi
 
 resp=$(curl -L -k -s $url) 
-echo $resp | grep -q NoSuchBucket && echo '{"Asset":"'$url'","Tags"{"s3-takeover":"true"}}'
-echo $resp | grep -q "The specified bucket does not exist" && echo '{"Asset":"'$url'","Tags":{"s3-takeover":"true"}}'
+echo $resp | grep -q NoSuchBucket && echo '{"Asset":"'$url'","Tags"{"s3-takeover":"true"}}' || echo -n
+echo $resp | grep -q "The specified bucket does not exist" && echo '{"Asset":"'$url'","Tags":{"s3-takeover":"true"}}' || echo -n
 
 s3scanner -i scan -b $bucketName \
     | grep bucket_exists \
