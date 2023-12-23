@@ -149,16 +149,19 @@ TaskDefinitions:
     Subject: HttpEndpoint
     Filter: HttpEndpoint.Path == "/"
 
-  - Name: dir_brute_common
-    CommandTemplate: dir-brute.sh {{Url}} /opt/wordlists/common.txt
-    Filter: HttpEndpoint.Path == "/"
-    Subject: HttpEndpoint
-
   - Name: file_brute_config
     CommandTemplate: file-brute.sh {{Url}} /opt/wordlists/config.txt
     Filter: HttpEndpoint.Path == "/"
     Subject: HttpEndpoint
+
+  - Name: vhost_scan
+    Subject: HttpEndpoint
+    Filter: HttpEndpoint.Path == "/" && HttpEndpoint.IsIpBased
+    CommandTemplate: vhost-scan.sh {{Url}}
+    StdinQuery: SELECT "TextNotation" FROM "asset_records" WHERE "InScope" = true AND "DomainNameId" IS NOT NULL
 ```
+
+tasks can be annotated as `shortlived` (those that take 2 minutes or less) which will place them in a separate task queue that is consumed from a service running on spot instances which gives those tasks a 95% cost reduction in terms of compute cost.
 
 **Notification Configuration**
 
@@ -238,13 +241,12 @@ Input:
 
 ## How to set it up?
 
-**To Do**
-- [ ] setup dev containers
-- [ ] terraform discord server
-
 1. create an aws Administrator user & set up aws cli
 2. put all tool configuration files in the `deployment/` folder
 3. install `task`
 > sudo sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin
 4. run `task deploy`
 
+**To Do**
+- [ ] setup dev containers
+- [ ] terraform discord server
