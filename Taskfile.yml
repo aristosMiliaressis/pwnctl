@@ -37,7 +37,7 @@ tasks:
       - |
         commitHash=$(git rev-parse --short HEAD)
         ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-exec-short") | .repositoryUri')
-        docker buildx build --build-arg COMMIT_HASH=$commitHash --ssh default=$SSH_AUTH_SOCK src/core/ -f src/core/pwnctl.exec/shortlived/Dockerfile -t ${ecrUri}:$commitHash
+        docker build --build-arg COMMIT_HASH=$commitHash --ssh default=$SSH_AUTH_SOCK src/core/ -f src/core/pwnctl.exec/shortlived/Dockerfile -t ${ecrUri}:$commitHash
         docker tag ${ecrUri}:$commitHash ${ecrUri}:untested_$commitHash
 
   build-exec-long-image:
@@ -45,7 +45,7 @@ tasks:
       - |
         commitHash=$(git rev-parse --short HEAD)
         ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-exec-long") | .repositoryUri')
-        docker buildx build --build-arg COMMIT_HASH=$commitHash --ssh default=$SSH_AUTH_SOCK src/core/ -f src/core/pwnctl.exec/longlived/Dockerfile -t ${ecrUri}:$commitHash
+        docker build --build-arg COMMIT_HASH=$commitHash --ssh default=$SSH_AUTH_SOCK src/core/ -f src/core/pwnctl.exec/longlived/Dockerfile -t ${ecrUri}:$commitHash
         docker tag ${ecrUri}:$commitHash ${ecrUri}:untested_$commitHash
 
   push-exec-short-image:
@@ -54,8 +54,6 @@ tasks:
         commitHash=$(git rev-parse --short HEAD)
         region=$(aws configure get region)
         ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-exec-short") | .repositoryUri')
-        aws ecr get-login-password --region $region \
-          | docker login --username AWS --password-stdin ${ecrUri}
         docker push ${ecrUri}:$commitHash
 
   push-exec-long-image:
@@ -64,8 +62,6 @@ tasks:
         commitHash=$(git rev-parse --short HEAD)
         region=$(aws configure get region)
         ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-exec-long") | .repositoryUri')
-        aws ecr get-login-password --region $region \
-          | docker login --username AWS --password-stdin ${ecrUri}
         docker push ${ecrUri}:$commitHash
 
   build-proc-image:
@@ -82,8 +78,6 @@ tasks:
         commitHash=$(git rev-parse --short HEAD)
         region=$(aws configure get region)
         ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-proc") | .repositoryUri')
-        aws ecr get-login-password --region $region \
-          | docker login --username AWS --password-stdin $ecrUri
         docker push ${ecrUri}:$commitHash
 
   build-all:
@@ -123,7 +117,6 @@ tasks:
       - |
         ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-exec-long") | .repositoryUri')
         latestTag=$(docker images | grep $ecrUri | head -n 1 | awk '{print $2}')
-        aws ecr get-login-password --region $(aws configure get region) | docker login --username AWS --password-stdin $ecrUri
         docker run -v ~/.aws/:/root/.aws/ -e PWNCTL_USE_LOCAL_INTEGRATIONS=true \
                    -e PWNCTL_Logging__FilePath=/mnt/efs -e PWNCTL_Logging__MinLevel=Information \
                    -e PWNCTL_TaskQueue__VisibilityTimeout=1200 -e PWNCTL_OutputQueue__VisibilityTimeout=1200 \
@@ -134,7 +127,6 @@ tasks:
       - |
         ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-exec-short") | .repositoryUri')
         latestTag=$(docker images | grep $ecrUri | head -n 1 | awk '{print $2}')
-        aws ecr get-login-password --region $(aws configure get region) | docker login --username AWS --password-stdin $ecrUri
         docker run -e PWNCTL_USE_LOCAL_INTEGRATIONS=true \
                    -e PWNCTL_Logging__FilePath=/mnt/efs -e PWNCTL_Logging__MinLevel=Information \
                    -e PWNCTL_TaskQueue__VisibilityTimeout=1200 -e PWNCTL_OutputQueue__VisibilityTimeout=1200 \
@@ -145,7 +137,6 @@ tasks:
       - |
         ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-proc") | .repositoryUri')
         latestTag=$(docker images | grep $ecrUri | head -n 1 | awk '{print $2}')
-        aws ecr get-login-password --region $(aws configure get region) | docker login --username AWS --password-stdin $ecrUri
         docker run -v ~/.aws/:/root/.aws/ -e PWNCTL_USE_LOCAL_INTEGRATIONS=true \
                    -e PWNCTL_Logging__FilePath=/mnt/efs -e PWNCTL_Logging__MinLevel=Information \
                    -e PWNCTL_TaskQueue__VisibilityTimeout=1200 -e PWNCTL_OutputQueue__VisibilityTimeout=1200 \

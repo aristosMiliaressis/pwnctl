@@ -4,20 +4,31 @@
 		"context": ".."
 	},
 	
+	"features": {
+		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
+	},
+
 	"customizations": {
 		"vscode": {
 			"extensions": [
+			    "amazonwebservices.aws-toolkit-vscode",
 				"ms-azuretools.vscode-docker",
 				"ms-dotnettools.csharp",
 				"leo-labs.dotnet",
 				"KishoreIthadi.dotnet-core-essentials",
-				"4ops.terraform",
-				"betajob.modulestf",
+				"hashicorp.hcl",
+        		"HashiCorp.terraform",
 				"mhutchie.git-graph",
-				"usernamehw.errorlens"
+				"usernamehw.errorlens",
+				"yzhang.markdown-all-in-one"
 			]
 		}
 	},
 
-	"postCreateCommand": "dotnet restore"
+	"mounts": [
+		"source=${env:HOME}${env:USERPROFILE}/.aws,target=/root/.aws,type=bind",
+		"source=${env:HOME}${env:USERPROFILE}/.ssh,target=/root/.ssh,type=bind"
+	],
+
+	"postCreateCommand": "chmod +x ./bin/setup-cred-helper.sh ; ./bin/setup-cred-helper.sh ; dotnet restore"
 }

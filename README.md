@@ -248,5 +248,5 @@ Input:
 4. run `task deploy`
 
 **To Do**
-- [ ] setup dev containers
+- [ ] ecs-cli for testing & debugging
 - [ ] terraform discord server
