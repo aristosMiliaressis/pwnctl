@@ -241,10 +241,9 @@ Input:
 
 ## How to set it up?
 
-1. create an aws Administrator user & set up aws cli
-2. put all tool configuration files in the `deployment/` folder
-3. install `task`
-> sudo sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin
+1. create an aws Administrator user & set a local aws profile
+2. setup devcontainer
+3. put all tool configuration files in the `deployment/` folder
 4. run `task deploy`
 
 **To Do**
