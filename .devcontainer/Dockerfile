@@ -24,10 +24,6 @@ RUN unzip awscli-exe-linux-x86_64.zip \
     && ./aws/install --update \
     && rm -rf ./aws
 
-RUN curl -OJ https://amazon-ecs-cli.s3.amazonaws.com/ecs-cli-linux-amd64-latest \
-    && chmod +x ecs-cli-linux-amd64-latest \
-    && mv ecs-cli-linux-amd64-latest /usr/local/bin/ecs-cli
-
 COPY --from=docker/buildx-bin /buildx /usr/libexec/docker/cli-plugins/docker-buildx
 RUN docker buildx install
 

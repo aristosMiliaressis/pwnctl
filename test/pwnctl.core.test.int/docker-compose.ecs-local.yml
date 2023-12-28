@@ -1,0 +1,128 @@
+version: "2"
+services:
+  ecs-local-endpoints:
+    image: amazon/amazon-ecs-local-container-endpoints
+    volumes:
+      - /var/run:/var/run
+      - /home/aristos/.aws/:/home/.aws/
+    environment:
+      HOME: "/home"
+      AWS_PROFILE: "default"
+    networks:
+      ecs-local-network:
+        ipv4_address: "169.254.170.2"
+  pwnctl-proc:
+    depends_on:
+      - ecs-local-endpoints
+      - postgres
+    environment:
+      AWS_REGION: $AWS_REGION
+      AWS_CONTAINER_CREDENTIALS_FULL_URI: http://169.254.170.2/role/pwnctl-ecs-service
+      ECS_CONTAINER_METADATA_URI: http://169.254.170.2/v3
+      PWNCTL_Db__Host: postgres:5432
+      PWNCTL_Db__Name: pwnctl
+      PWNCTL_Db__Username: pwnadmin
+      PWNCTL_Db__Password: P@ssw0rd!
+      PWNCTL_FS_MOUNT_POINT: /mnt/efs
+      PWNCTL_IS_PROD: "false"
+      PWNCTL_Logging__MinLevel: Information
+      PWNCTL_LongLivedTaskQueue__Name: dev-task-longlived.fifo
+      PWNCTL_OutputQueue__Name: dev-output.fifo
+      PWNCTL_ShortLivedTaskQueue__Name: dev-task-shortlived.fifo
+    image: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/pwnctl-proc:$PWNCTL_PROC_TAG
+    labels:
+      ecs-local.task-definition-input.type: remote
+      ecs-local.task-definition-input.value: arn:aws:ecs:$AWS_REGION:$AWS_ACCOUNT_ID:task-definition/pwnctl-proc
+    logging:
+      driver: json-file
+    networks:
+      ecs-local-network:
+        ipv4_address: "169.254.170.3"
+    volumes:
+      - efs:/mnt/efs
+  pwnctl-exec-long:
+    depends_on:
+      - ecs-local-endpoints
+      - postgres
+    environment:
+      AWS_REGION: $AWS_REGION
+      AWS_CONTAINER_CREDENTIALS_FULL_URI: http://169.254.170.2/role/pwnctl-ecs-service
+      ECS_CONTAINER_METADATA_URI: http://169.254.170.2/v3
+      PWNCTL_Db__Host: postgres:5432
+      PWNCTL_Db__Name: pwnctl
+      PWNCTL_Db__Username: pwnadmin
+      PWNCTL_Db__Password: P@ssw0rd!
+      PWNCTL_FS_MOUNT_POINT: /mnt/efs
+      PWNCTL_IS_PROD: "false"
+      PWNCTL_STAY_ALIVE: "true"
+      PWNCTL_Logging__MinLevel: Information
+      PWNCTL_LongLivedTaskQueue__Name: dev-task-longlived.fifo
+      PWNCTL_LongLivedTaskQueue__VisibilityTimeout: "900"
+      PWNCTL_OutputQueue__Name: dev-output.fifo
+      PWNCTL_Worker__MaxTaskTimeout: "10800"
+    image: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/pwnctl-exec-long:$PWNCTL_EXEC_LONG_TAG
+    labels:
+      ecs-local.task-definition-input.type: remote
+      ecs-local.task-definition-input.value: arn:aws:ecs:$AWS_REGION:$AWS_ACCOUNT_ID:task-definition/pwnctl-exec-long
+    logging:
+      driver: json-file
+    networks:
+      ecs-local-network:
+        ipv4_address: "169.254.170.4"
+    volumes:
+      - efs:/mnt/efs
+  pwnctl-exec-short:
+    depends_on:
+      - ecs-local-endpoints
+      - postgres
+    environment:
+      AWS_REGION: $AWS_REGION
+      AWS_CONTAINER_CREDENTIALS_FULL_URI: http://169.254.170.2/role/pwnctl-ecs-service
+      ECS_CONTAINER_METADATA_URI: http://169.254.170.2/v3
+      PWNCTL_Db__Host: postgres:5432
+      PWNCTL_Db__Name: pwnctl
+      PWNCTL_Db__Username: pwnadmin
+      PWNCTL_Db__Password: P@ssw0rd!
+      PWNCTL_FS_MOUNT_POINT: /mnt/efs
+      PWNCTL_IS_PROD: "false"
+      PWNCTL_STAY_ALIVE: "true"
+      PWNCTL_Logging__MinLevel: Information
+      PWNCTL_ShortLivedTaskQueue__Name: dev-task-shortlived.fifo
+      PWNCTL_OutputQueue__Name: dev-output.fifo
+      PWNCTL_Worker__MaxTaskTimeout: "180"
+    image: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/pwnctl-exec-short:$PWNCTL_EXEC_SHORT_TAG
+    labels:
+      ecs-local.task-definition-input.type: remote
+      ecs-local.task-definition-input.value: arn:aws:ecs:$AWS_REGION:$AWS_ACCOUNT_ID:task-definition/pwnctl-exec-short
+    logging:
+      driver: json-file
+    networks:
+      ecs-local-network:
+        ipv4_address: "169.254.170.5"
+    volumes:
+      - efs:/mnt/efs
+  postgres:
+    image: postgres:15-alpine
+    restart: always
+    ports:
+      - 65432:5432
+    environment:
+      POSTGRES_PASSWORD: P@ssw0rd!
+      POSTGRES_USER: pwnadmin
+      POSTGRES_DB: pwnctl
+      PGDATA: /var/lib/postgresql/data/pgdata
+    networks:
+      ecs-local-network:
+        aliases:
+          - postgres
+        ipv4_address: "169.254.170.6"
+volumes:
+  efs:
+    driver: local
+networks:
+    ecs-local-network:
+        driver: bridge
+        ipam:
+            config:
+                - subnet: "169.254.170.0/24"
+                  gateway: 169.254.170.1

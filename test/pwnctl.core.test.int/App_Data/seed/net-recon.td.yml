@@ -1,0 +1,48 @@
+Profile: "net_recon"
+
+TaskDefinitions:
+  - Name: ping_sweep
+    CommandTemplate: ping-sweep.sh {{CIDR}}
+    Subject: NetworkRange
+    MonitorRules:
+      Schedule: 0 0 * * *
+
+  - Name: reverse_range_lookup
+    CommandTemplate: reverse-range-lookup.sh {{CIDR}}
+    Subject: NetworkRange
+    MonitorRules:
+      Schedule: 0 0 * * *
+
+  - Name: asn_lookup
+    CommandTemplate: asn-lookup.sh {{IP}}
+    Subject: NetworkHost
+    ShortLived: true
+
+  - Name: reverse_dns_lookup
+    CommandTemplate: dig +short -x {{IP}}
+    Subject: NetworkHost
+    ShortLived: true
+
+  - Name: tcp_scan
+    CommandTemplate: tcp-scan.sh {{IP}}
+    Subject: NetworkHost
+    CheckNotificationRules: true
+
+  - Name: tls_probe
+    CommandTemplate: tls-probe.sh {{Address}}
+    Subject: NetworkSocket
+    ShortLived: true
+
+  - Name: http_probe
+    CommandTemplate: http-probe.sh {{Address}}
+    Subject: NetworkSocket
+    ShortLived: true
+
+  - Name: udp_scan
+    CommandTemplate: udp-scan.sh {{IP}}
+    Subject: NetworkHost
+    CheckNotificationRules: true
+
+  - Name: os_fingerprint
+    CommandTemplate: os-fingerprint.sh {{IP}}
+    Subject: NetworkHost

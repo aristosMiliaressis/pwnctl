@@ -247,5 +247,4 @@ Input:
 4. run `task deploy`
 
 **To Do**
-- [ ] ecs-cli for testing & debugging
 - [ ] terraform discord server

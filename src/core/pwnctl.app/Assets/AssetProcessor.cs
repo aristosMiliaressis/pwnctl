@@ -16,13 +16,6 @@ using pwnctl.kernel.BaseClasses;
 
 public sealed class AssetProcessor
 {
-    private readonly IEnumerable<NotificationRule> _notificationRules;
-
-    public AssetProcessor()
-    {
-        _notificationRules = PwnInfraContext.NotificationRepository.ListRules();
-    }
-
     public async Task<bool> TryProcessAsync(string assetText, int taskId)
     {
         try
@@ -158,6 +151,9 @@ public sealed class AssetProcessor
 
     private async Task CheckNotificationRulesAsync(AssetRecord record)
     {
+        if (_notificationRules == null)
+            _notificationRules = PwnInfraContext.NotificationRepository.ListRules();
+
         await Parallel.ForEachAsync(_notificationRules, async (rule, token) =>
         {
             if ((record.InScope || rule.CheckOutOfScope) && rule.Check(record))
@@ -229,4 +225,6 @@ public sealed class AssetProcessor
 
         return assets;
     }
+
+    private IEnumerable<NotificationRule> _notificationRules;
 }

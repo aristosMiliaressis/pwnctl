@@ -1,0 +1,26 @@
+Profile: "vuln_scan"
+
+TaskDefinitions:
+  - Name: ns_takeover_check
+    CommandTemplate: ns_takeover_check.sh {{Name}}
+    Subject: DomainName
+    Filter: Tags["rcode"] != "NOERROR"
+    CheckNotificationRules: true
+    ShortLived: true
+
+  - Name: nuclei_official
+    CommandTemplate: nuclei.sh {{Name}} -s low,medium,high,critical -t /opt/nuclei_templates/official
+    Subject: DomainName
+    CheckNotificationRules: true
+
+  - Name: cache_prober
+    CommandTemplate: cache-prober.sh {{Url}}
+    Filter: HttpEndpoint.Path == "/" && HttpEndpoint.Socket.DomainNameId != null
+    Subject: HttpEndpoint
+    CheckNotificationRules: true
+
+  - Name: smuggler
+    CommandTemplate: smuggler.sh {{Url}}
+    Filter: HttpEndpoint.Path == "/"
+    Subject: HttpEndpoint
+    CheckNotificationRules: true

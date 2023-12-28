@@ -11,14 +11,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
-    <PackageReference Include="Testcontainers" Version="3.3.0" />
-    <PackageReference Include="Testcontainers.PostgreSql" Version="3.3.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="coverlet.collector" Version="3.1.2">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -28,12 +22,6 @@
     <ProjectReference Include="..\..\src\core\pwnctl.app\pwnctl.app.csproj" />
     <ProjectReference Include="..\..\src\core\pwnctl.domain\pwnctl.domain.csproj" />
     <ProjectReference Include="..\..\src\core\pwnctl.infra\pwnctl.infra.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="App_Data/*">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
   <ItemGroup>

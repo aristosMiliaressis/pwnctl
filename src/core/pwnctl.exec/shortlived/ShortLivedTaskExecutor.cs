@@ -7,6 +7,7 @@ using pwnctl.infra.Repositories;
 using pwnctl.infra.Persistence;
 using pwnctl.infra;
 using System.Text;
+using pwnctl.infra.Configuration;
 
 public sealed class ShortLivedTaskExecutor : LifetimeService
 {
@@ -26,7 +27,7 @@ public sealed class ShortLivedTaskExecutor : LifetimeService
             try
             {
                 bool exit = await ExecutePendingTaskAsync(stoppingToken);
-                if (exit)
+                if (exit && !EnvironmentVariables.STAY_ALIVE)
                     break;
             } 
             catch (Exception ex)

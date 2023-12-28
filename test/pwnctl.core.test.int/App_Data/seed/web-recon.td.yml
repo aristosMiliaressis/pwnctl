@@ -1,0 +1,159 @@
+Profile: "web_recon"
+
+TaskDefinitions:
+  - Name: domain_resolution
+    CommandTemplate: resolve.sh {{Name}}
+    Subject: DomainName
+    Filter: Tags["rcode"] == ""
+    MonitorRules:
+      Schedule: 0 0 * * *
+      PostCondition: newTags["rcode"] != oldTags["rcode"]
+      NotificationTemplate: domain {{Name}} changed rcode from {{oldTags["rcode"]}} to {{newTags["rcode"]}}
+    ShortLived: true
+
+  - Name: httpx
+    CommandTemplate: echo {{Name}} | httpx -silent -csp-probe
+    Subject: DomainName
+    ShortLived: true
+
+  - Name: sub_enum
+    CommandTemplate: sub-enum.sh {{Name}} -d -m 110
+    Filter: DomainName.ZoneDepth == 1
+    Subject: DomainName
+    MonitorRules:
+      Schedule: 0 0 * * *
+
+  - Name: sub_wildcard_finder
+    CommandTemplate: sub-wildcard-finder.sh {{Name}}
+    Filter: Tags["wildcard"] == "true"
+    Subject: DomainName
+
+  - Name: dns_record_enum
+    CommandTemplate: dns-record-enum.sh {{Name}} {{ZoneDepth}}
+    Subject: DomainName
+    ShortLived: true
+
+  - Name: email_finder
+    CommandTemplate: email-finder.sh {{Name}}
+    Subject: DomainName
+    Filter: DomainName.ZoneDepth == 1
+    ShortLived: true
+
+  - Name: reverse_whois
+    CommandTemplate: reverse-whois.sh {{Address}}
+    Subject: Email
+    MatchOutOfScope: true
+    ShortLived: true
+
+  - Name: zone_trasfer
+    CommandTemplate: zone-transfer.sh {{Key}}
+    Subject: DomainNameRecord
+    Filter: DomainNameRecord.Type == DnsRecordType.SOA
+    CheckNotificationRules: true
+    ShortLived: true
+
+  - Name: zone_walking
+    CommandTemplate: ldns-walk {{Key}} | tail -n +2 | cut -d ' ' -f 1
+    Filter: DomainNameRecord.Type == DnsRecordType.NSEC
+    Subject: DomainNameRecord
+    ShortLived: true
+
+  - Name: grab_headers
+    CommandTemplate: grab-headers.sh {{Url}}
+    Filter: HttpEndpoint.Path == "/" && HttpEndpoint.Socket.DomainNameId != null
+    Subject: HttpEndpoint
+    MonitorRules:
+      Schedule: 0 0 * * *
+      PreCondition: new List<string>{ "401", "403", "404", "500", "501", "502", "503", "504" }.Contains(Tags["Status"])
+      PostCondition: newTags["Status"] != oldTags["Status"]
+      NotificationTemplate: Endpoint {{Url}} changed status code from {{oldTags["Status"]}} to {{newTags["Status"]}}
+    ShortLived: true
+
+  - Name: wappalyzer
+    CommandTemplate: wappalyzer.sh {{Url}}
+    Filter: HttpEndpoint.Path == "/" && HttpEndpoint.Socket.DomainNameId != null
+    Subject: HttpEndpoint
+    ShortLived: true
+
+  - Name: waymore
+    CommandTemplate: waymore.sh {{Name}}
+    Subject: DomainName
+    Filter: DomainName.ZoneDepth == 1
+
+  - Name: webcrawl
+    CommandTemplate: webcrawl.sh {{Url}}
+    Filter: HttpEndpoint.Path == "/" && HttpEndpoint.Socket.DomainNameId != null
+    Subject: HttpEndpoint
+
+  - Name: screenshot
+    CommandTemplate: screenshot.sh {{Url}}
+    Filter: HttpEndpoint.Path == "/" && HttpEndpoint.Socket.DomainNameId != null
+    Subject: HttpEndpoint
+    ShortLived: true
+
+  - Name: wafw00f
+    CommandTemplate: wafw00f.sh {{Url}}
+    Filter: HttpEndpoint.Path == "/" && HttpEndpoint.Socket.DomainNameId != null
+    Subject: HttpEndpoint
+    ShortLived: true
+
+  - Name: cors_scanner
+    CommandTemplate: cors-scanner.sh {{Url}}
+    Subject: HttpEndpoint
+    Filter: HttpEndpoint.Path == "/" && HttpEndpoint.Socket.DomainNameId != null
+    CheckNotificationRules: true
+
+  - Name: swagger_discovery
+    CommandTemplate: swagger-discovery.sh {{Url}}
+    Subject: HttpEndpoint
+    Filter: HttpEndpoint.Path == "/" && HttpEndpoint.Socket.DomainNameId != null
+    CheckNotificationRules: true
+
+  - Name: panel_discovery
+    CommandTemplate: panel-discovery.sh {{Url}}
+    Subject: HttpEndpoint
+    Filter: HttpEndpoint.Path == "/" && HttpEndpoint.Socket.DomainNameId != null
+    CheckNotificationRules: true
+
+  - Name: short_name_scanning
+    CommandTemplate: shortname-check.sh {{Url}}
+    Subject: HttpEndpoint
+    Filter: Tags["Web servers"].Contains("IIS")||Tags["Web frameworks"]=="Microsoft ASP.NET"||Tags["Operating systems"]=="Windows Server"
+    CheckNotificationRules: true
+
+  - Name: file_fuzz_main
+    CommandTemplate: file-fuzz.sh {{Url}} /opt/wordlists/directories.txt /opt/wordlists/high_impact.txt
+    Filter: HttpEndpoint.Path == "/" && !Tags["Web servers"].Contains("IIS") && HttpEndpoint.Socket.DomainNameId != null
+    Subject: HttpEndpoint
+    CheckNotificationRules: true
+
+  - Name: file_fuzz_main_lowercase
+    CommandTemplate: file-fuzz.sh {{Url}} /opt/wordlists/directories_lowercase.txt /opt/wordlists/high_impact_lowercase.txt
+    Filter: HttpEndpoint.Path == "/" && Tags["Web servers"].Contains("IIS") && HttpEndpoint.Socket.DomainNameId != null
+    Subject: HttpEndpoint
+    CheckNotificationRules: true
+
+  - Name: dir_fuzz_iis_asp
+    CommandTemplate: dir-fuzz.sh {{Url}} /opt/wordlists/tech/iis_asp.txt
+    Filter: HttpEndpoint.Path=="/"&&(Tags["Web servers"].Contains("IIS")||Tags["Web frameworks"]=="Microsoft ASP.NET"||Tags["Operating systems"]=="Windows Server")
+    Subject: HttpEndpoint
+
+  - Name: dir_fuzz_tomcat_jsp
+    CommandTemplate: dir-fuzz.sh {{Url}} /opt/wordlists/tech/tomcat_jsp.txt
+    Filter: HttpEndpoint.Path=="/"&&(Tags["Web servers"].Contains("Apache Tomcat")||Tags["Web frameworks"]=="Spring"||Tags["Programming languages"]=="Java")
+    Subject: HttpEndpoint
+
+  - Name: dir_fuzz_apache_php
+    CommandTemplate: dir-fuzz.sh {{Url}} /opt/wordlists/tech/apache_php.txt
+    Filter: HttpEndpoint.Path=="/"&&(Tags["Web servers"].Equals("Apache")||Tags["Programming languages"]=="PHP")
+    Subject: HttpEndpoint
+
+  - Name: dir_fuzz_nginx
+    CommandTemplate: dir-fuzz.sh {{Url}} /opt/wordlists/tech/nginx.txt
+    Filter: HttpEndpoint.Path=="/"&&Tags["Web servers"].Equals("Nginx")
+    Subject: HttpEndpoint
+
+  - Name: mdwfuzzer
+    CommandTemplate: mdwfuzzer.sh {{Url}}
+    Filter: HttpEndpoint.Path=="/"
+    Subject: HttpEndpoint

@@ -16,6 +16,10 @@ data "external" "aws_region" {
   program = ["bash", "-c", "aws configure get region --profile ${var.profile} | jq --raw-input '. | { region: (.) }'"]
 }
 
+data "external" "caller_identity" {
+  program = ["bash", "-c", "aws --profile default sts get-caller-identity"]
+}
+
 provider "aws" {
   profile = var.profile
   region = data.external.aws_region.result.region

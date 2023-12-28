@@ -2,27 +2,18 @@ version: '3'
 
 tasks:
   test:
-    deps: [test-core, test-exec, test-proc]
+    deps: [test-unit, test-int]
 
-  test-core:
+  test-unit:
     cmds:
       - dotnet test --filter "FullyQualifiedName~test.unit"
 
-  test-proc:
-    deps: [build-proc-image]
+  test-int:
     cmds:
       - |
-        rm -rf test/pwnctl.proc.test.int/bin
-        export UNTESTED_IMAGE=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-proc") | .repositoryUri'):untested_$(git rev-parse --short HEAD)
-        dotnet test --filter "FullyQualifiedName~pwnctl.proc"
-
-  test-exec:
-    deps: [build-exec-long-image]
-    cmds:
-    - |
-      rm -rf test/pwnctl.exec.test.int/bin
-      export UNTESTED_IMAGE=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-exec-long") | .repositoryUri'):untested_$(git rev-parse --short HEAD)
-      dotnet test --filter "FullyQualifiedName~pwnctl.exec"
+        . ./bin/setenv.sh
+        dotnet test --filter "FullyQualifiedName~test.int"
+        docker-compose -f test/pwnctl.core.test.int/docker-compose.ecs-local.yml down
 
   build-api:
     cmds:
@@ -94,8 +85,11 @@ tasks:
 
   setup-ci:
     cmds:
-      - gh variable set AWS_REGION --body "$(aws configure get region)"
-      - gh variable set AWS_CALLER_IDENTITY --body "$(aws sts get-caller-identity | jq -r .Account)"
+      # - gh auth login
+      # - gh secret set AWS_REGION --body "$(aws configure get region)"
+      # - gh secret set AWS_CALLER_IDENTITY --body "$(aws sts get-caller-identity | jq -r .Account)"
+      # - gh secret set AWS_ACCESS_KEY_ID --body ""
+      # - gh secret set AWS_SECRET_ACCESS_KEY --body ""
       - terraform -chdir=infra/modules/ci apply -auto-approve
 
   deploy:
@@ -112,35 +106,11 @@ tasks:
     cmds:
       - terraform -chdir=infra/modules/ci destroy
 
-  debug-exec-long:
+  debug:
     cmds:
-      - |
-        ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-exec-long") | .repositoryUri')
-        latestTag=$(docker images | grep $ecrUri | head -n 1 | awk '{print $2}')
-        docker run -v ~/.aws/:/root/.aws/ -e PWNCTL_USE_LOCAL_INTEGRATIONS=true \
-                   -e PWNCTL_Logging__FilePath=/mnt/efs -e PWNCTL_Logging__MinLevel=Information \
-                   -e PWNCTL_TaskQueue__VisibilityTimeout=1200 -e PWNCTL_OutputQueue__VisibilityTimeout=1200 \
-                   -v "$(pwd)"/deployment:/mnt/efs -t ${ecrUri}:$latestTag
-
-  debug-exec-short:
-    cmds:
-      - |
-        ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-exec-short") | .repositoryUri')
-        latestTag=$(docker images | grep $ecrUri | head -n 1 | awk '{print $2}')
-        docker run -e PWNCTL_USE_LOCAL_INTEGRATIONS=true \
-                   -e PWNCTL_Logging__FilePath=/mnt/efs -e PWNCTL_Logging__MinLevel=Information \
-                   -e PWNCTL_TaskQueue__VisibilityTimeout=1200 -e PWNCTL_OutputQueue__VisibilityTimeout=1200 \
-                   -v "$(pwd)"/deployment:/mnt/efs -t ${ecrUri}:$latestTag
-
-  debug-proc:
-    cmds:
-      - |
-        ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-proc") | .repositoryUri')
-        latestTag=$(docker images | grep $ecrUri | head -n 1 | awk '{print $2}')
-        docker run -v ~/.aws/:/root/.aws/ -e PWNCTL_USE_LOCAL_INTEGRATIONS=true \
-                   -e PWNCTL_Logging__FilePath=/mnt/efs -e PWNCTL_Logging__MinLevel=Information \
-                   -e PWNCTL_TaskQueue__VisibilityTimeout=1200 -e PWNCTL_OutputQueue__VisibilityTimeout=1200 \
-                   -v "$(pwd)"/deployment:/mnt/efs -t ${ecrUri}:$latestTag
+      - | 
+        . ./bin/setenv.sh
+        docker-compose -f test/pwnctl.core.test.int/docker-compose.ecs-local.yml up
 
   get-exec-logs:
     cmds:

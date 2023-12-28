@@ -1,0 +1,94 @@
+
+# - Name: default_creds
+#   Subject: NetworkSocket
+#   Filter: Tags["vuln-default-creds"] == "true"
+#   Topic: misconfigs
+
+- Name: cors_misconfig
+  Subject: HttpEndpoint
+  Filter: Tags.Tags.Any(tag => tag.Name.StartsWith("cors-") && tag.Value.Contains("Type\":\"Vulnerability"))
+  Topic: misconfigs
+
+- Name: swagger_discovery
+  Subject: HttpEndpoint
+  Filter: Tags["swagger-ui"] == "true"
+  Topic: misconfigs
+
+- Name: exposed_panel
+  Subject: HttpEndpoint
+  Filter: '!string.IsNullOrEmpty(Tags["exposed-panel"])'
+  Topic: misconfigs
+
+- Name: shortname_misconfig
+  Subject: HttpEndpoint
+  Filter: Tags["shortname-misconfig"] == "true"
+  Topic: misconfigs
+
+- Name: ns_takeover
+  Subject: DomainName
+  Filter: Tags["ns-takeover"] == "true"
+  Topic: misconfigs
+
+- Name: waf_bypass
+  Subject: DomainName
+  Filter: Tags["WafBypass"] != ""
+  Topic: misconfigs
+
+- Name: s3_misconfig
+  Subject: DomainName
+  Filter: Tags["s3-takeover"] == "true" || !string.IsNullOrEmpty(Tags["s3-public-perms"])
+  Topic: misconfigs
+  CheckOutOfScope: true
+
+- Name: s3_misconfig_url
+  Subject: HttpEndpoint
+  Filter: Tags["s3-takeover"] == "true" || !string.IsNullOrEmpty(Tags["s3-public-perms"])
+  Topic: misconfigs
+  CheckOutOfScope: true
+
+- Name: high_impact_wordlist_hit
+  Subject: HttpEndpoint
+  Filter: Tags["source"]=="/opt/wordlists/high_impact.txt"
+  Topic: misconfigs
+
+- Name: mdwfuzzer
+  Subject: HttpEndpoint
+  Filter: Tags["mdwfuzzer_check"]!=""
+  Template: '{{Url}} triggered mdwfuzzer check {{Tags["mdwfuzzer_check"]}} with word {{Tags["mdwfuzzer_word"]}}'
+  Topic: misconfigs
+
+- Name: zone_transfer
+  Subject: DomainName
+  Filter: Tags["zone_transfer"] == "true"
+  Topic: misconfigs
+
+- Name: sketchy_open_port
+  Subject: NetworkSocket
+  Filter: new List<uint> {9228,9229,2735,2736,5000,10250,10259,10257,2379,2380,50030,50060,50070,50075,50090,24007,24008,24009,49152,5555,5601,11211,6000,3389,9200,8009,6379}.Contains(NetworkSocket.Port)
+  Template: '{{Address}} triggered sketchy_open_port rule on port {{Port}}'
+  Topic: misconfigs
+
+- Name: nuclei_domain
+  Subject: DomainName
+  Filter: Tags.Tags.Any(tag => tag.Name.StartsWith("nuclei-") && (tag.Value.Contains("severity\":\"crit") || tag.Value.Contains("severity\":\"high")))
+  Topic: misconfigs
+
+- Name: nuclei_net
+  Subject: NetworkSocket
+  Filter: Tags.Tags.Any(tag => tag.Name.StartsWith("nuclei-") && (tag.Value.Contains("severity\":\"crit") || tag.Value.Contains("severity\":\"high")))
+  Topic: misconfigs
+
+- Name: nuclei_http
+  Subject: HttpEndpoint
+  Filter: Tags.Tags.Any(tag => tag.Name.StartsWith("nuclei-") && (tag.Value.Contains("severity\":\"crit") || tag.Value.Contains("severity\":\"high")))
+  Topic: misconfigs
+
+- Name: cache_prober
+  Subject: HttpEndpoint
+  Filter: Tags.Tags.Any(tag => tag.Name.StartsWith("cache-prober-"))
+  Topic: misconfigs
+
+- Name: h1_smuggling
+  Subject: HttpEndpoint
+  Filter: Tags.Tags.Any(tag => tag.Name == "h1_smuggling")
+  Topic: misconfigs

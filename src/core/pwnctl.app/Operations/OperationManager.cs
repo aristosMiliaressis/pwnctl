@@ -62,7 +62,7 @@ public class OperationManager
         return true;    
     }
 
-    public async Task InitializeAsync(Operation op)
+    private async Task InitializeAsync(Operation op)
     {
         op.Initialize();
         await _opRepo.SaveAsync(op);
@@ -99,7 +99,7 @@ public class OperationManager
         await PwnInfraContext.NotificationSender.SendAsync($"Initialized {op.Type} op {op.Name.Value} #{op.Id}", NotificationTopic.Status);
     }
 
-    public async Task TerminateAsync(Operation op)
+    private async Task TerminateAsync(Operation op)
     {
         if (op.Type == OperationType.Scan || op.Type == OperationType.Crawl)
         {
@@ -112,7 +112,7 @@ public class OperationManager
         await PwnInfraContext.NotificationSender.SendAsync($"Terminated {op.Type} op {op.Name.Value} #{op.Id}", NotificationTopic.Status);
     }
 
-    public async Task TransitionPhaseAsync(Operation op)
+    private async Task TransitionPhaseAsync(Operation op)
     {
         op.TransitionPhase();
 

@@ -9,6 +9,7 @@ public static class EnvironmentVariables
 
     public static bool IS_GHA => Environment.GetEnvironmentVariable("GITHUB_ACTIONS")?.Equals("true") ?? false;
     public static bool IS_PROD => Environment.GetEnvironmentVariable("PWNCTL_IS_PROD")?.Equals("true") ?? false;
+    public static bool STAY_ALIVE => Environment.GetEnvironmentVariable("PWNCTL_STAY_ALIVE")?.Equals("true") ?? false;
 
     public static bool USE_LOCAL_INTEGRATIONS => Environment.GetEnvironmentVariable("PWNCTL_USE_LOCAL_INTEGRATIONS")?.Equals("true") ?? false;
 }

@@ -9,24 +9,34 @@ using pwnctl.app.Tasks.Entities;
 using pwnctl.domain.Entities;
 using pwnctl.infra.Persistence;
 
-namespace pwnctl.proc.test.integration
+namespace pwnctl.core.test.integration.Helpers
 {
     public static class EntityFactory
     {
-        public static Operation CreateMonitorOperation()
+        public static Operation EnsureMonitorOperationCreated()
         {
             PwnctlDbContext context = new();
+            
+            var op = context.Operations.FirstOrDefault(a => a.Name == ShortName.Create("monitor_tesla"));
+            if (op is not null)
+            {
+                return op;
+            }
 
-            var scope = new ScopeAggregate("tesla_scope", "");
-            scope.Definitions = new List<ScopeDefinitionAggregate>
+            var scope = context.ScopeAggregates.FirstOrDefault(a => a.Name == ShortName.Create("tesla_scope"));
+            if (scope == null)
+            {
+                scope = new ScopeAggregate("tesla_scope", "");
+                scope.Definitions = new List<ScopeDefinitionAggregate>
                 {
                     new ScopeDefinitionAggregate(scope, new ScopeDefinition(ScopeType.DomainRegex, "(^tesla\\.com$|.*\\.tesla\\.com$)")),
                     new ScopeDefinitionAggregate(scope, new ScopeDefinition(ScopeType.UrlRegex, "(.*:\\/\\/tsl\\.com\\/app\\/.*$)")),
                     new ScopeDefinitionAggregate(scope, new ScopeDefinition(ScopeType.CIDR, "172.16.17.0/24"))
                 };
+            }
             var taskProfiles = context.TaskProfiles.Include(p => p.TaskDefinitions).ToList();
             var policy = new Policy(taskProfiles);
-            var op = new Operation("monitor_tesla", OperationType.Monitor, policy, scope);
+            op = new Operation("monitor_tesla", OperationType.Monitor, policy, scope);
             context.Add(op);
             context.SaveChanges();
             var domain = DomainName.TryParse("tesla.com").Value;
@@ -38,9 +48,14 @@ namespace pwnctl.proc.test.integration
             return op;
         }
 
-        public static Operation CreateCrawlOperation()
+        public static Operation EnsureCrawlOperationCreated()
         {
             PwnctlDbContext context = new();
+            var op = context.Operations.FirstOrDefault(a => a.Name == ShortName.Create("crawl_starlink"));
+            if (op is not null)
+            {
+                return op;
+            }
 
             var scope = new ScopeAggregate("starlink_scope", "");
             scope.Definitions = new List<ScopeDefinitionAggregate>
@@ -50,10 +65,10 @@ namespace pwnctl.proc.test.integration
                 };
             var taskProfiles = context.TaskProfiles.Include(p => p.TaskDefinitions).ToList();
             var policy = new Policy(taskProfiles);
-            var op = new Operation("crawl_tesla", OperationType.Crawl, policy, scope);
+            op = new Operation("crawl_starlink", OperationType.Crawl, policy, scope);
             context.Add(op);
             context.SaveChanges();
-            var domain = DomainName.TryParse("tesla.com").Value;
+            var domain = DomainName.TryParse("starlink.com").Value;
             var record = new AssetRecord(domain);
             record.SetScopeId(scope.Definitions.First().Definition.Id);
             context.Add(record);
