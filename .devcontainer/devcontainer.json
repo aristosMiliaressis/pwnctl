@@ -30,6 +30,10 @@
 		"source=${env:HOME}${env:USERPROFILE}/.ssh,target=/root/.ssh,type=bind"
 	],
 
+	"containerEnv": {
+		"HOME_OUT_OF_DOCKER": "${localEnv:HOME}"
+	},
+
 	"runArgs": [
     	"--network=host"
 	],

@@ -4,7 +4,7 @@ services:
     image: amazon/amazon-ecs-local-container-endpoints
     volumes:
       - /var/run:/var/run
-      - /home/aristos/.aws/:/home/.aws/
+      - $HOME_OUT_OF_DOCKER/.aws/:/home/.aws/
     environment:
       HOME: "/home"
       AWS_PROFILE: "default"
