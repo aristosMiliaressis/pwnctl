@@ -13,6 +13,14 @@ data "aws_iam_policy_document" "event_publisher" {
   }
 }
 
+data "aws_iam_policy" "eventbridge_scheduler" {
+  name = "eventbridge_scheduler"
+}
+
+data "aws_iam_policy" "sqs_readwrite" {
+  name = "sqs-readwrite"
+}
+
 resource "aws_iam_role" "event_publisher" {
   name               = "event_publisher"
   assume_role_policy = data.aws_iam_policy_document.event_publisher.json
@@ -40,7 +48,7 @@ resource "aws_iam_role_policy" "ecs_events_run_task_with_any_role" {
 
 resource "aws_iam_role_policy_attachment" "grant_lambda_eventbridge_scheduler_access" {
   role       = aws_iam_role.lambda.name
-  policy_arn = aws_iam_policy.eventbridge_scheduler.arn
+  policy_arn = data.aws_iam_policy.eventbridge_scheduler.arn
 }
 
 
@@ -122,7 +130,7 @@ resource "aws_iam_role_policy_attachment" "grant_lambda_sm_readwrite_access" {
 
 resource "aws_iam_role_policy_attachment" "grant_lambda_sqs_readwrite_access" {
   role       = aws_iam_role.lambda.name
-  policy_arn = aws_iam_policy.sqs_readwrite.arn
+  policy_arn = data.aws_iam_policy.sqs_readwrite.arn
 }
 
 resource "aws_iam_role_policy_attachment" "grant_lambda_cloud_watch_logs_access" {

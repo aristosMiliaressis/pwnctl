@@ -85,15 +85,11 @@ tasks:
 
   setup-ci:
     cmds:
-      # - gh auth login
-      # - gh secret set AWS_REGION --body "$(aws configure get region)"
-      # - gh secret set AWS_CALLER_IDENTITY --body "$(aws sts get-caller-identity | jq -r .Account)"
-      # - gh secret set AWS_ACCESS_KEY_ID --body ""
-      # - gh secret set AWS_SECRET_ACCESS_KEY --body ""
+      #- ./bin/setup-gha-secrets.sh
       - terraform -chdir=infra/modules/ci apply -auto-approve
 
   deploy:
-    deps: [setup-ci, build-api, install-cli]
+    deps: [build-api, install-cli]
     cmds:
       - terraform -chdir=infra apply -auto-approve
       - ./bin/upload-conf.sh

@@ -2,14 +2,18 @@ resource "aws_ecs_cluster" "this" {
   name = "pwnctl_cluster"
 }
 
+data "aws_iam_role" "ecs_service" {
+  name = "pwnctl-ecs-service"
+}
+
 resource "aws_ecs_task_definition" "exec_short" {
   family                   = "pwnctl-exec-short"
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   cpu                      = 256
   memory                   = 1024
-  execution_role_arn       = aws_iam_role.ecs_service.arn
-  task_role_arn            = aws_iam_role.ecs_service.arn
+  execution_role_arn       = data.aws_iam_role.ecs_service.arn
+  task_role_arn            = data.aws_iam_role.ecs_service.arn
 
   depends_on = [
     aws_db_instance.this
@@ -100,7 +104,7 @@ resource "aws_ecs_service" "exec_short" {
   depends_on = [
     aws_ecs_cluster.this,
     aws_ecs_task_definition.exec_short,
-    aws_iam_role.ecs_service
+    data.aws_iam_role.ecs_service
   ]
 
   network_configuration {
@@ -124,8 +128,8 @@ resource "aws_ecs_task_definition" "exec_long" {
   network_mode             = "awsvpc"
   cpu                      = 512
   memory                   = 2048
-  execution_role_arn       = aws_iam_role.ecs_service.arn
-  task_role_arn            = aws_iam_role.ecs_service.arn
+  execution_role_arn       = data.aws_iam_role.ecs_service.arn
+  task_role_arn            = data.aws_iam_role.ecs_service.arn
 
   depends_on = [
     aws_db_instance.this
@@ -220,7 +224,7 @@ resource "aws_ecs_service" "exec_long" {
   depends_on = [
     aws_ecs_cluster.this,
     aws_ecs_task_definition.exec_long,
-    aws_iam_role.ecs_service
+    data.aws_iam_role.ecs_service
   ]
 
   network_configuration {
@@ -245,8 +249,8 @@ resource "aws_ecs_task_definition" "proc" {
   network_mode             = "awsvpc"
   cpu                      = 1024
   memory                   = 3072
-  execution_role_arn       = aws_iam_role.ecs_service.arn
-  task_role_arn            = aws_iam_role.ecs_service.arn
+  execution_role_arn       = data.aws_iam_role.ecs_service.arn
+  task_role_arn            = data.aws_iam_role.ecs_service.arn
 
   depends_on = [
     aws_db_instance.this,
@@ -338,7 +342,7 @@ resource "aws_ecs_service" "proc" {
   depends_on = [
     aws_ecs_cluster.this,
     aws_ecs_task_definition.proc,
-    aws_iam_role.ecs_service
+    data.aws_iam_role.ecs_service
   ]
 
   network_configuration {

@@ -245,6 +245,3 @@ Input:
 2. setup devcontainer
 3. put all tool configuration files in the `deployment/` folder
 4. run `task deploy`
-
-**To Do**
-- [ ] terraform discord server
