@@ -8,7 +8,7 @@ trap "rm $temp" EXIT
 params=()
 [[ $ip =~ .*":".* ]] && params+=(-6)
 
-nmap -sU --script-args http.useragent="$(uagen)" -sV "${params[@]}" --version-intensity 0 -F -n $ip -oG $temp >/dev/null;
+nmap -sU --script-args http.useragent="$(uagen)" -T1 -sV "${params[@]}" --version-intensity 0 -F -n $ip -oG $temp >/dev/null;
 
 cat $temp \
 	| sed 's/Ports: /\n/g' \

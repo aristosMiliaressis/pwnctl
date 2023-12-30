@@ -6,7 +6,7 @@ temp=`mktemp | sed 's,/tmp/,,g'`;
 touch $temp
 trap "rm $temp" EXIT
 
-rustscan -r 1-65535 -a $ip -- -sSV --script-args http.useragent="Mozilla/9.1" -oG $temp >/dev/null;
+rustscan -b 1000 -r 1-65535 -a $ip -- -T1 -sSV --script-args http.useragent="Mozilla/9.1" -oG $temp >/dev/null;
 
 cat $temp \
 	| sed 's/Ports: /\n/g' \
