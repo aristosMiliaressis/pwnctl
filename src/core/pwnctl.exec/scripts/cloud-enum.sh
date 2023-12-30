@@ -1,5 +1,5 @@
 #!/bin/bash
-set -eux
+set -eu
 
 temp=`mktemp`
 trap "rm $temp" EXIT

@@ -1,5 +1,5 @@
 #!/bin/bash
-set -ux
+set -u
 
 if [ $# -lt 2 ]
 then

@@ -1,5 +1,5 @@
 #!/bin/bash
-set -eux
+set -eu
 
 emailfinder -d $1 \
     | grep 'Total emails' -A 1000 \

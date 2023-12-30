@@ -1,5 +1,5 @@
 #!/bin/bash
-set -eux
+set -eu
 
 ip=$1
 temp=`mktemp`;
