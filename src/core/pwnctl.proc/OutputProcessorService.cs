@@ -37,6 +37,8 @@ namespace pwnctl.proc
                     PwnInfraContext.Logger.Exception(ex);
                 }
             }
+
+            await StopAsync(stoppingToken);
         }
 
         private async Task ProcessOutputBatchAsync(CancellationToken stoppingToken)

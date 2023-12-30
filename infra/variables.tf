@@ -24,7 +24,7 @@ variable "exec_instance_count" {
   description = "The maximum number of concurrent exec instances."
 
   default = {
-    longlived  = 20
+    longlived  = 30
     shortlived = 20
   }
 }
@@ -42,7 +42,7 @@ variable "exec_step_size" {
   description = "exec service scaling step size."
 
   default = {
-    longlived  = 2
+    longlived  = 3
     shortlived = 2
   }
 }

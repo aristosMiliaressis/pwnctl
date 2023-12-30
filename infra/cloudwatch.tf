@@ -146,38 +146,8 @@ resource "aws_cloudwatch_metric_alarm" "output_queue_depth" {
   }
 
   metric_query {
-    id = "inFlightLongLivedTaskMessages"
-
-    metric {
-      metric_name = "ApproximateNumberOfMessagesNotVisible"
-      namespace   = "AWS/SQS"
-      period      = 60
-      stat        = "Maximum"
-
-      dimensions = {
-        QueueName = module.sqs.longlived_tasks_queue.name
-      }
-    }
-  }
-
-  metric_query {
-    id = "inFlightShortLivedTaskMessages"
-
-    metric {
-      metric_name = "ApproximateNumberOfMessagesNotVisible"
-      namespace   = "AWS/SQS"
-      period      = 60
-      stat        = "Maximum"
-
-      dimensions = {
-        QueueName = module.sqs.shortlived_tasks_queue.name
-      }
-    }
-  }
-
-  metric_query {
     id          = "allMessages"
-    expression  = "visibleOutputMessages + inFlightOutputMessages + inFlightLongLivedTaskMessages + inFlightShortLivedTaskMessages"
+    expression  = "visibleOutputMessages + inFlightOutputMessages"
     return_data = "true"
   }
 
