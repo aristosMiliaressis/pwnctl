@@ -63,7 +63,7 @@ RUN dotnet publish "/src/pwnctl.proc/pwnctl.proc.csproj" -c Release -o /src/publ
 FROM base AS release
 
 ARG COMMIT_HASH
-RUN echo "export PWNCTL_COMMIT_HASH=$COMMIT_HASH" >> /root/.profile
+RUN echo "export PWNCTL_COMMIT_HASH=$COMMIT_HASH" >> /root/.env
 
 COPY --from=build /src/publish /opt/pwnctl-proc
 COPY --from=tool-build /root/go/bin/ /usr/local/bin/

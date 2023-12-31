@@ -158,7 +158,7 @@ RUN chmod -R +x /opt/scripts \
     && mv /opt/wordlists/ffuf_ac_strategies/* ~/.config/ffuf/autocalibration
 
 ARG COMMIT_HASH
-RUN echo "export PWNCTL_COMMIT_HASH=$COMMIT_HASH" >> /root/.profile
+RUN echo "export PWNCTL_COMMIT_HASH=$COMMIT_HASH" >> /root/.env
 
 RUN chmod +x /opt/pwnctl-exec/entrypoint.sh
 ENTRYPOINT ["/opt/pwnctl-exec/entrypoint.sh"]
