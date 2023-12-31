@@ -11,9 +11,7 @@ RUN groupadd --gid $USER_GID $USERNAME \
     && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
     && chmod 0440 /etc/sudoers.d/$USERNAME
 
-USER $USERNAME
-
-RUN sudo apt-get update \
+RUN apt-get update \
     && sudo apt-get install -y amazon-ecr-credential-helper \
         curl \
         docker \
@@ -45,3 +43,5 @@ RUN unzip awscli-exe-linux-x86_64.zip \
     && rm -rf ./aws
 
 RUN pip install awslogs
+
+USER $USERNAME

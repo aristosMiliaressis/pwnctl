@@ -1,8 +1,6 @@
 namespace pwnctl.exec.test.integration;
 
-using pwnctl.app;
 using pwnctl.app.Assets;
-using pwnctl.app.Assets.Entities;
 using pwnctl.app.Common.ValueObjects;
 using pwnctl.app.Tasks.Entities;
 using pwnctl.app.Queueing.DTO;
@@ -43,8 +41,7 @@ public sealed class TaskExecutionTests : IntegrationTestBase
         context = new PwnctlDbContext();
         task = context.TaskRecords.First(t => t.Id == task.Id);
         Assert.Equal(TaskState.FINISHED, task.State);
-
-        // TODO: check if output pushed to queue?
+        Assert.Equal(1, task.RunCount);
     }
 
     [Fact]
@@ -71,8 +68,7 @@ public sealed class TaskExecutionTests : IntegrationTestBase
         context = new PwnctlDbContext();
         task = context.TaskRecords.First(t => t.Id == task.Id);
         Assert.Equal(TaskState.FINISHED, task.State);
-
-        // TODO: check if output pushed to queue?
+        Assert.Equal(1, task.RunCount);
     }
 
     [Fact]
@@ -112,8 +108,6 @@ public sealed class TaskExecutionTests : IntegrationTestBase
         var tasks = context.TaskRecords.Where(t => t.RecordId == host.Id).ToList();
         Assert.Equal(5, tasks.Count());
         Assert.True(tasks.All(t => t.State == TaskState.QUEUED));
-        
-        // TODO: check that task queue was populated?
     }
 
     // Execute Task with State Started,Running,Finished,Failed

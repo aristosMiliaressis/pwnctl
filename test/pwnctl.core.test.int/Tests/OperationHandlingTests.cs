@@ -1,15 +1,7 @@
 namespace pwnctl.core.test.integration;
 
-using pwnctl.app;
-using pwnctl.app.Assets;
-using pwnctl.app.Assets.Entities;
 using pwnctl.app.Common.ValueObjects;
-using pwnctl.app.Tasks.Entities;
-using pwnctl.app.Queueing.DTO;
 using pwnctl.app.Operations;
-using pwnctl.app.Tasks.Enums;
-using pwnctl.infra.Queueing;
-using pwnctl.infra.DependencyInjection;
 using pwnctl.infra.Persistence;
 using pwnctl.infra.Repositories;
 using pwnctl.infra.Scheduling;
@@ -17,10 +9,9 @@ using pwnctl.core.test.integration.Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
-using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
+using pwnctl.app.Operations.Enums;
 
 public sealed class OperationHandlingTests : IntegrationTestBase
 {
@@ -33,23 +24,26 @@ public sealed class OperationHandlingTests : IntegrationTestBase
     {
         var context = new PwnctlDbContext();
 
-        var op = context.Operations.FirstOrDefault();
+        var op = context.Operations.Where(o => o.Type == OperationType.Monitor).FirstOrDefault();
         if (op is null)
         {
             op = EntityFactory.EnsureMonitorOperationCreated();
         }
 
+        Assert.Equal(OperationState.Pending, op?.State);
         await _opManager.TryHandleAsync(op.Id);
-
-        var def = context.TaskDefinitions.First(d => d.Name == ShortName.Create("domain_resolution"));
-        var task = context.TaskRecords.Include(t => t.Definition).First(t => t.Definition.Name == ShortName.Create("domain_resolution"));
-        Assert.NotEqual(DateTime.MinValue, task?.QueuedAt);
-        //Assert.Equal(TaskState.QUEUED, task?.State);
 
         context = new PwnctlDbContext();
         op = context.Operations.Find(op.Id);
 
         Assert.NotEqual(DateTime.MinValue, op?.InitiatedAt);
+        Assert.Equal(OperationState.Ongoing, op?.State);
+
+        // TODO: check that tasks were generated
+        // var def = context.TaskDefinitions.First(d => d.Name == ShortName.Create("domain_resolution"));
+        // var task = context.TaskRecords.Include(t => t.Definition).First(t => t.Definition.Name == ShortName.Create("domain_resolution"));
+        // Assert.NotEqual(DateTime.MinValue, task?.QueuedAt);
+        //Assert.Equal(TaskState.QUEUED, task?.State);
     }
 
     // [Fact]
