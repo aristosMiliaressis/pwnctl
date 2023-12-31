@@ -4,7 +4,7 @@ services:
     image: amazon/amazon-ecs-local-container-endpoints
     volumes:
       - /var/run:/var/run
-      - $HOME_OUT_OF_DOCKER/.aws/:/home/.aws/
+      - $HOME/.aws/:/home/.aws/
     environment:
       HOME: "/home"
       AWS_PROFILE: "default"
@@ -39,7 +39,9 @@ services:
       ecs-local-network:
         ipv4_address: "169.254.170.3"
     volumes:
-      - efs:/mnt/efs
+      - type: bind
+        source: ../../deployment
+        target: /mnt/efs
   pwnctl-exec-long:
     depends_on:
       - ecs-local-endpoints
@@ -70,7 +72,9 @@ services:
       ecs-local-network:
         ipv4_address: "169.254.170.4"
     volumes:
-      - efs:/mnt/efs
+      - type: bind
+        source: ../../deployment
+        target: /mnt/efs
   pwnctl-exec-short:
     depends_on:
       - ecs-local-endpoints
@@ -100,7 +104,9 @@ services:
       ecs-local-network:
         ipv4_address: "169.254.170.5"
     volumes:
-      - efs:/mnt/efs
+      - type: bind
+        source: ../../deployment
+        target: /mnt/efs
   postgres:
     image: postgres:15-alpine
     restart: always
@@ -116,9 +122,6 @@ services:
         aliases:
           - postgres
         ipv4_address: "169.254.170.6"
-volumes:
-  efs:
-    driver: local
 networks:
     ecs-local-network:
         driver: bridge

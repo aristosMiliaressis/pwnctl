@@ -26,6 +26,7 @@ tasks:
   build-exec-short-image:
     cmds:
       - |
+        eval "$(ssh-agent -s)";
         commitHash=$(git rev-parse --short HEAD)
         ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-exec-short") | .repositoryUri')
         docker build --build-arg COMMIT_HASH=$commitHash --ssh default=$SSH_AUTH_SOCK src/core/ -f src/core/pwnctl.exec/shortlived/Dockerfile -t ${ecrUri}:$commitHash
@@ -34,6 +35,7 @@ tasks:
   build-exec-long-image:
     cmds:
       - |
+        eval "$(ssh-agent -s)";
         commitHash=$(git rev-parse --short HEAD)
         ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-exec-long") | .repositoryUri')
         docker build --build-arg COMMIT_HASH=$commitHash --ssh default=$SSH_AUTH_SOCK src/core/ -f src/core/pwnctl.exec/longlived/Dockerfile -t ${ecrUri}:$commitHash
@@ -80,7 +82,7 @@ tasks:
       - chmod +x src/pwnctl.cli/bin/Release/net7.0/linux-x64/publish/pwnctl
       - mv src/pwnctl.cli/bin/Release/net7.0/linux-x64/publish/pwnctl ~/.local/bin
       - mkdir -p ~/.config/pwnctl/
-      - chown $USER ~/.config/pwnctl/
+      - chown `whoami` ~/.config/pwnctl/
       - mv src/pwnctl.cli/bin/Release/net7.0/linux-x64/publish/config.ini ~/.config/pwnctl/
 
   setup-ci:
@@ -89,7 +91,7 @@ tasks:
       - terraform -chdir=infra/modules/ci apply -auto-approve
 
   deploy:
-    deps: [build-api, install-cli]
+    deps: [install-cli]
     cmds:
       - terraform -chdir=infra apply -auto-approve
       - ./bin/upload-conf.sh

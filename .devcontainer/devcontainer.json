@@ -5,7 +5,10 @@
 	},
 	
 	"features": {
-		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
+		"ghcr.io/devcontainers/features/docker-in-docker:1": {
+			"version": "latest",
+			"moby": true
+    	}
 	},
 
 	"customizations": {
@@ -29,10 +32,6 @@
 		"source=${env:HOME}${env:USERPROFILE}/.aws,target=/root/.aws,type=bind",
 		"source=${env:HOME}${env:USERPROFILE}/.ssh,target=/root/.ssh,type=bind"
 	],
-
-	"containerEnv": {
-		"HOME_OUT_OF_DOCKER": "${localEnv:HOME}"
-	},
 
 	"runArgs": [
     	"--network=host"
