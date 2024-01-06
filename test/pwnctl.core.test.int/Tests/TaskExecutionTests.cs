@@ -107,7 +107,7 @@ public sealed class TaskExecutionTests : IntegrationTestBase
         var host = context.NetworkHosts.First(h => h.IP == "1.2.3.4");
         var tasks = context.TaskRecords.Where(t => t.RecordId == host.Id).ToList();
         Assert.Equal(5, tasks.Count());
-        Assert.True(tasks.All(t => t.State == TaskState.QUEUED));
+        Assert.All(tasks, t => Assert.Equal(TaskState.FINISHED, t.State));
     }
 
     // Execute Task with State Started,Running,Finished,Failed

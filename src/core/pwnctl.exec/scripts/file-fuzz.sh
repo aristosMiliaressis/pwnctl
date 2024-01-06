@@ -21,12 +21,12 @@ do
     cat $list
 done | sort -u > $temp_wordlist
 
-timeout --preserve-status -v -k 30s 150m ffuf -maxtime 9000 -s -o $temp_outfile -of json -se -fp -acp -acs waf,blacklist,wildcard,route-handler \
-    -ar -mc 200,204,401,500,501 -recursion -recursion-status 301,302,303,307,308,401,403,405,500,501 -H "User-Agent: $(uagen)" -w $temp_wordlist -u ${url}FUZZ >/dev/null
+ffuf -maxtime 9000 -s -o $temp_outfile -of json -se -acs waf,blacklist,wildcard,route-handler \
+    -mc 200,204,401,500,501 -H "User-Agent: $(uagen)" -w $temp_wordlist -u ${url}FUZZ >/dev/null
 
 cat $temp_outfile \
     | jq -c '.results[] | {asset: ("%%BASE_URL%%"+.input.FUZZ), tags:{status:.status|tostring,location:.redirectlocation}}' \
-    | sed "s/%%BASE_URL%%/$(echo $url | 's,/,\\/,g')/g" \
-    | while read line; do word=$(echo $line | jq -r .asset | sed "s/$(echo $url | 's,/,\\/,g')//"); \
+    | sed "s/%%BASE_URL%%/$(echo $url | sed 's,/,\\/,g')/g" \
+    | while read line; do word=$(echo $line | jq -r .asset | sed "s/$(echo $url | sed 's,/,\\/,g')//"); \
         for list in "$@"; do grep -q -E "^$word\$" $list && echo $line | jq -c ".tags.source = \"$list\""; done; done
 

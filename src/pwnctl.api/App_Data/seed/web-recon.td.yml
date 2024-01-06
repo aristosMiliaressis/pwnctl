@@ -23,6 +23,12 @@ TaskDefinitions:
     MonitorRules:
       Schedule: 0 0 * * *
 
+  - Name: kaeferjaeger
+    CommandTemplate: kaeferjaeger.sh {{Name}}
+    Filter: DomainName.ZoneDepth == 1
+    Subject: DomainName
+    ShortLived: true
+
   - Name: sub_wildcard_finder
     CommandTemplate: sub-wildcard-finder.sh {{Name}}
     Filter: Tags["wildcard"] == "true"
@@ -45,7 +51,7 @@ TaskDefinitions:
     MatchOutOfScope: true
     ShortLived: true
 
-  - Name: zone_trasfer
+  - Name: zone_transfer
     CommandTemplate: zone-transfer.sh {{Key}}
     Subject: DomainNameRecord
     Filter: DomainNameRecord.Type == DnsRecordType.SOA
@@ -108,12 +114,14 @@ TaskDefinitions:
     Subject: HttpEndpoint
     Filter: HttpEndpoint.Path == "/" && HttpEndpoint.Socket.DomainNameId != null
     CheckNotificationRules: true
+    ShortLived: true
 
   - Name: panel_discovery
     CommandTemplate: panel-discovery.sh {{Url}}
     Subject: HttpEndpoint
     Filter: HttpEndpoint.Path == "/" && HttpEndpoint.Socket.DomainNameId != null
     CheckNotificationRules: true
+    ShortLived: true
 
   - Name: short_name_scanning
     CommandTemplate: shortname-check.sh {{Url}}
@@ -157,3 +165,4 @@ TaskDefinitions:
     CommandTemplate: mdwfuzzer.sh {{Url}}
     Filter: HttpEndpoint.Path=="/"
     Subject: HttpEndpoint
+    CheckNotificationRules: true

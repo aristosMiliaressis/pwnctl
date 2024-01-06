@@ -2,11 +2,14 @@
 set -eu
 
 cidr=$1
+temp=`mktemp`
 
-RESOLVERS_FILE='/opt/wordlists/dns/resolvers-best.txt'
+mapcidr -silent -cidr $cidr | hakip2host > $temp
 
-mapcidr -silent -cidr $cidr \
-    | zdns PTR --name-servers @$RESOLVERS_FILE --result-verbosity short \
-    | jq -r '.data | select(.answers != null ) |.answers[] | select( .type == "PTR" ) | "\(.name) IN \(.type) \(.answer)"' \
-    | grep -v null \
-    | sort -u
+cat $temp | grep -E '^\[SSL-' | awk '{print $3 " IN VHOST " $2}' | sed 's/*\.//' | sort -u
+
+cat $temp | grep -E '^\[DNS-' | while read line; do \
+        ip=$(echo $line | cut -d ' ' -f2 | awk -F. '{print $4"."$3"." $2"."$1".in-addr.arpa"}'); \
+        domain=$(echo $line | cut -d ' ' -f3); \
+        echo "$ip IN PTR $domain"; \
+done

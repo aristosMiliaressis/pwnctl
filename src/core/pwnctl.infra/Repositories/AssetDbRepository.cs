@@ -152,7 +152,7 @@ namespace pwnctl.infra.Repositories
                     return t;
                 }));
 
-                var newTasks = record.Tasks.Where(t => t.Id == default);
+                var newTasks = record.Tasks.Where(t => t.Id == default).ToList();
                 _context.AddRange(newTasks.Select(t =>
                 {
                     t.Record = null;

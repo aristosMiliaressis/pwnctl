@@ -14,8 +14,6 @@ RUN go install github.com/tomnomnom/unfurl@latest
 RUN go install github.com/projectdiscovery/katana/cmd/katana@latest
 RUN go install github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
 RUN go install github.com/projectdiscovery/mapcidr/cmd/mapcidr@latest
-#RUN go install github.com/projectdiscovery/naabu/v2/cmd/naabu@latest
-#RUN go install github.com/ffuf/ffuf@latest
 RUN go install github.com/lc/gau/v2/cmd/gau@latest
 RUN go install github.com/hakluke/hakrawler@latest
 RUN go install github.com/d3mondev/puredns/v2@latest
@@ -27,10 +25,11 @@ RUN go install github.com/gwen001/github-subdomains@latest
 RUN go install github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
 RUN go install github.com/Josue87/gotator@latest
 RUN go install github.com/projectdiscovery/notify/cmd/notify@latest
-RUN go install github.com/aristosMiliaressis/mdwfuzzer@latest
+RUN go install github.com/ffuf/ffuf@latest
+RUN go install github.com/hakluke/hakip2host@latest
+RUN go install github.com/projectdiscovery/naabu/v2/cmd/naabu@latest
 
 WORKDIR /tmp
-RUN git clone https://github.com/aristosMiliaressis/ffuf.git && go build -C ffuf && mv ffuf/ffuf $GOPATH/bin
 RUN git clone https://github.com/blechschmidt/massdns.git \
     && cd massdns && make && cp bin/massdns $GOPATH/bin/
 
@@ -46,9 +45,11 @@ RUN --mount=type=ssh \
 RUN --mount=type=ssh \
     git clone git@github.com:aristosMiliaressis/cors-scanner.git && make -C cors-scanner install
 RUN --mount=type=ssh \
+    git clone git@github.com:aristosMiliaressis/mdwfuzzer.git && make -C mdwfuzzer install
+RUN --mount=type=ssh \
     git clone -b pwnctl git@github.com:aristosMiliaressis/sub-enum.git \
     && cp sub-enum/wordlists/* /opt/wordlists/dns/ && cp sub-enum/sub-enum.sh $GOPATH/bin/ \
-    && cp sub-enum/sub-wildcard-finder.sh $GOPATH/bin/
+    && cp sub-enum/sub-wildcard-finder.sh $GOPATH/bin/ && chmod +x $GOPATH/bin/sub-wildcard-finder.sh
 
 FROM golang:1.20.2-alpine as nuclei-templates
 
@@ -117,14 +118,14 @@ RUN apt-get update \
     libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 \
     libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 \
     libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 \
-    ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils curl nmap git
+    ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils curl git
 
 # Installing tools
 RUN mkdir /opt/tools
 WORKDIR /opt/tools
 
 RUN apt-get update \
-    && DEBIAN_FRONTEND=noninteractive apt-get install -y jq whois dnsutils less parallel wget
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y jq whois dnsutils less parallel wget nmap
 
 RUN python3 -m pip install useragent-picker-cli && uagen
 RUN python3 -m pip install -e git+https://github.com/initstring/cloud_enum#egg=cloud_enum
@@ -135,8 +136,6 @@ RUN python3 -m pip install -e git+https://github.com/xnl-h4ck3r/waymore#egg=waym
 RUN git clone https://github.com/cramppet/regulator \
     && python3 -m pip install -r regulator/requirements.txt
 RUN git clone https://github.com/defparam/smuggler.git
-RUN curl -LOJ https://github.com/RustScan/RustScan/releases/download/2.0.1/rustscan_2.0.1_amd64.deb \
-    && dpkg -i rustscan_2.0.1_amd64.deb && rm rustscan_2.0.1_amd64.deb
 RUN mkdir -p /opt/toos/ShortNameScanner && cd /opt/toos/ShortNameScanner \
     && curl -OJ https://raw.githubusercontent.com/irsdl/IIS-ShortName-Scanner/master/release/iis_shortname_scanner.jar \
     && curl -OJ https://raw.githubusercontent.com/irsdl/IIS-ShortName-Scanner/master/release/config.xml
@@ -151,6 +150,7 @@ COPY pwnctl.exec/wordlists/ /opt/wordlists/
 COPY pwnctl.exec/nuclei_templates/ /opt/nuclei_templates/
 COPY pwnctl.exec/scripts/* /opt/scripts/
 COPY pwnctl.exec/longlived/entrypoint.sh /opt/pwnctl-exec/entrypoint.sh
+RUN cat /opt/wordlists/dns/perms-large.txt | anew -q /opt/tools/src/cloud-enum/enum_tools/fuzz.txt
 
 RUN chmod -R +x /opt/scripts \
     && mv /opt/scripts/* /usr/local/bin/ \

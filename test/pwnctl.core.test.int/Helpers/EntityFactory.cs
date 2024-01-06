@@ -24,7 +24,7 @@ namespace pwnctl.core.test.integration.Helpers
             }
 
             var scope = context.ScopeAggregates.FirstOrDefault(a => a.Name == ShortName.Create("tesla_scope"));
-            if (scope == null)
+            if (scope is null)
             {
                 scope = new ScopeAggregate("tesla_scope", "");
                 scope.Definitions = new List<ScopeDefinitionAggregate>

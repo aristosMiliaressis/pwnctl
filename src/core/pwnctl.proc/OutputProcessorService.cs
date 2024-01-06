@@ -5,6 +5,7 @@ using pwnctl.infra;
 using pwnctl.infra.Repositories;
 using pwnctl.infra.Scheduling;
 using pwnctl.app.Operations;
+using System.Diagnostics;
 
 namespace pwnctl.proc
 {
@@ -60,6 +61,7 @@ namespace pwnctl.proc
             }
 
             PwnInfraContext.Logger.Information($"Received output batch #{batchDTO.TaskId} with {batchDTO.Lines.Count} lines.");
+            var stopWatch = Stopwatch.StartNew();
 
             try
             {
@@ -71,6 +73,9 @@ namespace pwnctl.proc
                 }
 
                 await PwnInfraContext.TaskQueueService.DequeueAsync(batchDTO);
+
+                stopWatch.Stop();
+                PwnInfraContext.Logger.Information($"Processed output batch #{batchDTO.TaskId} in {stopWatch.ElapsedMilliseconds}ms.");
             }
             catch (Exception ex)
             {

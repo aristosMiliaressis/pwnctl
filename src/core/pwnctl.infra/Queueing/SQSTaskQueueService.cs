@@ -69,8 +69,6 @@ namespace pwnctl.infra.Queueing
         public async Task EnqueueBatchAsync<TMessage>(IEnumerable<TMessage> msgs)
             where TMessage : QueueMessage
         {
-            PwnInfraContext.Logger.Information($"Enqueuing batch of {msgs.Count()} {typeof(TMessage).Name} messages");
-            
             try
             {
                 for (var i = 0; i * 10 < msgs.Count(); i++)
@@ -79,6 +77,8 @@ namespace pwnctl.infra.Queueing
 
                     if (!batch.Any())
                         continue;
+                    
+                    PwnInfraContext.Logger.Information($"Enqueuing batch of {batch.Count()} {typeof(TMessage).Name} messages.");
 
                     var request = new SendMessageBatchRequest(this[typeof(TMessage)], batch.Select(msg =>
                     new SendMessageBatchRequestEntry

@@ -17,6 +17,7 @@ tasks:
 
   build-api:
     cmds:
+      - dotnet clean src/pwnctl.api/pwnctl.api.csproj
       - dotnet build src/pwnctl.api/pwnctl.api.csproj -c Release
 
   build-cli:
@@ -45,6 +46,8 @@ tasks:
         commitHash=$(git rev-parse --short HEAD)
         region=$(aws configure get region)
         ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-exec-short") | .repositoryUri')
+        aws ecr get-login-password --region $region \
+          | docker login --username AWS --password-stdin ${ecrUri}
         docker push ${ecrUri}:$commitHash
 
   push-exec-long-image:
@@ -53,6 +56,8 @@ tasks:
         commitHash=$(git rev-parse --short HEAD)
         region=$(aws configure get region)
         ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-exec-long") | .repositoryUri')
+        aws ecr get-login-password --region $region \
+          | docker login --username AWS --password-stdin ${ecrUri}
         docker push ${ecrUri}:$commitHash
 
   build-proc-image:
@@ -69,6 +74,8 @@ tasks:
         commitHash=$(git rev-parse --short HEAD)
         region=$(aws configure get region)
         ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-proc") | .repositoryUri')
+        aws ecr get-login-password --region $region \
+          | docker login --username AWS --password-stdin ${ecrUri}
         docker push ${ecrUri}:$commitHash
 
   build-all:
@@ -89,7 +96,7 @@ tasks:
       - terraform -chdir=infra/modules/ci apply -auto-approve
 
   deploy:
-    deps: [install-cli]
+    deps: [build-api]
     cmds:
       - terraform -chdir=infra apply -auto-approve
       - ./bin/upload-conf.sh

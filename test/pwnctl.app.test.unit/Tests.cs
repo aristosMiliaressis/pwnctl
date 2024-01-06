@@ -410,6 +410,14 @@ public sealed class Tests
 
         await proc.ProcessAsync(PwnInfraContext.Serializer.Serialize(sshService), EntityFactory.TaskRecord.Id);
         var service = context.NetworkSockets.First(ep => ep.Address == "tcp://1.3.3.7:22");
+
+        await proc.ProcessAsync("https://test.tesla.com/", EntityFactory.TaskRecord.Id);
+        await proc.ProcessAsync($$$"""{"Asset":"https://test.tesla.com/","Tags":{"Content-Type":"text/html"}}""", EntityFactory.TaskRecord.Id);
+
+        endpointRecord = repository.ListHttpEndpointsAsync(0).Result.First(r => r.HttpEndpoint.Url == "https://test.tesla.com/");
+
+        tasks = context.TaskRecords.Include(t => t.Definition).Where(t => t.Record.Id == endpointRecord.Id).ToList();
+        Assert.Contains(tasks, t => t.Definition.Name.Value == "hakrawler");
     }
 
     [Fact]

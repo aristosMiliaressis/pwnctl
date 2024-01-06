@@ -45,6 +45,23 @@ public sealed class NetworkHost : Asset
         }
     }
 
+    public bool IsPrivate()
+    {
+        int[] ipParts = IP.Split(".", StringSplitOptions.RemoveEmptyEntries)
+                            .Select(int.Parse)
+                            .ToArray();
+
+        // in private ip range
+        if (ipParts[0] == 10 || ipParts[0] == 127 ||
+            (ipParts[0] == 192 && ipParts[1] == 168) ||
+            (ipParts[0] == 172 && ipParts[1] >= 16 && ipParts[1] <= 31))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     public override string ToString()
     {
         return IP;

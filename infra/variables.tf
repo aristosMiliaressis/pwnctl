@@ -67,6 +67,6 @@ variable "message_visibility_timeout" {
   default = {
     shortlived = 180
     longlived  = 900
-    output     = 450
+    output     = 900
   }
 }

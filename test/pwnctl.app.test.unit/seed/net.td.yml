@@ -4,4 +4,9 @@ TaskDefinitions:
   - Name: nmap_basic
     CommandTemplate: nmap -Pn {{CIDR}}
     Subject: NetworkRange
+
+  - Name: tcp_scan
+    CommandTemplate: tcp-scan.sh {{IP}}
+    Filter: NetworkHost.Version.ToString() == "InterNetwork"
+    Subject: NetworkHost
     

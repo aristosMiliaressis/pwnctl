@@ -1,7 +1,7 @@
 FROM ubuntu AS tool-build
 
 RUN apt-get update \
-    && apt-get install -y git make unzip musl-dev gcc curl
+    && apt-get install -y git make unzip musl-dev gcc curl libpcap-dev
 
 # Setting up Go lang
 COPY --from=golang:1.20 /usr/local/go/ /usr/local/go/
@@ -18,6 +18,7 @@ RUN go install github.com/aristosMiliaressis/urgo@latest
 RUN go install github.com/rverton/webanalyze/cmd/webanalyze@latest
 RUN go install github.com/sensepost/gowitness@latest
 RUN go install github.com/zmap/zdns@latest
+RUN go install github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
 RUN go install github.com/projectdiscovery/notify/cmd/notify@latest
 
 WORKDIR /tmp
@@ -29,6 +30,14 @@ RUN --mount=type=ssh \
     git clone -b pwnctl git@github.com:aristosMiliaressis/sub-enum.git \
     && cp sub-enum/wordlists/* /opt/wordlists/dns/
 
+FROM golang:1.20.2-alpine as nuclei-templates
+
+RUN go install github.com/xm1k3/cent@latest
+
+RUN go install github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
+RUN mkdir -p /opt/nuclei_templates/official
+RUN nuclei -ud /opt/nuclei_templates/official
+RUN cent init
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS worker-build
 
@@ -79,12 +88,16 @@ RUN cp /usr/bin/python3 /usr/bin/python
 WORKDIR /opt/chromium
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends libgbm1 libxkbcommon0 \
-    xvfb gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 \
+    && apt-get install -y --no-install-recommends libgbm1 libxkbcommon0 libu2f-udev libvulkan1 wget \
+    xvfb gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 mesa-vulkan-drivers \
     libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 \
     libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 \
     libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 \
-    ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils curl nmap git
+    ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils curl nmap git libpcap-dev
+
+RUN wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
+    && dpkg -i google-chrome-stable_current_amd64.deb \
+    && rm google-chrome-stable_current_amd64.deb
 
 # Installing tools
 RUN mkdir /opt/tools
@@ -108,10 +121,19 @@ RUN curl https://github.com/mgdm/htmlq/releases/download/v0.4.0/htmlq-x86_64-lin
 
 COPY --from=tool-build /root/go/bin/ /usr/local/bin/
 COPY --from=tool-build /opt/wordlists/ /opt/wordlists/
+COPY --from=nuclei-templates /opt/nuclei_templates/ /opt/nuclei_templates/
 COPY --from=worker-build /src/publish /opt/pwnctl-exec
+COPY pwnctl.exec/nuclei_templates/ /opt/nuclei_templates/
 COPY pwnctl.exec/wordlists/ /opt/wordlists/
 COPY pwnctl.exec/scripts/* /opt/scripts/
 COPY pwnctl.exec/shortlived/entrypoint.sh /opt/pwnctl-exec/entrypoint.sh
+
+RUN mkdir /opt/wordlists/cloud \
+    && curl https://kaeferjaeger.gay/sni-ip-ranges/amazon/ipv4_merged_sni.txt > /opt/wordlists/cloud/amazon.txt \
+    && curl https://kaeferjaeger.gay/sni-ip-ranges/digitalocean/ipv4_merged_sni.txt > /opt/wordlists/cloud/digitalocean.txt \
+    && curl https://kaeferjaeger.gay/sni-ip-ranges/google/ipv4_merged_sni.txt > /opt/wordlists/cloud/google.txt \
+    && curl https://kaeferjaeger.gay/sni-ip-ranges/microsoft/ipv4_merged_sni.txt > /opt/wordlists/cloud/microsoft.txt \
+    && curl https://kaeferjaeger.gay/sni-ip-ranges/oracle/ipv4_merged_sni.txt > /opt/wordlists/cloud/oracle.txt
 
 RUN chmod -R +x /opt/scripts \
     && mv /opt/scripts/* /usr/local/bin/

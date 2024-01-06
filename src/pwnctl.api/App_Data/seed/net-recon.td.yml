@@ -25,8 +25,15 @@ TaskDefinitions:
 
   - Name: tcp_scan
     CommandTemplate: tcp-scan.sh {{IP}}
+    Filter: NetworkHost.Version.ToString() == "InterNetwork"
     Subject: NetworkHost
     CheckNotificationRules: true
+
+  - Name: ver_scan
+    CommandTemplate: ver-scan.sh {{Address}}
+    Subject: NetworkSocket
+    Filter: NetworkSocket.TransportProtocol == TransportProtocol.TCP
+    ShortLived: true
 
   - Name: tls_probe
     CommandTemplate: tls-probe.sh {{Address}}
@@ -40,6 +47,7 @@ TaskDefinitions:
 
   - Name: udp_scan
     CommandTemplate: udp-scan.sh {{IP}}
+    Filter: NetworkHost.Version.ToString() == "InterNetwork"
     Subject: NetworkHost
     CheckNotificationRules: true
 

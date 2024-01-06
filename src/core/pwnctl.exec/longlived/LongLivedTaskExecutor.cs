@@ -158,11 +158,17 @@ public sealed class LongLivedTaskExecutor : LifetimeService
                 {
                     PwnInfraContext.Logger.Warning($"Task {task.Id} cancelled.");
                     task.Canceled(stderr.ToString());
+
+                    // return the task to the queue, if this occures to many times,
+                    // the task will be put in the dead letter queue
+                    await PwnInfraContext.TaskQueueService.ChangeMessageVisibilityAsync(taskDTO, 0);
                 }
                 else
                 {
                     PwnInfraContext.Logger.Warning($"Task {task.Id} timed out.");
                     task.Timedout(stderr.ToString());
+
+                    await PwnInfraContext.TaskQueueService.DequeueAsync(taskDTO);
                 }
             }
             else
@@ -176,10 +182,6 @@ public sealed class LongLivedTaskExecutor : LifetimeService
             {
                 PwnInfraContext.Logger.Warning($"failed to update task records #{task.Id} state to FAILED.");
             }
-
-            // return the task to the queue, if this occures to many times,
-            // the task will be put in the dead letter queue
-            await PwnInfraContext.TaskQueueService.ChangeMessageVisibilityAsync(taskDTO, 0);
 
             return false;
         }

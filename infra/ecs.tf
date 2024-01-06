@@ -127,7 +127,7 @@ resource "aws_ecs_task_definition" "exec_long" {
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   cpu                      = 512
-  memory                   = 2048
+  memory                   = 1024
   execution_role_arn       = data.aws_iam_role.ecs_service.arn
   task_role_arn            = data.aws_iam_role.ecs_service.arn
 
