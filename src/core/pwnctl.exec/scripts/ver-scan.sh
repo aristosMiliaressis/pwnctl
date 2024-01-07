@@ -14,7 +14,7 @@ nmap -Pn -p $port -sV --script-args http.useragent="Mozilla/9.1" -oG $temp $ip >
 cat $temp \
 	| sed 's/Ports: /\n/g' \
 	| sed 's/, /\n/g' \
-	| grep 'open/tcp' \
+	| grep -E '(open|filtered)/tcp' \
 	| cut -d '/' -f 1,5,7 \
 	| while read line; \
 	do \

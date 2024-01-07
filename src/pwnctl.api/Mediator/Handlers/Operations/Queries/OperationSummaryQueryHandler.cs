@@ -20,56 +20,69 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Commands
             var viewModel = new SummaryViewModel();
 
             PwnctlDbContext context = new();
-            var op = context.Operations.FirstOrDefault(o => o.Name == ShortName.Create(command.Name));
+            var op = context.Operations
+                            .Include(o => o.Scope)
+                            .ThenInclude(o => o.Definitions)
+                            .ThenInclude(o => o.Definition)
+                            .FirstOrDefault(o => o.Name == ShortName.Create(command.Name));
             if (op == null)
                 return MediatedResponse<SummaryViewModel>.Error("Operation {0} not found.", command.Name);
 
-            viewModel.NetworkRangeCount = await context.NetworkRanges.CountAsync();
-            viewModel.HostCount = await context.NetworkHosts.CountAsync();
-            viewModel.DomainCount = await context.DomainNames.CountAsync();
-            viewModel.RecordCount = await context.DomainNameRecords.CountAsync();
-            viewModel.SocketCount = await context.NetworkSockets.CountAsync();
-            viewModel.HttpEndpointCount = await context.HttpEndpoints.CountAsync();
-            viewModel.HttpParamCount = await context.HttpParameters.CountAsync();
-            viewModel.EmailCount = await context.Emails.CountAsync();
-            viewModel.TagCount = await context.Tags.CountAsync();
-            viewModel.InScopeRangesCount = await context.AssetRecords.Where(r => r.Subject == AssetClass.Create(nameof(NetworkRange)) && r.InScope).CountAsync();
-            viewModel.InScopeHostCount = await context.AssetRecords.Where(r => r.Subject == AssetClass.Create(nameof(NetworkHost)) && r.InScope).CountAsync();
-            viewModel.InScopeDomainCount = await context.AssetRecords.Where(r => r.Subject == AssetClass.Create(nameof(DomainName)) && r.InScope).CountAsync();
-            viewModel.InScopeRecordCount = await context.AssetRecords.Where(r => r.Subject == AssetClass.Create(nameof(DomainNameRecord)) && r.InScope).CountAsync();
-            viewModel.InScopeServiceCount = await context.AssetRecords.Where(r => r.Subject == AssetClass.Create(nameof(NetworkSocket)) && r.InScope).CountAsync();
-            viewModel.InScopeEndpointCount = await context.AssetRecords.Where(r => r.Subject == AssetClass.Create(nameof(domain.Entities.HttpEndpoint)) && r.InScope).CountAsync();
-            viewModel.InScopeParamCount = await context.AssetRecords.Where(r => r.Subject == AssetClass.Create(nameof(HttpParameter)) && r.InScope).CountAsync();
-            viewModel.InScopeEmailCount = await context.AssetRecords.Where(r => r.Subject == AssetClass.Create(nameof(Email)) && r.InScope).CountAsync();
+            var scopeDefinitionIds = op.Scope.Definitions.Select(s => s.DefinitionId).ToList();
 
-            viewModel.QueuedTaskCount = await context.TaskRecords.Where(t => t.State == TaskState.QUEUED).CountAsync();
-            viewModel.RunningTaskCount = await context.TaskRecords.Where(t => t.State == TaskState.RUNNING).CountAsync();
-            viewModel.FinishedTaskCount = await context.TaskRecords.Where(t => t.State == TaskState.FINISHED).CountAsync();
-            viewModel.FailedTaskCount = await context.TaskRecords.Where(t => t.State == TaskState.FAILED).CountAsync();
-            viewModel.CanceledTaskCount = await context.TaskRecords.Where(t => t.State == TaskState.CANCELED).CountAsync();
-            viewModel.TimedOutTaskCount = await context.TaskRecords.Where(t => t.State == TaskState.TIMED_OUT).CountAsync();
-            viewModel.FirstTask = (await context.TaskRecords.OrderBy(t => t.QueuedAt).FirstOrDefaultAsync())?.QueuedAt;
-            viewModel.LastTask = (await context.TaskRecords.OrderByDescending(t => t.QueuedAt).FirstOrDefaultAsync())?.QueuedAt;
-            viewModel.LastFinishedTask = (await context.TaskRecords.OrderByDescending(t => t.FinishedAt).FirstOrDefaultAsync())?.FinishedAt;
+            viewModel.TagCount = await context.Tags.CountAsync();
+            viewModel.InScopeRangesCount = await context.AssetRecords.Where(r => scopeDefinitionIds.Contains(r.ScopeId.Value) && r.NetworkRangeId != null).CountAsync();
+            viewModel.InScopeHostCount = await context.AssetRecords.Where(r => scopeDefinitionIds.Contains(r.ScopeId.Value) && r.NetworkHostId != null).CountAsync();
+            viewModel.InScopeDomainCount = await context.AssetRecords.Where(r => scopeDefinitionIds.Contains(r.ScopeId.Value) && r.DomainNameId != null).CountAsync();
+            viewModel.InScopeRecordCount = await context.AssetRecords.Where(r => scopeDefinitionIds.Contains(r.ScopeId.Value) && r.DomainNameRecordId != null).CountAsync();
+            viewModel.InScopeServiceCount = await context.AssetRecords.Where(r => scopeDefinitionIds.Contains(r.ScopeId.Value) && r.NetworkSocketId != null).CountAsync();
+            viewModel.InScopeEndpointCount = await context.AssetRecords.Where(r => scopeDefinitionIds.Contains(r.ScopeId.Value) && r.HttpEndpointId != null).CountAsync();
+            viewModel.InScopeParamCount = await context.AssetRecords.Where(r => scopeDefinitionIds.Contains(r.ScopeId.Value) && r.HttpParameterId != null).CountAsync();
+            viewModel.InScopeEmailCount = await context.AssetRecords.Where(r => scopeDefinitionIds.Contains(r.ScopeId.Value) && r.EmailId != null).CountAsync();
+
+            viewModel.QueuedTaskCount = await context.TaskRecords.Where(t => t.OperationId == op.Id && t.State == TaskState.QUEUED).CountAsync();
+            viewModel.RunningTaskCount = await context.TaskRecords.Where(t => t.OperationId == op.Id && t.State == TaskState.RUNNING).CountAsync();
+            viewModel.FinishedTaskCount = await context.TaskRecords.Where(t => t.OperationId == op.Id && t.State == TaskState.FINISHED).CountAsync();
+            viewModel.FailedTaskCount = await context.TaskRecords.Where(t => t.OperationId == op.Id && t.State == TaskState.FAILED).CountAsync();
+            viewModel.CanceledTaskCount = await context.TaskRecords.Where(t => t.OperationId == op.Id && t.State == TaskState.CANCELED).CountAsync();
+            viewModel.TimedOutTaskCount = await context.TaskRecords.Where(t => t.OperationId == op.Id && t.State == TaskState.TIMED_OUT).CountAsync();
+            viewModel.FirstTask = (await context.TaskRecords.Where(t => t.OperationId == op.Id).OrderBy(t => t.QueuedAt).FirstOrDefaultAsync())?.QueuedAt;
+            viewModel.LastTask = (await context.TaskRecords.Where(t => t.OperationId == op.Id).OrderByDescending(t => t.QueuedAt).FirstOrDefaultAsync())?.QueuedAt;
+            viewModel.LastFinishedTask = (await context.TaskRecords.Where(t => t.OperationId == op.Id).OrderByDescending(t => t.FinishedAt).FirstOrDefaultAsync())?.FinishedAt;
             viewModel.TaskDetails = new List<SummaryViewModel.TaskDefinitionDetails>();
             foreach (var def in context.TaskDefinitions.AsEnumerable().GroupBy(d => d.Name.Value).ToList())
             {
                 var details = new SummaryViewModel.TaskDefinitionDetails
                 {
                     Name = def.First().Name.Value,
-                    Count = await context.TaskRecords.Where(e => def.Select(d => d.Id).Contains(e.DefinitionId)).CountAsync(),
-                    RunCount = context.TaskRecords.Where(e => def.Select(d => d.Id).Contains(e.DefinitionId)).Sum(e => e.RunCount),
-                    Findings = context.AssetRecords.Include(r => r.FoundByTask).Where(r => def.Select(d => d.Id).Contains(r.FoundByTask.DefinitionId)).Count()
+                    Count = await context.TaskRecords
+                                        .Where(t => t.OperationId == op.Id && def.Select(d => d.Id).Contains(t.DefinitionId))
+                                        .CountAsync(),
+                    RunCount = context.TaskRecords
+                                        .Where(t => t.OperationId == op.Id && def.Select(d => d.Id).Contains(t.DefinitionId))
+                                        .Sum(e => e.RunCount),
+                    Findings = await context.AssetRecords
+                                        .Include(r => r.FoundByTask)
+                                        .Where(r => scopeDefinitionIds.Contains(r.ScopeId.Value) 
+                                                && def.Select(d => d.Id).Contains(r.FoundByTask.DefinitionId))
+                                        .CountAsync()
                 };
 
                 if (details.Count == 0)
                     continue;
 
-                var count = await  context.TaskRecords.Where(e => e.State == TaskState.FINISHED && def.Select(d => d.Id).Contains(e.DefinitionId)).CountAsync();
+                var count = await context.TaskRecords
+                                            .Where(e => e.OperationId == op.Id 
+                                                    && e.State == TaskState.FINISHED 
+                                                    && def.Select(d => d.Id).Contains(e.DefinitionId))
+                                            .CountAsync();
+
                 for (var i = 0; i <= count / PwnInfraContext.Config.Api.BatchSize; i++)
                 {
                     details.Duration += TimeSpan.FromSeconds(context.TaskRecords
-                            .Where(e => e.State == TaskState.FINISHED && def.Select(d => d.Id).Contains(e.DefinitionId))
+                            .Where(e => e.OperationId == op.Id 
+                                    && e.State == TaskState.FINISHED 
+                                    && def.Select(d => d.Id).Contains(e.DefinitionId))
                             .OrderBy(t => t.QueuedAt)
                             .Skip(i*PwnInfraContext.Config.Api.BatchSize)
                             .Take(PwnInfraContext.Config.Api.BatchSize)

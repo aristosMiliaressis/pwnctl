@@ -1,7 +1,7 @@
 FROM ubuntu AS tool-build
 
 RUN apt-get update \
-    && apt-get install -y git make unzip musl-dev gcc curl
+    && apt-get install -y git make unzip musl-dev gcc curl libpcap-dev
 
 # Setting up Go lang
 COPY --from=golang:1.20 /usr/local/go/ /usr/local/go/
@@ -113,7 +113,7 @@ RUN cp /usr/bin/python3 /usr/bin/python
 WORKDIR /opt/chromium
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends libgbm1 libxkbcommon0 \
+    && apt-get install -y --no-install-recommends libgbm1 libxkbcommon0 libpcap-dev \
     xvfb gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 \
     libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 \
     libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 \

@@ -23,7 +23,6 @@ namespace pwnctl.cli.ModeHandlers
 
         private static Dictionary<string, Type> ResourceMap = new()
         {
-            { "ops", typeof(UpdateOperationCommand) },
             { "scope", typeof(UpdateScopeAggregateCommand) },
             { "task-profiles", typeof(UpdateTaskProfileCommand) },
             { "task-definitions", typeof(UpdateTaskDefinitionCommand) }

@@ -1,15 +1,18 @@
+using pwnctl.app.Operations.Enums;
+
 namespace pwnctl.dto.Operations.Models;
 
 public sealed class SummaryViewModel
 {
-    public int NetworkRangeCount { get; set; }
-    public int HostCount { get; set; }
-    public int DomainCount { get; set; }
-    public int RecordCount { get; set; }
-    public int SocketCount { get; set; }
-    public int HttpEndpointCount { get; set; }
-    public int HttpParamCount { get; set; }
-    public int EmailCount { get; set; }
+    public string Name { get; set; }
+    public string ScopeName { get; set; }
+    public OperationType Type { get; set; }
+    public OperationState State { get; set; }
+    public int CurrentPhase { get; set; }
+    public DateTime? InitializedAt { get; set; }
+    public DateTime? FinishedAt { get; set; }
+    //schedule
+
     public int TagCount { get; set; }
     public int InScopeRangesCount { get; set; }
     public int InScopeHostCount { get; set; }
@@ -28,8 +31,6 @@ public sealed class SummaryViewModel
     public DateTime? FirstTask { get; set; }
     public DateTime? LastTask { get; set; }
     public DateTime? LastFinishedTask { get; set; }
-    public DateTime? InitializedAt { get; set; }
-    public DateTime? FinishedAt { get; set; }
 
     public List<TaskDefinitionDetails> TaskDetails { get; set; }
 

@@ -1,7 +1,7 @@
 FROM ubuntu AS tool-build
 
 RUN apt-get update \
-    && apt-get install -y git make unzip musl-dev gcc curl libpcap-dev
+    && apt-get install -y git make unzip musl-dev gcc curl
 
 # Setting up Go lang
 COPY --from=golang:1.20 /usr/local/go/ /usr/local/go/

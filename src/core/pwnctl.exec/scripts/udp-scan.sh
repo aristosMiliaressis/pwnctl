@@ -13,7 +13,7 @@ nmap -Pn -sU --script-args http.useragent="$(uagen)" -sV "${params[@]}" --versio
 cat $temp \
 	| sed 's/Ports: /\n/g' \
 	| sed 's/, /\n/g' \
-	| grep 'open/udp' \
+	| grep -E '(open|filtered)/udp' \
 	| cut -d '/' -f 1,5,7 \
 	| while read line; \
 	do \

@@ -21,14 +21,14 @@ namespace pwnctl.cli.ModeHandlers
             {
                var model = await PwnctlApiClient.Default.Send(new OperationSummaryQuery { Name = opt.Name });
 
-               Console.WriteLine($"NetworkRanges: {model.NetworkRangeCount}, InScope: {model.InScopeRangesCount}");
-               Console.WriteLine($"NetworkHosts: {model.HostCount}, InScope: {model.InScopeHostCount}");
-               Console.WriteLine($"NetworkSockets: {model.SocketCount}, InScope: {model.InScopeServiceCount}");
-               Console.WriteLine($"DomainNames: {model.DomainCount}, InScope: {model.InScopeDomainCount}");
-               Console.WriteLine($"DomainNameRecords: {model.RecordCount}, InScope: {model.InScopeRecordCount}");
-               Console.WriteLine($"HttpEndpoints: {model.HttpEndpointCount}, InScope: {model.InScopeEndpointCount}");
-               Console.WriteLine($"HttpParameters: {model.HttpParamCount}, InScope: {model.InScopeParamCount}");
-               Console.WriteLine($"Emais: {model.EmailCount}, InScope: {model.InScopeEmailCount}");
+               Console.WriteLine($"NetworkRanges: {model.InScopeRangesCount}");
+               Console.WriteLine($"NetworkHosts: {model.InScopeHostCount}");
+               Console.WriteLine($"NetworkSockets: {model.InScopeServiceCount}");
+               Console.WriteLine($"DomainNames: {model.InScopeDomainCount}");
+               Console.WriteLine($"DomainNameRecords: {model.InScopeRecordCount}");
+               Console.WriteLine($"HttpEndpoints: {model.InScopeEndpointCount}");
+               Console.WriteLine($"HttpParameters: {model.InScopeParamCount}");
+               Console.WriteLine($"Emais: {model.InScopeEmailCount}");
                Console.WriteLine($"Tags: {model.TagCount}");
                Console.WriteLine();
                Console.WriteLine($"QUEUED: {model.QueuedTaskCount}, RUNNING: {model.RunningTaskCount}, FINISHED: {model.FinishedTaskCount}, CANCELED: {model.CanceledTaskCount}, TIMED_OUT: {model.TimedOutTaskCount}, FAILED: {model.FailedTaskCount}");
