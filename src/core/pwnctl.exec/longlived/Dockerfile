@@ -28,6 +28,7 @@ RUN go install github.com/projectdiscovery/notify/cmd/notify@latest
 RUN go install github.com/ffuf/ffuf@latest
 RUN go install github.com/hakluke/hakip2host@latest
 RUN go install github.com/projectdiscovery/naabu/v2/cmd/naabu@latest
+RUN go install github.com/aristosMiliaressis/ffufClean@latest
 
 WORKDIR /tmp
 RUN git clone https://github.com/blechschmidt/massdns.git \

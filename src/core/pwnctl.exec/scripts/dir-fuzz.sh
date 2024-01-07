@@ -22,8 +22,13 @@ ffuf -maxtime 9000 -s -o $temp_outfile -of json -se -acs waf,blacklist,wildcard,
     -mc all -fc 404,429,503 -H "User-Agent: $(uagen)" -w $temp_wordlist -u ${url}FUZZ >/dev/null
 
 cat $temp_outfile \
-    | jq -c '.results[] | {asset: ("%%BASE_URL%%"+.input.FUZZ), tags:{status:.status|tostring,location:.redirectlocation}}' \
+    | jq -c '.results[]' \
+    | ffufClean \
+    | jq -c '.[] | {asset: ("%%BASE_URL%%"+.input.FUZZ), tags:{status:.status|tostring,location:.redirectlocation}}' \
     | sed "s/%%BASE_URL%%/$(echo $url | sed 's,/,\\/,g')/g" \
-    | while read line; do word=$(echo $line | jq -r .asset | sed "s/$(echo $url | sed 's,/,\\/,g')//"); \
-        for list in "$@"; do grep -q -E "^$word\$" $list && echo $line | jq -c ".tags.source = \"$list\""; done; done
-
+    | while read line; do \
+        word=$(echo $line | jq -r .asset | sed "s/$(echo $url | sed 's,/,\\/,g')//"); \
+        for list in "$@"; do \
+            grep -q -E "^$word\$" $list && echo $line | jq -c ".tags.source = \"$list\""; \
+        done; \
+    done
