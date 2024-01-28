@@ -140,6 +140,8 @@ public sealed class LongLivedTaskExecutor : LifetimeService
         using var cts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
         cts.CancelAfter(PwnInfraContext.Config.Worker.MaxTaskTimeout * 1000);
 
+        Environment.SetEnvironmentVariable("PWNCTL_OUTPUT_PATH", $"{EnvironmentVariables.FS_MOUNT_POINT}/{task.Operation.Name}/{task.Definition.Name}/");
+
         int exitCode = 0;
         StringBuilder stdout = null, stderr = new();
         try
