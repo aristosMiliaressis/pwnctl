@@ -29,7 +29,7 @@ services:
       PWNCTL_LongLivedTaskQueue__Name: dev-task-longlived.fifo
       PWNCTL_OutputQueue__Name: dev-output.fifo
       PWNCTL_ShortLivedTaskQueue__Name: dev-task-shortlived.fifo
-    image: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/pwnctl-proc:$PWNCTL_PROC_TAG
+    image: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/pwnctl-proc:latest
     labels:
       ecs-local.task-definition-input.type: remote
       ecs-local.task-definition-input.value: arn:aws:ecs:$AWS_REGION:$AWS_ACCOUNT_ID:task-definition/pwnctl-proc
@@ -62,7 +62,7 @@ services:
       PWNCTL_LongLivedTaskQueue__VisibilityTimeout: "900"
       PWNCTL_OutputQueue__Name: dev-output.fifo
       PWNCTL_Worker__MaxTaskTimeout: "10800"
-    image: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/pwnctl-exec-long:$PWNCTL_EXEC_LONG_TAG
+    image: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/pwnctl-exec-long:latest
     labels:
       ecs-local.task-definition-input.type: remote
       ecs-local.task-definition-input.value: arn:aws:ecs:$AWS_REGION:$AWS_ACCOUNT_ID:task-definition/pwnctl-exec-long
@@ -94,7 +94,7 @@ services:
       PWNCTL_ShortLivedTaskQueue__Name: dev-task-shortlived.fifo
       PWNCTL_OutputQueue__Name: dev-output.fifo
       PWNCTL_Worker__MaxTaskTimeout: "180"
-    image: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/pwnctl-exec-short:$PWNCTL_EXEC_SHORT_TAG
+    image: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/pwnctl-exec-short:latest
     labels:
       ecs-local.task-definition-input.type: remote
       ecs-local.task-definition-input.value: arn:aws:ecs:$AWS_REGION:$AWS_ACCOUNT_ID:task-definition/pwnctl-exec-short

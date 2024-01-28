@@ -9,6 +9,7 @@ tasks:
       - dotnet test --filter "FullyQualifiedName~test.unit"
 
   test-int:
+    deps: [build-exec-short-image, build-exec-long-image, build-proc-image]
     cmds:
       - |
         . ./bin/setenv.sh
@@ -27,56 +28,20 @@ tasks:
   build-exec-short-image:
     cmds:
       - |
-        commitHash=$(git rev-parse --short HEAD)
         ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-exec-short") | .repositoryUri')
-        docker build --build-arg COMMIT_HASH=$commitHash --ssh default=$SSH_AUTH_SOCK src/core/ -f src/core/pwnctl.exec/shortlived/Dockerfile -t ${ecrUri}:$commitHash
-        docker tag ${ecrUri}:$commitHash ${ecrUri}:untested_$commitHash
+        docker build --ssh default=$SSH_AUTH_SOCK src/core/ -f src/core/pwnctl.exec/shortlived/Dockerfile -t ${ecrUri}:latest
 
   build-exec-long-image:
     cmds:
       - |
-        commitHash=$(git rev-parse --short HEAD)
         ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-exec-long") | .repositoryUri')
-        docker build --build-arg COMMIT_HASH=$commitHash --ssh default=$SSH_AUTH_SOCK src/core/ -f src/core/pwnctl.exec/longlived/Dockerfile -t ${ecrUri}:$commitHash
-        docker tag ${ecrUri}:$commitHash ${ecrUri}:untested_$commitHash
-
-  push-exec-short-image:
-    cmds:
-      - |
-        commitHash=$(git rev-parse --short HEAD)
-        region=$(aws configure get region)
-        ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-exec-short") | .repositoryUri')
-        aws ecr get-login-password --region $region \
-          | docker login --username AWS --password-stdin ${ecrUri}
-        docker push ${ecrUri}:$commitHash
-
-  push-exec-long-image:
-    cmds:
-      - |
-        commitHash=$(git rev-parse --short HEAD)
-        region=$(aws configure get region)
-        ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-exec-long") | .repositoryUri')
-        aws ecr get-login-password --region $region \
-          | docker login --username AWS --password-stdin ${ecrUri}
-        docker push ${ecrUri}:$commitHash
+        docker build --ssh default=$SSH_AUTH_SOCK src/core/ -f src/core/pwnctl.exec/longlived/Dockerfile -t ${ecrUri}:latest
 
   build-proc-image:
     cmds:
       - |
-        commitHash=$(git rev-parse --short HEAD)
         ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-proc") | .repositoryUri')
-        docker build --build-arg COMMIT_HASH=$commitHash src/core/ -f src/core/pwnctl.proc/Dockerfile -t ${ecrUri}:$commitHash
-        docker tag ${ecrUri}:$commitHash ${ecrUri}:untested_$commitHash
-
-  push-proc-image:
-    cmds:
-      - |
-        commitHash=$(git rev-parse --short HEAD)
-        region=$(aws configure get region)
-        ecrUri=$(aws ecr describe-repositories | jq -r '.repositories[] | select( .repositoryName == "pwnctl-proc") | .repositoryUri')
-        aws ecr get-login-password --region $region \
-          | docker login --username AWS --password-stdin ${ecrUri}
-        docker push ${ecrUri}:$commitHash
+        docker build src/core/ -f src/core/pwnctl.proc/Dockerfile -t ${ecrUri}:latest
 
   build-all:
     deps: [build-cli, build-api, build-exec-short-image, build-exec-long-image, build-proc-image]
@@ -110,6 +75,7 @@ tasks:
       - terraform -chdir=infra/modules/ci destroy
 
   debug:
+    deps: [build-exec-short-image, build-exec-long-image, build-proc-image]
     cmds:
       - | 
         . ./bin/setenv.sh
