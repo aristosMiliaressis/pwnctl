@@ -52,13 +52,16 @@ public sealed class AssetRecord : Entity<Guid>
     public HttpParameter? HttpParameter { get; private init; }
     public Guid? HttpParameterId { get; private init; }
 
+    public VirtualHost? VirtualHost { get; private init; }
+    public Guid? VirtualHostId { get; private init; }
+
     // constructs immutable domain layer 
     // reference graph from assets TextNotation
     // preventing the need to JOIN tables
     private AssetRecord(string textNotation)
     {
         var result = AssetParser.Parse(textNotation);
-        if (!result.IsOk)
+        if (result.Failed)
             throw new Exception($"TextNotation {textNotation} is not valid");
 
         if (result.Value is HttpEndpoint ep && ep.HttpParameters.Any())

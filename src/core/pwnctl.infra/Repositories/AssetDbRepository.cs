@@ -291,6 +291,20 @@ namespace pwnctl.infra.Repositories
                             .AsNoTracking()
                             .ToListAsync(token);
         }
+
+        public async Task<IEnumerable<AssetRecord>> ListVirtualHostsAsync(int pageIdx, CancellationToken token = default)
+        {
+            return await _context.AssetRecords
+                            .Include(e => e.FoundByTask)
+                                .ThenInclude(e => e.Definition)
+                            .Include(e => e.Tags)
+                            .Where(r => r.VirtualHostId != null)
+                            .OrderBy(r => r.FoundAt)
+                            .Skip(pageIdx * PwnInfraContext.Config.Api.BatchSize)
+                            .Take(PwnInfraContext.Config.Api.BatchSize)
+                            .AsNoTracking()
+                            .ToListAsync(token);
+        }
     }
 
     // public async Task SaveSafeAsync(AssetRecord record)

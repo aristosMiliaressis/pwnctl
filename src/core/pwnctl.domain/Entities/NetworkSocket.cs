@@ -60,11 +60,11 @@ public sealed class NetworkSocket : Asset
             var hostResult = NetworkHost.TryParse(assetText);
             var domainResult = DomainName.TryParse(assetText);
 
-            if (hostResult.IsOk)
+            if (!hostResult.Failed)
             {
                 return new NetworkSocket(hostResult.Value, port, protocol);
             }
-            else if (domainResult.IsOk)
+            else if (!domainResult.Failed)
             {
                 return new NetworkSocket(domainResult.Value, port, protocol);
             }

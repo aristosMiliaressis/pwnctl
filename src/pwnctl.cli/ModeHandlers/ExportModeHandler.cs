@@ -46,6 +46,9 @@ namespace pwnctl.cli.ModeHandlers
                 var records = await PwnctlApiClient.Default.Send(new ListDomainNameRecordsQuery());
                 WriteToFile(Path.Combine(opt.ExportPath, "domain_name_records.json"), records.Rows);
 
+                var vhosts = await PwnctlApiClient.Default.Send(new ListVirtualHostsQuery());
+                WriteToFile(Path.Combine(opt.ExportPath, "virtual_hosts.json"), vhosts.Rows);
+
                 var emails = await PwnctlApiClient.Default.Send(new ListEmailsQuery());
                 WriteToFile(Path.Combine(opt.ExportPath, "emails.json"), emails.Rows);
 

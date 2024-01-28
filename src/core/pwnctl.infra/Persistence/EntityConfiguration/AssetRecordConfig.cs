@@ -37,6 +37,7 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
             builder.HasOne(r => r.NetworkSocket).WithMany().HasForeignKey(r => r.NetworkSocketId).IsRequired(false);
             builder.HasOne(r => r.DomainNameRecord).WithMany().HasForeignKey(r => r.DomainNameRecordId).IsRequired(false);
             builder.HasOne(r => r.Email).WithMany().HasForeignKey(r => r.EmailId).IsRequired(false);
+            builder.HasOne(r => r.VirtualHost).WithMany().HasForeignKey(r => r.VirtualHostId).IsRequired(false);
             builder.HasOne(r => r.HttpEndpoint).WithMany().HasForeignKey(r => r.HttpEndpointId).IsRequired(false);
             builder.HasOne(r => r.HttpParameter).WithMany().HasForeignKey(r => r.HttpParameterId).IsRequired(false);
         }

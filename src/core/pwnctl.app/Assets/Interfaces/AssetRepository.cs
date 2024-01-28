@@ -21,4 +21,5 @@ public interface AssetRepository
     Task<IEnumerable<AssetRecord>> ListDomainNamesAsync(int pageIdx, CancellationToken token = default);
     Task<IEnumerable<AssetRecord>> ListDomainNameRecordsAsync(int pageIdx, CancellationToken token = default);
     Task<IEnumerable<AssetRecord>> ListEmailsAsync(int pageIdx, CancellationToken token = default);
+    Task<IEnumerable<AssetRecord>> ListVirtualHostsAsync(int pageIdx, CancellationToken token = default);
 }

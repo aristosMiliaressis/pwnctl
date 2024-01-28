@@ -36,8 +36,8 @@ task output is processed line by line, each line is classified into one of the f
 | NetworkHost      | 1.3.3.7, FD00:DEAD:BEEF:64:35::2                 |
 | NetworkRange     | 12.34.45.0/24, 2001:db8::/48                     |
 | NetworkSocket    | 1.3.3.7:443, udp://1.3.3.7:161, [2001:db8::]:80  |
+| VirtualHost      | 1.3.3.7:443  example.com                         |
 
-* a dns pseudo record is supported to describe virtual hosting (e.g. `example.com IN VHOST 1.2.3.4`)
 
 lines can either be in "raw" or json format, json format suports arbitary key/value tags
 

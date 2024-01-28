@@ -1,15 +1,11 @@
 namespace pwnctl.app.test.unit;
 
 using pwnctl.domain.Entities;
-using pwnctl.domain.Enums;
 using pwnctl.app.Assets;
 using pwnctl.app.Assets.Entities;
-using pwnctl.app.Assets.DTO;
 using pwnctl.app.Common.ValueObjects;
-using pwnctl.app.Common.Interfaces;
 using pwnctl.app.Queueing.Interfaces;
 using pwnctl.app.Notifications.Interfaces;
-using pwnctl.infra.Commands;
 using pwnctl.infra.DependencyInjection;
 using pwnctl.infra.Persistence;
 using pwnctl.infra.Repositories;
@@ -18,7 +14,6 @@ using pwnctl.infra.Queueing;
 using pwnctl.infra.Notifications;
 
 using Xunit;
-using System.Text;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Threading.Tasks;
@@ -30,7 +25,7 @@ using pwnctl.app.Operations;
 using pwnctl.app.Operations.Enums;
 using System.Reflection;
 
-[Collection("Tests")]
+[Collection("UnitTests")]
 public sealed class OperationHandlingTests
 {
     public OperationHandlingTests()

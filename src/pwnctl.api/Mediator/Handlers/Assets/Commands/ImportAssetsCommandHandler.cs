@@ -24,7 +24,7 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Commands
             foreach (var assetText in command.Assets)
             {
                 var result = AssetParser.Parse(assetText);
-                if (!result.IsOk)
+                if (result.Failed)
                     continue;
 
                 await RecursiveSave(scopeDefinitions, result.Value);

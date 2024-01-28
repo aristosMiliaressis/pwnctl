@@ -34,14 +34,20 @@ public sealed class DomainNameRecord : Asset
         Value = value;
 
         var result = DomainName.TryParse(key);
-        if (!result.IsOk)
+        if (result.Failed)
             throw new Exception(result.Error);
 
         DomainName = result.Value;
         Key = DomainName.Name;
 
         var hostResult = NetworkHost.TryParse(value);
-        if (hostResult.IsOk)
+        if(Type == DnsRecordType.PTR)
+        {
+            var ip = string.Join(".", Key.Split(".").Reverse().Skip(2));
+            hostResult = NetworkHost.TryParse(ip);
+        }
+
+        if (!hostResult.Failed)
         {
             NetworkHost = hostResult.Value;
             NetworkHost.AARecords = new List<DomainNameRecord> { this };

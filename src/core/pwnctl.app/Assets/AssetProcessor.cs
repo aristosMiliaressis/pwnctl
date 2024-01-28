@@ -36,11 +36,11 @@ public sealed class AssetProcessor
     public async Task<(bool, string)> ProcessAsync(string assetText, int taskId)
     {
         Result<AssetDTO, string> dto = TagParser.Parse(assetText);
-        if (!dto.IsOk)
+        if (dto.Failed)
             return (false, dto.Error);
 
         Result<Asset, string> asset = AssetParser.Parse(dto.Value.Asset);
-        if (!asset.IsOk)
+        if (asset.Failed)
             return (false, asset.Error);
 
         await ProcessAssetAsync(asset.Value, dto.Value.Tags, taskId);

@@ -38,6 +38,7 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Commands
             viewModel.InScopeServiceCount = await context.AssetRecords.Where(r => scopeDefinitionIds.Contains(r.ScopeId.Value) && r.NetworkSocketId != null).CountAsync();
             viewModel.InScopeEndpointCount = await context.AssetRecords.Where(r => scopeDefinitionIds.Contains(r.ScopeId.Value) && r.HttpEndpointId != null).CountAsync();
             viewModel.InScopeParamCount = await context.AssetRecords.Where(r => scopeDefinitionIds.Contains(r.ScopeId.Value) && r.HttpParameterId != null).CountAsync();
+            viewModel.InScopeVirtualHostCount = await context.AssetRecords.Where(r => scopeDefinitionIds.Contains(r.ScopeId.Value) && r.VirtualHostId != null).CountAsync();
             viewModel.InScopeEmailCount = await context.AssetRecords.Where(r => scopeDefinitionIds.Contains(r.ScopeId.Value) && r.EmailId != null).CountAsync();
 
             viewModel.QueuedTaskCount = await context.TaskRecords.Where(t => t.OperationId == op.Id && t.State == TaskState.QUEUED).CountAsync();

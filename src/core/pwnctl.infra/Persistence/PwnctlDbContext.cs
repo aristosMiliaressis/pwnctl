@@ -43,6 +43,7 @@ namespace pwnctl.infra.Persistence
         public DbSet<NetworkHost> NetworkHosts { get; set; }
         public DbSet<NetworkRange> NetworkRanges { get; set; }
         public DbSet<NetworkSocket> NetworkSockets { get; set; }
+        public DbSet<VirtualHost> VirtualHosts { get; set; }
         public DbSet<DomainName> DomainNames { get; set; }
         public DbSet<DomainNameRecord> DomainNameRecords { get; set; }
         public DbSet<HttpEndpoint> HttpEndpoints { get; set; }

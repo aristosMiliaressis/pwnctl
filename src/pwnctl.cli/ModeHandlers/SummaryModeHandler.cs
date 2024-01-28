@@ -28,8 +28,9 @@ namespace pwnctl.cli.ModeHandlers
                Console.WriteLine($"DomainNameRecords: {model.InScopeRecordCount}");
                Console.WriteLine($"HttpEndpoints: {model.InScopeEndpointCount}");
                Console.WriteLine($"HttpParameters: {model.InScopeParamCount}");
-               Console.WriteLine($"Emais: {model.InScopeEmailCount}");
-               Console.WriteLine($"Tags: {model.TagCount}");
+                Console.WriteLine($"VirtualHosts: {model.InScopeVirtualHostCount}");
+                Console.WriteLine($"Emais: {model.InScopeEmailCount}");
+                Console.WriteLine($"Tags: {model.TagCount}");
                Console.WriteLine();
                Console.WriteLine($"QUEUED: {model.QueuedTaskCount}, RUNNING: {model.RunningTaskCount}, FINISHED: {model.FinishedTaskCount}, CANCELED: {model.CanceledTaskCount}, TIMED_OUT: {model.TimedOutTaskCount}, FAILED: {model.FailedTaskCount}");
                Console.WriteLine();

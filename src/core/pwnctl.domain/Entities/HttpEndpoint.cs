@@ -13,8 +13,8 @@ public sealed class HttpEndpoint : Asset
 
     public Guid SocketAddressId { get; private init; }
     public NetworkSocket Socket { get; init; }
-    public Guid? ParentEndpointId { get; private init; }
-    public HttpEndpoint? ParentEndpoint { get; private set; }
+    public Guid? BaseEndpointId { get; private init; }
+    public HttpEndpoint? BaseEndpoint { get; private set; }
     public List<HttpParameter> HttpParameters { get; private set; }
     
     public bool IsIpBased => new Regex(@"^https?://[\d]{1,3}(\.[\d]{1,3}){3}").Match(Url).Success;
@@ -51,9 +51,9 @@ public sealed class HttpEndpoint : Asset
             ushort port = (ushort) (uri.Port == -1 ? 443 : uri.Port);
 
             var result = NetworkHost.TryParse(uri.Host);
-            var socket = result.IsOk
-                    ? new NetworkSocket(result.Value, port)
-                    : new NetworkSocket(new DomainName(uri.Host), port);
+            var socket = result.Failed
+                    ? new NetworkSocket(new DomainName(uri.Host), port) 
+                    : new NetworkSocket(result.Value, port);
 
             var endpoint = new HttpEndpoint(scheme, socket, uri.AbsolutePath);
 
@@ -67,18 +67,12 @@ public sealed class HttpEndpoint : Asset
 
             endpoint.HttpParameters = _params;
 
-            var furthestEndpoint = endpoint;
-
-            // Adds all subdirectories
-            string path = endpoint.Path;
-            do
+            if (endpoint.Path != "/")
             {
-                path = string.Join("/", path.Split("/").Reverse().Skip(1).Reverse());
-                endpoint.ParentEndpoint = new HttpEndpoint(endpoint.Scheme, endpoint.Socket, path);
-                endpoint = endpoint.ParentEndpoint;
-            } while (path.Length > 1);
+                endpoint.BaseEndpoint = new HttpEndpoint(endpoint.Scheme, endpoint.Socket, "/");
+            }
 
-            return furthestEndpoint;
+            return endpoint;
         }
         catch
         {

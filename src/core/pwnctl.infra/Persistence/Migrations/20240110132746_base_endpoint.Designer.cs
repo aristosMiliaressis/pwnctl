@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using pwnctl.infra.Persistence;
@@ -11,9 +12,10 @@ using pwnctl.infra.Persistence;
 namespace pwnctl.infra.Migrations
 {
     [DbContext(typeof(PwnctlDbContext))]
-    partial class PwnctlDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240110132746_base_endpoint")]
+    partial class base_endpoint
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -204,9 +206,6 @@ namespace pwnctl.infra.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("VirtualHostId")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
 
                     b.HasIndex("DomainNameId");
@@ -231,8 +230,6 @@ namespace pwnctl.infra.Migrations
 
                     b.HasIndex("TextNotation")
                         .IsUnique();
-
-                    b.HasIndex("VirtualHostId");
 
                     b.ToTable("asset_records", (string)null);
                 });
@@ -899,38 +896,6 @@ namespace pwnctl.infra.Migrations
                     b.ToTable("network_sockets", (string)null);
                 });
 
-            modelBuilder.Entity("pwnctl.domain.Entities.VirtualHost", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("DomainId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Hostname")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("SocketAddress")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("SocketId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DomainId");
-
-                    b.HasIndex("SocketId");
-
-                    b.HasIndex("SocketAddress", "Hostname")
-                        .IsUnique();
-
-                    b.ToTable("virtual_hosts", (string)null);
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -1024,10 +989,6 @@ namespace pwnctl.infra.Migrations
                         .WithMany()
                         .HasForeignKey("ScopeId");
 
-                    b.HasOne("pwnctl.domain.Entities.VirtualHost", "VirtualHost")
-                        .WithMany()
-                        .HasForeignKey("VirtualHostId");
-
                     b.Navigation("DomainName");
 
                     b.Navigation("DomainNameRecord");
@@ -1047,8 +1008,6 @@ namespace pwnctl.infra.Migrations
                     b.Navigation("NetworkSocket");
 
                     b.Navigation("Scope");
-
-                    b.Navigation("VirtualHost");
                 });
 
             modelBuilder.Entity("pwnctl.app.Notifications.Entities.Notification", b =>
@@ -1258,25 +1217,6 @@ namespace pwnctl.infra.Migrations
                     b.Navigation("DomainName");
 
                     b.Navigation("NetworkHost");
-                });
-
-            modelBuilder.Entity("pwnctl.domain.Entities.VirtualHost", b =>
-                {
-                    b.HasOne("pwnctl.domain.Entities.DomainName", "Domain")
-                        .WithMany()
-                        .HasForeignKey("DomainId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("pwnctl.domain.Entities.NetworkSocket", "Socket")
-                        .WithMany()
-                        .HasForeignKey("SocketId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Domain");
-
-                    b.Navigation("Socket");
                 });
 
             modelBuilder.Entity("pwnctl.app.Assets.Entities.AssetRecord", b =>

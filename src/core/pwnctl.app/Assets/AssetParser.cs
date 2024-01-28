@@ -16,15 +16,14 @@ public static class AssetParser
 
         foreach (var tryParseMethod in _tryParseMethod)
         {
-            // TODO: clean this up
             Type resultType = typeof(Result<,>).MakeGenericType(tryParseMethod.ReturnType.GenericTypeArguments[0], typeof(string));
-            PropertyInfo? Result_IsOk_Property = resultType.GetProperty("IsOk");
+            PropertyInfo? Result_Failed_Property = resultType.GetProperty("Failed");
             FieldInfo? Result_Value_Property = resultType.GetField("Value");
 
             try
             {
                 var result = tryParseMethod?.Invoke(null, new object[] { assetText });
-                if (!(bool)Result_IsOk_Property.GetValue(result))
+                if ((bool)Result_Failed_Property.GetValue(result))
                     continue;
 
                 return (Asset)Result_Value_Property.GetValue(result);
@@ -42,6 +41,4 @@ public static class AssetParser
                 !.GetTypes()
                 .Where(t => !t.IsAbstract && typeof(Asset).IsAssignableFrom(t))
                 .Select(t => t.GetMethod("TryParse"));
-
-    
 }

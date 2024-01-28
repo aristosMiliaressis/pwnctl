@@ -49,6 +49,14 @@ public sealed class Tests
     }
 
     [Fact]
+    public void DomainNameRecord_PTR_To_NetworkHost()
+    {
+        var record = DomainNameRecord.TryParse("12.34.56.78.in-addr.arpa IN PTR dns.google.").Value;
+        Assert.NotNull(record.NetworkHost);
+        Assert.Equal("78.56.34.12", record.NetworkHost.ToString());
+    }
+
+    [Fact]
     public void NetworkHost_IsPrivate()
     {
         var host1 = NetworkHost.TryParse("172.18.30.6").Value;
@@ -79,5 +87,14 @@ public sealed class Tests
 
         var endpoint3 = HttpEndpoint.TryParse("https://example.com/api").Value;
         Assert.False(endpoint3.IsIpBased);
+    }
+
+    [Fact]
+    public void HttpEndpoint_BaseEndpoint()
+    {
+        var endpoint1 = HttpEndpoint.TryParse("https://1.3.3.7/api/v2/token").Value;
+        Assert.NotNull(endpoint1.BaseEndpoint);
+        Assert.Null(endpoint1.BaseEndpoint.BaseEndpoint);
+        Assert.Equal("https://1.3.3.7/", endpoint1.BaseEndpoint.ToString());
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using pwnctl.infra.Persistence;
@@ -11,9 +12,10 @@ using pwnctl.infra.Persistence;
 namespace pwnctl.infra.Migrations
 {
     [DbContext(typeof(PwnctlDbContext))]
-    partial class PwnctlDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240110142041_virtual_host")]
+    partial class virtual_host
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -204,9 +206,6 @@ namespace pwnctl.infra.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("VirtualHostId")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
 
                     b.HasIndex("DomainNameId");
@@ -231,8 +230,6 @@ namespace pwnctl.infra.Migrations
 
                     b.HasIndex("TextNotation")
                         .IsUnique();
-
-                    b.HasIndex("VirtualHostId");
 
                     b.ToTable("asset_records", (string)null);
                 });
@@ -1024,10 +1021,6 @@ namespace pwnctl.infra.Migrations
                         .WithMany()
                         .HasForeignKey("ScopeId");
 
-                    b.HasOne("pwnctl.domain.Entities.VirtualHost", "VirtualHost")
-                        .WithMany()
-                        .HasForeignKey("VirtualHostId");
-
                     b.Navigation("DomainName");
 
                     b.Navigation("DomainNameRecord");
@@ -1047,8 +1040,6 @@ namespace pwnctl.infra.Migrations
                     b.Navigation("NetworkSocket");
 
                     b.Navigation("Scope");
-
-                    b.Navigation("VirtualHost");
                 });
 
             modelBuilder.Entity("pwnctl.app.Notifications.Entities.Notification", b =>

@@ -2,7 +2,6 @@ namespace pwnctl.infra.Commands;
 
 using System.Diagnostics;
 using System.Text;
-using pwnctl.app;
 using pwnctl.app.Common.Interfaces;
 
 public class BashCommandExecutor : CommandExecutor

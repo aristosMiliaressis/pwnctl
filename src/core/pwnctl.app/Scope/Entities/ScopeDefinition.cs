@@ -40,6 +40,7 @@ public class ScopeDefinition : Entity<int>
             DomainNameRecord record => record.NetworkHost is not null && Matches(record.NetworkHost),
             HttpEndpoint ep => Matches(ep.Socket),
             HttpParameter param => Matches(param?.Endpoint),
+            VirtualHost vhost => Matches(vhost.Domain),
             _ => false
         };
     }
@@ -55,6 +56,7 @@ public class ScopeDefinition : Entity<int>
             NetworkSocket srv => srv.NetworkHost is not null && Matches(srv.NetworkHost) || srv.DomainName is not null && Matches(srv.DomainName),
             HttpEndpoint ep => Matches(ep.Socket),
             HttpParameter param => Matches(param.Endpoint),
+            VirtualHost vhost => Matches(vhost.Domain),
             _ => false
         };
     }

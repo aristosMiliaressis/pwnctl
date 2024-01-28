@@ -6,9 +6,9 @@ using Humanizer;
 
 namespace pwnctl.infra.Persistence.EntityConfiguration
 {
-    public sealed class HttpEndpointConfig : IEntityTypeConfiguration<HttpEndpoint>
+    public sealed class VirtualHostConfig : IEntityTypeConfiguration<VirtualHost>
     {
-        public void Configure(EntityTypeBuilder<HttpEndpoint> builder)
+        public void Configure(EntityTypeBuilder<VirtualHost> builder)
         {
             builder.ToTable(builder.GetType().GenericTypeArguments[0].Name.Underscore().Pluralize());
 
@@ -18,13 +18,13 @@ namespace pwnctl.infra.Persistence.EntityConfiguration
 
             builder.HasOne(e => e.Socket)
                 .WithMany()
-                .HasForeignKey(e => e.SocketAddressId);
+                .HasForeignKey(e => e.SocketId);
 
-            builder.HasIndex(nameof(HttpEndpoint.Url)).IsUnique();
-
-            builder.HasOne(e => e.BaseEndpoint)
+            builder.HasOne(e => e.Domain)
                 .WithMany()
-                .HasForeignKey(e => e.BaseEndpointId);
+                .HasForeignKey(e => e.DomainId);
+
+            builder.HasIndex(nameof(VirtualHost.SocketAddress), nameof(VirtualHost.Hostname)).IsUnique();
         }
     }
 }

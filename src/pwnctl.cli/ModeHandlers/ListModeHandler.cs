@@ -29,6 +29,7 @@ namespace pwnctl.cli.ModeHandlers
             { "netranges", typeof(ListNetworkRangesQuery) },
             { "dnsrecords", typeof(ListDomainNameRecordsQuery) },
             { "emails", typeof(ListEmailsQuery) },
+            { "vhosts", typeof(ListVirtualHostsQuery) },
             { "ops", typeof(ListOperationsQuery) },
             { "scope", typeof(ListScopeAggregatesQuery) },
             { "task-profiles", typeof(ListTaskProfilesQuery) },

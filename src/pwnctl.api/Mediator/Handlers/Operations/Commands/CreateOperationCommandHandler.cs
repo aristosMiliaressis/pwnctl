@@ -101,7 +101,7 @@ namespace pwnctl.api.Mediator.Handlers.Operations.Commands
             foreach (var assetText in input.Where(a => !string.IsNullOrEmpty(a)))
             {
                 Result<Asset, string> result = AssetParser.Parse(assetText);
-                if (!result.IsOk)
+                if (result.Failed)
                     continue;
 
                 AssetRecord record = new(result.Value);

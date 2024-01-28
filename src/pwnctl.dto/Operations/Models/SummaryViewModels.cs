@@ -20,6 +20,7 @@ public sealed class SummaryViewModel
     public int InScopeRecordCount { get; set; }
     public int InScopeServiceCount { get; set; }
     public int InScopeEndpointCount { get; set; }
+    public int InScopeVirtualHostCount { get; set; }
     public int InScopeParamCount { get; set; }
     public int InScopeEmailCount { get; set; }
     public int QueuedTaskCount { get; set; }
