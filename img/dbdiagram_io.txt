@@ -1,0 +1,71 @@
+Table DomainNames {
+  id uuid
+  Name string
+  ZoneDepth integer
+  ParentDomainId uuid
+}
+
+Table DomainNameRecords {
+  id uuid
+  domain_id uuid
+  host_id uuid
+  Type integer
+  Key string
+  Value string
+}
+
+Table Emails {
+  id uuid
+  domain_id uuid
+  Address string
+}
+
+Ref: NetworkHosts.id < DomainNameRecords.host_id
+Ref: DomainNames.id < DomainNameRecords.domain_id
+Ref: DomainNames.id < Emails.domain_id
+
+Table HttpEndpoints {
+  id uuid
+  socket_id uuid
+  parent_endpoint_id uuid
+  Url string
+}
+
+Table HttpParameters {
+  id uuid
+  endpoint_id uuid
+  Url string
+  Name string
+  Value string
+  Type integer
+}
+Ref: NetworkSockets.id < HttpEndpoints.socket_id
+Ref: HttpEndpoints.id < HttpParameters.endpoint_id
+
+Table NetworkHosts {
+  id uuid
+  IP string
+  Version integer
+}
+
+Table NetworkSockets {
+  id uuid
+  host_id uuid
+  Address string
+  TransportProtocol integer
+}
+Ref: NetworkHosts.id < NetworkSockets.host_id
+
+Table NetworkRanges {
+  id uuid
+  FirstAddress string
+  NetPrefixBits integer
+}
+
+Table VirtualHosts {
+  id uuid
+  socket_id uuid
+  SocketAddress string
+  Hostname string
+}
+Ref: NetworkSockets.id < VirtualHosts.socket_id
