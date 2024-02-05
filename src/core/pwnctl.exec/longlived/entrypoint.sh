@@ -8,6 +8,4 @@ then
     cp "$PWNCTL_FS_MOUNT_POINT/.gau.toml" $HOME/.gau.toml
 fi
 
-. /root/.env
-
 exec /opt/pwnctl-exec/executor

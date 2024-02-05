@@ -17,16 +17,28 @@ data "external" "commit_hash" {
 resource "docker_registry_image" "exec_short" {
   name          = "${data.aws_ecr_repository.exec_short.repository_url}:${data.external.commit_hash.result.sha}"
   keep_remotely = true
+
+  depends_on = [
+    null_resource.build_push_exec_short_img
+  ]
 }
 
 resource "docker_registry_image" "exec_long" {
   name          = "${data.aws_ecr_repository.exec_long.repository_url}:${data.external.commit_hash.result.sha}"
   keep_remotely = true
+
+  depends_on = [
+    null_resource.build_push_exec_long_img
+  ]
 }
 
 resource "docker_registry_image" "proc" {
   name          = "${data.aws_ecr_repository.proc.repository_url}:${data.external.commit_hash.result.sha}"
   keep_remotely = true
+
+  depends_on = [
+    null_resource.build_push_proc_img
+  ]
 }
 
 locals {
@@ -40,20 +52,17 @@ locals {
 
   proc_build_cmd = <<-EOT
     docker build -t ${data.aws_ecr_repository.proc.repository_url}:${data.external.commit_hash.result.sha} \
-          --build-arg COMMIT_HASH=${data.external.commit_hash.result.sha} \
           -f ${local.proc_img_src_path}/pwnctl.proc/Dockerfile ${local.proc_img_src_path}
   EOT
 
   exec_short_build_cmd = <<-EOT
     docker build -t ${data.aws_ecr_repository.exec_short.repository_url}:${data.external.commit_hash.result.sha} \
-          --build-arg COMMIT_HASH=${data.external.commit_hash.result.sha} --ssh default=$SSH_AUTH_SOCK \
-          -f ${local.exec_short_img_src_path}/pwnctl.exec/shortlived/Dockerfile ${local.exec_short_img_src_path}
+          --ssh default=$SSH_AUTH_SOCK -f ${local.exec_short_img_src_path}/pwnctl.exec/shortlived/Dockerfile ${local.exec_short_img_src_path}
   EOT
 
   exec_long_build_cmd = <<-EOT
     docker build -t ${data.aws_ecr_repository.exec_long.repository_url}:${data.external.commit_hash.result.sha} \
-          --build-arg COMMIT_HASH=${data.external.commit_hash.result.sha} --ssh default=$SSH_AUTH_SOCK \
-          -f ${local.exec_long_img_src_path}/pwnctl.exec/longlived/Dockerfile ${local.exec_long_img_src_path}
+          --ssh default=$SSH_AUTH_SOCK -f ${local.exec_long_img_src_path}/pwnctl.exec/longlived/Dockerfile ${local.exec_long_img_src_path}
   EOT
 }
 

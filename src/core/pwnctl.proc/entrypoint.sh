@@ -6,6 +6,4 @@ then
     cp "$PWNCTL_FS_MOUNT_POINT/config/notify/provider-config.yaml" $HOME/.config/notify/provider-config.yaml
 fi
 
-. /root/.env
-
 exec /opt/pwnctl-proc/processor

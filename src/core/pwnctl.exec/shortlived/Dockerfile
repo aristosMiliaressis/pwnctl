@@ -138,8 +138,5 @@ RUN mkdir /opt/wordlists/cloud \
 RUN chmod -R +x /opt/scripts \
     && mv /opt/scripts/* /usr/local/bin/
 
-ARG COMMIT_HASH
-RUN echo "export PWNCTL_COMMIT_HASH=$COMMIT_HASH" >> /root/.env
-
 RUN chmod +x /opt/pwnctl-exec/entrypoint.sh
 ENTRYPOINT ["/opt/pwnctl-exec/entrypoint.sh"]
