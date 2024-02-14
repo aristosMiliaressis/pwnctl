@@ -99,3 +99,12 @@ tasks:
     cmds:
       - find {src,test} -type d -name bin -exec rm -rf {} +
       - find {src,test} -type d -name obj -exec rm -rf {} +
+
+  deploy-jumpbox:
+    cmds: 
+      - terraform -chdir=infra/modules/jumpbox init
+      - terraform -chdir=infra/modules/jumpbox apply -auto-approve
+
+  destroy-jumpbox:
+    cmds: 
+      - terraform -chdir=infra/modules/jumpbox destroy -auto-approve

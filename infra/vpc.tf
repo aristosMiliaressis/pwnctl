@@ -29,7 +29,7 @@ resource "aws_subnet" "public" {
   vpc_id = aws_vpc.main.id
 
   tags = {
-    Name = "PwnCtl Public Subnet at ${data.external.aws_region.result.region}${each.key}"
+    Name = "PwnCtl Public Subnet ${each.key}"
   }
 
   availability_zone = "${data.external.aws_region.result.region}${each.key}"
