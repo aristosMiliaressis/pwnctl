@@ -255,8 +255,8 @@ resource "aws_ecs_task_definition" "proc" {
   family                   = "pwnctl-proc"
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
-  cpu                      = 1024
-  memory                   = 2048
+  cpu                      = 512
+  memory                   = 1024
   execution_role_arn       = data.aws_iam_role.ecs_service.arn
   task_role_arn            = data.aws_iam_role.ecs_service.arn
 
@@ -271,7 +271,7 @@ resource "aws_ecs_task_definition" "proc" {
       "name": "pwnctl",
       "image": "${docker_registry_image.proc.name}",
       "essential": true,
-      "stopTimeout": 30,
+      "stopTimeout": 120,
       "environment": [
         {
           "name": "PWNCTL_COMMIT_HASH",

@@ -7,6 +7,6 @@ TaskDefinitions:
 
   - Name: tcp_scan
     CommandTemplate: tcp-scan.sh {{IP}}
-    Filter: NetworkHost.Version.ToString() == "InterNetwork"
+    Filter: NetworkHost.Version.ToString() == "InterNetwork" && NetworkHost.IsPrivate == false
     Subject: NetworkHost
     

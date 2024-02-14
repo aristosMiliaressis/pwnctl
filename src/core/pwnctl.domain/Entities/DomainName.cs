@@ -23,11 +23,12 @@ public sealed class DomainName : Asset
         // support FQDN notation ending with a dot.
         domain = domain.EndsWith(".") ? domain.Substring(0, domain.Length - 1) : domain;
 
-        Name = domain;
+        var parsed = _domainParser.Parse(domain);
 
-        ZoneDepth = Name.Substring(0, Name.Length - _domainParser.Parse(Name).TLD.Length - 1)
-                    .Split(".")
-                    .Count();
+        Name = domain;
+        ZoneDepth = Name.Substring(0, Name.Length - parsed.TLD.Length - 1)
+            .Split(".")
+            .Count();
     }
 
     public static Result<DomainName, string> TryParse(string assetText)
@@ -36,7 +37,6 @@ public sealed class DomainName : Asset
         {
             if (assetText.Trim().Contains(" ")
                 || assetText.Contains("/")
-                || assetText.Contains("*")
                 || assetText.Contains("@"))
                 return $"{assetText} is not a {nameof(DomainName)}, charset";
 
@@ -61,9 +61,9 @@ public sealed class DomainName : Asset
 
             return domain;
         }
-        catch
+        catch (Exception ex)
         {
-            return $"{assetText} is not a {nameof(DomainName)}";
+            return $"{assetText} is not a {nameof(DomainName)}, {ex.Message}";
         }
     }
 

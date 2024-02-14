@@ -81,13 +81,13 @@ namespace pwnctl.infra.Repositories
             return _context.FirstFromLambda<TaskRecord>(lambda);
         }
 
-        public async Task<bool> TryUpdateAsync(TaskRecord task)
+        public async Task<bool> TryUpdateAsync(TaskRecord task, CancellationToken token = default)
         {
             try 
             {
                 _context.Entry(task).State = EntityState.Modified;
 
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(token);
 
                 _context.Entry(task).DetachReferenceGraph();
                 return true;

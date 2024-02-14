@@ -48,7 +48,10 @@ public sealed class AssetDTO
 
                 if (strVal is null)
                     return;
-                
+
+                if (strVal == record.Asset.ToString())
+                    return;
+
                 Tags.Add(p.Name, strVal);
             });
         }

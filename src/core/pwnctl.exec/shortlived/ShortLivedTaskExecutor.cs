@@ -3,6 +3,7 @@ namespace pwnctl.exec.shortlived;
 using pwnctl.app;
 using pwnctl.app.Queueing.DTO;
 using pwnctl.app.Tasks.Enums;
+using pwnctl.app.Common.Extensions;
 using pwnctl.infra.Repositories;
 using pwnctl.infra.Persistence;
 using pwnctl.infra;
@@ -26,34 +27,22 @@ public sealed class ShortLivedTaskExecutor : LifetimeService
         {
             try
             {
-                bool exit = await ExecutePendingTaskAsync(stoppingToken);
-                if (exit && !EnvironmentVariables.STAY_ALIVE)
-                    break;
+                await ExecutePendingTaskAsync(stoppingToken);
             } 
             catch (Exception ex)
             {
                 PwnInfraContext.Logger.Exception(ex);
             }
         }
-
-        await StopAsync(stoppingToken);
     }
 
-    private async Task<bool> ExecutePendingTaskAsync(CancellationToken stoppingToken)
+    private async Task ExecutePendingTaskAsync(CancellationToken stoppingToken)
     {
-        ShortLivedTaskDTO taskDTO = null;
-        try 
+        var taskDTO = await PwnInfraContext.TaskQueueService.ReceiveAsync<ShortLivedTaskDTO>(stoppingToken);
+        if (taskDTO is null)
         {
-            taskDTO = await PwnInfraContext.TaskQueueService.ReceiveAsync<ShortLivedTaskDTO>(stoppingToken);
-            if (taskDTO is null)
-            {
-                PwnInfraContext.Logger.Information("task queue is empty, exiting.");
-                return true;
-            }
-        } 
-        catch (OperationCanceledException)
-        {
-            return true;
+            PwnInfraContext.Logger.Information("task queue is empty, exiting.");
+            return;
         }
 
         var task = await _taskRepo.FindAsync(taskDTO.TaskId);
@@ -63,30 +52,15 @@ public sealed class ShortLivedTaskExecutor : LifetimeService
 
             await PwnInfraContext.TaskQueueService.DequeueAsync(taskDTO);
 
-            return false;
+            return;
         }
 
-        bool succeeded = task.Started();
-        if (!succeeded)
-        {
-            PwnInfraContext.Logger.Warning($"Invalid TaskRecord:{task.Id} state transition from {task.State} to {TaskState.RUNNING}.");
-
-            // probably a deduplication issue, remove from queue and move on
-            await PwnInfraContext.TaskQueueService.DequeueAsync(taskDTO);
-
-            return false;
-        }
-
-        succeeded = await _taskRepo.TryUpdateAsync(task);
-        if (!succeeded)
-        {
-            PwnInfraContext.Logger.Warning($"failed to update task records #{task.Id} state to STARTED.");
-        }
-
+        bool succeeded = false;
         StringBuilder stdin = null;
         if (task.Definition.StdinQuery is not null)
         {
-            var (succedded, json) = await _queryRunner.TryRunAsync(task.Definition.StdinQuery);
+            var query = task.Definition.StdinQuery.Interpolate(task.Record.Asset);
+            var (succedded, json) = await _queryRunner.TryRunAsync(query);
             if (!succedded)
             {
                 task.Failed(null);
@@ -99,18 +73,35 @@ public sealed class ShortLivedTaskExecutor : LifetimeService
 
                 await PwnInfraContext.TaskQueueService.DequeueAsync(taskDTO);
 
-                return false;
+                return;
             }
 
             stdin = new(json);
         }
 
+        succeeded = task.Started();
+        if (!succeeded)
+        {
+            PwnInfraContext.Logger.Warning($"Invalid TaskRecord:{task.Id} state transition from {task.State} to {TaskState.RUNNING}.");
+
+            // probably a deduplication issue, remove from queue and move on
+            await PwnInfraContext.TaskQueueService.DequeueAsync(taskDTO);
+
+            return;
+        }
+
+        succeeded = await _taskRepo.TryUpdateAsync(task, stoppingToken);
+        if (!succeeded)
+        {
+            PwnInfraContext.Logger.Warning($"failed to update task records #{task.Id} state to STARTED.");
+        }
+
         // create a linked token that cancels the task when max 
         // task timeout is exheeded or if a scale in event occures
-        using var cts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
+        CancellationTokenSource cts = new CancellationTokenSource();
         cts.CancelAfter((PwnInfraContext.Config.Worker.MaxTaskTimeout - 30) * 1000);
 
-        Environment.SetEnvironmentVariable("PWNCTL_OUTPUT_PATH", $"{EnvironmentVariables.FS_MOUNT_POINT}/{task.Operation.Name}/{task.Definition.Name}/");
+        Environment.SetEnvironmentVariable("PWNCTL_OUTPUT_PATH", $"{EnvironmentVariables.FS_MOUNT_POINT}/{task.Operation.Name.Value}/{task.Definition.Name.Value}");
 
         int exitCode = 0;
         StringBuilder stdout = null, stderr = new();
@@ -126,22 +117,12 @@ public sealed class ShortLivedTaskExecutor : LifetimeService
         {
             if (ex is OperationCanceledException)
             {
-                if (stoppingToken.IsCancellationRequested)
-                {
-                    PwnInfraContext.Logger.Warning($"Task {task.Id} cancelled.");
-                    task.Canceled(stderr.ToString());
+                PwnInfraContext.Logger.Warning($"Task {task.Id} timed out.");
+                task.Timedout(stderr.ToString());
 
-                    // return the task to the queue, if this occures to many times,
-                    // the task will be put in the dead letter queue
-                    await PwnInfraContext.TaskQueueService.ChangeMessageVisibilityAsync(taskDTO, 0);
-                } 
-                else 
-                {
-                    PwnInfraContext.Logger.Warning($"Task {task.Id} timed out.");
-                    task.Timedout(stderr.ToString());
-        
-                    await PwnInfraContext.TaskQueueService.DequeueAsync(taskDTO);
-                }  
+                // return the task to the queue, if this occures to many times,
+                // the task will be put in the dead letter queue
+                await PwnInfraContext.TaskQueueService.ChangeMessageVisibilityAsync(taskDTO, 0);
             }
             else
             {
@@ -155,7 +136,7 @@ public sealed class ShortLivedTaskExecutor : LifetimeService
                 PwnInfraContext.Logger.Warning($"failed to update task records #{task.Id} state to FAILED.");
             }
 
-            return ex is OperationCanceledException;
+            return;
         }
 
         succeeded = await _taskRepo.TryUpdateAsync(task);
@@ -175,7 +156,5 @@ public sealed class ShortLivedTaskExecutor : LifetimeService
         var batches = OutputBatchDTO.FromLines(lines, task.Id);
         
         await PwnInfraContext.TaskQueueService.EnqueueBatchAsync(batches);
-
-        return false;
     }
 }

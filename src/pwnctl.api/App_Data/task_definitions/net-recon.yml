@@ -4,29 +4,40 @@ TaskDefinitions:
   - Name: ping_sweep
     CommandTemplate: ping-sweep.sh {{CIDR}}
     Subject: NetworkRange
+    ShortLived: true
     MonitorRules:
       Schedule: 0 0 * * *
 
   - Name: reverse_range_lookup
     CommandTemplate: reverse-range-lookup.sh {{CIDR}}
     Subject: NetworkRange
+    ShortLived: true
     MonitorRules:
       Schedule: 0 0 * * *
 
   - Name: asn_lookup
     CommandTemplate: asn-lookup.sh {{IP}}
+    Filter: NetworkHost.IsPrivate == false
     Subject: NetworkHost
     ShortLived: true
 
   - Name: reverse_dns_lookup
     CommandTemplate: dig +short -x {{IP}}
+    Filter: NetworkHost.IsPrivate == false
     Subject: NetworkHost
     ShortLived: true
 
   - Name: tcp_scan
     CommandTemplate: tcp-scan.sh {{IP}}
+    Filter: NetworkHost.Version.ToString() == "InterNetwork" && NetworkHost.IsPrivate == false
     Subject: NetworkHost
     CheckNotificationRules: true
+
+  - Name: ver_scan
+    CommandTemplate: ver-scan.sh {{Address}}
+    Subject: NetworkSocket
+    Filter: NetworkSocket.TransportProtocol == TransportProtocol.TCP && NetworkSocket.NetworkHostId != null
+    ShortLived: true
 
   - Name: tls_probe
     CommandTemplate: tls-probe.sh {{Address}}
@@ -40,9 +51,11 @@ TaskDefinitions:
 
   - Name: udp_scan
     CommandTemplate: udp-scan.sh {{IP}}
+    Filter: NetworkHost.Version.ToString() == "InterNetwork" && NetworkHost.IsPrivate == false
     Subject: NetworkHost
     CheckNotificationRules: true
 
   - Name: os_fingerprint
     CommandTemplate: os-fingerprint.sh {{IP}}
+    Filter: NetworkHost.IsPrivate == false
     Subject: NetworkHost

@@ -4,7 +4,7 @@ TaskDefinitions:
   - Name: domain_resolution
     CommandTemplate: resolve.sh {{Name}}
     Subject: DomainName
-    Filter: Tags["rcode"] == ""
+    Filter: Tags["rcode"] != "NXDOMAIN"
     MonitorRules:
       Schedule: 0 0 * * *
       PostCondition: newTags["rcode"] != oldTags["rcode"]
@@ -12,27 +12,38 @@ TaskDefinitions:
     ShortLived: true
 
   - Name: httpx
-    CommandTemplate: echo {{Name}} | httpx -silent -csp-probe
+    CommandTemplate: echo {{Name}} | httpx -silent -csp-probe -nf
     Subject: DomainName
     ShortLived: true
 
-  - Name: sub_enum
-    CommandTemplate: sub-enum.sh {{Name}} -d -m 110
+  - Name: subdomain_osint
+    CommandTemplate: subdomain-osint.sh {{Name}}
     Filter: DomainName.ZoneDepth == 1
     Subject: DomainName
     MonitorRules:
       Schedule: 0 0 * * *
+
+  - Name: subdomain_brute
+    CommandTemplate: subdomain-brute.sh {{Name}} /opt/wordlists/dns/subdomains.txt
+    Filter: DomainName.ZoneDepth == 1
+    Subject: DomainName
+
+  - Name: subdomain_alts
+    CommandTemplate: subdomain-alts.sh {{Name}} /opt/wordlists/dns/alts.txt
+    Filter: Tags["osint"] == "done" && Tags["brute"] == "done"
+    StdinQuery: SELECT "Name" FROM "domain_names" WHERE "Name" LIKE '%.{{Name}}'
+    Subject: DomainName
+
+  - Name: subdomain_wildcard_brute
+    CommandTemplate: subdomain-wildcard-brute.sh {{Key}} /opt/wordlists/dns/subdomains.txt
+    Filter: DomainNameRecord.Wildcard == true
+    Subject: DomainNameRecord
 
   - Name: kaeferjaeger
     CommandTemplate: kaeferjaeger.sh {{Name}}
     Filter: DomainName.ZoneDepth == 1
     Subject: DomainName
     ShortLived: true
-
-  - Name: sub_wildcard_finder
-    CommandTemplate: sub-wildcard-finder.sh {{Name}}
-    Filter: Tags["wildcard"] == "true"
-    Subject: DomainName
 
   - Name: dns_record_enum
     CommandTemplate: dns-record-enum.sh {{Name}} {{ZoneDepth}}
@@ -66,7 +77,7 @@ TaskDefinitions:
 
   - Name: grab_headers
     CommandTemplate: grab-headers.sh {{Url}}
-    Filter: HttpEndpoint.Path == "/" && HttpEndpoint.Socket.DomainNameId != null
+    Filter: HttpEndpoint.Path == "/"
     Subject: HttpEndpoint
     MonitorRules:
       Schedule: 0 0 * * *
@@ -77,7 +88,7 @@ TaskDefinitions:
 
   - Name: wappalyzer
     CommandTemplate: wappalyzer.sh {{Url}}
-    Filter: HttpEndpoint.Path == "/" && HttpEndpoint.Socket.DomainNameId != null
+    Filter: HttpEndpoint.Path == "/"
     Subject: HttpEndpoint
     ShortLived: true
 
@@ -86,14 +97,9 @@ TaskDefinitions:
     Subject: DomainName
     Filter: DomainName.ZoneDepth == 1
 
-  - Name: webcrawl
-    CommandTemplate: webcrawl.sh {{Url}}
-    Filter: HttpEndpoint.Path == "/" && HttpEndpoint.Socket.DomainNameId != null
-    Subject: HttpEndpoint
-
   - Name: screenshot
     CommandTemplate: screenshot.sh {{Url}}
-    Filter: HttpEndpoint.Path == "/" && HttpEndpoint.Socket.DomainNameId != null
+    Filter: HttpEndpoint.Path == "/"
     Subject: HttpEndpoint
     ShortLived: true
 
@@ -109,8 +115,8 @@ TaskDefinitions:
     Filter: HttpEndpoint.Path == "/" && HttpEndpoint.Socket.DomainNameId != null
     CheckNotificationRules: true
 
-  - Name: swagger_discovery
-    CommandTemplate: swagger-discovery.sh {{Url}}
+  - Name: api_discovery
+    CommandTemplate: api-discovery.sh {{Url}}
     Subject: HttpEndpoint
     Filter: HttpEndpoint.Path == "/" && HttpEndpoint.Socket.DomainNameId != null
     CheckNotificationRules: true
@@ -129,40 +135,8 @@ TaskDefinitions:
     Filter: Tags["Web servers"].Contains("IIS")||Tags["Web frameworks"]=="Microsoft ASP.NET"||Tags["Operating systems"]=="Windows Server"
     CheckNotificationRules: true
 
-  - Name: file_fuzz_main
-    CommandTemplate: file-fuzz.sh {{Url}} /opt/wordlists/directories.txt /opt/wordlists/high_impact.txt
-    Filter: HttpEndpoint.Path == "/" && !Tags["Web servers"].Contains("IIS") && HttpEndpoint.Socket.DomainNameId != null
-    Subject: HttpEndpoint
-    CheckNotificationRules: true
-
-  - Name: file_fuzz_main_lowercase
-    CommandTemplate: file-fuzz.sh {{Url}} /opt/wordlists/directories_lowercase.txt /opt/wordlists/high_impact_lowercase.txt
-    Filter: HttpEndpoint.Path == "/" && Tags["Web servers"].Contains("IIS") && HttpEndpoint.Socket.DomainNameId != null
-    Subject: HttpEndpoint
-    CheckNotificationRules: true
-
-  - Name: dir_fuzz_iis_asp
-    CommandTemplate: dir-fuzz.sh {{Url}} /opt/wordlists/tech/iis_asp.txt
-    Filter: HttpEndpoint.Path=="/"&&(Tags["Web servers"].Contains("IIS")||Tags["Web frameworks"]=="Microsoft ASP.NET"||Tags["Operating systems"]=="Windows Server")
-    Subject: HttpEndpoint
-
-  - Name: dir_fuzz_tomcat_jsp
-    CommandTemplate: dir-fuzz.sh {{Url}} /opt/wordlists/tech/tomcat_jsp.txt
-    Filter: HttpEndpoint.Path=="/"&&(Tags["Web servers"].Contains("Apache Tomcat")||Tags["Web frameworks"]=="Spring"||Tags["Programming languages"]=="Java")
-    Subject: HttpEndpoint
-
-  - Name: dir_fuzz_apache_php
-    CommandTemplate: dir-fuzz.sh {{Url}} /opt/wordlists/tech/apache_php.txt
-    Filter: HttpEndpoint.Path=="/"&&(Tags["Web servers"].Equals("Apache")||Tags["Programming languages"]=="PHP")
-    Subject: HttpEndpoint
-
-  - Name: dir_fuzz_nginx
-    CommandTemplate: dir-fuzz.sh {{Url}} /opt/wordlists/tech/nginx.txt
-    Filter: HttpEndpoint.Path=="/"&&Tags["Web servers"].Equals("Nginx")
-    Subject: HttpEndpoint
-
-  - Name: mdwfuzzer
-    CommandTemplate: mdwfuzzer.sh {{Url}}
-    Filter: HttpEndpoint.Path=="/"
+  - Name: smuggler
+    CommandTemplate: smuggler.sh {{Url}}
+    Filter: HttpEndpoint.Path == "/"
     Subject: HttpEndpoint
     CheckNotificationRules: true

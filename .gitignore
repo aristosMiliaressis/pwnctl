@@ -363,6 +363,7 @@ test/**/bin/
 *.db-*
 
 deployment/*
+!deployment/.gitkeep
 
 # Local .terraform directories
 **/.terraform/*

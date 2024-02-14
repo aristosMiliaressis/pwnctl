@@ -17,6 +17,9 @@ public sealed class DomainNameRecord : Asset
     [EqualityComponent]
     public string Value { get; init; }
 
+    [EqualityComponent]
+    public bool Wildcard { get; private init; }
+
     public Guid? DomainId { get; private init; }
     public Guid? HostId { get; private init; }
 
@@ -28,7 +31,7 @@ public sealed class DomainNameRecord : Asset
 
     private DomainNameRecord() {}
 
-    internal DomainNameRecord(DnsRecordType type, string key, string value)
+    internal DomainNameRecord(DnsRecordType type, string key, string value, bool wildcard=false)
     {
         Type = type;
         Value = value;
@@ -37,6 +40,7 @@ public sealed class DomainNameRecord : Asset
         if (result.Failed)
             throw new Exception(result.Error);
 
+        Wildcard = wildcard;
         DomainName = result.Value;
         Key = DomainName.Name;
 
@@ -79,7 +83,14 @@ public sealed class DomainNameRecord : Asset
 
             var value = assetText.Substring(parts[0].Length).Trim();
 
-            var record = new DomainNameRecord(type, key, value);
+            bool wildcard = false;
+            if (key.StartsWith("*."))
+            {
+                key = key.Substring(2);
+                wildcard = true;
+            }
+
+            var record = new DomainNameRecord(type, key, value, wildcard);
 
             if (record.Type == DnsRecordType.TXT && record.Value.Contains("spf"))
             {
@@ -106,6 +117,6 @@ public sealed class DomainNameRecord : Asset
 
     public override string ToString()
     {
-        return Key + " IN " + Type + " " + Value;
+        return (Wildcard ? "*." : "") + Key + " IN " + Type + " " + Value;
     }
 }

@@ -12,5 +12,5 @@ public interface TaskRepository
     TaskRecord Find(AssetRecord asset, TaskDefinition definition);
 
     Task AddAsync(TaskRecord task);
-    Task<bool> TryUpdateAsync(TaskRecord task);
+    Task<bool> TryUpdateAsync(TaskRecord task, CancellationToken token = default);
 }

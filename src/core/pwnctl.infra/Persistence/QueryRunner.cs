@@ -7,6 +7,7 @@ namespace pwnctl.infra.Persistence
     {
         public async Task<(bool, string)> TryRunAsync(string sql)
         {
+            PwnInfraContext.Logger.Information($"Executing Query: {sql}");
             try
             {
                 using (var connection = new NpgsqlConnection(PwnctlDbContext.ConnectionString))

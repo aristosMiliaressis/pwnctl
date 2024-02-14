@@ -20,15 +20,14 @@ RUN go install github.com/sensepost/gowitness@latest
 RUN go install github.com/zmap/zdns@latest
 RUN go install github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
 RUN go install github.com/projectdiscovery/notify/cmd/notify@latest
+RUN go install github.com/projectdiscovery/mapcidr/cmd/mapcidr@latest
+RUN go install github.com/hakluke/hakip2host@latest
 
 WORKDIR /tmp
 
 # Installing private tools
 RUN mkdir -p /opt/wordlists/dns/
 RUN mkdir -p -m 0700 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
-RUN --mount=type=ssh \
-    git clone -b pwnctl git@github.com:aristosMiliaressis/sub-enum.git \
-    && cp sub-enum/wordlists/* /opt/wordlists/dns/
 
 FROM golang:1.20.2-alpine as nuclei-templates
 

@@ -103,8 +103,8 @@ TaskDefinitions:
     Filter: HttpEndpoint.Path == "/" && HttpEndpoint.Socket.DomainNameId != null
     CheckNotificationRules: true
 
-  - Name: swagger_discovery
-    CommandTemplate: swagger-discovery.sh {{Url}}
+  - Name: api_discovery
+    CommandTemplate: api-discovery.sh {{Url}}
     Subject: HttpEndpoint
     Filter: HttpEndpoint.Path == "/" && HttpEndpoint.Socket.DomainNameId != null
     CheckNotificationRules: true
@@ -122,13 +122,13 @@ TaskDefinitions:
     CheckNotificationRules: true
 
   - Name: file_fuzz_main
-    CommandTemplate: file-fuzz.sh {{Url}} /opt/wordlists/directories.txt /opt/wordlists/high_impact.txt
+    CommandTemplate: file-fuzz.sh {{Url}} true /opt/wordlists/raft-small-directories.txt /opt/wordlists/onelistforallmicro.txt
     Filter: HttpEndpoint.Path == "/" && !Tags["Web servers"].Contains("IIS") && HttpEndpoint.Socket.DomainNameId != null
     Subject: HttpEndpoint
     CheckNotificationRules: true
 
   - Name: file_fuzz_main_lowercase
-    CommandTemplate: file-fuzz.sh {{Url}} /opt/wordlists/directories_lowercase.txt /opt/wordlists/high_impact_lowercase.txt
+    CommandTemplate: file-fuzz.sh {{Url}} false /opt/wordlists/raft-small-directories.txt /opt/wordlists/onelistforallmicro.txt
     Filter: HttpEndpoint.Path == "/" && Tags["Web servers"].Contains("IIS") && HttpEndpoint.Socket.DomainNameId != null
     Subject: HttpEndpoint
     CheckNotificationRules: true

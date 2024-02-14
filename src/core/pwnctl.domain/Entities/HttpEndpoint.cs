@@ -16,6 +16,7 @@ public sealed class HttpEndpoint : Asset
     public Guid? BaseEndpointId { get; private init; }
     public HttpEndpoint? BaseEndpoint { get; private set; }
     public List<HttpParameter> HttpParameters { get; private set; }
+    public string? RootDomain { get; private init; }
     
     public bool IsIpBased => new Regex(@"^https?://[\d]{1,3}(\.[\d]{1,3}){3}").Match(Url).Success;
 
@@ -30,7 +31,11 @@ public sealed class HttpEndpoint : Asset
         Socket = address;
         Path = path.EndsWith("/") ? path.Substring(0, path.Length - 1) : path;
         Path = string.IsNullOrEmpty(Path) ? "/" : Path;
-
+        if (Socket.DomainName != null)
+        {
+            RootDomain = Socket.DomainName.GetRegistrationDomain();
+        }
+        
         string hostSegment = Socket.NetworkHost is not null ? Socket.NetworkHost.IP : Socket.DomainName!.Name;
         string portSegment = (scheme == "http" && Socket.Port == 80) || (scheme == "https" && Socket.Port == 443) ? "" : (":" + Socket.Port);
         Url = Scheme+"://"+hostSegment+portSegment+Path;

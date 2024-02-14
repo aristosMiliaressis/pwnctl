@@ -129,10 +129,9 @@ public static class ConfigValidator
                 return false;
             }
 
-            AssetRecord record = new AssetRecord(_sampleAssets[rule.Subject]);
-
             try
             {
+                AssetRecord record = new AssetRecord(_sampleAssets[rule.Subject]);
                 rule.Check(record);
             }
             catch (Exception ex)

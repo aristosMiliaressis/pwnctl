@@ -78,7 +78,7 @@ task definitions & task profiles can be seeded trough yaml files or created trou
 
 task definitions can have monitoring rules that are only evaluated for `Monitor` type operations.
 
-[Default Task Configuration](https://github.com/aristosMiliaressis/pwnctl/blob/master/src/pwnctl.api/App_Data/seed/)
+[Default Task Configuration](https://github.com/aristosMiliaressis/pwnctl/blob/master/src/pwnctl.api/App_Data/task_definitions/)
 
 **`task-definitions.td.yml`**
 ```YAML

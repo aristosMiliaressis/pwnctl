@@ -46,6 +46,11 @@ services:
     depends_on:
       - ecs-local-endpoints
       - postgres
+    image: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/pwnctl-exec-long:latest
+    privileged: true
+    labels:
+      ecs-local.task-definition-input.type: remote
+      ecs-local.task-definition-input.value: arn:aws:ecs:$AWS_REGION:$AWS_ACCOUNT_ID:task-definition/pwnctl-exec-long
     environment:
       AWS_REGION: $AWS_REGION
       AWS_CONTAINER_CREDENTIALS_FULL_URI: http://169.254.170.2/role/pwnctl-ecs-service
@@ -56,16 +61,11 @@ services:
       PWNCTL_Db__Password: P@ssw0rd!
       PWNCTL_FS_MOUNT_POINT: /mnt/efs
       PWNCTL_IS_PROD: "false"
-      PWNCTL_STAY_ALIVE: "true"
       PWNCTL_Logging__MinLevel: Information
       PWNCTL_LongLivedTaskQueue__Name: dev-task-longlived.fifo
       PWNCTL_LongLivedTaskQueue__VisibilityTimeout: "900"
       PWNCTL_OutputQueue__Name: dev-output.fifo
       PWNCTL_Worker__MaxTaskTimeout: "10800"
-    image: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/pwnctl-exec-long:latest
-    labels:
-      ecs-local.task-definition-input.type: remote
-      ecs-local.task-definition-input.value: arn:aws:ecs:$AWS_REGION:$AWS_ACCOUNT_ID:task-definition/pwnctl-exec-long
     logging:
       driver: json-file
     networks:
@@ -79,6 +79,11 @@ services:
     depends_on:
       - ecs-local-endpoints
       - postgres
+    image: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/pwnctl-exec-short:latest
+    privileged: true
+    labels:
+      ecs-local.task-definition-input.type: remote
+      ecs-local.task-definition-input.value: arn:aws:ecs:$AWS_REGION:$AWS_ACCOUNT_ID:task-definition/pwnctl-exec-short
     environment:
       AWS_REGION: $AWS_REGION
       AWS_CONTAINER_CREDENTIALS_FULL_URI: http://169.254.170.2/role/pwnctl-ecs-service
@@ -89,15 +94,10 @@ services:
       PWNCTL_Db__Password: P@ssw0rd!
       PWNCTL_FS_MOUNT_POINT: /mnt/efs
       PWNCTL_IS_PROD: "false"
-      PWNCTL_STAY_ALIVE: "true"
       PWNCTL_Logging__MinLevel: Information
       PWNCTL_ShortLivedTaskQueue__Name: dev-task-shortlived.fifo
       PWNCTL_OutputQueue__Name: dev-output.fifo
       PWNCTL_Worker__MaxTaskTimeout: "180"
-    image: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/pwnctl-exec-short:latest
-    labels:
-      ecs-local.task-definition-input.type: remote
-      ecs-local.task-definition-input.value: arn:aws:ecs:$AWS_REGION:$AWS_ACCOUNT_ID:task-definition/pwnctl-exec-short
     logging:
       driver: json-file
     networks:

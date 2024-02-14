@@ -40,18 +40,18 @@ namespace pwnctl.infra.Persistence
                 await context.Database.MigrateAsync();
             }
 
-            if (!context.NotificationRules.Any())
+            if (!context.NotificationRules.Any() || !context.TaskDefinitions.Any())
             {
                 string[] seedResources = callingAssembly.GetManifestResourceNames();
 
                 foreach (string resourceName in seedResources)
                 {
                     PwnInfraContext.Logger.Information($"Seeding {resourceName}");
-                    if (resourceName.EndsWith(".td.yml"))
+                    if (resourceName.Contains(".App_Data.task_definitions."))
                     {
                         await SeedTaskProfileAsync(callingAssembly, context, resourceName);
                     }
-                    else if (resourceName.EndsWith(".nr.yml"))
+                    else if (resourceName.Contains(".App_Data.notification_rules."))
                     {
                         await SeedNotificationRulesAsync(callingAssembly, context, resourceName);
                     }

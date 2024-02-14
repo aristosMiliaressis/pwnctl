@@ -42,5 +42,6 @@ public sealed class SummaryViewModel
         public int RunCount { get; set; }
         public TimeSpan Duration { get; set; }
         public int Findings { get; set; }
+        public bool ShortLived { get; set; }
     }
 }

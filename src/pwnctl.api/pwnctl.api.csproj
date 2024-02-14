@@ -34,6 +34,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="App_Data/seed/*" />
+    <EmbeddedResource Include="App_Data/**/*.yml" />
   </ItemGroup>
 </Project>

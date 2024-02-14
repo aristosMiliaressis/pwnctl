@@ -13,8 +13,6 @@ RUN go install github.com/tomnomnom/anew@latest
 RUN go install github.com/tomnomnom/unfurl@latest
 RUN go install github.com/projectdiscovery/katana/cmd/katana@latest
 RUN go install github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
-RUN go install github.com/projectdiscovery/mapcidr/cmd/mapcidr@latest
-RUN go install github.com/lc/gau/v2/cmd/gau@latest
 RUN go install github.com/hakluke/hakrawler@latest
 RUN go install github.com/d3mondev/puredns/v2@latest
 RUN go install github.com/aristosMiliaressis/skiphost@latest
@@ -26,42 +24,39 @@ RUN go install github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
 RUN go install github.com/Josue87/gotator@latest
 RUN go install github.com/projectdiscovery/notify/cmd/notify@latest
 RUN go install github.com/ffuf/ffuf@latest
-RUN go install github.com/hakluke/hakip2host@latest
 RUN go install github.com/projectdiscovery/naabu/v2/cmd/naabu@latest
 RUN go install github.com/aristosMiliaressis/ffufClean@latest
+RUN go install github.com/aristosMiliaressis/vhost-brute@latest
 
 WORKDIR /tmp
 RUN git clone https://github.com/blechschmidt/massdns.git \
     && cd massdns && make && cp bin/massdns $GOPATH/bin/
 
 RUN mkdir -p /opt/wordlists/dns/
-RUN curl https://wordlists-cdn.assetnote.io/data/manual/best-dns-wordlist.txt -o /opt/wordlists/dns/subdomains-3m.txt
 
 # Installing private tools
 RUN mkdir -p -m 0700 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
-RUN --mount=type=ssh \
-    git clone git@github.com:aristosMiliaressis/vhost-brute.git && make -C vhost-brute install
 RUN --mount=type=ssh \
     git clone git@github.com:aristosMiliaressis/cache-prober.git && make -C cache-prober install
 RUN --mount=type=ssh \
     git clone git@github.com:aristosMiliaressis/cors-scanner.git && make -C cors-scanner install
 RUN --mount=type=ssh \
     git clone git@github.com:aristosMiliaressis/mdwfuzzer.git && make -C mdwfuzzer install
-RUN --mount=type=ssh \
-    git clone -b pwnctl git@github.com:aristosMiliaressis/sub-enum.git \
-    && cp sub-enum/wordlists/* /opt/wordlists/dns/ && cp sub-enum/sub-enum.sh $GOPATH/bin/ \
-    && cp sub-enum/sub-wildcard-finder.sh $GOPATH/bin/ && chmod +x $GOPATH/bin/sub-wildcard-finder.sh
+RUN curl https://wordlists-cdn.assetnote.io/data/manual/best-dns-wordlist.txt -o /opt/wordlists/dns/subdomains.txt
+
 
 FROM golang:1.20.2-alpine as nuclei-templates
 
-RUN go install github.com/xm1k3/cent@latest
-
 RUN go install github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
+#RUN go install github.com/xm1k3/cent@latest
+
 RUN mkdir -p /opt/nuclei_templates/{community,official}
 RUN nuclei -ud /opt/nuclei_templates/official
-RUN cent init
-RUN cent -t=20 -p=/opt/nuclei_templates/community
+#RUN cent init
+#RUN cent -t=20 -p=/opt/nuclei_templates/community
 
+COPY pwnctl.exec/nuclei_templates/blacklist.txt . 
+RUN cat blacklist.txt| while read temp; do find . -name $temp -exec rm {} +; done
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS worker-build
 
@@ -119,7 +114,7 @@ RUN apt-get update \
     libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 \
     libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 \
     libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 \
-    ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils curl git
+    ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils curl git unzip libpq-dev
 
 # Installing tools
 RUN mkdir /opt/tools
@@ -129,29 +124,43 @@ RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y jq whois dnsutils less parallel wget nmap
 
 RUN python3 -m pip install useragent-picker-cli && uagen
+RUN python3 -m pip install shodan
 RUN python3 -m pip install -e git+https://github.com/initstring/cloud_enum#egg=cloud_enum
 RUN python3 -m pip install -e git+https://github.com/xnl-h4ck3r/urless#egg=urless
 RUN python3 -m pip install -e git+https://github.com/xnl-h4ck3r/waymore#egg=waymore \
-    && ln /opt/tools/src/waymore/waymore.py \
+    && ln -s /opt/tools/src/waymore/waymore.py /usr/local/bin/waymore.py \
     && chmod +x /opt/tools/src/waymore/waymore.py
+RUN python3 -m pip install -e git+https://github.com/xnl-h4ck3r/xnLinkFinder#egg=xnLinkFinder \
+    && ln -s /opt/tools/src/xnlinkfinder/xnLinkFinder.py /usr/local/bin/xnLinkFinder.py \
+    && chmod +x /opt/tools/src/xnlinkfinder/xnLinkFinder.py
 RUN git clone https://github.com/cramppet/regulator \
     && python3 -m pip install -r regulator/requirements.txt
 RUN git clone https://github.com/defparam/smuggler.git
-RUN mkdir -p /opt/toos/ShortNameScanner && cd /opt/toos/ShortNameScanner \
+RUN mkdir -p /opt/tools/ShortNameScanner && cd /opt/tools/ShortNameScanner \
     && curl -OJ https://raw.githubusercontent.com/irsdl/IIS-ShortName-Scanner/master/release/iis_shortname_scanner.jar \
     && curl -OJ https://raw.githubusercontent.com/irsdl/IIS-ShortName-Scanner/master/release/config.xml
+RUN git clone https://github.com/nil0x42/duplicut /tmp/duplicut \
+    && cd /tmp/duplicut/ && make \
+    && mv duplicut /usr/local/bin && cd - && rm -rf /tmp/duplicut/
+RUN curl -OJL https://github.com/ztgrace/changeme/archive/refs/tags/v1.2.3.zip  \
+    && unzip changeme-1.2.3.zip \
+    && pip install psycopg2-binary \
+    && pip install -r changeme-1.2.3/requirements.txt \
+    && ln -s `pwd`/changeme-1.2.3/changeme.py /usr/local/bin/ \
+    && rm changeme-1.2.3.zip
 
 COPY --from=tool-build /root/go/bin/ /usr/local/bin/
-RUN curl https://raw.githubusercontent.com/aristosMiliaressis/wordlist_builder/master/wordlist_builder.sh | bash -s -- /opt/wordlists/
-
-COPY --from=tool-build /opt/wordlists/ /opt/wordlists/
-COPY --from=nuclei-templates /opt/nuclei_templates/ /opt/nuclei_templates/
 COPY --from=worker-build /src/publish /opt/pwnctl-exec
 COPY pwnctl.exec/wordlists/ /opt/wordlists/
 COPY pwnctl.exec/nuclei_templates/ /opt/nuclei_templates/
 COPY pwnctl.exec/scripts/* /opt/scripts/
 COPY pwnctl.exec/longlived/entrypoint.sh /opt/pwnctl-exec/entrypoint.sh
-RUN cat /opt/wordlists/dns/perms-large.txt | anew -q /opt/tools/src/cloud-enum/enum_tools/fuzz.txt
+
+COPY --from=tool-build /opt/wordlists/ /opt/wordlists/
+COPY --from=nuclei-templates /opt/nuclei_templates/ /opt/nuclei_templates/
+RUN cat /opt/wordlists/dns/alts-large.txt | anew -q /opt/tools/src/cloud-enum/enum_tools/fuzz.txt
+RUN curl https://raw.githubusercontent.com/danielmiessler/SecLists/master/Discovery/Web-Content/raft-small-directories.txt > /opt/wordlists/raft-small-directories.txt
+RUN curl https://raw.githubusercontent.com/danielmiessler/SecLists/master/Discovery/Web-Content/raft-small-directories-lowercase.txt > /opt/wordlists/raft-small-directories-lowercase.txt
 
 RUN chmod -R +x /opt/scripts \
     && mv /opt/scripts/* /usr/local/bin/ \

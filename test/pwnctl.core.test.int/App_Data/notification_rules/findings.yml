@@ -9,9 +9,9 @@
   Filter: Tags.Tags.Any(tag => tag.Name.StartsWith("cors-") && tag.Value.Contains("Type\":\"Vulnerability"))
   Topic: misconfigs
 
-- Name: swagger_discovery
+- Name: api_discovery
   Subject: HttpEndpoint
-  Filter: Tags["swagger-ui"] == "true"
+  Filter: Tags["exposed-api"] != ""
   Topic: misconfigs
 
 - Name: exposed_panel

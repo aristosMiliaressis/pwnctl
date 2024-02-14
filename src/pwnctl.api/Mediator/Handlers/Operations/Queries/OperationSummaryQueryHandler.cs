@@ -28,6 +28,14 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Commands
             if (op == null)
                 return MediatedResponse<SummaryViewModel>.Error("Operation {0} not found.", command.Name);
 
+            viewModel.Name = op.Name.Value;
+            viewModel.Type = op.Type;
+            viewModel.State = op.State;
+            viewModel.ScopeName = op.Scope.Name.Value;
+            viewModel.CurrentPhase = op.CurrentPhase;
+            viewModel.InitializedAt = op.InitiatedAt;
+            viewModel.FinishedAt = op.FinishedAt;
+
             var scopeDefinitionIds = op.Scope.Definitions.Select(s => s.DefinitionId).ToList();
 
             viewModel.TagCount = await context.Tags.CountAsync();
@@ -56,6 +64,7 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Commands
                 var details = new SummaryViewModel.TaskDefinitionDetails
                 {
                     Name = def.First().Name.Value,
+                    ShortLived = def.First().ShortLived,
                     Count = await context.TaskRecords
                                         .Where(t => t.OperationId == op.Id && def.Select(d => d.Id).Contains(t.DefinitionId))
                                         .CountAsync(),

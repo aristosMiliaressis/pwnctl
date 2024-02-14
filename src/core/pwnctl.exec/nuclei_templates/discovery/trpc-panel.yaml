@@ -1,0 +1,37 @@
+id: trpc-panel
+
+info:
+  name: Public trpc-panel
+  author: LogicalHunter
+  severity: info
+  tags: exposure,trpc
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/panel"
+      - "{{BaseURL}}/trpc-panel"
+      - "{{BaseURL}}/trpc"
+      - "{{BaseURL}}/trpc/panel"
+      - "{{BaseURL}}/api/panel"
+      - "{{BaseURL}}/api/trpc-panel"
+      - "{{BaseURL}}/docs"
+      - "{{BaseURL}}/doc"
+      - "{{BaseURL}}/api/docs"
+      - "{{BaseURL}}/api/doc"
+      - "{{BaseURL}}/api/trpc/panel"
+  
+    headers:
+      Accept: text/html
+    stop-at-first-match: true
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "tRPC.panel()"
+
+      - type: status
+        status:
+          - 200

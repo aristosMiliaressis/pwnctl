@@ -19,38 +19,42 @@ namespace pwnctl.cli.ModeHandlers
         {
             await Parser.Default.ParseArguments<SummaryModeHandler>(args).WithParsedAsync(async opt =>
             {
-               var model = await PwnctlApiClient.Default.Send(new OperationSummaryQuery { Name = opt.Name });
+                var model = await PwnctlApiClient.Default.Send(new OperationSummaryQuery { Name = opt.Name });
 
-               Console.WriteLine($"NetworkRanges: {model.InScopeRangesCount}");
-               Console.WriteLine($"NetworkHosts: {model.InScopeHostCount}");
-               Console.WriteLine($"NetworkSockets: {model.InScopeServiceCount}");
-               Console.WriteLine($"DomainNames: {model.InScopeDomainCount}");
-               Console.WriteLine($"DomainNameRecords: {model.InScopeRecordCount}");
-               Console.WriteLine($"HttpEndpoints: {model.InScopeEndpointCount}");
-               Console.WriteLine($"HttpParameters: {model.InScopeParamCount}");
+                Console.WriteLine($"Name: {model.Name}\tType: {model.Type}\tState: {model.State}");
+                Console.WriteLine($"Initiated At: {model.InitializedAt}\tFinished At: {model.FinishedAt}\tCurrent Phase: {model.CurrentPhase}");
+                Console.WriteLine();
+
+                if (model.FirstTask is not null)
+                {
+                    Console.WriteLine("First Queued Task: " + model.FirstTask);
+                    Console.WriteLine("Last Queued Task: " + model.LastTask);
+                    Console.WriteLine("Last Finished Task: " + model.LastFinishedTask);
+                    Console.WriteLine();
+                    var shortLivedTaskExecTime = TimeSpan.FromSeconds(model.TaskDetails.Where(t => t.ShortLived).Select(t => t.Duration.TotalSeconds).Sum());
+                    var longLivedTaskExecTime = TimeSpan.FromSeconds(model.TaskDetails.Where(t => !t.ShortLived).Select(t => t.Duration.TotalSeconds).Sum());
+                    var subExecTime = shortLivedTaskExecTime + longLivedTaskExecTime;
+                    Console.WriteLine($"Total Task Execution Time: {subExecTime:dd\\.hh\\:mm\\:ss} of which {shortLivedTaskExecTime:dd\\.hh\\:mm\\:ss} on spot instances and {longLivedTaskExecTime:dd\\.hh\\:mm\\:ss} on EC2 instances.");
+                    Console.WriteLine();
+                }
+
+                Console.WriteLine($"NetworkRanges: {model.InScopeRangesCount}");
+                Console.WriteLine($"NetworkHosts: {model.InScopeHostCount}");
+                Console.WriteLine($"NetworkSockets: {model.InScopeServiceCount}");
+                Console.WriteLine($"DomainNames: {model.InScopeDomainCount}");
+                Console.WriteLine($"DomainNameRecords: {model.InScopeRecordCount}");
+                Console.WriteLine($"HttpEndpoints: {model.InScopeEndpointCount}");
+                Console.WriteLine($"HttpParameters: {model.InScopeParamCount}");
                 Console.WriteLine($"VirtualHosts: {model.InScopeVirtualHostCount}");
                 Console.WriteLine($"Emais: {model.InScopeEmailCount}");
                 Console.WriteLine($"Tags: {model.TagCount}");
-               Console.WriteLine();
-               Console.WriteLine($"QUEUED: {model.QueuedTaskCount}, RUNNING: {model.RunningTaskCount}, FINISHED: {model.FinishedTaskCount}, CANCELED: {model.CanceledTaskCount}, TIMED_OUT: {model.TimedOutTaskCount}, FAILED: {model.FailedTaskCount}");
-               Console.WriteLine();
-               foreach (var def in model.TaskDetails.OrderBy(t => t.Count))
-               {
-                   Console.WriteLine($"{def.Name,20}: Queued {def.Count,4} times, ran {def.RunCount,4} times, for {def.Duration:dd\\.hh\\:mm\\:ss} and found {def.Findings,6} unique assets.");
-               }
-
-               if (model.FirstTask is not null)
-               {
-                   Console.WriteLine();
-                   Console.WriteLine("First Queued Task: " + model.FirstTask);
-                   Console.WriteLine("Last Queued Task: " + model.LastTask);
-                   Console.WriteLine("Last Finished Task: " + model.LastFinishedTask);
-                   Console.WriteLine();
-                   Console.WriteLine($"Total Task Execution Time: {TimeSpan.FromSeconds(model.TaskDetails.Select(t => t.Duration.TotalSeconds).Sum()):dd\\.hh\\:mm\\:ss}");
-
-                   // TODO: operation info
-                   // State, Current Phase / Remaining Phases / INIT/Finish time total time
-               }
+                Console.WriteLine();
+                Console.WriteLine($"QUEUED: {model.QueuedTaskCount}, RUNNING: {model.RunningTaskCount}, FINISHED: {model.FinishedTaskCount}, CANCELED: {model.CanceledTaskCount}, TIMED_OUT: {model.TimedOutTaskCount}, FAILED: {model.FailedTaskCount}");
+                Console.WriteLine();
+                foreach (var def in model.TaskDetails.Where(t => t.ShortLived).OrderBy(t => t.Duration))
+                    Console.WriteLine($"S {def.Name,20}: Queued {def.Count,4} times, ran {def.RunCount,4} times, for {def.Duration:dd\\.hh\\:mm\\:ss} and found {def.Findings,6} unique assets.");
+                foreach (var def in model.TaskDetails.Where(t => !t.ShortLived).OrderBy(t => t.Duration))
+                    Console.WriteLine($"L {def.Name,20}: Queued {def.Count,4} times, ran {def.RunCount,4} times, for {def.Duration:dd\\.hh\\:mm\\:ss} and found {def.Findings,6} unique assets.");
            });
         }
 

@@ -17,7 +17,7 @@ then
     fi
 fi
 
-cd /opt/toos/ShortNameScanner/
+cd /opt/tools/ShortNameScanner/
 
 echo No | java -jar iis_shortname_scanner.jar 2 20 $url \
         | grep -q 'Vulnerable!' && echo '{"Asset":"'$url'", "tags":{"shortname-misconfig":"true"}}' || exit 0

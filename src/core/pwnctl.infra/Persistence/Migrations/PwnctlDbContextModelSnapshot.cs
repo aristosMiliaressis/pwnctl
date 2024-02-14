@@ -714,6 +714,9 @@ namespace pwnctl.infra.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<bool>("Wildcard")
+                        .HasColumnType("boolean");
+
                     b.HasKey("Id");
 
                     b.HasIndex("DomainId");
@@ -760,6 +763,9 @@ namespace pwnctl.infra.Migrations
 
                     b.Property<string>("Path")
                         .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("RootDomain")
                         .HasColumnType("text");
 
                     b.Property<string>("Scheme")

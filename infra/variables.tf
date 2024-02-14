@@ -65,7 +65,7 @@ variable "message_visibility_timeout" {
   description = "SQS message visibility timeout in seconds."
 
   default = {
-    shortlived = 180
+    shortlived = 240
     longlived  = 900
     output     = 900
   }

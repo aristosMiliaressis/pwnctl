@@ -1,0 +1,35 @@
+Profile: "http"
+
+TaskDefinitions:
+  - Name: ffuf_common
+    CommandTemplate: file-fuzz.sh {{Url}} false /mnt/efs/**/waymore/{{RootDomain}}/wordlist.txt /opt/wordlists/raft-small-directories.txt /opt/wordlists/high_impact.txt
+    Filter: HttpEndpoint.Path == "/" && !Tags["Web servers"].Contains("IIS")&&Tags["Web frameworks"]!="Microsoft ASP.NET"&&Tags["Operating systems"]!="Windows Server"
+    Subject: HttpEndpoint
+    CheckNotificationRules: true
+
+  - Name: ffuf_common_lowercase
+    CommandTemplate: file-fuzz.sh {{Url}} true /mnt/efs/**/waymore/{{RootDomain}}/wordlist.txt /opt/wordlists/raft-small-directories.txt /opt/wordlists/high_impact_lowercase.txt
+    Filter: HttpEndpoint.Path == "/" && (Tags["Web servers"].Contains("IIS")||Tags["Web frameworks"]=="Microsoft ASP.NET"||Tags["Operating systems"]=="Windows Server") && HttpEndpoint.Socket.DomainNameId != null
+    Subject: HttpEndpoint
+    CheckNotificationRules: true
+
+  - Name: shortname_scanner
+    CommandTemplate: shortname_scanner
+    Subject: HttpEndpoint
+    Filter: HttpEndpoint.Path == "/" && Tags["Protocol"] == "IIS"
+    CheckNotificationRules: true
+
+  - Name: hakrawler
+    CommandTemplate: "hakrawler -plain -h 'User-Agent: Mozilla/5.0' {{Url}}"
+    Subject: HttpEndpoint
+    Filter: Tags["Content-Type"].Contains("/html")
+
+  - Name: sqlmap
+    CommandTemplate: sqlmap {{Url}}
+    Filter: HttpEndpoint.Socket.NetworkHostId == null
+    Subject: HttpEndpoint
+
+  - Name: second_order_takeover
+    CommandTemplate: nuclei -t /opt/nuclei-templates/cname_takeovers
+    Subject: HttpEndpoint
+    MatchOutOfScope: true

@@ -39,6 +39,16 @@ public sealed class Tests
     }
 
     [Fact]
+    public void DomainNameRecord_Wildcard()
+    {
+        var record = DomainNameRecord.TryParse("*.tesla.com IN A 1.2.3.4").Value;
+        Assert.Equal("tesla.com", record.DomainName.ToString());
+        Assert.Equal("1.2.3.4", record.NetworkHost.ToString());
+        Assert.Equal("*.tesla.com IN A 1.2.3.4", record.ToString());
+        Assert.True(record.Wildcard);
+    }
+
+    [Fact]
     public void DomainNameRecord_ParseSPFString()
     {
         var hosts = DomainNameRecord.ParseSPFString("tesla.com IN TXT \"v=spf1 ip4:2.2.2.2 ipv4: 3.3.3.3 ipv6:FD00:DEAD:BEEF:64:34::2 include: spf.protection.outlook.com include:servers.mcsv.net -all\"");
@@ -60,19 +70,19 @@ public sealed class Tests
     public void NetworkHost_IsPrivate()
     {
         var host1 = NetworkHost.TryParse("172.18.30.6").Value;
-        Assert.True(host1.IsPrivate());
+        Assert.True(host1.IsPrivate);
 
         var host2 = NetworkHost.TryParse("192.168.1.1").Value;
-        Assert.True(host2.IsPrivate());
+        Assert.True(host2.IsPrivate);
 
         var host3 = NetworkHost.TryParse("10.0.0.1").Value;
-        Assert.True(host3.IsPrivate());
+        Assert.True(host3.IsPrivate);
 
         var host4 = NetworkHost.TryParse("127.0.0.1").Value;
-        Assert.True(host4.IsPrivate());
+        Assert.True(host4.IsPrivate);
 
         var host5 = NetworkHost.TryParse("8.8.8.8").Value;
-        Assert.False(host5.IsPrivate());
+        Assert.False(host5.IsPrivate);
     }
 
     [Fact]
