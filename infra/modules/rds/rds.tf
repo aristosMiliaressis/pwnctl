@@ -1,20 +1,15 @@
-variable "rds_postgres_databasename" {
-  description = "The database name."
-  type        = string
-
-  default = "pwnctl"
+locals {
+  db_name = "pwnctl"
+  db_user = "pwnadmin"
 }
 
-variable "rds_postgres_username" {
-  description = "The database username."
-  type        = string
-
-  default = "pwnadmin"
+data "aws_vpc" "this" {
+  id = var.vpc_id
 }
 
 resource "aws_db_subnet_group" "this" {
   name       = "main"
-  subnet_ids = [for k, v in aws_subnet.private : aws_subnet.private[k].id]
+  subnet_ids = [var.private_subnet_a, var.private_subnet_b]
 
   tags = {
     Name = "PwnCtl db subnet group"
@@ -24,14 +19,14 @@ resource "aws_db_subnet_group" "this" {
 resource "aws_security_group" "allow_postgres" {
   name        = "allow_postgres"
   description = "Allow ingress Postgres traffic from VPC"
-  vpc_id      = aws_vpc.main.id
+  vpc_id      = var.vpc_id
 
   ingress {
     description = "Allow ingress Postgres traffic from VPC"
     from_port   = 5432
     to_port     = 5432
     protocol    = "tcp"
-    cidr_blocks = [aws_vpc.main.cidr_block]
+    cidr_blocks = [data.aws_vpc.this.cidr_block]
   }
 
   egress {
@@ -62,8 +57,8 @@ resource "aws_db_instance" "this" {
   engine                 = "postgres"
   engine_version         = "15"
   instance_class         = "db.t3.micro"
-  db_name                = var.rds_postgres_databasename
-  username               = var.rds_postgres_username
+  db_name                = local.db_name
+  username               = local.db_user
   password               = aws_secretsmanager_secret_version.db_password.secret_string
   parameter_group_name   = aws_db_parameter_group.this.name
   skip_final_snapshot    = true

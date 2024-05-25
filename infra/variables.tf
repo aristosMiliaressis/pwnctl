@@ -6,18 +6,44 @@ variable "profile" {
   default = "default"
 }
 
-variable "access_timeout_minutes" {
-  description = "The access token expiration in minutes."
-  type        = number
-
-  default = 120
+variable "vpc_id" {
+  description = "The VPC id."
+  type        = string
 }
 
-variable "refresh_timeout_hours" {
-  description = "The refresh token expiration in hours."
-  type        = number
+variable "public_subnet_a" {
+  description = "The public subnet A id."
+  type        = string
+}
 
-  default = 720
+variable "public_subnet_b" {
+  description = "The public subnet B id."
+  type        = string
+}
+
+variable "private_subnet_a" {
+  description = "The private subnet A id."
+  type        = string
+}
+
+variable "private_subnet_b" {
+  description = "The private subnet B id."
+  type        = string
+}
+
+variable "db_host" {
+  description = "Database host."
+  type        = string
+}
+
+variable "db_name" {
+  description = "Database name."
+  type        = string
+}
+
+variable "db_user" {
+  description = "Database user."
+  type        = string
 }
 
 variable "exec_instance_count" {
@@ -54,19 +80,3 @@ variable "task_timeout" {
   default = 10800 # 3 hours
 }
 
-variable "message_retention_seconds" {
-  description = "SQS message retention in seconds."
-  type        = number
-
-  default = 1209600 # 14 days
-}
-
-variable "message_visibility_timeout" {
-  description = "SQS message visibility timeout in seconds."
-
-  default = {
-    shortlived = 240
-    longlived  = 900
-    output     = 900
-  }
-}

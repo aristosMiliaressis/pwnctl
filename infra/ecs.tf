@@ -2,10 +2,6 @@ resource "aws_ecs_cluster" "this" {
   name = "pwnctl_cluster"
 }
 
-data "aws_iam_role" "ecs_service" {
-  name = "pwnctl-ecs-service"
-}
-
 resource "aws_ecs_task_definition" "exec_short" {
   family                   = "pwnctl-exec-short"
   requires_compatibilities = ["FARGATE"]
@@ -14,10 +10,6 @@ resource "aws_ecs_task_definition" "exec_short" {
   memory                   = 512
   execution_role_arn       = data.aws_iam_role.ecs_service.arn
   task_role_arn            = data.aws_iam_role.ecs_service.arn
-
-  depends_on = [
-    aws_db_instance.this
-  ]
 
   container_definitions = <<DEFINITION
   [
@@ -49,15 +41,15 @@ resource "aws_ecs_task_definition" "exec_short" {
         },
         {
           "name": "PWNCTL_Db__Name",
-          "value": "${var.rds_postgres_databasename}"
+          "value": "${var.db_name}"
         },
         {
           "name": "PWNCTL_Db__Username",
-          "value": "${var.rds_postgres_username}"
+          "value": "${var.db_user}"
         },
         {
           "name": "PWNCTL_Db__Host",
-          "value": "${aws_db_instance.this.endpoint}"
+          "value": "${var.db_host}"
         },
         {
           "name": "PWNCTL_IS_PROD",
@@ -65,7 +57,7 @@ resource "aws_ecs_task_definition" "exec_short" {
         },
         {
           "name": "PWNCTL_FS_MOUNT_POINT",
-          "value": "${var.efs_mount_point}"
+          "value": "${local.efs_mount_point}"
         }
       ],
       "logConfiguration": {
@@ -79,7 +71,7 @@ resource "aws_ecs_task_definition" "exec_short" {
       "mountPoints": [
         {
           "sourceVolume": "pwnctl-fs",
-          "containerPath": "${var.efs_mount_point}"
+          "containerPath": "${local.efs_mount_point}"
         }
       ]
     }
@@ -112,7 +104,7 @@ resource "aws_ecs_service" "exec_short" {
   ]
 
   network_configuration {
-    subnets          = [for k, v in aws_subnet.public : aws_subnet.public[k].id]
+    subnets          = [var.public_subnet_a, var.public_subnet_b]
     assign_public_ip = "true"
   }
 
@@ -134,10 +126,6 @@ resource "aws_ecs_task_definition" "exec_long" {
   memory                   = 1024
   execution_role_arn       = data.aws_iam_role.ecs_service.arn
   task_role_arn            = data.aws_iam_role.ecs_service.arn
-
-  depends_on = [
-    aws_db_instance.this
-  ]
 
   container_definitions = <<DEFINITION
   [
@@ -173,15 +161,15 @@ resource "aws_ecs_task_definition" "exec_long" {
         },
         {
           "name": "PWNCTL_Db__Name",
-          "value": "${var.rds_postgres_databasename}"
+          "value": "${var.db_name}"
         },
         {
           "name": "PWNCTL_Db__Username",
-          "value": "${var.rds_postgres_username}"
+          "value": "${var.db_user}"
         },
         {
           "name": "PWNCTL_Db__Host",
-          "value": "${aws_db_instance.this.endpoint}"
+          "value": "${var.db_host}"
         },
         {
           "name": "PWNCTL_IS_PROD",
@@ -189,7 +177,7 @@ resource "aws_ecs_task_definition" "exec_long" {
         },
         {
           "name": "PWNCTL_FS_MOUNT_POINT",
-          "value": "${var.efs_mount_point}"
+          "value": "${local.efs_mount_point}"
         }
       ],
       "logConfiguration": {
@@ -203,7 +191,7 @@ resource "aws_ecs_task_definition" "exec_long" {
       "mountPoints": [
         {
           "sourceVolume": "pwnctl-fs",
-          "containerPath": "${var.efs_mount_point}"
+          "containerPath": "${local.efs_mount_point}"
         }
       ]
     }
@@ -236,7 +224,7 @@ resource "aws_ecs_service" "exec_long" {
   ]
 
   network_configuration {
-    subnets          = [for k, v in aws_subnet.public : aws_subnet.public[k].id]
+    subnets          = [var.public_subnet_a, var.public_subnet_b]
     assign_public_ip = "true"
   }
 
@@ -250,6 +238,9 @@ resource "aws_ecs_service" "exec_long" {
   }
 }
 
+data "aws_iam_role" "ecs_service" {
+  name = "pwnctl-ecs-service"
+}
 
 resource "aws_ecs_task_definition" "proc" {
   family                   = "pwnctl-proc"
@@ -259,11 +250,6 @@ resource "aws_ecs_task_definition" "proc" {
   memory                   = 1024
   execution_role_arn       = data.aws_iam_role.ecs_service.arn
   task_role_arn            = data.aws_iam_role.ecs_service.arn
-
-  depends_on = [
-    aws_db_instance.this,
-    aws_security_group.allow_postgres
-  ]
 
   container_definitions = <<DEFINITION
   [
@@ -295,15 +281,15 @@ resource "aws_ecs_task_definition" "proc" {
         },
         {
           "name": "PWNCTL_Db__Name",
-          "value": "${var.rds_postgres_databasename}"
+          "value": "${var.db_name}"
         },
         {
           "name": "PWNCTL_Db__Username",
-          "value": "${var.rds_postgres_username}"
+          "value": "${var.db_user}"
         },
         {
           "name": "PWNCTL_Db__Host",
-          "value": "${aws_db_instance.this.endpoint}"
+          "value": "${var.db_host}"
         },
         {
           "name": "PWNCTL_IS_PROD",
@@ -311,7 +297,7 @@ resource "aws_ecs_task_definition" "proc" {
         },
         {
           "name": "PWNCTL_FS_MOUNT_POINT",
-          "value": "${var.efs_mount_point}"
+          "value": "${local.efs_mount_point}"
         }
       ],
       "logConfiguration": {
@@ -325,7 +311,7 @@ resource "aws_ecs_task_definition" "proc" {
       "mountPoints": [
         {
           "sourceVolume": "pwnctl-fs",
-          "containerPath": "${var.efs_mount_point}"
+          "containerPath": "${local.efs_mount_point}"
         }
       ]
     }
@@ -352,13 +338,12 @@ resource "aws_ecs_service" "proc" {
   task_definition = aws_ecs_task_definition.proc.arn
   desired_count   = 0
   depends_on = [
-    aws_ecs_cluster.this,
     aws_ecs_task_definition.proc,
     data.aws_iam_role.ecs_service
   ]
 
   network_configuration {
-    subnets          = [for k, v in aws_subnet.public : aws_subnet.public[k].id]
+    subnets          = [var.public_subnet_a, var.public_subnet_b]
     assign_public_ip = "true"
   }
 

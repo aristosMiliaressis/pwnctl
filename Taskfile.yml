@@ -61,10 +61,9 @@ tasks:
       - terraform -chdir=infra/modules/ci apply -auto-approve
 
   deploy:
-    deps: [build-api]
+    deps: [build-api, setup-ci]
     cmds:
-      - terraform -chdir=infra apply -auto-approve
-      - ./bin/upload-conf.sh
+      - ./bin/deploy.sh
 
   destroy:
     cmds:

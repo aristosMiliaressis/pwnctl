@@ -52,7 +52,7 @@ resource "aws_instance" "this" {
 
 resource "aws_security_group" "this" {
   name = "pwnctl-jumpbox"
-  vpc_id      = data.aws_vpc.main.id
+  vpc_id      = data.aws_vpc.this.id
   
   ingress = [
     {
