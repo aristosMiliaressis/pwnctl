@@ -1,0 +1,77 @@
+---
+
+- name: install_postgres
+  hosts: all
+  become: yes
+  gather_facts: false
+  vars_files:
+    - vars.yml
+  
+  pre_tasks:
+    - name: "Install packages"
+      apt: "name={{ item }} state=present"
+      with_items:
+        - postgresql
+        - postgresql-contrib
+
+    - name: "Install Python packages"
+      pip: "name={{ item }}  state=present"
+      with_items:
+        - psycopg2-binary
+    
+  tasks:
+    - name: Configure postgres to listen on all interfaces
+      command: sed -i "s/#listen_addresses = 'localhost'/listen_addresses = '*'/" /etc/postgresql/12/main/postgresql.conf 
+ 
+    - name: "Start and enable services"
+      service: "name={{ item }} state=started enabled=yes"
+      with_items:
+        - postgresql
+    
+    - name: "Create app database"
+      postgresql_db:
+        state: present
+        name: "{{ db_name }}"
+      become: yes
+      become_user: postgres
+
+    - name: "Create db user"
+      postgresql_user:
+        state: present
+        name: "{{ db_user }}"
+        password: "{{ db_pass }}"
+      become: yes
+      become_user: postgres
+
+    - name: "Grant db user access to app db"
+      postgresql_privs:
+        type: database
+        database: "{{ db_name }}"
+        roles: "{{ db_user }}"
+        grant_option: no
+        privs: all
+      become: yes
+      become_user: postgres
+
+    - name: "Allow md5 connection for the db user"
+      postgresql_pg_hba:
+        dest: "/etc/postgresql/12/main/pg_hba.conf"
+        contype: host
+        databases: all
+        users: "{{ db_user }}"
+        source: all
+        method: md5
+        create: true
+      become: yes
+      become_user: postgres
+      notify: restart postgres
+    
+    - name: Allow PostgreSQL port
+      ufw:
+        rule: allow
+        port: 5432
+        proto: tcp
+    
+  handlers:
+    - name: restart postgres
+      service: name=postgresql state=restarted

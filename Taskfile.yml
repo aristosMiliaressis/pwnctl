@@ -64,6 +64,11 @@ tasks:
     deps: [build-api, setup-ci]
     cmds:
       - ./bin/deploy.sh
+      
+  deploy2vps:
+    deps: [build-api, setup-ci]
+    cmds:
+      - ./bin/deploy_vps.sh
 
   destroy:
     cmds:
