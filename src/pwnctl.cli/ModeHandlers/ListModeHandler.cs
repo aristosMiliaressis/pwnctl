@@ -42,7 +42,7 @@ namespace pwnctl.cli.ModeHandlers
             {
                 var request = (MediatedRequest<object>)Activator.CreateInstance(ResourceMap[opt.Resource]);
 
-                object result = await PwnctlApiClient.Default.Send(request);
+                object result = await Program.Sender.Send(request);
 
                 Console.WriteLine(PwnInfraContext.Serializer.Serialize(result));
             });

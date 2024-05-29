@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Threading.Tasks;
 using CommandLine;
 using pwnctl.app;
@@ -21,7 +22,6 @@ namespace pwnctl.cli.ModeHandlers
         [Option('n', "name", Required = true, HelpText = "The resource Name to be deleted.")]
         public string Name { get; set; }
 
-
         private static Dictionary<string, Type> ResourceMap = new()
         {
             { "scope", typeof(DeleteScopeAggregateCommand) },
@@ -35,7 +35,7 @@ namespace pwnctl.cli.ModeHandlers
             {
                 var request = (MediatedRequest)PwnInfraContext.Serializer.Deserialize($$"""{"Name":"{{opt.Name}}"}""", ResourceMap[opt.Resource]);
 
-                await PwnctlApiClient.Default.Send(request);
+                await Program.Sender.Send(request);
             });
         }
 

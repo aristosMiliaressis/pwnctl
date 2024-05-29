@@ -40,7 +40,7 @@ namespace pwnctl.cli.ModeHandlers
             {
                 var request = (MediatedRequest)PwnInfraContext.Serializer.Deserialize(json, ResourceMap[opt.Resource]);
 
-                await PwnctlApiClient.Default.Send(request);
+                await Program.Sender.Send(request);
             });
         }
 

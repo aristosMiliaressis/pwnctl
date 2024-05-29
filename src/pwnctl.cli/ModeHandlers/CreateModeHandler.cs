@@ -35,7 +35,7 @@ namespace pwnctl.cli.ModeHandlers
                 .WithNamingConvention(PascalCaseNamingConvention.Instance)
                 .Build();
 
-            await Parser.Default.ParseArguments<CreateModeHandler>(args).WithParsedAsync(async opt => 
+            await Parser.Default.ParseArguments<CreateModeHandler>(args).WithParsedAsync(async opt =>
             {
                 string line = string.Empty;
                 string yaml = string.Empty;
@@ -48,7 +48,7 @@ namespace pwnctl.cli.ModeHandlers
 
                 var request = (MediatedRequest)deserializer.Deserialize(yaml, ResourceMap[opt.Resource]);
 
-                await PwnctlApiClient.Default.Send(request);
+                await Program.Sender.Send(request);
             });
         }
 

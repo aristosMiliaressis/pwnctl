@@ -11,23 +11,33 @@ namespace pwnctl.cli.ModeHandlers
     {
         public string ModeName => "import";
 
+        [Option('b', "batch", Required = false, HelpText = "Batch size.")]
+        public int BatchSize { get; set; }
+
         public async Task Handle(string[] args)
         {
             await Parser.Default.ParseArguments<ImportModeHandler>(args).WithParsedAsync(async opt =>
             {
+                if (opt.BatchSize == 0)
+                    opt.BatchSize = 50;
+
                 List<string> lines = new();
                 string line;
                 while (!string.IsNullOrEmpty(line = Console.ReadLine()))
                 {
-                   lines.Add(line);
+                    lines.Add(line);
+                    if (lines.Count == opt.BatchSize)
+                    {
+                        var request = new ImportAssetsCommand
+                        {
+                            Assets = lines
+                        };
+
+                        await Program.Sender.Send(request);
+
+                        lines = new();
+                    }
                 }
-
-                var request = new ImportAssetsCommand
-                {
-                    Assets = lines
-                };
-
-                await PwnctlApiClient.Default.Send(request);
             });
         }
 

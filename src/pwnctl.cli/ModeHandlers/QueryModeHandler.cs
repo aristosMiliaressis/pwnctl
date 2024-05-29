@@ -11,7 +11,7 @@ namespace pwnctl.cli.ModeHandlers
     public sealed class QueryModeHandler : ModeHandler
     {
         public string ModeName => "query";
-        
+
         public async Task Handle(string[] args)
         {
             var queryRunner = new QueryRunner();
@@ -27,7 +27,7 @@ namespace pwnctl.cli.ModeHandlers
                 Query = query
             };
 
-            var result = await PwnctlApiClient.Default.Send(command);
+            var result = await Program.Sender.Send(command);
 
             if (result is not null)
                 Console.WriteLine(PwnInfraContext.Serializer.Serialize(result));

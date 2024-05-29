@@ -5,6 +5,16 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using pwnctl.infra.DependencyInjection;
+using MediatR;
+using pwnctl.cli;
+using Microsoft.Extensions.DependencyInjection;
+using pwnctl.dto;
+using pwnctl.app.Queueing.Interfaces;
+using pwnctl.infra.Queueing;
+using pwnctl.api;
+using pwnctl.api.Mediator.Pipelines;
+using FluentValidation;
+using pwnctl.infra.Configuration;
 
 internal sealed class Program
 {
@@ -15,9 +25,12 @@ internal sealed class Program
                     .Select(t => (ModeHandler)Activator.CreateInstance(t))
                     .ToDictionary(p => p.ModeName, p => p);
 
+    public static ISender Sender;
+
     static async Task Main(string[] args)
     {
         PwnInfraContextInitializer.Setup();
+        Setup(EnvironmentVariables.BYPASS_API);
 
         if (args.Length < 1)
         {
@@ -40,7 +53,24 @@ internal sealed class Program
         await provider.Handle(args);
     }
 
-    static void PrintHelpPage() // TODO: help all method
+    static void Setup(bool direct)
+    {
+        if (direct)
+        {
+            var services = new ServiceCollection();
+            services.AddMediatR(typeof(PwnctlDtoAssemblyMarker), typeof(PwnctlApiAssemblyMarker));
+            services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipeline<,>));
+            services.AddValidatorsFromAssemblyContaining<PwnctlDtoAssemblyMarker>();
+            services.AddTransient<TaskQueueService, SQSTaskQueueService>();
+            Sender = new Mediator(services.BuildServiceProvider());
+        }
+        else
+        {
+            Sender = PwnctlApiClient.Default;
+        }
+    }
+
+    static void PrintHelpPage()
     {
         Console.WriteLine();
         Console.WriteLine($"USAGE: {Assembly.GetExecutingAssembly().GetName().Name} <mode> [arguments]");

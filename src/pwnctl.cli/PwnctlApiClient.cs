@@ -8,6 +8,7 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using pwnctl.dto.Mediator;
 using pwnctl.app;
+using MediatR;
 using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
 using System.Net.Http.Headers;
@@ -16,12 +17,14 @@ using Amazon.SecretsManager;
 using Amazon.SecretsManager.Model;
 using System.Linq;
 using System.Collections.Generic;
+using System.Threading;
+
 
 /// <summary>
 /// an api client that utilizes the custom Mediated Api contract and
 /// requires no extra implementation to support api extensions
 /// </summary>
-public sealed class PwnctlApiClient
+public sealed class PwnctlApiClient : ISender
 {
     private readonly HttpClient _httpClient;
 
@@ -34,14 +37,13 @@ public sealed class PwnctlApiClient
         _httpClient.Timeout = TimeSpan.FromMinutes(5);
     }
 
-    public async Task<TResult> Send<TResult>(MediatedRequest<TResult> request)
-         where TResult : class
+    public async Task<TResult> Send<TResult>(IRequest<TResult> request, CancellationToken token = default)
     {
-        (Type concreteRequestType, string route, string json) = await PrepareRequest(request);
+        (Type concreteRequestType, string route, string json) = await PrepareRequest((Request)request);
 
         if (concreteRequestType.IsAssignableTo(typeof(PaginatedRequest)))
         {
-            return await HandlePaginatedRequest<TResult>(concreteRequestType, route, json);
+            return (TResult)await HandlePaginatedRequest<TResult>(concreteRequestType, route, json);
         }
 
         var apiResponse = await _send(concreteRequestType, route, json);
@@ -51,13 +53,19 @@ public sealed class PwnctlApiClient
         return PwnInfraContext.Serializer.Deserialize<TResult>((JsonElement)apiResponse.Result);
     }
 
-    public async Task Send(MediatedRequest request)
+    public async Task<object> Send(object request, CancellationToken token = default)
     {
-        (Type concreteRequestType, string route, string json) = await PrepareRequest(request);
-        
+        (Type concreteRequestType, string route, string json) = await PrepareRequest((Request)request);
+
         var apiResponse = await _send(concreteRequestType, route, json);
 
-        return;
+        return null;
+    }
+
+    public Task Send<TRequest>(TRequest request, CancellationToken token = default)
+        where TRequest : IRequest
+    {
+        throw new NotImplementedException();
     }
 
     private async Task<(Type concreteRequestType, string route, string json)> PrepareRequest(Request request)
@@ -99,8 +107,7 @@ public sealed class PwnctlApiClient
         return await response.Content.ReadFromJsonAsync<MediatedResponse>();
     }
 
-    private async Task<TResult> HandlePaginatedRequest<TResult>(Type concreteRequestType, string route, string json)
-     where TResult : class
+    private async Task<object> HandlePaginatedRequest<TResult>(Type concreteRequestType, string route, string json)
     {
         MediatedResponse response = null;
         PaginatedViewModel view = null;
@@ -120,20 +127,20 @@ public sealed class PwnctlApiClient
 
             var responseType = typeof(MediatedResponse<TResult>);
 
-            response = (MediatedResponse) PwnInfraContext.Serializer.Deserialize(jsonResponse, responseType);
+            response = (MediatedResponse)PwnInfraContext.Serializer.Deserialize(jsonResponse, responseType);
 
             var viewModel = responseType.GetProperties().First(p => p.Name == "Result").GetValue(response) as PaginatedViewModel;
 
             if (view is null)
                 view = viewModel;
             else
-                view.Rows.AddRange((List<object>) typeof(PaginatedViewModel).GetProperty("Rows").GetValue(viewModel));
-    
+                view.Rows.AddRange((List<object>)typeof(PaginatedViewModel).GetProperty("Rows").GetValue(viewModel));
+
             view.Page++;
         }
-        while (view.Page != view.TotalPages+1);
+        while (view.Page != view.TotalPages + 1);
 
-        return view as TResult;
+        return view;
     }
 
     private async Task<TokenGrantResponse> GetAccessToken()
@@ -163,5 +170,15 @@ public sealed class PwnctlApiClient
         response.EnsureSuccessStatusCode();
 
         return await response.Content.ReadFromJsonAsync<TokenGrantResponse>();
+    }
+
+    public IAsyncEnumerable<TResponse> CreateStream<TResponse>(IStreamRequest<TResponse> request, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
+
+    public IAsyncEnumerable<object> CreateStream(object request, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
     }
 }

@@ -25,10 +25,13 @@
     <PackageReference Include="AwsSignatureVersion4" Version="4.0.0" />
     <PackageReference Include="CommandLineParser" Version="2.9.1" />
     <PackageReference Include="DnsClient" Version="1.5.0" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.9.1" />
+    <PackageReference Include="MediatR" Version="12.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
     <PackageReference Include="Serilog" Version="2.12.0" />
     <PackageReference Include="YamlDotNet" Version="12.0.0" />
@@ -44,5 +47,6 @@
     <ProjectReference Include="..\core\pwnctl.domain\pwnctl.domain.csproj" />
     <ProjectReference Include="..\core\pwnctl.app\pwnctl.app.csproj" />
     <ProjectReference Include="..\pwnctl.dto\pwnctl.dto.csproj" />
+    <ProjectReference Include="..\pwnctl.api\pwnctl.api.csproj" />
   </ItemGroup>
 </Project>

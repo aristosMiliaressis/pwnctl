@@ -1,10 +1,12 @@
+using CommandLine;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
-using pwnctl.dto.Operations.Queries;
 using pwnctl.cli.Interfaces;
-using System.Linq;
-using CommandLine;
+using pwnctl.dto.Mediator;
+using pwnctl.dto.Operations.Queries;
+using pwnctl.dto.Operations.Models;
 
 namespace pwnctl.cli.ModeHandlers
 {
@@ -19,7 +21,8 @@ namespace pwnctl.cli.ModeHandlers
         {
             await Parser.Default.ParseArguments<SummaryModeHandler>(args).WithParsedAsync(async opt =>
             {
-                var model = await PwnctlApiClient.Default.Send(new OperationSummaryQuery { Name = opt.Name });
+                var response = await Program.Sender.Send<MediatedResponse<SummaryViewModel>>(new OperationSummaryQuery { Name = opt.Name });
+                var model = response.Result;
 
                 Console.WriteLine($"Name: {model.Name}\tType: {model.Type}\tState: {model.State}");
                 Console.WriteLine($"Initiated At: {model.InitializedAt}\tFinished At: {model.FinishedAt}\tCurrent Phase: {model.CurrentPhase}");
@@ -55,7 +58,7 @@ namespace pwnctl.cli.ModeHandlers
                     Console.WriteLine($"S {def.Name,20}: Queued {def.Count,4} times, ran {def.RunCount,4} times, for {def.Duration:dd\\.hh\\:mm\\:ss} and found {def.Findings,6} unique assets.");
                 foreach (var def in model.TaskDetails.Where(t => !t.ShortLived).OrderBy(t => t.Duration))
                     Console.WriteLine($"L {def.Name,20}: Queued {def.Count,4} times, ran {def.RunCount,4} times, for {def.Duration:dd\\.hh\\:mm\\:ss} and found {def.Findings,6} unique assets.");
-           });
+            });
         }
 
         public void PrintHelpSection()
