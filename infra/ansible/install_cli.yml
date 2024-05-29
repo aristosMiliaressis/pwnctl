@@ -1,0 +1,30 @@
+---
+
+- name: install_cli
+  hosts: all
+  become: yes
+  gather_facts: false
+
+  tasks:
+    - name: Create pwnctl config directory
+      ansible.builtin.file:
+        path: /root/.config/pwnctl/
+        state: directory
+        mode: '0444'
+            
+    - name: Copy pwnctl config
+      ansible.builtin.copy:
+        src:  ../../src/pwnctl.cli/config.local.ini
+        dest: ~/.config/pwnctl/config.ini
+        owner: root
+        group: root
+        mode: '0644'
+        
+    - name: Copy pwnctl executable
+      ansible.builtin.copy:
+        src:  ../../src/pwnctl.cli/bin/Release/net7.0/linux-x64/publish/pwnctl.cli
+        dest: /usr/local/bin/pwnctl
+        owner: root
+        group: root
+        mode: '0755'
+    

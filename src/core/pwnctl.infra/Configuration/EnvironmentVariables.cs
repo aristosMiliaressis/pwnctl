@@ -11,5 +11,4 @@ public static class EnvironmentVariables
     public static bool IS_PROD => Environment.GetEnvironmentVariable("PWNCTL_IS_PROD")?.Equals("true") ?? false;
 
     public static bool USE_LOCAL_INTEGRATIONS => Environment.GetEnvironmentVariable("PWNCTL_USE_LOCAL_INTEGRATIONS")?.Equals("true") ?? false;
-    public static bool BYPASS_API => Environment.GetEnvironmentVariable("PWNCTL_BYPASS_API")?.Equals("true") ?? false;
 }

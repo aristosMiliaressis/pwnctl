@@ -49,8 +49,8 @@ tasks:
   install-cli:
     deps: [build-cli]
     cmds:
-      - chmod +x src/pwnctl.cli/bin/Release/net7.0/linux-x64/publish/pwnctl
-      - mv src/pwnctl.cli/bin/Release/net7.0/linux-x64/publish/pwnctl ~/.local/bin
+      - chmod +x src/pwnctl.cli/bin/Release/net7.0/linux-x64/publish/pwnctl.cli
+      - mv src/pwnctl.cli/bin/Release/net7.0/linux-x64/publish/pwnctl.cli ~/.local/bin/pwnctl
       - mkdir -p ~/.config/pwnctl/
       - chown `whoami` ~/.config/pwnctl/
       - mv src/pwnctl.cli/bin/Release/net7.0/linux-x64/publish/config.ini ~/.config/pwnctl/

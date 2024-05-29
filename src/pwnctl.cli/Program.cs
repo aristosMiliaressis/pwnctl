@@ -15,6 +15,7 @@ using pwnctl.api;
 using pwnctl.api.Mediator.Pipelines;
 using FluentValidation;
 using pwnctl.infra.Configuration;
+using pwnctl.app;
 
 internal sealed class Program
 {
@@ -25,13 +26,10 @@ internal sealed class Program
                     .Select(t => (ModeHandler)Activator.CreateInstance(t))
                     .ToDictionary(p => p.ModeName, p => p);
 
-    public static ISender Sender;
+    public static ISender Sender = CreateSender();
 
     static async Task Main(string[] args)
     {
-        PwnInfraContextInitializer.Setup();
-        Setup(EnvironmentVariables.BYPASS_API);
-
         if (args.Length < 1)
         {
             Console.WriteLine("No mode provided");
@@ -53,20 +51,26 @@ internal sealed class Program
         await provider.Handle(args);
     }
 
-    static void Setup(bool direct)
+    static ISender CreateSender()
     {
-        if (direct)
+        PwnInfraContextInitializer.Setup();
+
+        if (PwnInfraContext.Config.Api.Bypass)
         {
             var services = new ServiceCollection();
-            services.AddMediatR(typeof(PwnctlDtoAssemblyMarker), typeof(PwnctlApiAssemblyMarker));
+            services.AddMediatR(cfg =>
+            {
+                cfg.RegisterServicesFromAssemblies(typeof(PwnctlDtoAssemblyMarker).GetTypeInfo().Assembly);
+                cfg.RegisterServicesFromAssemblies(typeof(PwnctlApiAssemblyMarker).GetTypeInfo().Assembly);
+            });
             services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipeline<,>));
             services.AddValidatorsFromAssemblyContaining<PwnctlDtoAssemblyMarker>();
             services.AddTransient<TaskQueueService, SQSTaskQueueService>();
-            Sender = new Mediator(services.BuildServiceProvider());
+            return new Mediator(services.BuildServiceProvider());
         }
         else
         {
-            Sender = PwnctlApiClient.Default;
+            return PwnctlApiClient.Default;
         }
     }
 

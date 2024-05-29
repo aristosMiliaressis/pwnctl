@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+dotnet publish src/pwnctl.cli/pwnctl.cli.csproj -c Release
+
 cd infra/ansible/
 
 password=$(aws secretsmanager get-secret-value --secret-id /aws/secret/pwnctl/Db/Password | jq -r .SecretString)
@@ -11,6 +13,8 @@ then
 fi
 
 ansible-playbook -i hosts.ini -k -u root install_postgres.yml --extra-vars "db_pass=$password"
+
+ansible-playbook -i hosts.ini -k -u root install_cli.yml
 
 cd -
 

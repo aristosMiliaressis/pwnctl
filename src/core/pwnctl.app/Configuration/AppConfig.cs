@@ -18,6 +18,7 @@ public sealed class AppConfig
 
     public sealed class ApiSettings
     {
+        public bool Bypass { get; set; }
         public string BaseUrl { get; set; }
         public string HMACSecret { get; set; }
         public int AccessTimeoutMinutes { get; set; }
