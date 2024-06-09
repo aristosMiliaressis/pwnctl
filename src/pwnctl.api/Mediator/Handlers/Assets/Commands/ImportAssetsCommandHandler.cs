@@ -10,6 +10,10 @@ using pwnctl.infra.Repositories;
 using pwnctl.app.Assets.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using pwnctl.app.Tagging;
+using pwnctl.kernel.BaseClasses;
+using pwnctl.app.Assets.DTO;
+using pwnctl.app.Tagging.Entities;
 
 namespace pwnctl.api.Mediator.Handlers.Targets.Commands
 {
@@ -23,26 +27,31 @@ namespace pwnctl.api.Mediator.Handlers.Targets.Commands
 
             foreach (var assetText in command.Assets)
             {
-                var result = AssetParser.Parse(assetText);
-                if (result.Failed)
+                Result<AssetDTO, string> dto = TagParser.Parse(assetText);
+                if (dto.Failed)
                     continue;
 
-                await RecursiveSave(scopeDefinitions, result.Value);
+                Result<Asset, string> asset = AssetParser.Parse(dto.Value.Asset);
+                if (asset.Failed)
+                    continue;
+
+                await RecursiveSave(scopeDefinitions, asset.Value, dto.Value.Tags);
             }
 
             return MediatedResponse.Success();
         }
 
-        private async Task RecursiveSave(List<ScopeDefinition> scopeDefinitions, Asset asset) 
+        private async Task RecursiveSave(List<ScopeDefinition> scopeDefinitions, Asset asset, Dictionary<string, string> tags)
         {
             AssetDbRepository assetRepo = new();
 
             foreach (var childAsset in GetReferencedAssets(asset))
             {
-                await RecursiveSave(scopeDefinitions, childAsset);
+                await RecursiveSave(scopeDefinitions, childAsset, tags);
             }
 
             var record = new AssetRecord(asset);
+            record.MergeTags(tags, false);
 
             foreach (var def in scopeDefinitions)
             {

@@ -38,6 +38,16 @@ namespace pwnctl.cli.ModeHandlers
                         lines = new();
                     }
                 }
+
+                if (lines.Count != 0)
+                {
+                    var request = new ImportAssetsCommand
+                    {
+                        Assets = lines
+                    };
+
+                    await Program.Sender.Send(request);
+                }
             });
         }
 

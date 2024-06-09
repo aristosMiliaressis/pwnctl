@@ -8,18 +8,19 @@ namespace pwnctl.api.Mediator.Pipelines
             where TResponse : MediatedResponse
             where TRequest : IRequest<TResponse>
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        // private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AuditLoggingPipeline(IHttpContextAccessor httpContextAccessor)
-        {
-            _httpContextAccessor = httpContextAccessor;
-        }
+        // public AuditLoggingPipeline(IHttpContextAccessor httpContextAccessor)
+        // {
+        //     _httpContextAccessor = httpContextAccessor;
+        // }
 
         public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
         {
-            var ip = _httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
+            //var ip = _httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
 
-            PwnInfraContext.Logger.Information($"{ip} requested {typeof(TRequest).Name}");
+            //PwnInfraContext.Logger.Information($"{ip} requested {typeof(TRequest).Name}");
+            PwnInfraContext.Logger.Information($"Executing {typeof(TRequest).Name}");
 
             return await next();
         }

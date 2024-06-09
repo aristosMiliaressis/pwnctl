@@ -63,6 +63,7 @@ internal sealed class Program
                 cfg.RegisterServicesFromAssemblies(typeof(PwnctlDtoAssemblyMarker).GetTypeInfo().Assembly);
                 cfg.RegisterServicesFromAssemblies(typeof(PwnctlApiAssemblyMarker).GetTypeInfo().Assembly);
             });
+            services.AddScoped(typeof(IPipelineBehavior<,>), typeof(AuditLoggingPipeline<,>));
             services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipeline<,>));
             services.AddValidatorsFromAssemblyContaining<PwnctlDtoAssemblyMarker>();
             services.AddTransient<TaskQueueService, SQSTaskQueueService>();
